@@ -51,6 +51,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 
-#prova .pri
-#include(GUI\classes.pri)
-#include(GUI\ui\uis.pri)
+RESOURCES += \
+    GUI/images/images.qrc
+

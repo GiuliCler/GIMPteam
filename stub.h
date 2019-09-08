@@ -9,6 +9,7 @@ class Stub : public QObject
 public:
     explicit Stub(QObject *parent = nullptr);
     static bool tryLogin(QString username, QString password);
+    static QString getNickname();
 };
 
 #endif // STUB_H

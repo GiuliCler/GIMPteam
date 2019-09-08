@@ -4,6 +4,7 @@ release/gui_menu.o
 release/gui_profile.o
 release/main.o
 release/stub.o
+release/qrc_images.o
 release/moc_gimpdocs.o
 release/moc_gui_login.o
 release/moc_gui_menu.o

@@ -11,7 +11,7 @@ public:
     explicit GUI_Menu(QWidget *parent = nullptr);
 
 private slots:
-    void on_pushButton_clicked();
+    void on_editPushButton_clicked();
 
 private:
     Ui::GUI_Menu *ui;

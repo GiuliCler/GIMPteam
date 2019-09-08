@@ -4,6 +4,7 @@ debug/gui_menu.o
 debug/gui_profile.o
 debug/main.o
 debug/stub.o
+debug/qrc_images.o
 debug/moc_gimpdocs.o
 debug/moc_gui_login.o
 debug/moc_gui_menu.o
