@@ -1,4 +1,4 @@
-#include "gimpdocs.h"
+#include "GUI/gimpdocs.h"
 #include <QApplication>
 //#include "gui_login.h"
 

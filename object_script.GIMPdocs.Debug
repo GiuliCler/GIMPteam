@@ -1,0 +1,11 @@
+debug/gimpdocs.o
+debug/gui_login.o
+debug/gui_menu.o
+debug/gui_profile.o
+debug/main.o
+debug/stub.o
+debug/moc_gimpdocs.o
+debug/moc_gui_login.o
+debug/moc_gui_menu.o
+debug/moc_gui_profile.o
+debug/moc_stub.o

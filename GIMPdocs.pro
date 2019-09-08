@@ -24,7 +24,26 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++11
 
+SOURCES += \
+        GUI/gimpdocs.cpp \
+        GUI/gui_login.cpp \
+        GUI/gui_menu.cpp \
+        GUI/gui_profile.cpp \
+        main.cpp \
+        stub.cpp
 
+HEADERS += \
+        GUI/gimpdocs.h \
+        GUI/gui_login.h \
+        GUI/gui_menu.h \
+        GUI/gui_profile.h \
+        stub.h
+
+FORMS += \
+        GUI/ui/gimpdocs.ui \
+        GUI/ui/gui_login.ui \
+        GUI/ui/gui_menu.ui \
+        GUI/ui/gui_profile.ui \
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -33,5 +52,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 
 #prova .pri
-include(GUI\classes.pri)
-include(GUI\ui\uis.pri)
+#include(GUI\classes.pri)
+#include(GUI\ui\uis.pri)
