@@ -24,6 +24,20 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++11
 
+SOURCES += \
+        gimpdocs.cpp \
+        gui_login.cpp \
+        gui_menu.cpp \
+        gui_profile.cpp \
+        main.cpp \
+        stub.cpp
+
+HEADERS += \
+        gimpdocs.h \
+        gui_login.h \
+        gui_menu.h \
+        gui_profile.h \
+        stub.h
 
 
 # Default rules for deployment.
@@ -31,7 +45,3 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-
-#prova .pri
-include(GUI\classes.pri)
-include(GUI\ui\uis.pri)

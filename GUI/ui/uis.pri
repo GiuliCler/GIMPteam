@@ -24,14 +24,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++11
 
-
+FORMS += \
+        gimpdocs.ui \
+        gui_login.ui \
+        gui_menu.ui \
+        gui_profile.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-
-#prova .pri
-include(GUI\classes.pri)
-include(GUI\ui\uis.pri)
