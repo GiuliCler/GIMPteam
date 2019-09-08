@@ -32,6 +32,8 @@ void GUI_Login::on_loginButton_clicked()
         return;
     }
 
+    //TODO devo farmi ritornare l'id dalla getLogin anzichè un boolean, e poi passarlo al costruttore di Menù
+
     GUI_Menu *widget = new GUI_Menu(static_cast<QWidget*>(this->parent()));
     static_cast<GIMPdocs*>(this->parent())->loadCentralWidget(widget);
 }

@@ -2,10 +2,13 @@
 #include "gimpdocs.h"
 #include "ui_gui_login.h"
 
-GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
+GUI_Profile::GUI_Profile(QWidget *parent, double id) : QWidget(parent)
 {
     ui = new Ui::GUI_Profile;
     ui->setupUi(this);
+    if(id != -1){
+        //TODO fare una getMapOfUser(id) ed impostare tutti i parametri, oppure prenderli uno a uno tipo get nickname
+    }
 }
 
 void GUI_Profile::on_pushButton_clicked()

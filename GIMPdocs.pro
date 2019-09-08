@@ -28,6 +28,8 @@ SOURCES += \
         GUI/gimpdocs.cpp \
         GUI/gui_login.cpp \
         GUI/gui_menu.cpp \
+        GUI/gui_newdoc.cpp \
+        GUI/gui_opendoc.cpp \
         GUI/gui_profile.cpp \
         main.cpp \
         stub.cpp
@@ -36,6 +38,8 @@ HEADERS += \
         GUI/gimpdocs.h \
         GUI/gui_login.h \
         GUI/gui_menu.h \
+        GUI/gui_newdoc.h \
+        GUI/gui_opendoc.h \
         GUI/gui_profile.h \
         stub.h
 
@@ -43,6 +47,8 @@ FORMS += \
         GUI/ui/gimpdocs.ui \
         GUI/ui/gui_login.ui \
         GUI/ui/gui_menu.ui \
+    GUI/ui/gui_newdoc.ui \
+    GUI/ui/gui_opendoc.ui \
         GUI/ui/gui_profile.ui \
 
 # Default rules for deployment.

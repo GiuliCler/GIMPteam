@@ -13,6 +13,12 @@ public:
 private slots:
     void on_editPushButton_clicked();
 
+    void on_newdocPushButton_clicked();
+
+    void on_logoutPushButton_clicked();
+
+    void on_opendocPushButton_clicked();
+
 private:
     Ui::GUI_Menu *ui;
 };
