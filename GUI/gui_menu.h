@@ -8,15 +8,12 @@ class GUI_Menu : public QWidget
 {
     Q_OBJECT
 public:
-    explicit GUI_Menu(QWidget *parent = nullptr);
+    explicit GUI_Menu(QWidget *parent);
 
 private slots:
     void on_editPushButton_clicked();
-
     void on_newdocPushButton_clicked();
-
     void on_logoutPushButton_clicked();
-
     void on_opendocPushButton_clicked();
 
 private:

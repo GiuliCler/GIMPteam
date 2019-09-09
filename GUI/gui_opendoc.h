@@ -7,7 +7,7 @@
 class GUI_Opendoc: public QWidget{
     Q_OBJECT
 public:
-    explicit GUI_Opendoc(QWidget *parent = nullptr);
+    explicit GUI_Opendoc(QWidget *parent);
 
 private slots:
     void on_pushButton_clicked();

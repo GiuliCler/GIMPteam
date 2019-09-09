@@ -2,8 +2,7 @@
 #include "ui_gimpdocs.h"
 #include <QBoxLayout>
 
-GIMPdocs::GIMPdocs(QWidget *parent) :
-    QDialog(parent)
+GIMPdocs::GIMPdocs(QWidget *parent) : QDialog(parent), userid(-1)
 {
     ui = new Ui::GIMPdocs;
     ui->setupUi(this);
@@ -14,7 +13,6 @@ GIMPdocs::GIMPdocs(QWidget *parent) :
 
     GUI_Login *loginWidget = new GUI_Login(this);
     loadCentralWidget(loginWidget);
-    //layout->addWidget(loginWidget);
 }
 
 GIMPdocs::~GIMPdocs(){
