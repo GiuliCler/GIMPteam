@@ -9,6 +9,7 @@ GUI_Opendoc::GUI_Opendoc(QWidget *parent) : QWidget(parent)
 }
 void GUI_Opendoc::on_pushButton_clicked()
 {
-    GUI_Menu *widget = new GUI_Menu(static_cast<QWidget*>(this->parent()));
-    static_cast<GIMPdocs*>(this->parent())->loadCentralWidget(widget);
+    //TODO devo collegare la editor window
+    //GUI_Menu *widget = new GUI_Menu(static_cast<QWidget*>(this->parent()));
+    //static_cast<GIMPdocs*>(this->parent())->loadCentralWidget(widget);
 }

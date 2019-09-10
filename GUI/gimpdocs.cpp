@@ -1,6 +1,7 @@
 #include "gimpdocs.h"
 #include "ui_gimpdocs.h"
 #include <QBoxLayout>
+#include <QDebug>
 
 GIMPdocs::GIMPdocs(QWidget *parent) : QDialog(parent), userid(-1)
 {

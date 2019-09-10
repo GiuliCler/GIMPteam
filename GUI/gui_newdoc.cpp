@@ -2,6 +2,8 @@
 #include "gui_menu.h"
 #include "gimpdocs.h"
 
+#include <QDebug>
+
 GUI_Newdoc::GUI_Newdoc(QWidget *parent) : QWidget(parent)
 {
     ui = new Ui::GUI_Newdoc;
@@ -10,6 +12,7 @@ GUI_Newdoc::GUI_Newdoc(QWidget *parent) : QWidget(parent)
 
 void GUI_Newdoc::on_pushButton_clicked()
 {
-    GUI_Menu *widget = new GUI_Menu(static_cast<QWidget*>(this->parent()));
-    static_cast<GIMPdocs*>(this->parent())->loadCentralWidget(widget);
+    //TODO devo collegare la editor window
+    //GUI_Menu *widget = new GUI_Menu(static_cast<QWidget*>(this->parent()));
+    //static_cast<GIMPdocs*>(this->parent())->loadCentralWidget(widget);
 }

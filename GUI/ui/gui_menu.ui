@@ -13,8 +13,8 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0">
-   <item>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
     <widget class="QGroupBox" name="userGroupBox">
      <property name="title">
       <string>User</string>
@@ -44,7 +44,7 @@
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap resource="../images/images.qrc">:/icon/Mew.png</pixmap>
+         <pixmap>:/icon/Mew.png</pixmap>
         </property>
         <property name="scaledContents">
          <bool>true</bool>
@@ -91,59 +91,49 @@
      </layout>
     </widget>
    </item>
-   <item>
-    <widget class="QGroupBox" name="groupBox">
+   <item row="1" column="0">
+    <widget class="QGroupBox" name="documentGroupBox">
      <property name="title">
       <string>Documents</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QPushButton" name="newdocPushButton">
-        <property name="text">
-         <string>New document</string>
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="0">
+      <item>
+       <widget class="QTabWidget" name="tabWidget">
+        <property name="currentIndex">
+         <number>0</number>
         </property>
+        <widget class="QWidget" name="newdocTab">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="accessibleName">
+          <string/>
+         </property>
+         <property name="autoFillBackground">
+          <bool>true</bool>
+         </property>
+         <attribute name="title">
+          <string>New document</string>
+         </attribute>
+        </widget>
+        <widget class="QWidget" name="opendocTab">
+         <property name="autoFillBackground">
+          <bool>true</bool>
+         </property>
+         <attribute name="title">
+          <string>Open document</string>
+         </attribute>
+        </widget>
        </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QPushButton" name="opendocPushButton">
-        <property name="text">
-         <string>Open document</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>202</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="1" column="0">
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>163</height>
-         </size>
-        </property>
-       </spacer>
       </item>
      </layout>
     </widget>
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="../images/images.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

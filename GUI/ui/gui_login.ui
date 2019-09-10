@@ -106,7 +106,11 @@
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QLineEdit" name="usernameLineEdit"/>
+        <widget class="QLineEdit" name="usernameLineEdit">
+         <property name="text">
+          <string>I'm</string>
+         </property>
+        </widget>
        </item>
        <item row="3" column="0">
         <widget class="QLabel" name="label_2">
@@ -117,6 +121,9 @@
        </item>
        <item row="3" column="1">
         <widget class="QLineEdit" name="passwordLineEdit">
+         <property name="text">
+          <string>lazy</string>
+         </property>
          <property name="echoMode">
           <enum>QLineEdit::Password</enum>
          </property>

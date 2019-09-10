@@ -92,8 +92,6 @@ void GUI_Profile::fillForm(){
 void GUI_Profile::loadIcons(){
     QVector<QString> *v = GUI_Icons::getIconPaths();
     QString *s;
-    for (s = v->begin(); s != v->end(); s++) {
+    for (s = v->begin(); s != v->end(); s++)
         ui->iconComboBox->addItem(QIcon(*s), "", s - v->begin());
-        qDebug() << s - v->begin();
-    }
 }
