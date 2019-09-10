@@ -26,6 +26,7 @@ CONFIG += c++11
 
 SOURCES += \
         GUI/gimpdocs.cpp \
+        GUI/gui_icons.cpp \
         GUI/gui_login.cpp \
         GUI/gui_menu.cpp \
         GUI/gui_newdoc.cpp \
@@ -36,6 +37,7 @@ SOURCES += \
 
 HEADERS += \
         GUI/gimpdocs.h \
+        GUI/gui_icons.h \
         GUI/gui_login.h \
         GUI/gui_menu.h \
         GUI/gui_newdoc.h \

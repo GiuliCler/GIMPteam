@@ -16,6 +16,7 @@ public:
 
 private slots:
     void fillForm();
+    void loadIcons();
     void on_savePushButton_clicked();
     void on_backPushButton_clicked();
 

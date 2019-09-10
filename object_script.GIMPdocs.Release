@@ -1,4 +1,5 @@
 release/gimpdocs.o
+release/gui_icons.o
 release/gui_login.o
 release/gui_menu.o
 release/gui_newdoc.o

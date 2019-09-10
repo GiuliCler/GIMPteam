@@ -4,6 +4,8 @@
 #include "ui_gui_login.h"
 
 #include <QMessageBox>
+#include <QIcon>
+#include <QDebug>
 
 GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
 {
@@ -17,6 +19,8 @@ GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
     else{
         ui->usernameLabelReadonly->hide();
     }
+
+    loadIcons();
 }
 
 void GUI_Profile::on_savePushButton_clicked()
@@ -83,4 +87,13 @@ void GUI_Profile::fillForm(){
     ui->usernameLabelReadonly->setText(Stub::getUsername(static_cast<GIMPdocs*>(this->parent())->userid));
     ui->passwordLineEdit->setText(Stub::getPassword(static_cast<GIMPdocs*>(this->parent())->userid));
     ui->repeatLineEdit->setText(Stub::getPassword(static_cast<GIMPdocs*>(this->parent())->userid));
+}
+
+void GUI_Profile::loadIcons(){
+    QVector<QString> *v = GUI_Icons::getIconPaths();
+    QString *s;
+    for (s = v->begin(); s != v->end(); s++) {
+        ui->iconComboBox->addItem(QIcon(*s), "", s - v->begin());
+        qDebug() << s - v->begin();
+    }
 }

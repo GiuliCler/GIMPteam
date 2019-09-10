@@ -14,6 +14,13 @@ long Stub::tryLogin(QString username, QString password){
     return 1;
 }
 
+static int getIconId(int userId){
+    int n =userId;
+    userId = n;
+
+    return 1;
+}
+
 QString Stub::getNickname(long id){
     if(id < 0)
         return "";

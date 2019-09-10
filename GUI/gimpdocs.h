@@ -4,6 +4,7 @@
 #include <QDialog>
 #include "gui_login.h"
 #include "stub.h"
+#include "gui_icons.h"
 
 //se proprio non posso usarla me la tengo qui per fare copia incolla
 //#define PARENT static_cast<GIMPdocs*>(this->parent())

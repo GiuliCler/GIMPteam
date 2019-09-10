@@ -15,7 +15,7 @@ public:
     static void updateUser(long id, QString password, QString nickname, int iconId);
 
     //dato l'id restituiscono parametri
-    //static ??? getIcon(int id);
+    static int getIconId(int id);
     static QString getNickname(long id);
     static QString getUsername(long id);
     static QString getPassword(long id);
