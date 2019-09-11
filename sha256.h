@@ -1,7 +1,3 @@
-//
-// Created by ilaria on 05/09/2019.
-//
-
 #ifndef GIMPDOCS_SHA256_H
 #define GIMPDOCS_SHA256_H
 #include <string>

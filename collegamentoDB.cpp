@@ -1,7 +1,3 @@
-//
-// Created by ilaria on 04/09/2019.
-//
-
 #include "collegamentoDB.h"
 #include "sha256.h"
 #include <vector>
@@ -51,7 +47,13 @@ void CollegamentoDB::disconnettiDB(){
 std::vector<std::string> CollegamentoDB::login(std::string username, std::string password){
     std::vector<std::string> ritorno;
 
-    std::string query = "SELECT * FROM utenti WHERE username=\':user\'";
+    if(username.empty() || password.empty()) {
+        ritorno.emplace_back("errore");
+        std::cout<<"OIBABOIIIIII"<<std::endl;       // DEBUG ------------------------------------------
+        return ritorno;
+    }
+
+    std::string query = "SELECT * FROM utenti WHERE username=:user";
     QSqlQuery ris;
     ris.prepare(QString::fromStdString(query));
     ris.bindValue(":user", QString::fromStdString(username));
@@ -63,22 +65,31 @@ std::vector<std::string> CollegamentoDB::login(std::string username, std::string
                 std::string sale = ris.value(2).toString().toUtf8().constData();
 
                 std::string pass_da_testare = sha256(password + sale);
+
+                std::cout<<"Sale nel DB:"<<sale<<std::endl;                     // DEBUG --------------------
+                std::cout<<"Password nel DB:"<<pass_nel_DB<<std::endl;          // DEBUG --------------------
+                std::cout<<"Password da testare:"<<pass_da_testare<<std::endl;  // DEBUG --------------------
+
+
                 if(pass_nel_DB == pass_da_testare) {
                     // password inserita corretta
                     std::string nickname = ris.value(3).toString().toUtf8().constData();
                     std::string icona = ris.value(4).toString().toUtf8().constData();
                     ritorno.push_back(nickname);
-                    ritorno.push_back(icona);                    
+                    ritorno.push_back(icona);
                 } else {
                     // Password inserita non corretta
+                    std::cout<<"MAMMAMIAAAAAA"<<std::endl;      // DEBUG ------------------------------------------
                     ritorno.emplace_back("errore");
                 }
             }
         } else {
+            std::cout<<"OHCRIBBIOOO"<<std::endl;        // DEBUG ------------------------------------------
             ritorno.emplace_back("errore");
         }
     }
     else{
+        std::cout<<"ULTIMOOOOO"<<std::endl;     // DEBUG ------------------------------------------
         ritorno.emplace_back("errore");
     }
 
@@ -98,11 +109,14 @@ std::vector<std::string> CollegamentoDB::login(std::string username, std::string
  */
 int CollegamentoDB::signup(std::string username, std::string password, std::string nickname, std::string icona){
 
+    if(username.empty() || password.empty() || nickname.empty())
+        return 0;
+
     char sale[10];
     gen_random(sale, 10);
     std::string pass = sha256(password + sale);
 
-    std::string query = "INSERT INTO utenti() VALUES(\':user\', \':pssw\', \':salt\', \':nick\', \':icon\')";
+    std::string query = "INSERT INTO utenti(username, password, sale, nickname, icona) VALUES(:user, :pssw, :salt, :nick, :icon)";
     QSqlQuery ris;
     ris.prepare(QString::fromStdString(query));
     ris.bindValue(":user", QString::fromStdString(username));
@@ -153,20 +167,21 @@ void CollegamentoDB::gen_random(char *s, const int len) {
  */
 int CollegamentoDB::creaDoc(std::string nomeDOC){
 
-    int ok = 1;
+    if(nomeDOC.empty())
+        return 0;
+
     std::string uri = creaURI(nomeDOC);
 
-    std::string query = "INSERT INTO doc(nome_doc, uri) VALUES (\':doc\', \':ur\')";
+    std::string query = "INSERT INTO doc(nome_doc, uri) VALUES(:doc, :ur)";
     QSqlQuery ris;
     ris.prepare(QString::fromStdString(query));
     ris.bindValue(":doc", QString::fromStdString(nomeDOC));
     ris.bindValue(":ur", QString::fromStdString(uri));
 
-    bool esito = ris.exec(QString::fromStdString(query));
-    if(!esito)
-        ok = 0;
+    if(!ris.exec())
+        return 0;
 
-    return ok;
+    return 1;
 }
 
 /*
@@ -177,7 +192,7 @@ int CollegamentoDB::creaDoc(std::string nomeDOC){
  *      stringa corrispondente all'URI creata
  */
 std::string CollegamentoDB::creaURI(std::string nomeDOC){
-    // TODO -------------------------------------------------------------------------------------------------
+    return "://GIMPdocs/"+nomeDOC;
 }
 
 /*
@@ -191,35 +206,53 @@ std::string CollegamentoDB::creaURI(std::string nomeDOC){
  *           (username,nomeDOC) è stata aggiunta alla tabella UTENTE_DOC
  *      0 -> L'utente è già stato abilitato alla modifica del documento, ovvero è già presente una riga
  *           con (username,nomeDOC) nella tabella UTENTE_DOC
+ *      2 -> Il documento di cui è stato fornito il nome non esiste nella tabella DOC oppure è stata fornita
+ *           una stringa vuota
  */
 int CollegamentoDB::aggiungiPartecipante(std::string nomeDOC, std::string username){
 
+    if(nomeDOC.empty())
+        return 2;
+
     int esito = 1;
 
-    std::string query1 = "SELECT * FROM utente_doc WHERE username=\':user\' AND nome_doc=\':doc\'";
-    std::string query2 = "INSERT INTO utente_doc(username, nome_doc) VALUES (\':user\', \':doc\')";
-    QSqlQuery ris1, ris2;
+    std::string query1 = "SELECT * FROM utente_doc WHERE username=:user AND nome_doc=:doc";
+    std::string query2 = "INSERT INTO utente_doc(username, nome_doc) VALUES(:user, :doc)";
+    std::string query3 = "SELECT * FROM doc WHERE nome_doc=:doc";
+    QSqlQuery ris1, ris2, ris3;
     ris1.prepare(QString::fromStdString(query1));
     ris2.prepare(QString::fromStdString(query2));
+    ris3.prepare(QString::fromStdString(query3));
     ris1.bindValue(":user", QString::fromStdString(username));
     ris1.bindValue(":doc", QString::fromStdString(nomeDOC));
     ris2.bindValue(":user", QString::fromStdString(username));
     ris2.bindValue(":doc", QString::fromStdString(nomeDOC));
+    ris3.bindValue(":doc", QString::fromStdString(nomeDOC));
 
     if(QSqlDatabase::database().driver()->hasFeature(QSqlDriver::Transactions)){
 
         QSqlDatabase::database().transaction();
-        ris1.exec(QString::fromStdString(query1));
 
-        // "Esiste già una riga nella tabella UTENTE_DOC corrispondente alla coppia (username,nomeDOC)?"
-        if(ris1.size() == 0){
-            // L'utente è già stato abilitato alla modifica del documento
-            esito = 0;
-            QSqlDatabase::database().commit();
+        ris3.exec();
+        if(ris3.size() == 0){
+
+            // Non esiste alcuna riga all'interno della tabella DOC con il nomeDOC specificato
+            esito = 2;
+
         } else {
-            // L'utente non è ancora stato abilitato alla modifica del documento
-            ris2.exec(QString::fromStdString(query2));
-            QSqlDatabase::database().commit();
+
+            ris1.exec();
+
+            // "Esiste già una riga nella tabella UTENTE_DOC corrispondente alla coppia (username,nomeDOC)?"
+            if(ris1.size() != 0){
+                // L'utente è già stato abilitato alla modifica del documento
+                esito = 0;
+                QSqlDatabase::database().commit();
+            } else {
+                // L'utente non è ancora stato abilitato alla modifica del documento
+                ris2.exec();
+                QSqlDatabase::database().commit();
+            }
         }
     }
 
@@ -239,17 +272,18 @@ std::vector<std::string> CollegamentoDB::recuperaDocs(std::string username){
 
     std::vector<std::string> elenco;
 
-    std::string query = "SELECT nome_doc FROM utente_doc WHERE username=\':user\'";
+    std::string query = "SELECT nome_doc FROM utente_doc WHERE username=:user";
     QSqlQuery ris;
     ris.prepare(QString::fromStdString(query));
     ris.bindValue(":user", QString::fromStdString(username));
 
-    ris.exec(QString::fromStdString(query));
+    ris.exec();
 
     if(ris.size() > 0){
         while(ris.next()){
             std::string doc;
-            doc = ris.value(1).toString().toUtf8().constData();
+            doc = ris.value(0).toString().toUtf8().constData();
+
             elenco.push_back(doc);
         }
     } else {
@@ -272,12 +306,12 @@ std::string CollegamentoDB::recuperaURI(std::string nomeDOC){
 
     std::string uri;
 
-    std::string query = "SELECT uri FROM doc WHERE nome_doc=\':doc\'";
+    std::string query = "SELECT uri FROM doc WHERE nome_doc=:doc";
     QSqlQuery ris;
     ris.prepare(QString::fromStdString(query));
     ris.bindValue(":doc", QString::fromStdString(nomeDOC));
 
-    ris.exec(QString::fromStdString(query));
+    ris.exec();
 
     if(ris.size() == 1){
         while(ris.next()){

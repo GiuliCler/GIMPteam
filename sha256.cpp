@@ -1,6 +1,3 @@
-//
-// Created by ilaria on 05/09/2019.
-//
 #include <cstring>
 #include <fstream>
 #include "sha256.h"

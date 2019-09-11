@@ -1,7 +1,3 @@
-//
-// Created by ilaria on 04/09/2019.
-//
-
 #ifndef GIMPDOCS_COLLEGAMENTODB_H
 #define GIMPDOCS_COLLEGAMENTODB_H
 #include <QCoreApplication>
@@ -17,7 +13,7 @@ private:
 public:
     void connettiDB(const QString& dbname, const QString& hostname="localhost", const QString& username="root", const QString& pssw="");
     void disconnettiDB();
-    std::vector<std::string>  login(std::string username, std::string password);
+    std::vector<std::string> login(std::string username, std::string password);
     int signup(std::string username, std::string password, std::string nickname, std::string icona);
     int creaDoc(std::string nomeDOC);
     std::string creaURI(std::string nomeDOC);
