@@ -1,7 +1,8 @@
 # GIMPteam
 
-## ************************************ NOTA PER FAR FUNZIONARE LE LIBRERIE PER IL DATABASE E PER SQL ************************************
-Attenzione: le seguenti info sono per gli utilizzatori di Windows... Se stai utilizzando Linux, arrangiati, io ho già smanettato abbastanza...
+## ----- NOTA PER FAR FUNZIONARE LE LIBRERIE PER IL DATABASE E PER SQL ----- 
+Attenzione:
+le seguenti info sono per gli utilizzatori di Windows... Se stai utilizzando Linux, arrangiati, io ho già smanettato abbastanza...
 
 1) Copiare le due librerie libmysql.dll e libmysqld.dll nel percorso ---> C:\Qt\5.12.3\mingw73_64\bin
 
