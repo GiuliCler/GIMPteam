@@ -14,6 +14,11 @@ GUI_Menu::GUI_Menu(QWidget *parent) : QWidget(parent)
 
     setProfileArea();
     setDocumentArea();
+
+}
+
+GUI_Menu::~GUI_Menu(){
+    delete ui;
 }
 
 void GUI_Menu::setProfileArea(){
@@ -24,11 +29,13 @@ void GUI_Menu::setProfileArea(){
 }
 
 void GUI_Menu::setDocumentArea(){
-    QWidget *w = new GUI_Newdoc(ui->tabWidget->widget(0));
-    new GUI_Opendoc(ui->tabWidget->widget(1));
-    QGridLayout *lay = new QGridLayout();
-    lay->addWidget(w);
-    ui->newdocTab->setLayout(lay);
+    //setto un layout ai due tab ed aggiungo ai layout i 2 widget
+    ui->newdocTab->setLayout(new QGridLayout());
+    //purtroppo settargli il parent è inutile perchè nel momento in cui faccio addWidget gli viene modificato il parent
+    ui->newdocTab->layout()->addWidget(new GUI_Newdoc(static_cast<GIMPdocs*>(this->parent())));
+
+    ui->opendocTab->setLayout(new QGridLayout());
+    ui->opendocTab->layout()->addWidget(new GUI_Opendoc(ui->tabWidget->widget(1)));
 }
 
 void GUI_Menu::on_editPushButton_clicked()

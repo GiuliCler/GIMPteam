@@ -9,6 +9,11 @@ GUI_Login::GUI_Login(QWidget *parent) : QWidget(parent)
     ui = new Ui::GUI_Login();
     ui->setupUi(this);
     static_cast<GIMPdocs*>(this->parent())->userid = -1;
+
+}
+
+GUI_Login::~GUI_Login(){
+    delete ui;
 }
 
 void GUI_Login::on_newAccountButton_clicked()

@@ -1,22 +1,39 @@
 #include "gimpdocs.h"
 #include "gui_login.h"
 
+#include <iostream>
 
 GIMPdocs::GIMPdocs(QWidget *parent) : QMainWindow(parent), userid(-1)
 {
-    ui = new Ui::GIMPdocs;
-    ui->setupUi(this);
+    ui1 = new Ui::GIMPdocs;
+    ui2 = new Ui::GUI_EditWindow;
     centralWidget = nullptr;
 
-    //layout = new QHBoxLayout(this);
-    //this->setLayout(layout);
-
-    GUI_Login *loginWidget = new GUI_Login(this);
-    loadCentralWidget(loginWidget);
+    setUi1(new GUI_Login(this));
 }
 
 GIMPdocs::~GIMPdocs(){
-    delete ui;
+    delete ui1;
+    delete ui2;
+    //TODO gestire il puntatore a central widget
+}
+
+void GIMPdocs::setUi1(QWidget *widget){
+    if(centralWidget != nullptr){
+        centralWidget->close();
+        centralWidget = nullptr;
+    }
+    ui1->setupUi(this);
+    loadCentralWidget(widget);
+}
+
+void GIMPdocs::setUi2(QWidget *widget){
+    if(centralWidget != nullptr){
+        centralWidget->close();
+        centralWidget = nullptr;
+    }
+    ui2->setupUi(this);
+    loadCentralWidget(widget);
 }
 
 void GIMPdocs::loadCentralWidget(QWidget* widget){

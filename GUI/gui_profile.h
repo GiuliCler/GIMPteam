@@ -10,6 +10,7 @@ class GUI_Profile : public QWidget
     Q_OBJECT
 public:
     explicit GUI_Profile(QWidget *parent = nullptr);
+    ~GUI_Profile();
 
     //faccio una funzione statica anzichè una normale stringa perchè non posso assegnare qui il valore alla stringa
     static QString getObjectName() {return QString("gui_profile");}

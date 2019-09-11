@@ -6,6 +6,7 @@
 #include "stub.h"
 #include "gui_icons.h"
 #include "ui_gimpdocs.h"
+#include "ui_gui_editorwindow.h"
 
 //se proprio non posso usarla me la tengo qui per fare copia incolla
 //#define PARENT static_cast<GIMPdocs*>(this->parent())
@@ -23,8 +24,13 @@ public:
     //carica il widget centrale coi dovuti controlli e chiude il precedente
     void loadCentralWidget(QWidget* widget);
 
+    //servono a cambiare l'ui attiva. Widget è il central widget da caricare
+    void setUi1(QWidget *widget);
+    void setUi2(QWidget *widget);
+
 private:
-    Ui::GIMPdocs *ui;
+    Ui::GIMPdocs *ui1;
+    Ui::GUI_EditWindow *ui2;
     QWidget *centralWidget;
 };
 

@@ -8,9 +8,9 @@ class GUI_Newdoc: public QWidget{
     Q_OBJECT
 public:
     explicit GUI_Newdoc(QWidget *parent);
-
+    ~GUI_Newdoc();
 private slots:
-    void on_pushButton_clicked();
+    void on_createPushButton_clicked();
 
 private:
     Ui::GUI_Newdoc *ui;

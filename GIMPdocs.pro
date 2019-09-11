@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -26,6 +26,7 @@ CONFIG += c++11
 
 SOURCES += \
         GUI/gimpdocs.cpp \
+        GUI/gui_editor.cpp \
         GUI/gui_icons.cpp \
         GUI/gui_login.cpp \
         GUI/gui_menu.cpp \
@@ -37,6 +38,7 @@ SOURCES += \
 
 HEADERS += \
         GUI/gimpdocs.h \
+        GUI/gui_editor.h \
         GUI/gui_icons.h \
         GUI/gui_login.h \
         GUI/gui_menu.h \
@@ -47,6 +49,7 @@ HEADERS += \
 
 FORMS += \
     GUI/ui/gimpdocs.ui \
+    GUI/ui/gui_editor.ui \
     GUI/ui/gui_editorwindow.ui \
         GUI/ui/gui_login.ui \
         GUI/ui/gui_menu.ui \

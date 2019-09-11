@@ -9,7 +9,7 @@ class GUI_Menu : public QWidget
     Q_OBJECT
 public:
     explicit GUI_Menu(QWidget *parent);
-
+    ~GUI_Menu();
 private slots:
     void on_editPushButton_clicked();
     void on_logoutPushButton_clicked();

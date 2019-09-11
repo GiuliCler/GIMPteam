@@ -24,6 +24,10 @@ GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
     loadIcons();
 }
 
+GUI_Profile::~GUI_Profile(){
+    delete ui;
+}
+
 void GUI_Profile::on_savePushButton_clicked()
 {
     //controllo che tutti i campi siano compilati
