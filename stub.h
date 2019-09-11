@@ -12,7 +12,8 @@ public:
     static long tryLogin(QString username, QString password);
     //anche qui mi srve che ritorni un id
     static long createUser(QString username, QString password, QString nickname, int iconId);
-    static void updateUser(long id, QString password, QString nickname, int iconId);
+    //a seconda del codice di errore stamperò un messaggio appropriato. Oppure può ritornare direttamente il messaggio
+    static int updateUser(long id, QString password, QString nickname, int iconId);
 
     //dato l'id restituiscono parametri
     static int getIconId(int id);

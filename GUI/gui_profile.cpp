@@ -2,6 +2,7 @@
 #include "gui_menu.h"
 #include "gimpdocs.h"
 #include "ui_gui_login.h"
+#include "gui_login.h"
 
 #include <QMessageBox>
 #include <QIcon>
@@ -25,10 +26,12 @@ GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
 
 void GUI_Profile::on_savePushButton_clicked()
 {
+    //controllo che tutti i campi siano compilati
     if(ui->nicknameLineEdit->text().isEmpty()){
         QMessageBox::information(this, "", "\"Nickname\" field is empty");
         return;
     }
+    //in caso di modifica questo non ha bisogno di essere controllato perchè è read only
     if(static_cast<GIMPdocs*>(this->parent())->userid < 0 && ui->usernameLineEdit->text().isEmpty()){
         QMessageBox::information(this, "", "\"Username\" field is empty");
         return;
@@ -46,6 +49,7 @@ void GUI_Profile::on_savePushButton_clicked()
         return;
     }
 
+    //creo un nuovo utente o aggirno quello vecchio
     if(static_cast<GIMPdocs*>(this->parent())->userid < 0){
         //creo un nuovo user
         long n = Stub::createUser(ui->usernameLineEdit->text(), ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), 1);
@@ -53,20 +57,25 @@ void GUI_Profile::on_savePushButton_clicked()
             static_cast<GIMPdocs*>(this->parent())->userid = n;
         else{
             //TODO I don't know. Do something
+            return;
         }
 
     }
     else{
         //faccio l'update del vecchio user
-        Stub::updateUser(static_cast<GIMPdocs*>(this->parent())->userid, ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), 1);
+        int code = Stub::updateUser(static_cast<GIMPdocs*>(this->parent())->userid, ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), 1);
+        if(code != 0){
+            QMessageBox::information(this, "", "Generic error");
+            return;
+        }
 
     }
-    //static_cast<GIMPdocs*>(this->parent())->userid = Stub::
+
+    /*
     if(!static_cast<GIMPdocs*>(this->parent())->userid){
         QMessageBox::information(this, "", "Username or Password are incorrect");
         return;
-    }
-
+    }*/
 
 
     GUI_Menu *widget = new GUI_Menu(static_cast<QWidget*>(this->parent()));

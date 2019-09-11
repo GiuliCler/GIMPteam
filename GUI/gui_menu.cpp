@@ -18,7 +18,8 @@ GUI_Menu::GUI_Menu(QWidget *parent) : QWidget(parent)
 
 void GUI_Menu::setProfileArea(){
     ui->nicknameLabel->setText(Stub::getNickname(static_cast<GIMPdocs*>(this->parent())->userid));
-    QPixmap image = QPixmap(GUI_Icons::getIconPath(static_cast<GIMPdocs*>(this->parent())->userid));
+    int iconId = Stub::getIconId(static_cast<GIMPdocs*>(this->parent())->userid);
+    QPixmap image = QPixmap(GUI_Icons::getIconPath(iconId));
     ui->iconLabel->setPixmap(image);
 }
 

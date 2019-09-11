@@ -15,8 +15,11 @@ public:
     static QString getObjectName() {return QString("gui_profile");}
 
 private slots:
+    //se sono sto modificando e non creando questa fuzione imposta gli attuali valori
     void fillForm();
+    //questa serve solo a riempire la combobox
     void loadIcons();
+
     void on_savePushButton_clicked();
     void on_backPushButton_clicked();
 

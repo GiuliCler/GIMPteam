@@ -46,7 +46,7 @@ HEADERS += \
         stub.h
 
 FORMS += \
-        GUI/ui/gimpdocs.ui \
+    GUI/ui/gimpdocs.ui \
     GUI/ui/gui_editorwindow.ui \
         GUI/ui/gui_login.ui \
         GUI/ui/gui_menu.ui \

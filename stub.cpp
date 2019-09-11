@@ -14,7 +14,7 @@ long Stub::tryLogin(QString username, QString password){
     return 1;
 }
 
-static int getIconId(int userId){
+int Stub::getIconId(int userId){
     int n =userId;
     userId = n;
 
@@ -61,9 +61,11 @@ long Stub::createUser(QString username, QString password, QString nickname, int 
     return 1;
 }
 
-void Stub::updateUser(long id, QString password, QString nickname, int iconId){
+int Stub::updateUser(long id, QString password, QString nickname, int iconId){
     //tutte 'ste assegnazioni sono solo per togliere i warning
     password = nickname;
     id = iconId;
     iconId = id;
+
+    return 0;
 }
