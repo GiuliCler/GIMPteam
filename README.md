@@ -25,3 +25,12 @@ Copiare le due librerie libmysql.dll e libmysqld.dll nel percorso ---> C:\Qt\5.1
 4) Creare un nuovo progetto in CLion e chiamarlo "gimpdocs"
 5) Prendere i file, CMakeLists.txt compreso (molto importante!), e copiarli nella cartella del nuovo progetto creato
 6) Buildare, runnare e far sì che la magia avvenga nella console
+
+## ----- NOTA PER FAR FUNZIONARE LE COSE IN QTCREATOR -----
+0) Se non lo si è ancora fatto, vedere ----- NOTA PER IMPORTARE IL DB -----
+1) Aprire XAMPP
+2) Cliccare su "Start" nelle prime due righe (i due "Start" relativi a "Apache" e a "MySQL")
+3) Aprire QtCreator
+4) Creare un nuovo progetto 
+5) Aggiungere i file .cpp e .h al progetto cliccando sul progetto, tasto DX, "Add Existing Files..."
+6) Aggiungere al file .pro la riga ---->   QT += sql
