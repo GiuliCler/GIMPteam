@@ -49,7 +49,7 @@ std::vector<std::string> CollegamentoDB::login(std::string username, std::string
 
     if(username.empty() || password.empty()) {
         ritorno.emplace_back("errore");
-        std::cout<<"OIBABOIIIIII"<<std::endl;       // DEBUG ------------------------------------------
+        //std::cout<<"OIBABOIIIIII"<<std::endl;       // DEBUG ------------------------------------------
         return ritorno;
     }
 
@@ -66,9 +66,11 @@ std::vector<std::string> CollegamentoDB::login(std::string username, std::string
 
                 std::string pass_da_testare = sha256(password + sale);
 
+                std::cout<<"**************************"<<std::endl;                // DEBUG --------------------
                 std::cout<<"Sale nel DB:"<<sale<<std::endl;                     // DEBUG --------------------
                 std::cout<<"Password nel DB:"<<pass_nel_DB<<std::endl;          // DEBUG --------------------
-                std::cout<<"Password da testare:"<<pass_da_testare<<std::endl;  // DEBUG --------------------
+                std::cout<<"Password del login:"<<password<<std::endl;          // DEBUG --------------------
+                std::cout<<"Password fatta con sha256:"<<pass_da_testare<<std::endl;  // DEBUG --------------------
 
 
                 if(pass_nel_DB == pass_da_testare) {
@@ -79,17 +81,17 @@ std::vector<std::string> CollegamentoDB::login(std::string username, std::string
                     ritorno.push_back(icona);
                 } else {
                     // Password inserita non corretta
-                    std::cout<<"MAMMAMIAAAAAA"<<std::endl;      // DEBUG ------------------------------------------
+                    //std::cout<<"MAMMAMIAAAAAA"<<std::endl;      // DEBUG ------------------------------------------
                     ritorno.emplace_back("errore");
                 }
             }
         } else {
-            std::cout<<"OHCRIBBIOOO"<<std::endl;        // DEBUG ------------------------------------------
+            //std::cout<<"OHCRIBBIOOO"<<std::endl;        // DEBUG ------------------------------------------
             ritorno.emplace_back("errore");
         }
     }
     else{
-        std::cout<<"ULTIMOOOOO"<<std::endl;     // DEBUG ------------------------------------------
+        //std::cout<<"ULTIMOOOOO"<<std::endl;     // DEBUG ------------------------------------------
         ritorno.emplace_back("errore");
     }
 
@@ -114,7 +116,10 @@ int CollegamentoDB::signup(std::string username, std::string password, std::stri
 
     char sale[10];
     gen_random(sale, 10);
+    std::cout<<"Sale signup:"<<sale<<std::endl;                     // DEBUG --------------------
+    std::cout<<"Password signup:"<<password<<std::endl;              // DEBUG --------------------
     std::string pass = sha256(password + sale);
+    std::cout<<"Sha256 signup:"<<pass<<std::endl;                     // DEBUG --------------------
 
     std::string query = "INSERT INTO utenti(username, password, sale, nickname, icona) VALUES(:user, :pssw, :salt, :nick, :icon)";
     QSqlQuery ris;
