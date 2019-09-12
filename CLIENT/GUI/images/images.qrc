@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>Mew.png</file>
+        <file>Celebi.png</file>
+        <file>Jirachi.png</file>
+        <file>Manaphy.png</file>
+        <file>Victini.png</file>
+    </qresource>
+</RCC>
