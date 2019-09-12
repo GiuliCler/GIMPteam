@@ -144,5 +144,19 @@ int main(int argc, char *argv[]) {
 
     std::cout<<"---------------------------------------------"<<std::endl;
 
+    /* Richiedo l'uri del doc 1 --> valore di ritorno atteso: URI */
+    std::string uri0 = link->recuperaURI("DivinaCommedia");
+    std::cout<<"URI doc 1: "<<uri0<<std::endl;
+
+    /* Richiedo l'uri di un doc inesistente --> valore di ritorno atteso: "errore" */
+    std::string uri1 = link->recuperaURI("IlFuMattiaPascal");
+    std::cout<<"URI doc inesistente: "<<uri1<<std::endl;
+
+    /* Boundary case: nomeDOC vuoto --> valore di ritorno atteso: "errore" */
+    std::string uri2 = link->recuperaURI("");
+    std::cout<<"URI doc vuoto: "<<uri2<<std::endl;
+
+    std::cout<<"---------------------------------------------"<<std::endl;
+
     return a.exec();
 }

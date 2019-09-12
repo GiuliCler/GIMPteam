@@ -296,8 +296,10 @@ std::vector<std::string> CollegamentoDB::recuperaDocs(std::string username){
  */
 std::string CollegamentoDB::recuperaURI(std::string nomeDOC){
 
-    std::string uri;
+    if(nomeDOC.empty())
+        return "errore";
 
+    std::string uri;
     std::string query = "SELECT uri FROM doc WHERE nome_doc=:doc";
     QSqlQuery ris;
     ris.prepare(QString::fromStdString(query));
@@ -307,7 +309,7 @@ std::string CollegamentoDB::recuperaURI(std::string nomeDOC){
 
     if(ris.size() == 1){
         while(ris.next()){
-            uri = ris.value(2).toString().toUtf8().constData();
+            uri = ris.value(0).toString().toUtf8().constData();
         }
     } else {
         uri = "errore";

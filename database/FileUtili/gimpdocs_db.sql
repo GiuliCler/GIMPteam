@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Set 08, 2019 alle 10:40
+-- Creato il: Set 12, 2019 alle 11:49
 -- Versione del server: 10.1.40-MariaDB
 -- Versione PHP: 7.3.5
 
@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `doc` (
   `nome_doc` varchar(40) NOT NULL,
-  `uri` varchar(20) NOT NULL
+  `uri` varchar(40) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -52,8 +52,8 @@ CREATE TABLE `utente_doc` (
 
 CREATE TABLE `utenti` (
   `username` varchar(50) NOT NULL,
-  `password` varchar(256) NOT NULL,
-  `sale` varchar(10) NOT NULL,
+  `password` varchar(260) NOT NULL,
+  `sale` varchar(20) NOT NULL,
   `nickname` varchar(20) NOT NULL,
   `icona` varchar(40) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
