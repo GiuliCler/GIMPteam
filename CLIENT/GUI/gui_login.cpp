@@ -20,7 +20,7 @@ void GUI_Login::on_newAccountButton_clicked()
 {
     static_cast<GIMPdocs*>(this->parent())->userid = -1;
     GUI_Profile *widget = new GUI_Profile(static_cast<QWidget*>(this->parent()));
-    static_cast<GIMPdocs*>(this->parent())->loadCentralWidget(widget);
+    static_cast<GIMPdocs*>(this->parent())->setCentralWidget(widget);
 }
 
 void GUI_Login::on_loginButton_clicked()
@@ -42,5 +42,5 @@ void GUI_Login::on_loginButton_clicked()
     }
 
     GUI_Menu *widget = new GUI_Menu(static_cast<QWidget*>(this->parent()));
-    static_cast<GIMPdocs*>(this->parent())->loadCentralWidget(widget);
+    static_cast<GIMPdocs*>(this->parent())->setCentralWidget(widget);
 }

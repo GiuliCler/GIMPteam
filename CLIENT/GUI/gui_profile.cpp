@@ -75,21 +75,14 @@ void GUI_Profile::on_savePushButton_clicked()
 
     }
 
-    /*
-    if(!static_cast<GIMPdocs*>(this->parent())->userid){
-        QMessageBox::information(this, "", "Username or Password are incorrect");
-        return;
-    }*/
-
-
     GUI_Menu *widget = new GUI_Menu(static_cast<QWidget*>(this->parent()));
-    static_cast<GIMPdocs*>(this->parent())->loadCentralWidget(widget);
+    static_cast<GIMPdocs*>(this->parent())->setCentralWidget(widget);
 }
 
 void GUI_Profile::on_backPushButton_clicked()
 {
     GUI_Login *widget = new GUI_Login(static_cast<QWidget*>(this->parent()));
-    static_cast<GIMPdocs*>(this->parent())->loadCentralWidget(widget);
+    static_cast<GIMPdocs*>(this->parent())->setCentralWidget(widget);
 }
 
 void GUI_Profile::fillForm(){

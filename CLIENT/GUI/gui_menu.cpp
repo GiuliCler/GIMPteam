@@ -41,11 +41,11 @@ void GUI_Menu::setDocumentArea(){
 void GUI_Menu::on_editPushButton_clicked()
 {
     GUI_Profile *widget = new GUI_Profile(static_cast<QWidget*>(this->parent()));
-    static_cast<GIMPdocs*>(this->parent())->loadCentralWidget(widget);
+    static_cast<GIMPdocs*>(this->parent())->setCentralWidget(widget);
 }
 
 void GUI_Menu::on_logoutPushButton_clicked()
 {
     GUI_Login *widget = new GUI_Login(static_cast<QWidget*>(this->parent()));
-    static_cast<GIMPdocs*>(this->parent())->loadCentralWidget(widget);
+    static_cast<GIMPdocs*>(this->parent())->setCentralWidget(widget);
 }

@@ -21,8 +21,6 @@ public:
 
     explicit GIMPdocs(QWidget *parent = nullptr);
     ~GIMPdocs();
-    //carica il widget centrale coi dovuti controlli e chiude il precedente
-    void loadCentralWidget(QWidget* widget);
 
     //servono a cambiare l'ui attiva. Widget è il central widget da caricare
     void setUi1(QWidget *widget);
@@ -31,7 +29,6 @@ public:
 private:
     Ui::GIMPdocs *ui1;
     Ui::GUI_EditWindow *ui2;
-    QWidget *centralWidget;
 };
 
 #endif // GIMPDOCS_H
