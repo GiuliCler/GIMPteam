@@ -49,7 +49,6 @@ std::vector<std::string> CollegamentoDB::login(std::string username, std::string
 
     if(username.empty() || password.empty()) {
         ritorno.emplace_back("errore");
-        //std::cout<<"OIBABOIIIIII"<<std::endl;       // DEBUG ------------------------------------------
         return ritorno;
     }
 
@@ -61,37 +60,27 @@ std::vector<std::string> CollegamentoDB::login(std::string username, std::string
     if(ris.exec()){
         if(ris.size() == 1){
             while(ris.next()){
+
                 std::string pass_nel_DB = ris.value(1).toString().toUtf8().constData();
                 std::string sale = ris.value(2).toString().toUtf8().constData();
-
                 std::string pass_da_testare = sha256(password + sale);
 
-                std::cout<<"**************************"<<std::endl;                // DEBUG --------------------
-                std::cout<<"Sale nel DB:"<<sale<<std::endl;                     // DEBUG --------------------
-                std::cout<<"Password nel DB:"<<pass_nel_DB<<std::endl;          // DEBUG --------------------
-                std::cout<<"Password del login:"<<password<<std::endl;          // DEBUG --------------------
-                std::cout<<"Password fatta con sha256:"<<pass_da_testare<<std::endl;  // DEBUG --------------------
-
-
                 if(pass_nel_DB == pass_da_testare) {
-                    // password inserita corretta
+                    /* password inserita corretta */
                     std::string nickname = ris.value(3).toString().toUtf8().constData();
                     std::string icona = ris.value(4).toString().toUtf8().constData();
                     ritorno.push_back(nickname);
                     ritorno.push_back(icona);
                 } else {
-                    // Password inserita non corretta
-                    //std::cout<<"MAMMAMIAAAAAA"<<std::endl;      // DEBUG ------------------------------------------
+                    /* Password inserita non corretta */
                     ritorno.emplace_back("errore");
                 }
             }
         } else {
-            //std::cout<<"OHCRIBBIOOO"<<std::endl;        // DEBUG ------------------------------------------
             ritorno.emplace_back("errore");
         }
     }
     else{
-        //std::cout<<"ULTIMOOOOO"<<std::endl;     // DEBUG ------------------------------------------
         ritorno.emplace_back("errore");
     }
 
@@ -116,17 +105,15 @@ int CollegamentoDB::signup(std::string username, std::string password, std::stri
 
     char sale[10];
     gen_random(sale, 10);
-    std::cout<<"Sale signup:"<<sale<<std::endl;                     // DEBUG --------------------
-    std::cout<<"Password signup:"<<password<<std::endl;              // DEBUG --------------------
+    std::string salt(sale);
     std::string pass = sha256(password + sale);
-    std::cout<<"Sha256 signup:"<<pass<<std::endl;                     // DEBUG --------------------
 
     std::string query = "INSERT INTO utenti(username, password, sale, nickname, icona) VALUES(:user, :pssw, :salt, :nick, :icon)";
     QSqlQuery ris;
     ris.prepare(QString::fromStdString(query));
     ris.bindValue(":user", QString::fromStdString(username));
     ris.bindValue(":pssw", QString::fromStdString(pass));
-    ris.bindValue(":salt", QString::fromStdString(sale));
+    ris.bindValue(":salt", QString::fromStdString(salt));
     ris.bindValue(":nick", QString::fromStdString(nickname));
 
     if(!icona.empty())
@@ -241,20 +228,20 @@ int CollegamentoDB::aggiungiPartecipante(std::string nomeDOC, std::string userna
         ris3.exec();
         if(ris3.size() == 0){
 
-            // Non esiste alcuna riga all'interno della tabella DOC con il nomeDOC specificato
+            /* Non esiste alcuna riga all'interno della tabella DOC con il nomeDOC specificato */
             esito = 2;
 
         } else {
 
             ris1.exec();
 
-            // "Esiste già una riga nella tabella UTENTE_DOC corrispondente alla coppia (username,nomeDOC)?"
+            /* "Esiste già una riga nella tabella UTENTE_DOC corrispondente alla coppia (username,nomeDOC)?" */
             if(ris1.size() != 0){
-                // L'utente è già stato abilitato alla modifica del documento
+                /* L'utente è già stato abilitato alla modifica del documento */
                 esito = 0;
                 QSqlDatabase::database().commit();
             } else {
-                // L'utente non è ancora stato abilitato alla modifica del documento
+                /* L'utente non è ancora stato abilitato alla modifica del documento */
                 ris2.exec();
                 QSqlDatabase::database().commit();
             }

@@ -9,7 +9,6 @@ int main(int argc, char *argv[]) {
 
     QCoreApplication a(argc, argv);
     CollegamentoDB* link = new CollegamentoDB();
-
     link->connettiDB("gimpdocs_db");
 
     std::cout<<"---------------------------------------------"<<std::endl;
@@ -142,6 +141,8 @@ int main(int argc, char *argv[]) {
     std::cout<<"Password vuota..."<<std::endl;
     for(auto i=log6.begin(); i!=log6.end(); i++)
         std::cout<<"\t"<<(*i)<<std::endl;
+
+    std::cout<<"---------------------------------------------"<<std::endl;
 
     return a.exec();
 }
