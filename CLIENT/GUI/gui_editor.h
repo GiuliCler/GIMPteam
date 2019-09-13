@@ -17,6 +17,8 @@ private slots:
 
 private:
     Ui::GUI_Editor *ui;
+
+    QLabel *getUserIcon(long userId);
 };
 
 #endif // GUI_EDITOR_H
