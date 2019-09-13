@@ -35,7 +35,7 @@ void GUI_Menu::setDocumentArea(){
     ui->newdocTab->layout()->addWidget(new GUI_Newdoc(static_cast<GIMPdocs*>(this->parent())));
 
     ui->opendocTab->setLayout(new QGridLayout());
-    ui->opendocTab->layout()->addWidget(new GUI_Opendoc(ui->tabWidget->widget(1)));
+    ui->opendocTab->layout()->addWidget(new GUI_Opendoc(static_cast<GIMPdocs*>(this->parent())));
 }
 
 void GUI_Menu::on_editPushButton_clicked()

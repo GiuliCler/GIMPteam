@@ -8,10 +8,11 @@ class GUI_Editor : public QWidget
 {
     Q_OBJECT
 public:
-    explicit GUI_Editor(QWidget *parent = nullptr);
+    long documentId;
+
+    explicit GUI_Editor(QWidget *parent, long documentId);
     ~GUI_Editor();
 private slots:
-
     void on_menuPushButton_clicked();
 
 private:

@@ -19,6 +19,10 @@ private slots:
 
 private:
     Ui::GUI_Opendoc *ui;
+    //me lo salvo qui perchè il normale pointer al padre viene modificato
+    QWidget *gimpParent;
+
+    void fillList();
 };
 
 #endif // GUI_OPENDOC_H

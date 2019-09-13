@@ -61,6 +61,7 @@ void GUI_Profile::on_savePushButton_clicked()
             static_cast<GIMPdocs*>(this->parent())->userid = n;
         else{
             //TODO I don't know. Do something
+            QMessageBox::information(this, "", "Generic error");
             return;
         }
 

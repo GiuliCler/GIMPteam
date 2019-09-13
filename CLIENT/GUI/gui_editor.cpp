@@ -2,7 +2,7 @@
 #include "gimpdocs.h"
 #include "gui_menu.h"
 
-GUI_Editor::GUI_Editor(QWidget *parent) : QWidget(parent)
+GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), documentId(documentId)
 {
     ui = new Ui::GUI_Editor();
     ui->setupUi(this);

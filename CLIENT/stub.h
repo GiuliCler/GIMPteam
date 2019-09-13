@@ -2,6 +2,7 @@
 #define STUB_H
 
 #include <QObject>
+#include <memory>
 
 class Stub : public QObject
 {
@@ -20,6 +21,12 @@ public:
     static QString getNickname(long id);
     static QString getUsername(long id);
     static QString getPassword(long id);
+
+    //il valore di ritorno può essere usato o per l'id del document o per un codice di errore
+    static long createDocument(int userId, QString name);
+    static long openWithURI(QString uri);
+    static long openWithName(QString name);
+    static std::shared_ptr<QVector<QString>> getDocuments(long userId);
 };
 
 #endif // STUB_H

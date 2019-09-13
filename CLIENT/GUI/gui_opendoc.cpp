@@ -1,11 +1,14 @@
 #include "gui_opendoc.h"
 #include "gimpdocs.h"
 #include "gui_editor.h"
+#include <QMessageBox>
 
-GUI_Opendoc::GUI_Opendoc(QWidget *parent) : QWidget(parent)
+GUI_Opendoc::GUI_Opendoc(QWidget *parent) : QWidget(parent), gimpParent(parent)
 {
     ui = new Ui::GUI_Opendoc;
     ui->setupUi(this);
+
+    fillList();
 }
 
 GUI_Opendoc::~GUI_Opendoc(){
@@ -14,24 +17,45 @@ GUI_Opendoc::~GUI_Opendoc(){
 
 void GUI_Opendoc::on_openDocsPushButton_clicked()
 {
-    QObject *par  = this->parent();
-    QString cl = "GIMPdocs";    //l'ho definito solo per applicare la ".length()"
-    while(strncmp(par->metaObject()->className(), "GIMPdocs", static_cast<size_t>(cl.length()))){
-        par = par->parent();
+    if(ui->docsListWidget->currentItem() == nullptr){
+        QMessageBox::information(this, "", "Please, select a document");
+        return;
     }
 
-    GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(par));
-    static_cast<GIMPdocs*>(par)->setUi2(widget);
+    long id = Stub::openWithName(ui->docsListWidget->currentItem()->text());
+    if(id < 0){
+        QMessageBox::information(this, "", "PANIC! Il document non esiste");
+        //TODO gestire più dettagliatamente
+        return;
+    }
+
+    GUI_Editor *widget = new GUI_Editor(gimpParent, id);
+    static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
 }
 
 void GUI_Opendoc::on_openURIPushButton_clicked()
 {
-    QObject *par  = this->parent();
-    QString cl = "GIMPdocs";    //l'ho definito solo per applicare la ".length()"
-    while(strncmp(par->metaObject()->className(), "GIMPdocs", static_cast<size_t>(cl.length()))){
-        par = par->parent();
+    if(ui->URILineEdit->text().isEmpty()){
+        QMessageBox::information(this, "", "\"URI\" field is empty");
+        return;
     }
 
-    GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(par));
-    static_cast<GIMPdocs*>(par)->setUi2(widget);
+    long id = Stub::openWithURI(ui->URILineEdit->text());
+
+    if(id < 0){
+        QMessageBox::information(this, "", "Generic error opening with URI");
+        //TODO gestire più dettagliatamente
+        return;
+    }
+
+    GUI_Editor *widget = new GUI_Editor(gimpParent, id);
+    static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
+}
+
+void GUI_Opendoc::fillList(){
+    std::shared_ptr<QVector<QString>> vp = Stub::getDocuments(static_cast<GIMPdocs*>(gimpParent)->userid);
+
+    for(QString *s = vp->begin(); s != vp->end(); s++){
+        ui->docsListWidget->addItem(*s);
+    }
 }
