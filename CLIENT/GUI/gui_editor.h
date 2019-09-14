@@ -17,7 +17,9 @@ private slots:
 
 private:
     Ui::GUI_Editor *ui;
+    QMap<long, QLabel*> usersIconMap;
 
+    void setUsersBar();
     QLabel *getUserIcon(long userId);
 };
 

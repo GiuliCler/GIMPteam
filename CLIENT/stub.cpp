@@ -1,5 +1,6 @@
 #include "stub.h"
 #include <QVector>
+#include <QSet>
 
 Stub::Stub(QObject *parent) : QObject(parent)
 {
@@ -15,38 +16,38 @@ long Stub::tryLogin(QString username, QString password){
     return 1;
 }
 
-int Stub::getIconId(int userId){
+int Stub::getIconId(long userId){
     int n =userId;
     userId = n;
 
     return 1;
 }
 
-QString Stub::getNickname(long id){
-    if(id < 0)
+QString Stub::getNickname(long userid){
+    if(userid < 0)
         return "";
 
-    if(id == 1)
+    if(userid == 1)
         return "Mew";
 
     return "Boh";
 }
 
-QString Stub::getUsername(long id){
-    if(id < 0)
+QString Stub::getUsername(long userid){
+    if(userid < 0)
         return "";
 
-    if(id == 1)
+    if(userid == 1)
         return "Ancient Mew";
 
     return "Boh";
 }
 
-QString Stub::getPassword(long id){
-    if(id < 0)
+QString Stub::getPassword(long userid){
+    if(userid < 0)
         return "";
 
-    if(id == 1)
+    if(userid == 1)
         return "Montruschio";
 
     return "Boh";
@@ -96,11 +97,21 @@ std::shared_ptr<QVector<QString>> Stub::getDocuments(long userId){
     userId = n;
 
     std::shared_ptr<QVector<QString>> vpointer(new QVector<QString>());
-    //QVector<QString> vec;
     vpointer->insert(0, "United States Declaration of independence");
     vpointer->insert(1, "Magna Carta Libertatum");
     vpointer->insert(2, "Hammurabi's Code");
     vpointer->insert(3, "Domande e risposte di Security: appello gennaio 2020");
+
+    return vpointer;
+}
+
+//uso un set perchè mi scanso più avanti controlli sull'unicità dello userId, che dovrebbe essere già garanita, ma non si sa mai
+std::shared_ptr<QSet<long>> Stub::getWorkingUsersOnDocument(long docId){
+    long n = docId;
+    docId = n;
+    std::shared_ptr<QSet<long>> vpointer(new QSet<long>());
+    for(int i = 0; i < 15; i++)
+        vpointer->insert(i);
 
     return vpointer;
 }

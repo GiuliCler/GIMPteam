@@ -17,16 +17,19 @@ public:
     static int updateUser(long id, QString password, QString nickname, int iconId);
 
     //dato l'id restituiscono parametri
-    static int getIconId(int id);
-    static QString getNickname(long id);
-    static QString getUsername(long id);
-    static QString getPassword(long id);
+    static int getIconId(long userid);
+    static QString getNickname(long userid);
+    static QString getUsername(long userid);
+    static QString getPassword(long userid);
 
     //il valore di ritorno può essere usato o per l'id del document o per un codice di errore
     static long createDocument(int userId, QString name);
     static long openWithURI(QString uri);
     static long openWithName(QString name);
     static std::shared_ptr<QVector<QString>> getDocuments(long userId);
+
+    //ritorna un set cogli userId
+    static std::shared_ptr<QSet<long>> getWorkingUsersOnDocument(long docId);
 };
 
 #endif // STUB_H
