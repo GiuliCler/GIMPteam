@@ -2,6 +2,7 @@
 
 #include <QDirIterator>
 
+int GUI_Icons::iconSize = 30;
 bool GUI_Icons::loaded = false;
 QVector<QString> GUI_Icons::icons;
 
@@ -23,9 +24,9 @@ QVector<QString> *GUI_Icons::getIconPaths(){
     return &GUI_Icons::icons;
 }
 
-QString GUI_Icons::getIconPath(int id){
+QString GUI_Icons::getIconPath(long userId){
     if(!loaded)
         load();
     //TODO fare un check di sicurezza su id
-    return icons[id];
+    return icons[userId];
 }

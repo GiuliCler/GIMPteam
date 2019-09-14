@@ -63,6 +63,9 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="text">
+        <string>Default</string>
+       </property>
       </widget>
      </item>
      <item>
@@ -85,6 +88,9 @@
       <widget class="QPushButton" name="createPushButton">
        <property name="text">
         <string>Create</string>
+       </property>
+       <property name="default">
+        <bool>true</bool>
        </property>
       </widget>
      </item>

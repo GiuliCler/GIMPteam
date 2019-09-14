@@ -14,6 +14,8 @@ private slots:
 
 private:
     Ui::GUI_Newdoc *ui;
+    //me lo salvo qui perchè il normale pointer al padre viene modificato
+    QWidget *gimpParent;
 };
 
 #endif // GUI_NEWDOC_H

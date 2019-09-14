@@ -8,14 +8,19 @@ class GUI_Editor : public QWidget
 {
     Q_OBJECT
 public:
-    explicit GUI_Editor(QWidget *parent = nullptr);
+    long documentId;
+
+    explicit GUI_Editor(QWidget *parent, long documentId);
     ~GUI_Editor();
 private slots:
-
     void on_menuPushButton_clicked();
 
 private:
     Ui::GUI_Editor *ui;
+    QMap<long, QLabel*> usersIconMap;
+
+    void setUsersBar();
+    QLabel *getUserIcon(long userId);
 };
 
 #endif // GUI_EDITOR_H

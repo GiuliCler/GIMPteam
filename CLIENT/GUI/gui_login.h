@@ -8,7 +8,7 @@ class GUI_Login : public QWidget
 {
     Q_OBJECT
 public:
-    explicit GUI_Login(QWidget *parent = nullptr);
+    explicit GUI_Login(QWidget *parent);
     ~GUI_Login();
 private slots:
     void on_newAccountButton_clicked();
