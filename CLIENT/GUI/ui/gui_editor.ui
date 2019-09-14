@@ -98,7 +98,7 @@
      <property name="autoFillBackground">
       <bool>true</bool>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,0,0,0">
+     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,0,15,1">
       <property name="topMargin">
        <number>0</number>
       </property>
@@ -134,11 +134,22 @@
       <item>
        <widget class="QWidget" name="iconsWidget" native="true">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+        </layout>
        </widget>
       </item>
       <item>
@@ -147,7 +158,7 @@
          <enum>Qt::Horizontal</enum>
         </property>
         <property name="sizeType">
-         <enum>QSizePolicy::Preferred</enum>
+         <enum>QSizePolicy::Expanding</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -161,7 +172,7 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,5,1">
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,0,5,0,1">
      <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
@@ -176,11 +187,18 @@
       </spacer>
      </item>
      <item>
+      <widget class="QPushButton" name="pushButton">
+       <property name="text">
+        <string>Aggiungi</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="0" colspan="3">
         <widget class="QPlainTextEdit" name="plainTextEdit">
          <property name="plainText">
-          <string>Questo è un meraviglioso editor di testo</string>
+          <string>'Sti 2 pulsanti di fianco a me sono solo per il debug</string>
          </property>
         </widget>
        </item>
@@ -218,6 +236,13 @@
         </spacer>
        </item>
       </layout>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_2">
+       <property name="text">
+        <string>Togli</string>
+       </property>
+      </widget>
      </item>
      <item>
       <spacer name="horizontalSpacer_2">

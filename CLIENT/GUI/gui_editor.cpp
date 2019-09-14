@@ -3,6 +3,8 @@
 #include "gui_menu.h"
 #include <memory>
 
+#define MAX_ICONWIDGET_WIDTH 15
+
 GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), documentId(documentId)
 {
     ui = new Ui::GUI_Editor();
@@ -22,23 +24,16 @@ void GUI_Editor::on_menuPushButton_clicked()
 }
 
 void GUI_Editor::setUsersBar(){
-    ui->iconsWidget->setLayout(new QHBoxLayout);
-    ui->iconsWidget->layout()->setMargin(0);
-    ui->iconsWidget->layout()->setSpacing(0);
-    ui->iconsWidget->setMaximumWidth(20*GUI_Icons::iconSize);
-
     //ottengo l'elenco degli utenti che al momento stanno guardando il mio stesso document, li salvo nella map e creo le icone
     std::shared_ptr<QSet<long>> users = Stub::getWorkingUsersOnDocument(this->documentId);
     ui->numberUsersLabel->setNum(users->size());
     for (QSet<long>::iterator userId = users->begin(); userId != users->end(); userId++){
-
-        //non dovrebbero esserci duplicati, ma per sicurezza controllo
-        if(usersIconMap.find(*userId) == usersIconMap.end()){
-            QLabel *iconLabel = getUserIcon(*userId);
-            usersIconMap.insert(*userId, iconLabel);
-            ui->iconsWidget->layout()->addWidget(iconLabel);
-        }
+        QLabel *iconLabel = getUserIcon(*userId);
+        usersIconMap.insert(*userId, iconLabel);
+        ui->iconsWidget->layout()->addWidget(iconLabel);
     }
+
+    updateIconsWidgetSize();
 }
 
 QLabel *GUI_Editor::getUserIcon(long userId){
@@ -54,4 +49,49 @@ QLabel *GUI_Editor::getUserIcon(long userId){
     //label->setFrameShape(QFrame::Box);
 
     return label;
+}
+
+void GUI_Editor::updateIconsWidgetSize(){
+    /*non potevo mettere policy Fixed perchè le icone sono Ignored ed il fixed non avendo un valore fisso interno si azzera, quindi lo fixo settando a mano max e min
+     * la policy del widget è expanding perchè altrimenti viene schiacciato dall'altro expanding. Devo mettere almeno un expanding o per riempire lo spazio mi aumenta lo spacing fra i widget senza chiedermi il permesso
+     * ho anche dato proporzioni diverse ai 2 expanding (20,1) per dire che il widget delle icone ha diritto a tutto quello di cui ha bisogno
+     * */
+    //ho deciso che fino a 10 gli do lo spazio giusto giusto, oltre i 10 utenti comprimo le icone e si fanno bastare lo spazio che hanno
+    int number = usersIconMap.size() <= MAX_ICONWIDGET_WIDTH ? usersIconMap.size() : MAX_ICONWIDGET_WIDTH;
+    //il +1 è perchè li lascio un po' più larghi
+    ui->iconsWidget->setMaximumWidth((number+1)*GUI_Icons::iconSize);
+    ui->iconsWidget->setMinimumWidth((number+1)*GUI_Icons::iconSize);
+}
+
+void GUI_Editor::addUserIcon(long userId){
+    if(this->usersIconMap.find(userId) != usersIconMap.end())
+        return;
+
+    QLabel *iconLabel = getUserIcon(userId);
+    usersIconMap.insert(userId, iconLabel);
+    ui->iconsWidget->layout()->addWidget(iconLabel);
+    ui->numberUsersLabel->setNum(usersIconMap.size());
+    if(usersIconMap.size() < MAX_ICONWIDGET_WIDTH+1)
+        updateIconsWidgetSize();
+}
+
+void GUI_Editor::removeUserIcon(long userId){
+    if(this->usersIconMap.find(userId) == usersIconMap.end())
+        return;
+
+    usersIconMap[userId]->close();
+    usersIconMap.remove(userId);
+    ui->numberUsersLabel->setNum(usersIconMap.size());
+    if(usersIconMap.size() < MAX_ICONWIDGET_WIDTH + 1)
+        updateIconsWidgetSize();
+}
+
+void GUI_Editor::on_pushButton_clicked()
+{
+    addUserIcon(usersIconMap.size());
+}
+
+void GUI_Editor::on_pushButton_2_clicked()
+{
+    removeUserIcon(usersIconMap.begin().key());
 }

@@ -12,8 +12,16 @@ public:
 
     explicit GUI_Editor(QWidget *parent, long documentId);
     ~GUI_Editor();
+    //se serve posso metterci un codice di ritorno
+    void addUserIcon(long userId);
+    void removeUserIcon(long userId);
+
 private slots:
     void on_menuPushButton_clicked();
+
+    void on_pushButton_clicked();
+
+    void on_pushButton_2_clicked();
 
 private:
     Ui::GUI_Editor *ui;
@@ -21,6 +29,8 @@ private:
 
     void setUsersBar();
     QLabel *getUserIcon(long userId);
+    //adatto la size del widget in base a quanti users ci sono, ma solo fino ad un certo punto
+    void updateIconsWidgetSize();
 };
 
 #endif // GUI_EDITOR_H
