@@ -27,9 +27,11 @@ public:
     static long openWithURI(QString uri);
     static long openWithName(QString name);
     static std::shared_ptr<QVector<QString>> getDocuments(long userId);
+    static void closeDocument(long userId, long docId);
 
     //ritorna un set cogli userId
     static std::shared_ptr<QSet<long>> getWorkingUsersOnDocument(long docId);
+    static QString getUserColor(long userId);
 };
 
 #endif // STUB_H

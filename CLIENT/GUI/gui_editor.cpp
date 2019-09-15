@@ -1,6 +1,7 @@
 #include "gui_editor.h"
 #include "gimpdocs.h"
 #include "gui_menu.h"
+#include "gui_texteditorwidget.h"
 #include <memory>
 
 #define MAX_ICONWIDGET_WIDTH 15
@@ -11,16 +12,12 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
     ui->setupUi(this);
 
     setUsersBar();
+    GUI_TextEditorWidget *editor = new GUI_TextEditorWidget(static_cast<GIMPdocs*>(this->parent()));
+    ui->textWidget->layout()->addWidget(editor);
 }
 
 GUI_Editor::~GUI_Editor(){
     delete ui;
-}
-
-void GUI_Editor::on_menuPushButton_clicked()
-{
-    GUI_Menu *widget = new GUI_Menu(static_cast<GIMPdocs*>(this->parent()));
-    static_cast<GIMPdocs*>(this->parent())->setUi1(widget);
 }
 
 void GUI_Editor::setUsersBar(){
@@ -45,7 +42,7 @@ QLabel *GUI_Editor::getUserIcon(long userId){
     label->setScaledContents(true);
     label->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     label->setMaximumSize(GUI_Icons::iconSize,GUI_Icons::iconSize);
-    label->setToolTip(QString("<font color = \"red\">") + Stub::getNickname(userId) + "</font>");
+    label->setToolTip(QString("<font color = \"" + Stub::getUserColor(userId) + "\">") + Stub::getNickname(userId) + "</font>");
     //label->setFrameShape(QFrame::Box);
 
     return label;
@@ -86,12 +83,3 @@ void GUI_Editor::removeUserIcon(long userId){
         updateIconsWidgetSize();
 }
 
-void GUI_Editor::on_pushButton_clicked()
-{
-    addUserIcon(usersIconMap.size());
-}
-
-void GUI_Editor::on_pushButton_2_clicked()
-{
-    removeUserIcon(usersIconMap.begin().key());
-}

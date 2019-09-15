@@ -1,12 +1,11 @@
 #include "gui_profile.h"
 #include "gui_menu.h"
 #include "gimpdocs.h"
-#include "ui_gui_login.h"
+//#include "ui_gui_login.h"
 #include "gui_login.h"
 
 #include <QMessageBox>
 #include <QIcon>
-#include <QDebug>
 
 GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
 {

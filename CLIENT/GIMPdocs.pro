@@ -33,6 +33,7 @@ SOURCES += \
         GUI/gui_newdoc.cpp \
         GUI/gui_opendoc.cpp \
         GUI/gui_profile.cpp \
+        GUI/gui_texteditorwidget.cpp \
         main.cpp \
         stub.cpp
 
@@ -45,6 +46,7 @@ HEADERS += \
         GUI/gui_newdoc.h \
         GUI/gui_opendoc.h \
         GUI/gui_profile.h \
+        GUI/gui_texteditorwidget.h \
         stub.h
 
 FORMS += \
@@ -56,6 +58,7 @@ FORMS += \
     GUI/ui/gui_newdoc.ui \
     GUI/ui/gui_opendoc.ui \
         GUI/ui/gui_profile.ui \
+    GUI/ui/gui_texteditorwidget.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

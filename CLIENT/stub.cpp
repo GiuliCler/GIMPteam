@@ -89,6 +89,13 @@ long Stub::openWithName(QString name){
     return 1;
 }
 
+void Stub::closeDocument(long userId, long docId){
+    userId = docId;
+    docId = userId;
+
+    //I don't know. Do something
+}
+
 std::shared_ptr<QVector<QString>> Stub::getDocuments(long userId){
     long n = userId;
     userId = n;
@@ -111,4 +118,11 @@ std::shared_ptr<QSet<long>> Stub::getWorkingUsersOnDocument(long docId){
         vpointer->insert(i);
 
     return vpointer;
+}
+
+QString Stub::getUserColor(long userId){
+    int n = userId;
+    userId = n;
+
+    return "red";
 }

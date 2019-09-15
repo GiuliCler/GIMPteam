@@ -6,6 +6,7 @@ release/gui_menu.o
 release/gui_newdoc.o
 release/gui_opendoc.o
 release/gui_profile.o
+release/gui_texteditorwidget.o
 release/main.o
 release/stub.o
 release/qrc_images.o
@@ -16,4 +17,5 @@ release/moc_gui_menu.o
 release/moc_gui_newdoc.o
 release/moc_gui_opendoc.o
 release/moc_gui_profile.o
+release/moc_gui_texteditorwidget.o
 release/moc_stub.o

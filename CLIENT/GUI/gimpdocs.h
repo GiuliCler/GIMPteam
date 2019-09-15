@@ -26,6 +26,10 @@ public:
     void setUi1(QWidget *widget);
     void setUi2(QWidget *widget);
 
+private slots:
+    //serve per l'azione close document che ha bisogno di uno slot
+    void launchSetUi2();
+
 private:
     Ui::GIMPdocs *ui1;
     Ui::GUI_EditWindow *ui2;
