@@ -27,7 +27,11 @@
     <number>0</number>
    </property>
    <item row="0" column="0">
-    <widget class="QTextEdit" name="textEdit"/>
+    <widget class="QTextEdit" name="textEdit">
+     <property name="styleSheet">
+      <string notr="true">color: rgb(128, 185, 255);</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

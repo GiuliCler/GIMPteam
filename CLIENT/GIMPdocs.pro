@@ -30,6 +30,7 @@ SOURCES += \
         GUI/gui_icons.cpp \
         GUI/gui_login.cpp \
         GUI/gui_menu.cpp \
+        GUI/gui_mytextedit.cpp \
         GUI/gui_newdoc.cpp \
         GUI/gui_opendoc.cpp \
         GUI/gui_profile.cpp \
@@ -43,6 +44,7 @@ HEADERS += \
         GUI/gui_icons.h \
         GUI/gui_login.h \
         GUI/gui_menu.h \
+        GUI/gui_mytextedit.h \
         GUI/gui_newdoc.h \
         GUI/gui_opendoc.h \
         GUI/gui_profile.h \

@@ -1,7 +1,7 @@
 #include "gui_editor.h"
 #include "gimpdocs.h"
 #include "gui_menu.h"
-#include "gui_texteditorwidget.h"
+#include "gui_mytextedit.h"
 #include <memory>
 
 #define MAX_ICONWIDGET_WIDTH 15
@@ -12,8 +12,9 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
     ui->setupUi(this);
 
     setUsersBar();
-    GUI_TextEditorWidget *editor = new GUI_TextEditorWidget(static_cast<GIMPdocs*>(this->parent()));
-    ui->textWidget->layout()->addWidget(editor);
+    GUI_MyTextEdit *textEdit = new GUI_MyTextEdit(static_cast<GIMPdocs*>(this->parent()));
+    //GUI_TextEditorWidget *editor = new GUI_TextEditorWidget(static_cast<GIMPdocs*>(this->parent()));
+    ui->textWidget->layout()->addWidget(textEdit);
 }
 
 GUI_Editor::~GUI_Editor(){
