@@ -175,7 +175,7 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,5,1">
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,0,5,1">
      <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
@@ -188,6 +188,13 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="debug">
+       <property name="text">
+        <string>Debug: add cursor</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QWidget" name="textWidget" native="true">

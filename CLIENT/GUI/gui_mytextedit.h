@@ -3,26 +3,25 @@
 
 #include <QTextEdit>
 #include <QTimer>
+#include "gui_coloredcursor.h"
+#include <QMap>
+#include <QPoint>
 
 class GUI_MyTextEdit : public QTextEdit
 {
     Q_OBJECT
 public:
-    explicit GUI_MyTextEdit(QWidget *parent = nullptr);
+    //la mappa serve per i cursori degli altri users
+    QMap<long, GUI_ColoredCursor*> cursorsMap;
 
-private:
-    QTimer *timer;
-    //QPainter *painter;
-    bool cursorVisible;
+    explicit GUI_MyTextEdit(QWidget *parent);
+    static QString getObjectName() {return QString("GUI_MyTextEdit");}
 
 protected:
     virtual void paintEvent(QPaintEvent *pEvent) override;
-/*
-signals:
-    void sendUpdate();*/
 
 public slots:
-    void timerSlot();
+    void addUserCursor(long userId, QPoint position);
 };
 
 #endif // GUI_MYTEXTEDIT_H

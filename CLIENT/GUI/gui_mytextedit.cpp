@@ -1,40 +1,29 @@
 #include "gui_mytextedit.h"
+#include "gimpdocs.h"
 
 #include <QPainter>
 #include <QColor>
 #include <QTimer>
 
 GUI_MyTextEdit::GUI_MyTextEdit(QWidget *parent) : QTextEdit(parent) {
-    cursorVisible = true;
-
-    this->setCursorWidth(0);
-
-    timer = new QTimer(this);
-    timer->start(500);
-    //connect(this, SIGNAL(sendUpdate()), this, SLOT(update()));
-    connect(timer, SIGNAL(timeout()), this, SLOT(timerSlot()));
+    this->setObjectName(GUI_MyTextEdit::getObjectName());
+    //per non farsi coprire dai cursori colorati
+    this->setCursorWidth(2);
 }
 
 void GUI_MyTextEdit::paintEvent(QPaintEvent *event)
 {
-  // questo serve a disegnare tutto quanto il resto. Normalmente disegnerebbe anche il sursore nero, ma gli ho messo spessore 0
+  // questo serve a disegnare tutto quanto il resto. Normalmente disegnerebbe anche il cursore nero, ma gli ho messo spessore 0
   QTextEdit::paintEvent(event);
-  // disegno il cursore a intermittenza
-  if (hasFocus()) {
-    if(cursorVisible) {
 
-        const QRect curRect = cursorRect(textCursor());
-        const QRect fakeRect(curRect.x(), curRect.y(), 1, curRect.height());
-        QPainter painter(viewport());
-        painter.fillRect(fakeRect, QColor(255, 0, 0, 255));
-    }
+  for(auto pair = cursorsMap.begin(); pair != cursorsMap.end(); pair++){
+      pair.value()->triggerPaintEvent(event);
   }
 }
 
-void GUI_MyTextEdit::timerSlot() {
-    // non posso invertire la visibilità del cursore in paintEvent perchè non sono sempre io a decidere quando chiamare il paintEvent
-    cursorVisible = !cursorVisible;
+void GUI_MyTextEdit::addUserCursor(long userId, QPoint position){
+    cursorsMap.insert(userId, new GUI_ColoredCursor(this, position));
 
-    //è l'update del widget QTextEdit per poterlo ridisegnare
+    //per ridisegnare tutto, nuovo cursore compreso
     this->update();
 }

@@ -26,6 +26,7 @@ CONFIG += c++11
 
 SOURCES += \
         GUI/gimpdocs.cpp \
+        GUI/gui_coloredcursor.cpp \
         GUI/gui_editor.cpp \
         GUI/gui_icons.cpp \
         GUI/gui_login.cpp \
@@ -34,12 +35,12 @@ SOURCES += \
         GUI/gui_newdoc.cpp \
         GUI/gui_opendoc.cpp \
         GUI/gui_profile.cpp \
-        GUI/gui_texteditorwidget.cpp \
         main.cpp \
         stub.cpp
 
 HEADERS += \
         GUI/gimpdocs.h \
+        GUI/gui_coloredcursor.h \
         GUI/gui_editor.h \
         GUI/gui_icons.h \
         GUI/gui_login.h \
@@ -48,7 +49,6 @@ HEADERS += \
         GUI/gui_newdoc.h \
         GUI/gui_opendoc.h \
         GUI/gui_profile.h \
-        GUI/gui_texteditorwidget.h \
         stub.h
 
 FORMS += \
@@ -59,8 +59,7 @@ FORMS += \
         GUI/ui/gui_menu.ui \
     GUI/ui/gui_newdoc.ui \
     GUI/ui/gui_opendoc.ui \
-        GUI/ui/gui_profile.ui \
-    GUI/ui/gui_texteditorwidget.ui
+        GUI/ui/gui_profile.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

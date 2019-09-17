@@ -13,7 +13,7 @@ public:
     ~GUI_Profile();
 
     //faccio una funzione statica anzichè una normale stringa perchè non posso assegnare qui il valore alla stringa
-    static QString getObjectName() {return QString("gui_profile");}
+    static QString getObjectName() {return QString("GUI_Profile");}
 
 private slots:
     //se sono sto modificando e non creando questa fuzione imposta gli attuali valori

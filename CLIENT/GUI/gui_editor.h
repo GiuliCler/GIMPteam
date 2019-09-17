@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "ui_gui_editor.h"
+#include <QTimer>
 
 class GUI_Editor : public QWidget
 {
@@ -13,13 +14,20 @@ public:
     explicit GUI_Editor(QWidget *parent, long documentId);
     ~GUI_Editor();
     inline static QString getChildName(){ return "GUI_Editor";}
+
     //se serve posso metterci un codice di ritorno
     void addUserIcon(long userId);
     void removeUserIcon(long userId);
 
+private slots:
+    //debug
+    void timerSlot();
+
 private:
     Ui::GUI_Editor *ui;
     QMap<long, QLabel*> usersIconMap;
+    //debug
+    QTimer *timer;
 
     void setUsersBar();
     QLabel *getUserIcon(long userId);

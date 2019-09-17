@@ -11,10 +11,7 @@ public:
     ~GUI_Opendoc();
 
 private slots:
-
-
     void on_openDocsPushButton_clicked();
-
     void on_openURIPushButton_clicked();
 
 private:
