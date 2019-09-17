@@ -15,9 +15,10 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
     GUI_MyTextEdit *textEdit = new GUI_MyTextEdit(static_cast<QWidget*>(this));
     ui->textWidget->layout()->addWidget(textEdit);
 
+    //debug purpose only
     timer = new QTimer(this);
-        timer->start(5000);
-        connect(timer, SIGNAL(timeout()), this, SLOT(timerSlot()));
+    timer->start(5000);
+    connect(timer, SIGNAL(timeout()), this, SLOT(timerSlot()));
 }
 
 GUI_Editor::~GUI_Editor(){
@@ -87,7 +88,7 @@ void GUI_Editor::removeUserIcon(long userId){
         updateIconsWidgetSize();
 }
 
-
+//serve solo per il debug
 void GUI_Editor::timerSlot(){
 
     GUI_MyTextEdit *textEditor = this->findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName());

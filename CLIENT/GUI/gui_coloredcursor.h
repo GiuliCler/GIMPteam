@@ -9,22 +9,20 @@ class GUI_ColoredCursor : public QWidget
 {
     Q_OBJECT
 public:
+    //TODO: devo lasciar selezionare il colore... forse potrei farmi una tabella hardcoded e deciderlo io in base a quanti sono nella mappa
     explicit GUI_ColoredCursor(QWidget *parent, QPoint position);
-    //TODO: un costruttore che prenda un QRect
-    void triggerPaintEvent(QPaintEvent *event);
+    void paint();
 
 private:
-    QRect *cursorRec;
-    //TODO: bisogna decidere se lasciarlo lampeggiare o no
-    //QTimer *timer;
-    bool cursorVisible;
+    QPoint cursorPosition;
+    QColor cursorColor;
 
 protected:
-    virtual void paintEvent(QPaintEvent *pEvent) override;
+    //TODO: voglio verificare se viene mai chiamata: sembra di no
+    //virtual void paintEvent(QPaintEvent *pEvent) override;
 
 public slots:
-    void updatePosition(int x0, int y0);
-    void timerSlot();
+    void updatePosition(QPoint position);
 };
 
 #endif // GUI_COLOREDCURSOR_H
