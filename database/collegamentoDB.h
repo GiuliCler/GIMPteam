@@ -19,6 +19,7 @@ public:
     std::string recuperaURI(std::string nomeDOC);
     int aggiungiPartecipante(std::string nomeDOC, std::string username);
     std::vector<std::string> recuperaDocs(std::string username);
+    int aggiornaUser(std::string username, std::string nuova_password, std::string nuovo_nickname, std::string nuova_icona);
 };
 
 #endif //GIMPDOCS_COLLEGAMENTODB_H

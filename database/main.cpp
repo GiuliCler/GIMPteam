@@ -158,5 +158,40 @@ int main(int argc, char *argv[]) {
 
     std::cout<<"---------------------------------------------"<<std::endl;
 
+   /* Modifico il nickname dell'utente1 */
+    int upd0 = link->aggiornaUser("utente1@p.it", "cane", "puzzettaXD", "image1");
+    std::cout<<"Nuovo nickname utente1: "<<upd0<<std::endl;
+
+    /* Modifico la password dell'utente2 */
+    int upd1 = link->aggiornaUser("utente2@p.it", "fenicottero", "paperella14", "image2");
+    std::cout<<"Nuova password utente2: "<<upd1<<std::endl;
+
+    /* Modifico l'icona dell'utente3 */
+    int upd2 = link->aggiornaUser("utente3@p.it", "scimmia", "carciofomalefico", "image34");
+    std::cout<<"Nuova icona utente3: "<<upd2<<std::endl;
+
+    /* Modifico le informazioni di un utente inesistente --> valore di ritorno atteso: 0 */
+    int upd3 = link->aggiornaUser("utente7@p.it", "banana", "sorbettoalmandarino12", "image5");
+    std::cout<<"Update utente inesistente: "<<upd3<<std::endl;
+    // int aggiornaUser(std::string username, std::string nuova_password, std::string nuovo_nickname, std::string nuova_icona);
+
+    /* Boundary case: username vuoto --> valore di ritorno atteso: 0 */
+    int upd4 = link->aggiornaUser("", "castoro", "lol666", "image9");
+    std::cout<<"Username vuoto: "<<upd4<<std::endl;
+
+    /* Boundary case: password vuota --> valore di ritorno atteso: 0 */
+    int upd5 = link->aggiornaUser("utente1@p.it", "", "prova0", "image1");
+    std::cout<<"Password vuota: "<<upd5<<std::endl;
+
+    /* Boundary case: nickname vuoto --> valore di ritorno atteso: 0 */
+    int upd6 = link->aggiornaUser("utente1@p.it", "cane", "", "image8");
+    std::cout<<"Nickname vuoto: "<<upd6<<std::endl;
+
+    /* Boundary case: icona vuota --> valore di ritorno atteso: 1 */
+    int upd7 = link->aggiornaUser("utente2@p.it", "fenicottero", "paperella14", "");
+    std::cout<<"Icona vuota: "<<upd7<<std::endl;
+
+    std::cout<<"---------------------------------------------"<<std::endl;
+
     return a.exec();
 }

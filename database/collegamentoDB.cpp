@@ -92,7 +92,7 @@ std::vector<std::string> CollegamentoDB::login(std::string username, std::string
  *           inserendole all'interno del database
  * Parametri:
  *      username, password  e nickname dell'utente che vuole effettuare la registrazione
- *      icona --> nome di immagine caricata   oppure   "" in caso di immagine assente
+ *      icona --> nome di immagine   oppure   "" in caso di immagine assente
  *
  * Ritorno:
  *      1 -> username e password correttamente inseriti nel database
@@ -317,3 +317,127 @@ std::string CollegamentoDB::recuperaURI(std::string nomeDOC){
 
     return uri;
 }
+
+
+/*
+ * Utilizzo: funzione che permette di aggiornare le informazioni relative ad un utente già presente nel DB
+ * Parametri:
+ *      username, nuova_password  e nuovo_nickname dell'utente da modificare
+ *      nuova_icona --> nome di immagine   oppure   "" in caso di immagine assente
+ *
+ * Ritorno:
+ *      1 -> info relative all'utente aggiornate correttamente
+ *      0 -> errore
+ */
+
+// -------- CON UPDATE --------
+/*int CollegamentoDB::aggiornaUser(std::string username, std::string nuova_password, std::string nuovo_nickname, std::string nuova_icona){
+
+    if(username.empty() || nuova_password.empty() || nuovo_nickname.empty())
+        return 0;
+
+    std::string query0 = "SELECT * FROM utenti WHERE username=:user0";
+    QSqlQuery ris0;
+    ris0.prepare(QString::fromStdString(query0));
+    ris0.bindValue(":user0", QString::fromStdString(username));
+
+    if(ris0.exec()){
+        if(ris0.size() == 1){
+            char sale[10];
+            gen_random(sale, 10);
+            std::string salt(sale);
+            std::string pass = sha256(nuova_password + sale);
+
+            std::string query = "UPDATE utenti SET password=:pssw, sale=:salt, nickname=:nick, icona=:icon WHERE username=:user";
+            QSqlQuery ris;
+            ris.prepare(QString::fromStdString(query));
+            ris.bindValue(":pssw", QString::fromStdString(pass));
+            ris.bindValue(":salt", QString::fromStdString(salt));
+            ris.bindValue(":nick", QString::fromStdString(nuovo_nickname));
+
+            if(!nuova_icona.empty())
+                ris.bindValue(":icon", QString::fromStdString(nuova_icona));
+            else
+                ris.bindValue(":icon", QString::fromStdString("NULL"));
+
+            ris.bindValue(":user", QString::fromStdString(username));
+
+            if(ris.exec())
+                return 1;
+            else
+                return 0;
+        } else {
+            return 0;
+        }
+    } else {
+        return 0;
+    }
+}
+
+*/
+
+// -------- CON DELETE/INSERT --------
+int CollegamentoDB::aggiornaUser(std::string username, std::string nuova_password, std::string nuovo_nickname, std::string nuova_icona){
+
+    if(username.empty() || nuova_password.empty() || nuovo_nickname.empty())
+        return 0;
+
+    std::string query0 = "SELECT * FROM utenti WHERE username=:user0";
+    QSqlQuery ris0;
+    ris0.prepare(QString::fromStdString(query0));
+    ris0.bindValue(":user0", QString::fromStdString(username));
+
+    if(QSqlDatabase::database().driver()->hasFeature(QSqlDriver::Transactions)) {
+
+        QSqlDatabase::database().transaction();
+
+        if(ris0.exec()){
+            if(ris0.size() == 1){
+                char sale[10];
+                gen_random(sale, 10);
+                std::string salt(sale);
+                std::string pass = sha256(nuova_password + sale);
+
+                QSqlQuery risDEL;
+                risDEL.prepare("DELETE FROM utenti WHERE username=:user");
+                risDEL.bindValue(":user", QString::fromStdString(username));
+                risDEL.exec();
+
+                std::string query = "INSERT INTO utenti(username, password, sale, nickname, icona) VALUES(:user, :pssw, :salt, :nick, :icon)";
+                QSqlQuery ris;
+                ris.prepare(QString::fromStdString(query));
+                ris.bindValue(":user", QString::fromStdString(username));
+                ris.bindValue(":pssw", QString::fromStdString(pass));
+                ris.bindValue(":salt", QString::fromStdString(salt));
+                ris.bindValue(":nick", QString::fromStdString(nuovo_nickname));
+
+                if(!nuova_icona.empty())
+                    ris.bindValue(":icon", QString::fromStdString(nuova_icona));
+                else
+                    ris.bindValue(":icon", QString::fromStdString("NULL"));
+
+                if(ris.exec()){
+                    QSqlDatabase::database().commit();
+                    return 1;
+                } else {
+                    QSqlDatabase::database().commit();
+                    return 0;
+                }
+            } else {
+                QSqlDatabase::database().commit();
+                return 0;
+            }
+        } else {
+            QSqlDatabase::database().commit();
+            return 0;
+        }
+
+    } else {
+        return 0;
+    }
+}
+
+
+
+
+
