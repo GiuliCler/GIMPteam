@@ -1,11 +1,13 @@
 #include "gui_opendoc.h"
 #include "gimpdocs.h"
 #include "gui_editor.h"
+#include "gui_menu.h"
 #include <QMessageBox>
 
-GUI_Opendoc::GUI_Opendoc(QWidget *parent) : QWidget(parent), gimpParent(parent)
+GUI_Opendoc::GUI_Opendoc(QWidget *parent) : QWidget(parent)
 {
     this->setObjectName(GUI_Opendoc::getObjectName());
+    gimpParent = static_cast<GUI_Menu*>(parent)->gimpParent;
     ui = new Ui::GUI_Opendoc;
     ui->setupUi(this);
 

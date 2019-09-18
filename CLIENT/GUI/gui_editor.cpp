@@ -9,11 +9,12 @@
 GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), documentId(documentId)
 {
     this->setObjectName(GUI_Editor::getObjectName());
+    gimpParent = static_cast<GIMPdocs*>(parent);
     ui = new Ui::GUI_Editor();
     ui->setupUi(this);
 
     setUsersBar();
-    GUI_MyTextEdit *textEdit = new GUI_MyTextEdit(static_cast<QWidget*>(this));
+    GUI_MyTextEdit *textEdit = new GUI_MyTextEdit(this);
     ui->textWidget->layout()->addWidget(textEdit);
 
     //debug purpose only

@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "ui_gui_editor.h"
+#include "gimpdocs.h"
 #include <QTimer>
 
 class GUI_Editor : public QWidget
@@ -10,6 +11,7 @@ class GUI_Editor : public QWidget
     Q_OBJECT
 public:
     long documentId;
+    GIMPdocs *gimpParent;
 
     explicit GUI_Editor(QWidget *parent, long documentId);
     ~GUI_Editor();

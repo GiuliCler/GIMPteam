@@ -4,6 +4,7 @@
 #include <QTextEdit>
 #include <QTimer>
 #include "gui_coloredcursor.h"
+#include "gimpdocs.h"
 #include <QMap>
 #include <QPoint>
 
@@ -11,6 +12,7 @@ class GUI_MyTextEdit : public QTextEdit
 {
     Q_OBJECT
 public:
+    GIMPdocs *gimpParent;
     //la mappa serve per i cursori degli altri users
     QMap<long, GUI_ColoredCursor*> cursorsMap;
 

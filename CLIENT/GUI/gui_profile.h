@@ -3,12 +3,15 @@
 
 #include <QWidget>
 #include "ui_gui_profile.h"
+#include "gimpdocs.h"
 
 
 class GUI_Profile : public QWidget
 {
     Q_OBJECT
 public:
+    GIMPdocs *gimpParent;
+
     explicit GUI_Profile(QWidget *parent);
     ~GUI_Profile();
     static QString getObjectName() {return QString("GUI_Profile");}

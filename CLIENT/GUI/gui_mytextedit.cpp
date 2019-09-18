@@ -1,11 +1,12 @@
 #include "gui_mytextedit.h"
-#include "gimpdocs.h"
+#include "gui_editor.h"
 
 #include <QPainter>
 #include <QColor>
 
 GUI_MyTextEdit::GUI_MyTextEdit(QWidget *parent) : QTextEdit(parent) {
     this->setObjectName(GUI_MyTextEdit::getObjectName());
+    gimpParent = static_cast<GUI_Editor*>(parent)->gimpParent;
     //per non farsi coprire dai cursori colorati
     this->setCursorWidth(2);
 }
