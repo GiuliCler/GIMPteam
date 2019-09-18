@@ -50,8 +50,14 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLabel" name="label">
+       <property name="cursor">
+        <cursorShape>IBeamCursor</cursorShape>
+       </property>
        <property name="text">
         <string>Document name</string>
+       </property>
+       <property name="textInteractionFlags">
+        <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
        </property>
       </widget>
      </item>

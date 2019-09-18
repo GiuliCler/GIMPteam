@@ -5,6 +5,7 @@
 
 GUI_Opendoc::GUI_Opendoc(QWidget *parent) : QWidget(parent), gimpParent(parent)
 {
+    this->setObjectName(GUI_Opendoc::getObjectName());
     ui = new Ui::GUI_Opendoc;
     ui->setupUi(this);
 

@@ -13,7 +13,7 @@ public:
 
     explicit GUI_Editor(QWidget *parent, long documentId);
     ~GUI_Editor();
-    inline static QString getChildName(){ return "GUI_Editor";}
+    inline static QString getObjectName(){ return "GUI_Editor";}
 
     //se serve posso metterci un codice di ritorno
     void addUserIcon(long userId);

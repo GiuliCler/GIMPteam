@@ -10,6 +10,9 @@ class GUI_Login : public QWidget
 public:
     explicit GUI_Login(QWidget *parent);
     ~GUI_Login();
+    //faccio una funzione statica anzichè una normale stringa perchè non posso assegnare qui il valore alla stringa
+    inline static QString getObjectName(){ return "GUI_Login";}
+
 private slots:
     void on_newAccountButton_clicked();
     void on_loginButton_clicked();

@@ -8,6 +8,7 @@
 
 GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), documentId(documentId)
 {
+    this->setObjectName(GUI_Editor::getObjectName());
     ui = new Ui::GUI_Editor();
     ui->setupUi(this);
 

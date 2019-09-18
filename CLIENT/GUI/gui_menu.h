@@ -10,6 +10,8 @@ class GUI_Menu : public QWidget
 public:
     explicit GUI_Menu(QWidget *parent);
     ~GUI_Menu();
+    inline static QString getObjectName(){ return "GUI_Menu";}
+
 private slots:
     void on_editPushButton_clicked();
     void on_logoutPushButton_clicked();

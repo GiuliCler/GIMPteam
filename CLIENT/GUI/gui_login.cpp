@@ -6,8 +6,10 @@
 
 GUI_Login::GUI_Login(QWidget *parent) : QWidget(parent)
 {
+    this->setObjectName(GUI_Login::getObjectName());
     ui = new Ui::GUI_Login();
     ui->setupUi(this);
+    //serve a segnalare che non ci sono utenti attivi e rimuove l'id dell'eventuale user che ha appena fatto il logout
     static_cast<GIMPdocs*>(this->parent())->userid = -1;
 
 }

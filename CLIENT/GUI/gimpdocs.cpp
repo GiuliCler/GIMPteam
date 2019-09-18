@@ -33,7 +33,7 @@ void GIMPdocs::setUi2(QWidget *widget){
 
 void GIMPdocs::launchSetUi2(){
 
-    long docId = this->findChild<GUI_Editor*>(GUI_Editor::getChildName())->documentId;
+    long docId = this->findChild<GUI_Editor*>(GUI_Editor::getObjectName())->documentId;
     Stub::closeDocument(this->userid, docId);
 
     GUI_Menu *widget = new GUI_Menu(this);

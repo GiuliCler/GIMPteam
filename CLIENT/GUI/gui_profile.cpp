@@ -9,6 +9,7 @@
 
 GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
 {
+    this->setObjectName(GUI_Profile::getObjectName());
     ui = new Ui::GUI_Profile;
     ui->setupUi(this);
     if(static_cast<GIMPdocs*>(this->parent())->userid > -1){

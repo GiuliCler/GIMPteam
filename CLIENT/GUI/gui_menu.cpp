@@ -9,12 +9,12 @@
 
 GUI_Menu::GUI_Menu(QWidget *parent) : QWidget(parent)
 {
+    this->setObjectName(GUI_Menu::getObjectName());
     ui = new Ui::GUI_Menu;
     ui->setupUi(this);
 
     setProfileArea();
     setDocumentArea();
-
 }
 
 GUI_Menu::~GUI_Menu(){

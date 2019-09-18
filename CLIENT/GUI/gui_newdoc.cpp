@@ -8,6 +8,7 @@
 
 GUI_Newdoc::GUI_Newdoc(QWidget *parent) : QWidget(parent), gimpParent(parent)
 {
+    this->setObjectName(GUI_Newdoc::getObjectName());
     ui = new Ui::GUI_Newdoc;
     ui->setupUi(this);
 }

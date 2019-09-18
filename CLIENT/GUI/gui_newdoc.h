@@ -9,6 +9,8 @@ class GUI_Newdoc: public QWidget{
 public:
     explicit GUI_Newdoc(QWidget *parent);
     ~GUI_Newdoc();
+    static QString getObjectName() {return QString("GUI_Newdoc");}
+
 private slots:
     void on_createPushButton_clicked();
 
