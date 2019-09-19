@@ -3,6 +3,8 @@
 #include "gui_menu.h"
 #include "gui_mytextedit.h"
 #include <memory>
+#include <QBitmap>
+#include <QPainter>
 
 #define MAX_ICONWIDGET_WIDTH 15
 
@@ -43,9 +45,15 @@ void GUI_Editor::setUsersBar(){
 QLabel *GUI_Editor::getUserIcon(long userId){
     long iconId = Stub::getIconId(userId);
     QPixmap *image = new QPixmap(GUI_Icons::getIconPath(iconId));
+    QPixmap *background = new QPixmap(image->height(), image->width());
+    background->fill(Qt::red);
+    QPainter painter(background);
+    const QRect rect(image->rect());
+    painter.drawPixmap(rect, *image);
+
     QLabel *label = new QLabel(this);
 
-    label->setPixmap(*image);
+    label->setPixmap(*background);
     label->setScaledContents(true);
     label->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     label->setMaximumSize(GUI_Icons::iconSize,GUI_Icons::iconSize);

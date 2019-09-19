@@ -17,10 +17,6 @@ private:
     QPoint cursorPosition;
     QColor cursorColor;
 
-protected:
-    //TODO: voglio verificare se viene mai chiamata: sembra di no
-    //virtual void paintEvent(QPaintEvent *pEvent) override;
-
 public slots:
     void updatePosition(QPoint position);
 };

@@ -24,6 +24,7 @@ protected:
 
 public slots:
     void addUserCursor(long userId, QPoint position);
+    void removeUserCursor(long userId);
 };
 
 #endif // GUI_MYTEXTEDIT_H
