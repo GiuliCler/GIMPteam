@@ -3,8 +3,9 @@
 
 #include <QWidget>
 #include "ui_gui_editor.h"
-#include "gimpdocs.h"
+#include "../gimpdocs.h"
 #include <QTimer>
+#include <QLabel>
 
 class GUI_Editor : public QWidget
 {
@@ -17,9 +18,7 @@ public:
     ~GUI_Editor();
     inline static QString getObjectName(){ return "GUI_Editor";}
 
-    //se serve posso metterci un codice di ritorno
-    void addUserIcon(long userId);
-    void removeUserIcon(long userId);
+
 
 private slots:
     //debug
@@ -27,14 +26,12 @@ private slots:
 
 private:
     Ui::GUI_Editor *ui;
-    QMap<long, QLabel*> usersIconMap;
+
     //debug
     QTimer *timer;
 
     void setUsersBar();
-    QLabel *getUserIcon(long userId);
-    //adatto la size del widget in base a quanti users ci sono, ma solo fino ad un certo punto
-    void updateIconsWidgetSize();
+
 };
 
 #endif // GUI_EDITOR_H

@@ -1,7 +1,7 @@
 #include "gimpdocs.h"
 #include "gui_login.h"
 #include "gui_menu.h"
-#include "gui_editor.h"
+#include "editorWindow/gui_editor.h"
 
 #include <iostream>
 

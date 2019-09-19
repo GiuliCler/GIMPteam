@@ -1,6 +1,6 @@
 #include "gui_opendoc.h"
 #include "gimpdocs.h"
-#include "gui_editor.h"
+#include "editorWindow/gui_editor.h"
 #include "gui_menu.h"
 #include <QMessageBox>
 

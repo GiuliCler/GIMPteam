@@ -4,7 +4,7 @@
 #include <QTextEdit>
 #include <QTimer>
 #include "gui_coloredcursor.h"
-#include "gimpdocs.h"
+#include "../gimpdocs.h"
 #include <QMap>
 #include <QPoint>
 

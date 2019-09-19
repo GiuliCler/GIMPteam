@@ -1,6 +1,6 @@
 #include "gui_newdoc.h"
 #include "gui_menu.h"
-#include "gui_editor.h"
+#include "editorWindow/gui_editor.h"
 
 #include "ui_gui_editorwindow.h"
 #include <QMessageBox>
