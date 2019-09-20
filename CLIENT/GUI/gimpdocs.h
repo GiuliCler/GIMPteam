@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QDebug>
+#include <QRandomGenerator>
 #include "stub.h"
 #include "gui_icons.h"
 #include "ui_gimpdocs.h"

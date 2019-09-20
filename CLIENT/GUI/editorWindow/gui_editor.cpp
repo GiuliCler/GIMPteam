@@ -6,6 +6,7 @@
 #include <memory>
 #include <QBitmap>
 #include <QPainter>
+#include <QTime>
 
 GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), documentId(documentId)
 {
@@ -16,6 +17,12 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
 
     GUI_UsersBar *usersbar = new GUI_UsersBar(this);
     ui->usersBarWidget->layout()->addWidget(usersbar);
+    //ottengo l'elenco degli utenti che al momento stanno guardando il mio stesso document e ne creo icona e cursore
+    std::shared_ptr<QSet<long>> users = Stub::getWorkingUsersOnDocument(documentId);
+    /*for (QSet<long>::iterator userId = users->begin(); userId != users->end(); userId++){
+        addUserToEditorGUI(*userId);
+    }*/
+
     GUI_MyTextEdit *textEdit = new GUI_MyTextEdit(this);
     ui->textWidget->layout()->addWidget(textEdit);
 
@@ -29,14 +36,32 @@ GUI_Editor::~GUI_Editor(){
     delete ui;
 }
 
+void GUI_Editor::addUserToEditorGUI(long userid){
+    //controllo che per qualche ragione l'user non sia già presente e non sia il CLIENT stesso che sta usando l'intefrfaccia
+    if(userColorMap.find(userid) != userColorMap.find(userid) || userid == gimpParent->userid){
+        //TODO: gestione intelligente
+        return;
+    }
+
+    QColor *color = new QColor;
+    QRandomGenerator rg;
+    color->setHsv(rg.global()->bounded(32)*8, 255, 255, 150);
+
+    findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->addUserIcon(userid, *color);
+    findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->addUserCursor(userid, QPoint(userid *20, 4), *color);
+}
+
+void GUI_Editor::removeUserFromEditorGUI(long userid){
+    findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->removeUserIcon(userid);
+    findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->removeUserCursor(userid);
+}
 
 //serve solo per il debug
 void GUI_Editor::timerSlot(){
 
-    GUI_MyTextEdit *textEditor = this->findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName());
+    /*GUI_MyTextEdit *textEditor = this->findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName());
     if(! textEditor->hasFocus())
-        return;
+        return;*/
 
-    QPoint position(textEditor->cursorRect().x(), textEditor->cursorRect().y());
-    textEditor->addUserCursor(1, position);
+    addUserToEditorGUI(QRandomGenerator::global()->bounded(20));
 }

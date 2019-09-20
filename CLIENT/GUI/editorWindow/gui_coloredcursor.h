@@ -9,8 +9,8 @@ class GUI_ColoredCursor : public QWidget
 {
     Q_OBJECT
 public:
-    //TODO: devo lasciar selezionare il colore... forse potrei farmi una tabella hardcoded e deciderlo io in base a quanti sono nella mappa
-    explicit GUI_ColoredCursor(QWidget *parent, QPoint position);
+    //DEBUG: il campo position è da togliere. Bisogna settare un valore iniziale di default
+    explicit GUI_ColoredCursor(QWidget *parent, QPoint position, QColor color);
     void paint();
 
 private:

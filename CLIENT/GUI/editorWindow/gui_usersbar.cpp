@@ -5,30 +5,21 @@
 #define MAX_ICONWIDGET_WIDTH 15
 
 GUI_UsersBar::GUI_UsersBar(QWidget *parent) : QWidget(parent){
+    this->setObjectName(GUI_UsersBar::getObjectName());
+    editorParent = static_cast<GUI_Editor*>(parent);
     ui = new Ui::GUI_UsersBar();
     ui->setupUi(this);
-
-    //ottengo l'elenco degli utenti che al momento stanno guardando il mio stesso document, li salvo nella map e creo le icone
-    std::shared_ptr<QSet<long>> users = Stub::getWorkingUsersOnDocument(static_cast<GUI_Editor*>(parent)->documentId);
-    ui->numberUsersLabel->setNum(users->size());
-    for (QSet<long>::iterator userId = users->begin(); userId != users->end(); userId++){
-        QLabel *iconLabel = getUserIcon(*userId);
-        usersIconMap.insert(*userId, iconLabel);
-        ui->iconsWidget->layout()->addWidget(iconLabel);
-    }
-
-    updateIconsWidgetSize();
 }
 
 GUI_UsersBar::~GUI_UsersBar(){
     delete ui;
 }
 
-QLabel *GUI_UsersBar::getUserIcon(long userId){
+QLabel *GUI_UsersBar::getUserIcon(long userId, QColor color){
     long iconId = Stub::getIconId(userId);
     QPixmap *image = new QPixmap(GUI_Icons::getIconPath(iconId));
     QPixmap *background = new QPixmap(image->height(), image->width());
-    background->fill(Qt::red);
+    background->fill(color);
     QPainter painter(background);
     const QRect rect(image->rect());
     painter.drawPixmap(rect, *image);
@@ -57,11 +48,11 @@ void GUI_UsersBar::updateIconsWidgetSize(){
     ui->iconsWidget->setMinimumWidth((number+1)*GUI_Icons::iconSize);
 }
 
-void GUI_UsersBar::addUserIcon(long userId){
+void GUI_UsersBar::addUserIcon(long userId, QColor color){
     if(this->usersIconMap.find(userId) != usersIconMap.end())
         return;
 
-    QLabel *iconLabel = getUserIcon(userId);
+    QLabel *iconLabel = getUserIcon(userId, color);
     usersIconMap.insert(userId, iconLabel);
     ui->iconsWidget->layout()->addWidget(iconLabel);
     ui->numberUsersLabel->setNum(usersIconMap.size());
