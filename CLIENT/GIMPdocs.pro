@@ -25,6 +25,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        GUI/editorWindow/gui_colorsmanager.cpp \
         GUI/editorWindow/gui_usersbar.cpp \
         GUI/gimpdocs.cpp \
         GUI/editorWindow/gui_coloredcursor.cpp \
@@ -40,6 +41,7 @@ SOURCES += \
         stub.cpp
 
 HEADERS += \
+        GUI/editorWindow/gui_colorsmanager.h \
         GUI/editorWindow/gui_usersbar.h \
         GUI/gimpdocs.h \
         GUI/editorWindow/gui_coloredcursor.h \

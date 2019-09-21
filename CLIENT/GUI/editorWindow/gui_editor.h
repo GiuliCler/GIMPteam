@@ -4,6 +4,7 @@
 #include <QWidget>
 #include "ui_gui_editor.h"
 #include "../gimpdocs.h"
+#include "gui_colorsmanager.h"
 #include <QTimer>
 #include <QLabel>
 #include <QMap>
@@ -31,7 +32,7 @@ private slots:
 
 private:
     Ui::GUI_Editor *ui;
-
+    GUI_ColorsManager colorsManager;
     //debug
     QTimer *timer;
 
