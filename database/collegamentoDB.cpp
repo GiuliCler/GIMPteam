@@ -184,7 +184,46 @@ int CollegamentoDB::creaDoc(std::string nomeDOC){
  *      stringa corrispondente all'URI creata
  */
 std::string CollegamentoDB::creaURI(std::string nomeDOC){
-    return "://GIMPdocs/"+nomeDOC;
+    QByteArray byteArray(nomeDOC.c_str(), nomeDOC.length());
+    QString blah = QString(QCryptographicHash::hash((byteArray),QCryptographicHash::Md5).toHex());
+    QString s = "://GIMPdocs/" + blah;
+    return s.toUtf8().constData();
+}
+
+/*
+ * Utilizzo: funzione che permette di recuperare il nome di un documento dato un certo URI
+ * Parametri:
+ *      uri: URI di un certo documento
+ * Ritorno:
+ *      tutto ok (URI presente nel DB) -> stringa corrispondente al nome del documento relativo all'URI passato
+ *      errore (URI inesistente) -> "errore"
+ */
+std::string CollegamentoDB::recuperaDocDatoURI(std::string uri){
+
+    if(uri.empty()) {
+        return "errore";
+    }
+
+    std::string doc_cercato;
+    std::string query = "SELECT * FROM doc WHERE uri=:ur";
+    QSqlQuery ris;
+    ris.prepare(QString::fromStdString(query));
+    ris.bindValue(":ur", QString::fromStdString(uri));
+
+    if(ris.exec()){
+        if(ris.size() == 1){
+            while(ris.next()){
+                doc_cercato = ris.value(0).toString().toUtf8().constData();
+            }
+        } else {
+            return "errore";
+        }
+    }
+    else{
+        return "errore";
+    }
+
+    return doc_cercato;
 }
 
 /*
@@ -287,7 +326,7 @@ std::vector<std::string> CollegamentoDB::recuperaDocs(std::string username){
 
 
 /*
- * Utilizzo: funzione che permette di recuperare l'URI di un certo documento
+ * Utilizzo: funzione che consente di recuperare l'URI di un certo documento, per permetterne la condivisione con altri utenti
  * Parametri:
  *      nomeDOC: nome del documento di cui si vuole recuperare l'URI
  * Ritorno:

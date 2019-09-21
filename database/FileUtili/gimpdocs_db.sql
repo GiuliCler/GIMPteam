@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Set 12, 2019 alle 11:49
+-- Creato il: Set 21, 2019 alle 11:17
 -- Versione del server: 10.1.40-MariaDB
 -- Versione PHP: 7.3.5
 
@@ -29,8 +29,8 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `doc` (
-  `nome_doc` varchar(40) NOT NULL,
-  `uri` varchar(40) NOT NULL
+  `nome_doc` varchar(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `uri` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -40,8 +40,8 @@ CREATE TABLE `doc` (
 --
 
 CREATE TABLE `utente_doc` (
-  `username` varchar(50) NOT NULL,
-  `nome_doc` varchar(40) NOT NULL
+  `username` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `nome_doc` varchar(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -51,11 +51,11 @@ CREATE TABLE `utente_doc` (
 --
 
 CREATE TABLE `utenti` (
-  `username` varchar(50) NOT NULL,
-  `password` varchar(260) NOT NULL,
-  `sale` varchar(20) NOT NULL,
-  `nickname` varchar(20) NOT NULL,
-  `icona` varchar(40) DEFAULT NULL
+  `username` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `password` varchar(260) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `sale` varchar(20) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `nickname` varchar(20) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `icona` varchar(40) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --

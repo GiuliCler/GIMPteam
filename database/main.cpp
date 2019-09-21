@@ -193,5 +193,19 @@ int main(int argc, char *argv[]) {
 
     std::cout<<"---------------------------------------------"<<std::endl;
 
+    /* Fornisco l'uri del documento 1 */
+    std::string doc0 = link->recuperaDocDatoURI("://GIMPdocs/80423b4c7a9c3e047148ececb88d1d41");
+    std::cout<<"Dato l'URI ottengo il nome doc... "<<doc0<<std::endl;
+
+    /* Fornisco un uri inesistente */
+    std::string doc1 = link->recuperaDocDatoURI("://GIMPdocs/OIBABOIII");
+    std::cout<<"URI inesistente... "<<doc1<<std::endl;
+
+    /* Boundary case: stringa vuota */
+    std::string doc2 = link->recuperaDocDatoURI("");
+    std::cout<<"URI vuoto... "<<doc2<<std::endl;
+
+    std::cout<<"---------------------------------------------"<<std::endl;
+
     return a.exec();
 }
