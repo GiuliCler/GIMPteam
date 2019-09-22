@@ -24,6 +24,8 @@ public:
 private:
     Ui::GUI_UsersBar *ui;
     QMap<long, QLabel*> usersIconMap;
+    static QString getOnlineAreaName() {return QString("onlineIconsScrollArea");}
+    static QString getContributorsAreaName() {return QString("contributorIconsScrollArea");}
 
     QLabel *getUserIcon(long userId, QColor color);
     //adatto la size del widget in base a quanti users ci sono, ma solo fino ad un certo punto

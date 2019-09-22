@@ -19,6 +19,7 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
     ui->textWidget->layout()->addWidget(textEdit);
     GUI_UsersBar *usersbar = new GUI_UsersBar(this);
     ui->usersBarWidget->layout()->addWidget(usersbar);
+
     //ottengo l'elenco degli utenti che al momento stanno guardando il mio stesso document e ne creo icona e cursore
     std::shared_ptr<QSet<long>> users = Stub::getWorkingUsersOnDocument(documentId);
     for (QSet<long>::iterator userId = users->begin(); userId != users->end(); userId++){
@@ -27,7 +28,7 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
 
     //debug purpose only
     timer = new QTimer(this);
-    timer->start(5000);
+    timer->start(3000);
     connect(timer, SIGNAL(timeout()), this, SLOT(timerSlot()));
 }
 
@@ -42,18 +43,21 @@ void GUI_Editor::addUserToEditorGUI(long userid){
         return;
     }
 
-    /*QColor *color = new QColor;
-    QRandomGenerator rg;
-    color->setHsv(rg.global()->bounded(32)*8, 255, 255, 150);*/
+    //ottengo un colore per cursore e icona
     QColor *color = colorsManager.takeColor();
+    userColorMap.insert(userid, color);
+
     //nota: la findChild è ricorsiva e funziona anche coi nipoti
     findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->addUserIcon(userid, *color);
-    findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->addUserCursor(userid, QPoint(userid *10, 4), *color);
+    findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->addUserCursor(userid, QPoint(userid *2, 4), *color);
 }
 
 void GUI_Editor::removeUserFromEditorGUI(long userid){
     findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->removeUserIcon(userid);
     findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->removeUserCursor(userid);
+    //non posso restituire i colori. Servono per colorare il testo anche quando gli utenti sono offline
+    /*colorsManager.returnColor(userColorMap[userid]);
+    userColorMap.remove(userid);*/
 }
 
 //serve solo per il debug

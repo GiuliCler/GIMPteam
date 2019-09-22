@@ -1,4 +1,5 @@
 debug/gui_colorsmanager.o
+debug/gui_myscrollarea.o
 debug/gui_usersbar.o
 debug/gimpdocs.o
 debug/gui_coloredcursor.o
@@ -14,6 +15,7 @@ debug/main.o
 debug/stub.o
 debug/qrc_images.o
 debug/moc_gui_colorsmanager.o
+debug/moc_gui_myscrollarea.o
 debug/moc_gui_usersbar.o
 debug/moc_gimpdocs.o
 debug/moc_gui_coloredcursor.o

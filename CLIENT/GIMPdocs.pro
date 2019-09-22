@@ -26,6 +26,7 @@ CONFIG += c++11
 
 SOURCES += \
         GUI/editorWindow/gui_colorsmanager.cpp \
+        GUI/editorWindow/gui_myscrollarea.cpp \
         GUI/editorWindow/gui_usersbar.cpp \
         GUI/gimpdocs.cpp \
         GUI/editorWindow/gui_coloredcursor.cpp \
@@ -42,6 +43,7 @@ SOURCES += \
 
 HEADERS += \
         GUI/editorWindow/gui_colorsmanager.h \
+        GUI/editorWindow/gui_myscrollarea.h \
         GUI/editorWindow/gui_usersbar.h \
         GUI/gimpdocs.h \
         GUI/editorWindow/gui_coloredcursor.h \

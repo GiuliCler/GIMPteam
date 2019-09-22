@@ -23,7 +23,6 @@ void GUI_ColorsManager::returnColor(QColor *color){
 }
 
 QColor *GUI_ColorsManager::newColor(){
-    qDebug() << h;
     QColor *color = new QColor();
     color->setHsv(h*8, 135 + 60* sFlag, 155 + 100*vFlag, 150);
 

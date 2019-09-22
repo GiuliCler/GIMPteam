@@ -16,7 +16,7 @@ class GUI_Editor : public QWidget
 public:
     long documentId;
     GIMPdocs *gimpParent;
-    QMap<long, QColor> userColorMap;
+    QMap<long, QColor*> userColorMap;
 
     explicit GUI_Editor(QWidget *parent, long documentId);
     ~GUI_Editor();
