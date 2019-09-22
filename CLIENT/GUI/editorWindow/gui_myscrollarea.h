@@ -12,6 +12,7 @@ public:
 
     explicit GUI_MyScrollArea(QWidget *parent = nullptr);
     virtual void resizeEvent(QResizeEvent *event) override;
+    void updateSize(int numberOfUsers);
 };
 
 #endif // GUI_MYSCROLLAREA_H

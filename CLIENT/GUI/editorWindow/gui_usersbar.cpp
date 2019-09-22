@@ -5,19 +5,19 @@
 #include <QScrollArea>
 #include <QAbstractScrollArea>
 #include <QPushButton>
+#include <QScrollBar>
 
-#define MAX_ICONWIDGET_WIDTH 15
+
 
 GUI_UsersBar::GUI_UsersBar(QWidget *parent) : QWidget(parent){
     this->setObjectName(GUI_UsersBar::getObjectName());
     editorParent = static_cast<GUI_Editor*>(parent);
     ui = new Ui::GUI_UsersBar();
     ui->setupUi(this);
-    ui->iconsWidget->close();
 
     GUI_MyScrollArea *onlineIconsScrollArea = new GUI_MyScrollArea(this);
     onlineIconsScrollArea->setObjectName(getOnlineAreaName());
-    static_cast<QVBoxLayout*>(this->layout())->insertWidget(3, onlineIconsScrollArea);
+    static_cast<QVBoxLayout*>(this->layout())->insertWidget(2, onlineIconsScrollArea);
 
     //TODO: anche coi contributors, per i quali ti serve uno Stub
     /*GUI_MyScrollArea *onlineIconsScrollArea = new GUI_MyScrollArea(this);
@@ -43,7 +43,7 @@ QLabel *GUI_UsersBar::getUserIcon(long userId, QColor color){
     label->setPixmap(*background);
     label->setScaledContents(true);
     //label->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
-    label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    //label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     label->setMaximumSize(GUI_Icons::iconSize,GUI_Icons::iconSize);
     label->setMinimumSize(GUI_Icons::iconSize,GUI_Icons::iconSize);
     label->setToolTip(QString("<font color = \"" + Stub::getUserColor(userId) + "\">") + Stub::getNickname(userId) + "</font>");
@@ -52,16 +52,9 @@ QLabel *GUI_UsersBar::getUserIcon(long userId, QColor color){
     return label;
 }
 
-void GUI_UsersBar::updateIconsWidgetSize(){
-    /*non potevo mettere policy Fixed perchè le icone sono Ignored ed il fixed non avendo un valore fisso interno si azzera, quindi lo fixo settando a mano max e min
-     * la policy del widget è expanding perchè altrimenti viene schiacciato dall'altro expanding. Devo mettere almeno un expanding o per riempire lo spazio mi aumenta lo spacing fra i widget senza chiedermi il permesso
-     * ho anche dato proporzioni diverse ai 2 expanding (20,1) per dire che il widget delle icone ha diritto a tutto quello di cui ha bisogno
-     * */
-    //ho deciso che fino a 10 gli do lo spazio giusto giusto, oltre i 10 utenti comprimo le icone e si fanno bastare lo spazio che hanno
-    int number = usersIconMap.size() <= MAX_ICONWIDGET_WIDTH ? usersIconMap.size() : MAX_ICONWIDGET_WIDTH;
-    //il +1 è perchè li lascio un po' più larghi
-    ui->iconsWidget->setMaximumWidth((number+1)*GUI_Icons::iconSize);
-    ui->iconsWidget->setMinimumWidth((number+1)*GUI_Icons::iconSize);
+void GUI_UsersBar::updateOnlineAreatSize(){
+
+
 }
 
 void GUI_UsersBar::addUserIcon(long userId, QColor color){
@@ -72,12 +65,8 @@ void GUI_UsersBar::addUserIcon(long userId, QColor color){
     usersIconMap.insert(userId, iconLabel);
     ui->numberUsersLabel->setNum(usersIconMap.size());
 
-    /*ui->iconsWidget->layout()->addWidget(iconLabel);
-    if(usersIconMap.size() < MAX_ICONWIDGET_WIDTH+1)
-        updateIconsWidgetSize();*/
-
-    //iconLabel->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     this->findChild<GUI_MyScrollArea*>(getOnlineAreaName())->widget()->layout()->addWidget(iconLabel);
+    this->findChild<GUI_MyScrollArea*>(getOnlineAreaName())->updateSize(usersIconMap.size());
 }
 
 void GUI_UsersBar::removeUserIcon(long userId){
@@ -87,6 +76,16 @@ void GUI_UsersBar::removeUserIcon(long userId){
     usersIconMap[userId]->close();
     usersIconMap.remove(userId);
     ui->numberUsersLabel->setNum(usersIconMap.size());
-    if(usersIconMap.size() < MAX_ICONWIDGET_WIDTH + 1)
-        updateIconsWidgetSize();
+    this->findChild<GUI_MyScrollArea*>(getOnlineAreaName())->updateSize(usersIconMap.size());
+}
+
+//serve solo per il debug
+void GUI_UsersBar::on_pushButton_clicked()
+{
+    editorParent->addUserToEditorGUI(QRandomGenerator::global()->bounded(2000));
+}
+
+void GUI_UsersBar::on_pushButton_2_clicked()
+{
+    editorParent->removeUserFromEditorGUI(usersIconMap.keys().first());
 }

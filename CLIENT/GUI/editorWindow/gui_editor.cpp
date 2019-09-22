@@ -63,5 +63,5 @@ void GUI_Editor::removeUserFromEditorGUI(long userid){
 //serve solo per il debug
 void GUI_Editor::timerSlot(){
 
-    addUserToEditorGUI(QRandomGenerator::global()->bounded(2000));
+    //addUserToEditorGUI(QRandomGenerator::global()->bounded(2000));
 }

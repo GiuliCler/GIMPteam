@@ -21,15 +21,22 @@ public:
     void addUserIcon(long userId, QColor color);
     void removeUserIcon(long userId);
 
+
+private slots:
+    void on_pushButton_clicked();
+
+    void on_pushButton_2_clicked();
+
 private:
     Ui::GUI_UsersBar *ui;
     QMap<long, QLabel*> usersIconMap;
+
+    //serve per ritrovare i figli. Avrei anche potuto salvarmi direttamente un pointer ai figli
     static QString getOnlineAreaName() {return QString("onlineIconsScrollArea");}
     static QString getContributorsAreaName() {return QString("contributorIconsScrollArea");}
-
     QLabel *getUserIcon(long userId, QColor color);
-    //adatto la size del widget in base a quanti users ci sono, ma solo fino ad un certo punto
-    void updateIconsWidgetSize();
+    //serve per contenere l'area della scrollarea
+    void updateOnlineAreatSize();
 };
 
 #endif // GUI_USERSBAR_H
