@@ -31,7 +31,8 @@ public:
 
     //ritorna un set cogli userId
     static std::shared_ptr<QSet<long>> getWorkingUsersOnDocument(long docId);
-    static QString getUserColor(long userId);
+    //ritorna tutti gli id degli users che hanno conrtibuito al document. Viene chiamata appena aperto il doc, mentre per l'update metto a disposizione altre funzioni
+    static std::shared_ptr<QSet<long>> getContributorsUsersOnDocument(long docId);
 };
 
 #endif // STUB_H

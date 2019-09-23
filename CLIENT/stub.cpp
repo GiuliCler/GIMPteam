@@ -114,15 +114,18 @@ std::shared_ptr<QSet<long>> Stub::getWorkingUsersOnDocument(long docId){
     long n = docId;
     docId = n;
     std::shared_ptr<QSet<long>> vpointer(new QSet<long>());
-    for(int i = 0; i < 3; i++)
+    for(int i = 0; i < 5; i++)
         vpointer->insert(i);
 
     return vpointer;
 }
 
-QString Stub::getUserColor(long userId){
-    int n = userId;
-    userId = n;
+std::shared_ptr<QSet<long>> Stub::getContributorsUsersOnDocument(long docId){
+    long n = docId;
+    docId = n;
+    std::shared_ptr<QSet<long>> vpointer(new QSet<long>());
+    for(int i = 3; i < 6; i++)
+        vpointer->insert(i);
 
-    return "red";
+    return vpointer;
 }

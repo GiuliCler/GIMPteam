@@ -16,7 +16,6 @@ public:
     ~GUI_UsersBar();
     static QString getObjectName() {return QString("GUI_UsersBar");}
 
-
     //se serve posso metterci un codice di ritorno
     void addOnlineUserIcon(long userId, QColor color);
     void removeOnlineUserIcon(long userId);
@@ -24,17 +23,23 @@ public:
     void removeContributorUserIcon(long userId);
 
 private slots:
-    void on_pushButton_clicked();
+    //questi 2 metodi non servono solo per la users bar, ma anche per attivare il comando che cambia colore al testo
+    void on_showColorsPushButton_clicked();
+    void on_hideColorsPushButton_clicked();
 
+    //per il debug
+    void on_pushButton_clicked();
     void on_pushButton_2_clicked();
 
-    void on_showColorsPushButton_clicked();
+    void on_pushButton_3_clicked();
 
-    void on_hideColorsPushButton_clicked();
+    void on_pushButton_4_clicked();
 
 private:
     Ui::GUI_UsersBar *ui;
-    QMap<long, QLabel*> usersIconMap;
+    //mi serve quando devo fare la remove
+    QMap<long, QLabel*> onlineUsersIconMap;
+    QMap<long, QLabel*> contributorUsersIconMap;
 
     //serve per ritrovare i figli. Avrei anche potuto salvarmi direttamente un pointer ai figli
     static QString getOnlineAreaName() {return QString("onlineIconsScrollArea");}

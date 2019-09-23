@@ -26,6 +26,12 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
         addUserToEditorGUI(*userId);
     }
 
+    //creo l'icona per gli user che hanno contribuito al document
+    std::shared_ptr<QSet<long>> contributors = Stub::getContributorsUsersOnDocument(documentId);
+    for (QSet<long>::iterator userId = contributors->begin(); userId != contributors->end(); userId++){
+        addContributorToCurrentDocument(*userId);
+    }
+
     //debug purpose only
     timer = new QTimer(this);
     timer->start(3000);
@@ -37,15 +43,22 @@ GUI_Editor::~GUI_Editor(){
 }
 
 void GUI_Editor::addUserToEditorGUI(long userid){
-    //controllo che per qualche ragione l'user non sia già presente e non sia il CLIENT stesso che sta usando l'intefrfaccia
-    if(userColorMap.find(userid) != userColorMap.find(userid) || userid == gimpParent->userid){
+    //controllo che per qualche ragione l'user non sia il CLIENT stesso che sta usando l'intefrfaccia
+    if(userid == gimpParent->userid){
         //TODO: gestione intelligente
         return;
     }
 
     //ottengo un colore per cursore e icona
-    QColor *color = colorsManager.takeColor();
-    userColorMap.insert(userid, color);
+    QColor *color;
+    //controllo che l'user non abbia già u colore assegnato, o perchè si è disconnesso e riconnesso o perchè è già presente fra i contributors
+    if(userColorMap.find(userid) == userColorMap.end() ){
+        color = colorsManager.takeColor();
+        userColorMap.insert(userid, color);
+    }
+    else{
+        color = userColorMap[userid];
+    }
 
     //nota: la findChild è ricorsiva e funziona anche coi nipoti
     findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->addOnlineUserIcon(userid, *color);
@@ -55,9 +68,28 @@ void GUI_Editor::addUserToEditorGUI(long userid){
 void GUI_Editor::removeUserFromEditorGUI(long userid){
     findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->removeOnlineUserIcon(userid);
     findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->removeUserCursor(userid);
-    //non posso restituire i colori. Servono per colorare il testo anche quando gli utenti sono offline
-    /*colorsManager.returnColor(userColorMap[userid]);
-    userColorMap.remove(userid);*/
+}
+
+void GUI_Editor::addContributorToCurrentDocument(long userid){
+    //nota, il CLIENT può comparire fra i contributors
+
+    //ottengo un colore per cursore e icona
+    QColor *color;
+    //controllo che l'user non abbia già u colore assegnato, o perchè si è disconnesso e riconnesso o perchè è già presente fra i contributors
+    if(userColorMap.find(userid) == userColorMap.end() ){
+        color = colorsManager.takeColor();
+        userColorMap.insert(userid, color);
+    }
+    else{
+        color = userColorMap[userid];
+    }
+
+    //nota: la findChild è ricorsiva e funziona anche coi nipoti
+    findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->addContributorUserIcon(userid, *color);
+}
+
+void GUI_Editor::removeContributorFromCurrentDocument(long userid){
+    findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->removeContributorUserIcon(userid);
 }
 
 //serve solo per il debug

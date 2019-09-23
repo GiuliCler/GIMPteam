@@ -27,6 +27,8 @@ public:
     //si occupano sia del cursore che dell'icona che del colore
     void addUserToEditorGUI(long userid);
     void removeUserFromEditorGUI(long userid);
+    void addContributorToCurrentDocument(long userid);
+    void removeContributorFromCurrentDocument(long userid);
 
 private slots:
     //debug
