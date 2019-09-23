@@ -18,14 +18,19 @@ public:
 
 
     //se serve posso metterci un codice di ritorno
-    void addUserIcon(long userId, QColor color);
-    void removeUserIcon(long userId);
-
+    void addOnlineUserIcon(long userId, QColor color);
+    void removeOnlineUserIcon(long userId);
+    void addContributorUserIcon(long userId, QColor color);
+    void removeContributorUserIcon(long userId);
 
 private slots:
     void on_pushButton_clicked();
 
     void on_pushButton_2_clicked();
+
+    void on_showColorsPushButton_clicked();
+
+    void on_hideColorsPushButton_clicked();
 
 private:
     Ui::GUI_UsersBar *ui;
@@ -35,8 +40,6 @@ private:
     static QString getOnlineAreaName() {return QString("onlineIconsScrollArea");}
     static QString getContributorsAreaName() {return QString("contributorIconsScrollArea");}
     QLabel *getUserIcon(long userId, QColor color);
-    //serve per contenere l'area della scrollarea
-    void updateOnlineAreatSize();
 };
 
 #endif // GUI_USERSBAR_H

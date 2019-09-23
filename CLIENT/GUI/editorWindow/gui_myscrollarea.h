@@ -11,8 +11,9 @@ public:
     QWidget *content;
 
     explicit GUI_MyScrollArea(QWidget *parent = nullptr);
-    virtual void resizeEvent(QResizeEvent *event) override;
+//    virtual void resizeEvent(QResizeEvent *event) override;
     void updateSize(int numberOfUsers);
+    inline static int getMaxUsersIconsNumber(){return 10;}
 };
 
 #endif // GUI_MYSCROLLAREA_H

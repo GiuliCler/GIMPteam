@@ -48,12 +48,12 @@ void GUI_Editor::addUserToEditorGUI(long userid){
     userColorMap.insert(userid, color);
 
     //nota: la findChild è ricorsiva e funziona anche coi nipoti
-    findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->addUserIcon(userid, *color);
+    findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->addOnlineUserIcon(userid, *color);
     findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->addUserCursor(userid, QPoint(userid *2, 4), *color);
 }
 
 void GUI_Editor::removeUserFromEditorGUI(long userid){
-    findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->removeUserIcon(userid);
+    findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->removeOnlineUserIcon(userid);
     findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->removeUserCursor(userid);
     //non posso restituire i colori. Servono per colorare il testo anche quando gli utenti sono offline
     /*colorsManager.returnColor(userColorMap[userid]);

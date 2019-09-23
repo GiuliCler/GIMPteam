@@ -10,54 +10,36 @@
 GUI_MyScrollArea::GUI_MyScrollArea(QWidget *parent) : QScrollArea(parent){
     setWidgetResizable(true);
 
-    //il posto il widget che conterrà il contenuto della scroll area
+    //imposto il widget che conterrà il contenuto della scroll area
     content = new QWidget(this);
     content->setLayout(new QHBoxLayout(content));
     this->setWidget(content);
 
     //scrollarea style
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    setSizeAdjustPolicy(SizeAdjustPolicy::AdjustToContents);
+    // mi serve soprattutto per la vertical policy o si slarga verso l'alto
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     setFrameShape(Shape::NoFrame);
-    setContentsMargins(0,0,0,0);
-    setViewportMargins(0, 0, 0, 0);
-    //setMaximumHeight(GUI_Icons::iconSize + this->horizontalScrollBar()->height());
-
-    setMaximumHeight(GUI_Icons::iconSize);
+    //il 2 bilancia il margin sotto, un 17 sta al posto della scrollbar e l'altro 17 sta soprae bilancia la scrollbar per avere simmetria
+    setMaximumHeight(GUI_Icons::iconSize + (2+17) + 17);
 
     //content style
-    content->layout()->setMargin(0);
-    //content->layout()->setContentsMargins(0,17,0,0);
-    content->layout()->setSpacing(1);
+    content->layout()->setSpacing(0);
 }
 
-void GUI_MyScrollArea::resizeEvent(QResizeEvent *event){
-    // Define content margins here
-    setViewportMargins(0, 0, 0, 0); // <<<<< SET MARGINS HERE
-    QScrollArea::resizeEvent(event);
-}
-
-//todo: trovare un nome più appropriato perchè non sempre faccio l'update
 void GUI_MyScrollArea::updateSize(int numberOfUsers){
-    /*non potevo mettere policy Fixed perchè le icone sono Ignored ed il fixed non avendo un valore fisso interno si azzera, quindi lo fixo settando a mano max e min
-     * la policy del widget è expanding perchè altrimenti viene schiacciato dall'altro expanding. Devo mettere almeno un expanding o per riempire lo spazio mi aumenta lo spacing fra i widget senza chiedermi il permesso
-     * ho anche dato proporzioni diverse ai 2 expanding (20,1) per dire che il widget delle icone ha diritto a tutto quello di cui ha bisogno
+    /* la policy del widget è expanding perchè altrimenti viene schiacciato dall'altro expanding. Devo mettere almeno un expanding o per riempire lo spazio mi aumenta lo spacing fra i widget senza chiedermi il permesso
+     * ho deciso che fino a TOT gli do lo spazio giusto giusto, oltre i TOT compare la scrollbar
      * */
-    //ho deciso che fino a TOT gli do lo spazio giusto giusto, oltre i TOT utenti comprimo le icone e si fanno bastare lo spazio che hanno
     int number = numberOfUsers <= MAX_ICONWIDGET_WIDTH ? numberOfUsers : MAX_ICONWIDGET_WIDTH;
-    //il +1 è perchè li lascio un po' più larghi
-    widget()->layout()->setSpacing(0);
-    setMaximumWidth((number)*GUI_Icons::iconSize);
-    setMinimumWidth((number)*GUI_Icons::iconSize);
-    if(numberOfUsers > MAX_ICONWIDGET_WIDTH){
-        setMaximumHeight(GUI_Icons::iconSize + 17*2);
-        content->layout()->setContentsMargins(0,17,0,0);
-        static_cast<GUI_UsersBar*>(this->parent())->layout()->setContentsMargins(6,0,6,2);
-    }
-    //l'else serve per quando li rimuovo
-    else{
-        setMaximumHeight(GUI_Icons::iconSize);
-        content->layout()->setContentsMargins(0,0,0,0);
-        static_cast<GUI_UsersBar*>(this->parent())->layout()->setContentsMargins(6,17,6,19);
-    }
+    setMaximumWidth(number * GUI_Icons::iconSize);
+    setMinimumWidth(number * GUI_Icons::iconSize);
+
+    /* il giochetto che faccio è:
+     * se c'è la scrollbar, questa occupa lo spazio sotto le icone, se non c'è ci piazzo un margin della stessa dimensione della scrollbar per rimpiazzarla
+     * nota che la size complessiva non deve cambiare o scombussolo le cose agli altri widget
+     * */
+    if(numberOfUsers <= MAX_ICONWIDGET_WIDTH)   //è come dire if(non c'è la scrollbar), solo che anche quando dovrebbe esserci non è ancora presente
+        content->layout()->setContentsMargins(0, 2 + 17, 0, 17);
+    else
+        content->layout()->setContentsMargins(0, 2 + 17, 0, 0);
 }

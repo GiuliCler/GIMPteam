@@ -17,6 +17,8 @@ public:
     long documentId;
     GIMPdocs *gimpParent;
     QMap<long, QColor*> userColorMap;
+    //indica se il testo è colorato coi colori degli utenti per identificarli
+    bool usersColors;
 
     explicit GUI_Editor(QWidget *parent, long documentId);
     ~GUI_Editor();
