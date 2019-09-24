@@ -24,10 +24,10 @@ void GUI_ColorsManager::returnColor(QColor *color){
 
 QColor *GUI_ColorsManager::newColor(){
     QColor *color = new QColor();
-    color->setHsv(h*8, 135 + 60* sFlag, 155 + 100*vFlag, 150);
+    color->setHsv(h*12, 105 + 75 * sFlag, 205 + 50*vFlag, 160);
 
-    //genero 31*2*3 colori diversi. Poi si ripetono
-    h = (h +7)%31;
+    //genero 29*2*3 colori diversi. Poi si ripetono
+    h = (h +11)%29;
     sFlag = (sFlag +1) %3;
     vFlag = (vFlag +1) %2;
 

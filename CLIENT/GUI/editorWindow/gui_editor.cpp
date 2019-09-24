@@ -7,6 +7,7 @@
 #include <QBitmap>
 #include <QPainter>
 #include <QTime>
+#include <QTabBar>
 
 GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), documentId(documentId)
 {
@@ -14,6 +15,9 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
     gimpParent = static_cast<GIMPdocs*>(parent);
     ui = new Ui::GUI_Editor();
     ui->setupUi(this);
+
+    //questo serve a togliere quel fastidioso bordino bianco attorno alle labels del tabwidget
+    ui->tabWidget->tabBar()->setStyleSheet(ui->tabWidget->tabBar()->styleSheet().append("background: rgb(240,240,240);"));
 
     GUI_MyTextEdit *textEdit = new GUI_MyTextEdit(this);
     ui->textWidget->layout()->addWidget(textEdit);
@@ -44,10 +48,10 @@ GUI_Editor::~GUI_Editor(){
 
 void GUI_Editor::addUserToEditorGUI(long userid){
     //controllo che per qualche ragione l'user non sia il CLIENT stesso che sta usando l'intefrfaccia
-    if(userid == gimpParent->userid){
+    /*if(userid == gimpParent->userid){
         //TODO: gestione intelligente
         return;
-    }
+    }*/
 
     //ottengo un colore per cursore e icona
     QColor *color;

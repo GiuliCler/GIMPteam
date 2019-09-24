@@ -47,6 +47,7 @@ QLabel *GUI_UsersBar::getUserIcon(long userId, QColor color){
 
     label->setPixmap(*background);
     label->setScaledContents(true);
+    label->setProperty("background-color", "#e1e1e1");
     label->setMaximumSize(GUI_Icons::iconSize,GUI_Icons::iconSize);
     label->setMinimumSize(GUI_Icons::iconSize,GUI_Icons::iconSize);
     label->setToolTip(Stub::getNickname(userId));
@@ -55,8 +56,8 @@ QLabel *GUI_UsersBar::getUserIcon(long userId, QColor color){
 }
 
 void GUI_UsersBar::addOnlineUserIcon(long userId, QColor color){
-    if(this->onlineUsersIconMap.find(userId) != onlineUsersIconMap.end())
-        return;
+    /*if(this->onlineUsersIconMap.find(userId) != onlineUsersIconMap.end())
+        return;*/
 
     QLabel *iconLabel = getUserIcon(userId, color);
     onlineUsersIconMap.insert(userId, iconLabel);
