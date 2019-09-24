@@ -7,8 +7,6 @@
 #include <QPushButton>
 #include <QScrollBar>
 
-
-
 GUI_UsersBar::GUI_UsersBar(QWidget *parent) : QWidget(parent){
     this->setObjectName(GUI_UsersBar::getObjectName());
     editorParent = static_cast<GUI_Editor*>(parent);

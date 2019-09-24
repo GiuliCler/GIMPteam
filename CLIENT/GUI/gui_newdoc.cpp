@@ -11,6 +11,9 @@ GUI_Newdoc::GUI_Newdoc(QWidget *parent) : QWidget(parent)
     gimpParent = static_cast<GUI_Menu*>(parent)->gimpParent;
     ui = new Ui::GUI_Newdoc;
     ui->setupUi(this);
+
+    //imposto la connect per premere invio ed aprire il doc
+    connect(ui->nameLineEdit, &QLineEdit::returnPressed, this, &GUI_Newdoc::on_createPushButton_clicked);
 }
 
 GUI_Newdoc::~GUI_Newdoc(){

@@ -22,6 +22,12 @@ GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
     }
 
     loadIcons();
+
+    //faccio le connect così premendo Enter prova a salvare
+    connect(ui->nicknameLineEdit, &QLineEdit::returnPressed, this, &GUI_Profile::on_savePushButton_clicked);
+    connect(ui->usernameLineEdit, &QLineEdit::returnPressed, this, &GUI_Profile::on_savePushButton_clicked);
+    connect(ui->passwordLineEdit, &QLineEdit::returnPressed, this, &GUI_Profile::on_savePushButton_clicked);
+    connect(ui->repeatLineEdit, &QLineEdit::returnPressed, this, &GUI_Profile::on_savePushButton_clicked);
 }
 
 GUI_Profile::~GUI_Profile(){

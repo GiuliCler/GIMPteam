@@ -36,10 +36,11 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
         addContributorToCurrentDocument(*userId);
     }
 
+    /*
     //debug purpose only
     timer = new QTimer(this);
     timer->start(3000);
-    connect(timer, SIGNAL(timeout()), this, SLOT(timerSlot()));
+    connect(timer, SIGNAL(timeout()), this, SLOT(timerSlot()));*/
 }
 
 GUI_Editor::~GUI_Editor(){

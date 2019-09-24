@@ -12,6 +12,10 @@ GUI_Opendoc::GUI_Opendoc(QWidget *parent) : QWidget(parent)
     ui->setupUi(this);
 
     fillList();
+
+    //imposto la connect per premere invio ed aprire il doc
+    connect(ui->URILineEdit, &QLineEdit::returnPressed, this, &GUI_Opendoc::on_openURIPushButton_clicked);
+    connect(ui->docsListWidget, &QListWidget::doubleClicked, this, &GUI_Opendoc::on_openDocsPushButton_clicked);
 }
 
 GUI_Opendoc::~GUI_Opendoc(){
