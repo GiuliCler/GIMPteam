@@ -27,9 +27,12 @@ public:
     static long openWithURI(QString uri);
     static long openWithName(QString name);
     static std::shared_ptr<QVector<QString>> getDocuments(long userId);
+    static void closeDocument(long userId, long docId);
 
     //ritorna un set cogli userId
     static std::shared_ptr<QSet<long>> getWorkingUsersOnDocument(long docId);
+    //ritorna tutti gli id degli users che hanno conrtibuito al document. Viene chiamata appena aperto il doc, mentre per l'update metto a disposizione altre funzioni
+    static std::shared_ptr<QSet<long>> getContributorsUsersOnDocument(long docId);
 };
 
 #endif // STUB_H

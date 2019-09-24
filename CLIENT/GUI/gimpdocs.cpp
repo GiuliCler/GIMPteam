@@ -1,5 +1,7 @@
 #include "gimpdocs.h"
 #include "gui_login.h"
+#include "gui_menu.h"
+#include "editorWindow/gui_editor.h"
 
 #include <iostream>
 
@@ -24,4 +26,17 @@ void GIMPdocs::setUi1(QWidget *widget){
 void GIMPdocs::setUi2(QWidget *widget){
     ui2->setupUi(this);
     this->setCentralWidget(widget);
+
+
+    connect(ui2->closeDocumentAction, SIGNAL(triggered()), this, SLOT(launchSetUi2()));
 }
+
+void GIMPdocs::launchSetUi2(){
+
+    long docId = this->findChild<GUI_Editor*>(GUI_Editor::getObjectName())->documentId;
+    Stub::closeDocument(this->userid, docId);
+
+    GUI_Menu *widget = new GUI_Menu(this);
+    this->setUi1(widget);
+}
+

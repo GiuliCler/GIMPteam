@@ -1,13 +1,14 @@
 #include "gui_newdoc.h"
 #include "gui_menu.h"
-#include "gimpdocs.h"
-#include "gui_editor.h"
+#include "editorWindow/gui_editor.h"
 
 #include "ui_gui_editorwindow.h"
 #include <QMessageBox>
 
-GUI_Newdoc::GUI_Newdoc(QWidget *parent) : QWidget(parent), gimpParent(parent)
+GUI_Newdoc::GUI_Newdoc(QWidget *parent) : QWidget(parent)
 {
+    this->setObjectName(GUI_Newdoc::getObjectName());
+    gimpParent = static_cast<GUI_Menu*>(parent)->gimpParent;
     ui = new Ui::GUI_Newdoc;
     ui->setupUi(this);
 }
@@ -23,13 +24,13 @@ void GUI_Newdoc::on_createPushButton_clicked()
         return;
     }
 
-    long id = Stub::createDocument(static_cast<GIMPdocs*>(this->gimpParent)->userid, ui->nameLineEdit->text());
+    long id = Stub::createDocument(static_cast<GIMPdocs*>(gimpParent)->userid, ui->nameLineEdit->text());
     if(id < 0){
         QMessageBox::information(this, "", "Generic error creating document");
         //TODO gestire più dettagliatamente
         return;
     }
 
-    GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(this->gimpParent), id);
-    static_cast<GIMPdocs*>(this->gimpParent)->setUi2(widget);
+    GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), id);
+    static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
 }

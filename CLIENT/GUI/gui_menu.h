@@ -3,13 +3,18 @@
 
 #include <QWidget>
 #include "ui_gui_menu.h"
+#include "gimpdocs.h"
 
 class GUI_Menu : public QWidget
 {
     Q_OBJECT
 public:
+    GIMPdocs *gimpParent;
+
     explicit GUI_Menu(QWidget *parent);
     ~GUI_Menu();
+    inline static QString getObjectName(){ return "GUI_Menu";}
+
 private slots:
     void on_editPushButton_clicked();
     void on_logoutPushButton_clicked();

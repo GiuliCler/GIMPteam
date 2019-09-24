@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QDebug>
+#include <QRandomGenerator>
 #include "stub.h"
 #include "gui_icons.h"
 #include "ui_gimpdocs.h"
@@ -25,6 +26,10 @@ public:
     //servono a cambiare l'ui attiva. Widget è il central widget da caricare
     void setUi1(QWidget *widget);
     void setUi2(QWidget *widget);
+
+private slots:
+    //serve per l'azione close document che ha bisogno di uno slot
+    void launchSetUi2();
 
 private:
     Ui::GIMPdocs *ui1;

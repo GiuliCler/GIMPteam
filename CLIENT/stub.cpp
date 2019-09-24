@@ -27,10 +27,7 @@ QString Stub::getNickname(long userid){
     if(userid < 0)
         return "";
 
-    if(userid == 1)
-        return "Mew";
-
-    return "Boh";
+    return "Mew";
 }
 
 QString Stub::getUsername(long userid){
@@ -92,6 +89,13 @@ long Stub::openWithName(QString name){
     return 1;
 }
 
+void Stub::closeDocument(long userId, long docId){
+    userId = docId;
+    docId = userId;
+
+    //I don't know. Do something
+}
+
 std::shared_ptr<QVector<QString>> Stub::getDocuments(long userId){
     long n = userId;
     userId = n;
@@ -110,7 +114,17 @@ std::shared_ptr<QSet<long>> Stub::getWorkingUsersOnDocument(long docId){
     long n = docId;
     docId = n;
     std::shared_ptr<QSet<long>> vpointer(new QSet<long>());
-    for(int i = 0; i < 15; i++)
+    for(int i = 0; i < 5; i++)
+        vpointer->insert(i);
+
+    return vpointer;
+}
+
+std::shared_ptr<QSet<long>> Stub::getContributorsUsersOnDocument(long docId){
+    long n = docId;
+    docId = n;
+    std::shared_ptr<QSet<long>> vpointer(new QSet<long>());
+    for(int i = 3; i < 6; i++)
         vpointer->insert(i);
 
     return vpointer;

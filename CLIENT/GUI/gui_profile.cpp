@@ -1,18 +1,18 @@
 #include "gui_profile.h"
 #include "gui_menu.h"
-#include "gimpdocs.h"
-#include "ui_gui_login.h"
 #include "gui_login.h"
 
 #include <QMessageBox>
 #include <QIcon>
-#include <QDebug>
 
 GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
 {
+    this->setObjectName(GUI_Profile::getObjectName());
+    //needs to be controlled before
+    gimpParent = static_cast<GIMPdocs*>(parent);
     ui = new Ui::GUI_Profile;
     ui->setupUi(this);
-    if(static_cast<GIMPdocs*>(this->parent())->userid > -1){
+    if(gimpParent->userid > -1){
         ui->backPushButton->hide();
         ui->usernameLineEdit->hide();
         fillForm();
@@ -36,7 +36,7 @@ void GUI_Profile::on_savePushButton_clicked()
         return;
     }
     //in caso di modifica questo non ha bisogno di essere controllato perchè è read only
-    if(static_cast<GIMPdocs*>(this->parent())->userid < 0 && ui->usernameLineEdit->text().isEmpty()){
+    if(gimpParent->userid < 0 && ui->usernameLineEdit->text().isEmpty()){
         QMessageBox::information(this, "", "\"Username\" field is empty");
         return;
     }
@@ -54,11 +54,11 @@ void GUI_Profile::on_savePushButton_clicked()
     }
 
     //creo un nuovo utente o aggirno quello vecchio
-    if(static_cast<GIMPdocs*>(this->parent())->userid < 0){
+    if(gimpParent->userid < 0){
         //creo un nuovo user
         long n = Stub::createUser(ui->usernameLineEdit->text(), ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), 1);
         if(n > -1)
-            static_cast<GIMPdocs*>(this->parent())->userid = n;
+            gimpParent->userid = n;
         else{
             //TODO I don't know. Do something
             QMessageBox::information(this, "", "Generic error");
@@ -68,7 +68,7 @@ void GUI_Profile::on_savePushButton_clicked()
     }
     else{
         //faccio l'update del vecchio user
-        int code = Stub::updateUser(static_cast<GIMPdocs*>(this->parent())->userid, ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), 1);
+        int code = Stub::updateUser(gimpParent->userid, ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), 1);
         if(code != 0){
             QMessageBox::information(this, "", "Generic error");
             return;
@@ -76,24 +76,24 @@ void GUI_Profile::on_savePushButton_clicked()
 
     }
 
-    GUI_Menu *widget = new GUI_Menu(static_cast<QWidget*>(this->parent()));
-    static_cast<GIMPdocs*>(this->parent())->setCentralWidget(widget);
+    GUI_Menu *widget = new GUI_Menu(gimpParent);
+    gimpParent->setCentralWidget(widget);
 }
 
 void GUI_Profile::on_backPushButton_clicked()
 {
-    GUI_Login *widget = new GUI_Login(static_cast<QWidget*>(this->parent()));
-    static_cast<GIMPdocs*>(this->parent())->setCentralWidget(widget);
+    GUI_Login *widget = new GUI_Login(gimpParent);
+    gimpParent->setCentralWidget(widget);
 }
 
 void GUI_Profile::fillForm(){
-    if(static_cast<GIMPdocs*>(this->parent())->userid < 0)
+    if(gimpParent->userid < 0)
         return;
 
-    ui->nicknameLineEdit->setText(Stub::getNickname(static_cast<GIMPdocs*>(this->parent())->userid));
-    ui->usernameLabelReadonly->setText(Stub::getUsername(static_cast<GIMPdocs*>(this->parent())->userid));
-    ui->passwordLineEdit->setText(Stub::getPassword(static_cast<GIMPdocs*>(this->parent())->userid));
-    ui->repeatLineEdit->setText(Stub::getPassword(static_cast<GIMPdocs*>(this->parent())->userid));
+    ui->nicknameLineEdit->setText(Stub::getNickname(gimpParent->userid));
+    ui->usernameLabelReadonly->setText(Stub::getUsername(gimpParent->userid));
+    ui->passwordLineEdit->setText(Stub::getPassword(gimpParent->userid));
+    ui->repeatLineEdit->setText(Stub::getPassword(gimpParent->userid));
 }
 
 void GUI_Profile::loadIcons(){
