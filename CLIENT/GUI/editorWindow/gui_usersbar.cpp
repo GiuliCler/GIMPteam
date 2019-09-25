@@ -25,6 +25,7 @@ GUI_UsersBar::GUI_UsersBar(QWidget *parent) : QWidget(parent){
     GUI_MyScrollArea *contributorIconsScrollArea = new GUI_MyScrollArea(this);
     contributorIconsScrollArea->setObjectName(getContributorsAreaName());
     static_cast<QVBoxLayout*>(ui->contributorUsersWidget->layout())->insertWidget(2, contributorIconsScrollArea);
+
 }
 
 GUI_UsersBar::~GUI_UsersBar(){

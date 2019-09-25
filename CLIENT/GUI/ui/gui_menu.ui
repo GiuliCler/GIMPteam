@@ -115,9 +115,6 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <property name="accessibleName">
-          <string/>
-         </property>
          <property name="autoFillBackground">
           <bool>true</bool>
          </property>
@@ -137,6 +134,14 @@
          </property>
          <attribute name="title">
           <string>Open document</string>
+         </attribute>
+        </widget>
+        <widget class="QWidget" name="forgetdocTab">
+         <property name="autoFillBackground">
+          <bool>true</bool>
+         </property>
+         <attribute name="title">
+          <string>Forget document</string>
          </attribute>
         </widget>
        </widget>

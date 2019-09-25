@@ -96,6 +96,15 @@ void Stub::closeDocument(long userId, long docId){
     //I don't know. Do something
 }
 
+int Stub::forgetDocumentWithName(long userId, QString docname){
+    int docId = userId;;
+    userId = docId;
+    QString pippo = docname;
+
+    //I don't know. Do something
+    return 0;
+}
+
 std::shared_ptr<QVector<QString>> Stub::getDocuments(long userId){
     long n = userId;
     userId = n;

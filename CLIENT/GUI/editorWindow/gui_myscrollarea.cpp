@@ -27,7 +27,7 @@ GUI_MyScrollArea::GUI_MyScrollArea(QWidget *parent) : QScrollArea(parent){
     //content style
     content->layout()->setSpacing(0);
     //questo serve perchè per qualche strana ragione, quando piazzo la user bar dentro il QTabWidget mi cambia il colore del background del content widget da solo e mette lo stesso che si usa di solito di default per l'attributo "window" nelle palette, e non solo lì
-    content->setStyleSheet("background-color: rgb(220,220,220);");
+    content->setStyleSheet("background-color: rgb(180,180,180);");
 }
 
 void GUI_MyScrollArea::updateSize(int numberOfUsers){

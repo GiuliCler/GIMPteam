@@ -31,6 +31,7 @@ SOURCES += \
         GUI/gimpdocs.cpp \
         GUI/editorWindow/gui_coloredcursor.cpp \
         GUI/editorWindow/gui_editor.cpp \
+        GUI/gui_forgetdoc.cpp \
         GUI/gui_icons.cpp \
         GUI/gui_login.cpp \
         GUI/gui_menu.cpp \
@@ -48,6 +49,7 @@ HEADERS += \
         GUI/gimpdocs.h \
         GUI/editorWindow/gui_coloredcursor.h \
         GUI/editorWindow/gui_editor.h \
+        GUI/gui_forgetdoc.h \
         GUI/gui_icons.h \
         GUI/gui_login.h \
         GUI/gui_menu.h \
@@ -62,6 +64,7 @@ FORMS += \
     GUI/ui/gimpdocs.ui \
     GUI/editorWindow/ui/gui_editor.ui \
     GUI/editorWindow/ui/gui_editorwindow.ui \
+    GUI/ui/gui_forgetdoc.ui \
         GUI/ui/gui_login.ui \
         GUI/ui/gui_menu.ui \
     GUI/ui/gui_newdoc.ui \

@@ -4,6 +4,7 @@ debug/gui_usersbar.o
 debug/gimpdocs.o
 debug/gui_coloredcursor.o
 debug/gui_editor.o
+debug/gui_forgetdoc.o
 debug/gui_icons.o
 debug/gui_login.o
 debug/gui_menu.o
@@ -20,6 +21,7 @@ debug/moc_gui_usersbar.o
 debug/moc_gimpdocs.o
 debug/moc_gui_coloredcursor.o
 debug/moc_gui_editor.o
+debug/moc_gui_forgetdoc.o
 debug/moc_gui_login.o
 debug/moc_gui_menu.o
 debug/moc_gui_mytextedit.o

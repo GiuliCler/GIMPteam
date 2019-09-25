@@ -37,6 +37,9 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="autoFillBackground">
+      <bool>true</bool>
+     </property>
      <property name="styleSheet">
       <string notr="true">QTabWidget#tabWidget{
 border-color: rgb(220, 220, 0);
@@ -85,9 +88,9 @@ border-color: rgb(220, 220, 0);
             <colorrole role="Window">
              <brush brushstyle="SolidPattern">
               <color alpha="255">
-               <red>220</red>
-               <green>220</green>
-               <blue>220</blue>
+               <red>180</red>
+               <green>180</green>
+               <blue>180</blue>
               </color>
              </brush>
             </colorrole>
@@ -105,9 +108,9 @@ border-color: rgb(220, 220, 0);
             <colorrole role="Window">
              <brush brushstyle="SolidPattern">
               <color alpha="255">
-               <red>220</red>
-               <green>220</green>
-               <blue>220</blue>
+               <red>180</red>
+               <green>180</green>
+               <blue>180</blue>
               </color>
              </brush>
             </colorrole>
@@ -116,18 +119,18 @@ border-color: rgb(220, 220, 0);
             <colorrole role="Base">
              <brush brushstyle="SolidPattern">
               <color alpha="255">
-               <red>220</red>
-               <green>220</green>
-               <blue>220</blue>
+               <red>180</red>
+               <green>180</green>
+               <blue>180</blue>
               </color>
              </brush>
             </colorrole>
             <colorrole role="Window">
              <brush brushstyle="SolidPattern">
               <color alpha="255">
-               <red>220</red>
-               <green>220</green>
-               <blue>220</blue>
+               <red>180</red>
+               <green>180</green>
+               <blue>180</blue>
               </color>
              </brush>
             </colorrole>

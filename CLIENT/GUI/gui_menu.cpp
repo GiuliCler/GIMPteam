@@ -3,6 +3,7 @@
 #include "gui_profile.h"
 #include "gui_newdoc.h"
 #include "gui_opendoc.h"
+#include "gui_forgetdoc.h"
 
 #include <QPixmap>
 
@@ -29,13 +30,16 @@ void GUI_Menu::setProfileArea(){
 }
 
 void GUI_Menu::setDocumentArea(){
-    //setto un layout ai due tab ed aggiungo ai layout i 2 widget
+    //setto un layout ai tab ed aggiungo ai layout i widget
     ui->newdocTab->setLayout(new QGridLayout());
-    //purtroppo settargli il parent è inutile perchè nel momento in cui faccio addWidget gli viene modificato il parent
+    //so che il parent verrà modificato nel momento in cui lo aggiungo al layout, ma viene salvato come GimpParent
     ui->newdocTab->layout()->addWidget(new GUI_Newdoc(this));
 
     ui->opendocTab->setLayout(new QGridLayout());
     ui->opendocTab->layout()->addWidget(new GUI_Opendoc(this));
+
+    ui->forgetdocTab->setLayout(new QGridLayout());
+    ui->forgetdocTab->layout()->addWidget(new GUI_Forgetdoc(this));
 }
 
 void GUI_Menu::on_editPushButton_clicked()
