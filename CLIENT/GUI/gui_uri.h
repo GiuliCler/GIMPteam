@@ -12,6 +12,9 @@ public:
     explicit GUI_URI(QWidget *parent, QString uri);
     ~GUI_URI();
 
+private slots:
+    void on_copyPushButton_clicked();
+
 private:
     Ui::GUI_URI *ui;
 };

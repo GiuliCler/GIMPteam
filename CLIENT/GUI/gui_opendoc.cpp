@@ -2,6 +2,7 @@
 #include "gimpdocs.h"
 #include "editorWindow/gui_editor.h"
 #include "gui_menu.h"
+#include "gui_uri.h"
 #include <QMessageBox>
 
 GUI_Opendoc::GUI_Opendoc(QWidget *parent) : QWidget(parent)
@@ -22,6 +23,14 @@ GUI_Opendoc::~GUI_Opendoc(){
     delete ui;
 }
 
+void GUI_Opendoc::fillList(){
+    std::shared_ptr<QVector<QString>> vp = Stub::getDocuments(static_cast<GIMPdocs*>(gimpParent)->userid);
+
+    for(QString *s = vp->begin(); s != vp->end(); s++){
+        ui->docsListWidget->addItem(*s);
+    }
+}
+
 void GUI_Opendoc::on_openDocsPushButton_clicked()
 {
     if(ui->docsListWidget->currentItem() == nullptr){
@@ -38,6 +47,16 @@ void GUI_Opendoc::on_openDocsPushButton_clicked()
 
     GUI_Editor *widget = new GUI_Editor(gimpParent, id);
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
+}
+
+void GUI_Opendoc::on_getURIPushButton_clicked(){
+    if(ui->docsListWidget->currentItem() == nullptr){
+        QMessageBox::information(this, "", "Please, select a document");
+        return;
+    }
+
+    GUI_URI *box = new GUI_URI(this, Stub::getDocumentURI(Stub::getDocumentId(ui->docsListWidget->currentItem()->text())));
+    box->setVisible(true);
 }
 
 void GUI_Opendoc::on_openURIPushButton_clicked()
@@ -59,14 +78,4 @@ void GUI_Opendoc::on_openURIPushButton_clicked()
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
 }
 
-void GUI_Opendoc::fillList(){
-    std::shared_ptr<QVector<QString>> vp = Stub::getDocuments(static_cast<GIMPdocs*>(gimpParent)->userid);
 
-    for(QString *s = vp->begin(); s != vp->end(); s++){
-        ui->docsListWidget->addItem(*s);
-    }
-}
-
-void GUI_Opendoc::displayURI(long docId){
-    //TODO
-}

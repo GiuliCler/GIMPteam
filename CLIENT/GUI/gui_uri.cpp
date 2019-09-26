@@ -1,4 +1,5 @@
 #include "gui_uri.h"
+#include <QClipboard>
 
 GUI_URI::GUI_URI(QWidget *parent, QString uri) : QDialog(parent){
     ui = new Ui::GUI_URI;
@@ -15,4 +16,9 @@ GUI_URI::GUI_URI(QWidget *parent, QString uri) : QDialog(parent){
 
 GUI_URI::~GUI_URI(){
     delete ui;
+}
+
+void GUI_URI::on_copyPushButton_clicked(){
+    QClipboard *clip = QApplication::clipboard();
+    clip->setText(ui->URILabel->text());
 }

@@ -55,20 +55,6 @@ void GUI_Editor::connectMenuBarActions(){
     connect(gimpParent->ui2->getURIAction, &QAction::triggered, [this](){
         GUI_URI *box = new GUI_URI(this, Stub::getDocumentURI(documentId));
         box->setVisible(true);
-
-        /*QDialog *box = new QDialog(this);
-
-        box->setLayout(new QVBoxLayout(box));
-        box->setVisible(true);*/
-        /*QMessageBox *mess = new QMessageBox(this);
-        mess->setWindowTitle("Document URI");
-        mess->setIcon(QMessageBox::Icon::NoIcon);
-        QPushButton *copy = new QPushButton(mess);
-        copy->setText("Copy URI");
-        mess->layout()->addWidget(new QPushButton(mess));
-        mess->setheight
-        mess->setText("Share this URI:\n" + Stub::getDocumentURI(documentId));
-        mess->show();*/
     });
 }
 

@@ -31,6 +31,7 @@ public:
     //volendo può ritornare un codice d'errore
     static int forgetDocumentWithName(long userId, QString docname);
     static QString getDocumentURI(long docId);
+    static long getDocumentId(QString name);
 
     //ritorna un set cogli userId
     static std::shared_ptr<QSet<long>> getWorkingUsersOnDocument(long docId);

@@ -14,12 +14,12 @@ public:
     ~GUI_Opendoc();
     static QString getObjectName() {return QString("GUI_Opendoc");}
 
-public slots:
-    void displayURI(long docId);
-
 private slots:
     void on_openDocsPushButton_clicked();
     void on_openURIPushButton_clicked();
+
+
+    void on_getURIPushButton_clicked();
 
 private:
     Ui::GUI_Opendoc *ui;

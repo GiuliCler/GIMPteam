@@ -112,6 +112,11 @@ QString Stub::getDocumentURI(long docId){
     return "httpippo";
 }
 
+long Stub::getDocumentId(QString name){
+    QString pippo = name;
+     return 1;
+}
+
 std::shared_ptr<QVector<QString>> Stub::getDocuments(long userId){
     long n = userId;
     userId = n;
