@@ -27,6 +27,8 @@ void GIMPdocs::setUi1(QWidget *widget){
 
 }
 
+/*******Qui sotto in pratica gestisco la menù bar dell'editor*************/
+
 void GIMPdocs::setUi2(QWidget *widget){
 
     ui2->setupUi(this);
@@ -34,10 +36,10 @@ void GIMPdocs::setUi2(QWidget *widget){
     //è importante che showMaximized venga lanciato dopo il cambio di ui perchè sì, atrimenti fa casini
     showMaximized();
 
-    connect(ui2->closeDocumentAction, SIGNAL(triggered()), this, SLOT(launchSetUi2()));
+    static_cast<GUI_Editor*>(widget)->connectMenuBarActions();
 }
 
-void GIMPdocs::launchSetUi2(){
+void GIMPdocs::launchSetUi1(){
     long docId = this->findChild<GUI_Editor*>(GUI_Editor::getObjectName())->documentId;
     Stub::closeDocument(this->userid, docId);
 

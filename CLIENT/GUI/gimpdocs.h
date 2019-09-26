@@ -19,6 +19,9 @@ class GIMPdocs : public QMainWindow
 
 public:
     long userid;
+    //mi servono public per fare delle connect
+    Ui::GIMPdocs *ui1;
+    Ui::GUI_EditWindow *ui2;
 
     explicit GIMPdocs(QWidget *parent = nullptr);
     ~GIMPdocs();
@@ -29,11 +32,8 @@ public:
 
 private slots:
     //serve per l'azione close document che ha bisogno di uno slot
-    void launchSetUi2();
+    void launchSetUi1();
 
-private:
-    Ui::GIMPdocs *ui1;
-    Ui::GUI_EditWindow *ui2;
 };
 
 #endif // GIMPDOCS_H

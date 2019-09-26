@@ -105,6 +105,13 @@ int Stub::forgetDocumentWithName(long userId, QString docname){
     return 0;
 }
 
+QString Stub::getDocumentURI(long docId){
+    long n = docId;
+    docId= n;
+
+    return "httpippo";
+}
+
 std::shared_ptr<QVector<QString>> Stub::getDocuments(long userId){
     long n = userId;
     userId = n;

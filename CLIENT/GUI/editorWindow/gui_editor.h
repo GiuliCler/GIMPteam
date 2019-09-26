@@ -30,6 +30,10 @@ public:
     void addContributorToCurrentDocument(long userid);
     void removeContributorFromCurrentDocument(long userid);
 
+    //mi serve perchè non posso fare le connect direttamente nel costruttore. Quando sono nel costruttore, la ui2 non è ancora stata caricata quindi la connect va fatta in un secondo momento
+    void connectMenuBarActions();
+    void launchSetUi1();
+
 private slots:
     //debug
     void timerSlot();

@@ -3,11 +3,14 @@
 #include "../gui_menu.h"
 #include "gui_mytextedit.h"
 #include "gui_usersbar.h"
+#include "../gui_uri.h"
 #include <memory>
 #include <QBitmap>
 #include <QPainter>
 #include <QTime>
+#include <QMessageBox>
 #include <QTabBar>
+
 
 GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), documentId(documentId)
 {
@@ -45,6 +48,35 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
 
 GUI_Editor::~GUI_Editor(){
     delete ui;
+}
+
+void GUI_Editor::connectMenuBarActions(){
+    connect(this->gimpParent->ui2->closeDocumentAction, &QAction::triggered, this, &GUI_Editor::launchSetUi1);
+    connect(gimpParent->ui2->getURIAction, &QAction::triggered, [this](){
+        GUI_URI *box = new GUI_URI(this, Stub::getDocumentURI(documentId));
+        box->setVisible(true);
+
+        /*QDialog *box = new QDialog(this);
+
+        box->setLayout(new QVBoxLayout(box));
+        box->setVisible(true);*/
+        /*QMessageBox *mess = new QMessageBox(this);
+        mess->setWindowTitle("Document URI");
+        mess->setIcon(QMessageBox::Icon::NoIcon);
+        QPushButton *copy = new QPushButton(mess);
+        copy->setText("Copy URI");
+        mess->layout()->addWidget(new QPushButton(mess));
+        mess->setheight
+        mess->setText("Share this URI:\n" + Stub::getDocumentURI(documentId));
+        mess->show();*/
+    });
+}
+
+void GUI_Editor::launchSetUi1(){
+    Stub::closeDocument(this->gimpParent->userid, documentId);
+
+    GUI_Menu *widget = new GUI_Menu(this->gimpParent);
+    static_cast<GIMPdocs*>(this->gimpParent)->setUi1(widget);
 }
 
 void GUI_Editor::addUserToEditorGUI(long userid){

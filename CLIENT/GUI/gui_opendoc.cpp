@@ -66,3 +66,7 @@ void GUI_Opendoc::fillList(){
         ui->docsListWidget->addItem(*s);
     }
 }
+
+void GUI_Opendoc::displayURI(long docId){
+    //TODO
+}

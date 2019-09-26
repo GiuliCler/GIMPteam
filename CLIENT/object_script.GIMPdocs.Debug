@@ -12,6 +12,7 @@ debug/gui_mytextedit.o
 debug/gui_newdoc.o
 debug/gui_opendoc.o
 debug/gui_profile.o
+debug/gui_uri.o
 debug/main.o
 debug/stub.o
 debug/qrc_images.o
@@ -28,4 +29,5 @@ debug/moc_gui_mytextedit.o
 debug/moc_gui_newdoc.o
 debug/moc_gui_opendoc.o
 debug/moc_gui_profile.o
+debug/moc_gui_uri.o
 debug/moc_stub.o
