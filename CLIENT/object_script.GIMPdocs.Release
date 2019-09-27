@@ -1,5 +1,6 @@
 release/gui_colorsmanager.o
 release/gui_myscrollarea.o
+release/gui_toolsbar.o
 release/gui_usersbar.o
 release/gimpdocs.o
 release/gui_coloredcursor.o
@@ -18,6 +19,7 @@ release/stub.o
 release/qrc_images.o
 release/moc_gui_colorsmanager.o
 release/moc_gui_myscrollarea.o
+release/moc_gui_toolsbar.o
 release/moc_gui_usersbar.o
 release/moc_gimpdocs.o
 release/moc_gui_coloredcursor.o

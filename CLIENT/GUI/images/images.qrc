@@ -8,4 +8,23 @@
         <file>Diancie.png</file>
         <file>Marshadow.png</file>
     </qresource>
+    <qresource prefix="/editor">
+        <file>text_editor/Bold.svg</file>
+        <file>text_editor/Apex.svg</file>
+        <file>text_editor/CentralAlign.svg</file>
+        <file>text_editor/Copy.svg</file>
+        <file>text_editor/Cut.svg</file>
+        <file>text_editor/Font.svg</file>
+        <file>text_editor/FontSize.svg</file>
+        <file>text_editor/Italic.svg</file>
+        <file>text_editor/JustifiedAlign.svg</file>
+        <file>text_editor/LeftAlign.svg</file>
+        <file>text_editor/Paste.svg</file>
+        <file>text_editor/Redo.svg</file>
+        <file>text_editor/RightAlign.svg</file>
+        <file>text_editor/StrikeThrough.svg</file>
+        <file>text_editor/Underlined.svg</file>
+        <file>text_editor/Undo.svg</file>
+        <file>text_editor/TextColor.svg</file>
+    </qresource>
 </RCC>

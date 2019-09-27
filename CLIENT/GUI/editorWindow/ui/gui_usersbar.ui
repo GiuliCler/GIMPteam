@@ -206,6 +206,13 @@
      <property name="rightMargin">
       <number>0</number>
      </property>
+     <item row="1" column="0">
+      <widget class="QPushButton" name="pushButton_3">
+       <property name="text">
+        <string>Add contributor</string>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QPushButton" name="pushButton">
        <property name="text">
@@ -217,13 +224,6 @@
       <widget class="QPushButton" name="pushButton_2">
        <property name="text">
         <string>Remove User</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QPushButton" name="pushButton_3">
-       <property name="text">
-        <string>Add contributor</string>
        </property>
       </widget>
      </item>
