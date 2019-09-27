@@ -5,7 +5,7 @@
 #include <QPaintEvent>
 #include <QPoint>
 
-class GUI_ColoredCursor : public QWidget
+class GUI_ColoredCursor : public QObject
 {
     Q_OBJECT
 public:

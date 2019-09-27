@@ -4,7 +4,7 @@
 #include <QTextEdit>
 #include <QPainter>
 
-GUI_ColoredCursor::GUI_ColoredCursor(QWidget *parent, QPoint position, QColor color) : QWidget(parent){
+GUI_ColoredCursor::GUI_ColoredCursor(QWidget *parent, QPoint position, QColor color) : QObject(parent){
     cursorPosition = position;
     cursorColor = color;
 }

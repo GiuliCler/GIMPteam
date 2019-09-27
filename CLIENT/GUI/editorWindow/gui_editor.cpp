@@ -66,11 +66,6 @@ void GUI_Editor::launchSetUi1(){
 }
 
 void GUI_Editor::addUserToEditorGUI(long userid){
-    //controllo che per qualche ragione l'user non sia il CLIENT stesso che sta usando l'intefrfaccia
-    /*if(userid == gimpParent->userid){
-        //TODO: gestione intelligente
-        return;
-    }*/
 
     //ottengo un colore per cursore e icona
     QColor *color;
