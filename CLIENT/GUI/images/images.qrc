@@ -26,5 +26,6 @@
         <file>text_editor/Underlined.svg</file>
         <file>text_editor/Undo.svg</file>
         <file>text_editor/TextColor.svg</file>
+        <file>text_editor/ShowColors.png</file>
     </qresource>
 </RCC>

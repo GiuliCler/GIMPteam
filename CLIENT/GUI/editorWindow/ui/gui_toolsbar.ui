@@ -6,72 +6,78 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>362</width>
-    <height>23</height>
+    <width>761</width>
+    <height>57</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
    <item>
-    <widget class="QPushButton" name="pushButton">
+    <widget class="QPushButton" name="pushButton_12">
      <property name="text">
       <string/>
      </property>
      <property name="icon">
       <iconset resource="../../images/images.qrc">
-       <normaloff>:/editor/text_editor/Italic.svg</normaloff>:/editor/text_editor/Italic.svg</iconset>
+       <normaloff>:/editor/text_editor/Undo.svg</normaloff>:/editor/text_editor/Undo.svg</iconset>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="pushButton_2">
+    <widget class="QPushButton" name="pushButton_13">
      <property name="text">
       <string/>
      </property>
      <property name="icon">
       <iconset resource="../../images/images.qrc">
-       <normaloff>:/editor/text_editor/Bold.svg</normaloff>:/editor/text_editor/Bold.svg</iconset>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="pushButton_3">
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="../../images/images.qrc">
-       <normaloff>:/editor/text_editor/Underlined.svg</normaloff>:/editor/text_editor/Underlined.svg</iconset>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="pushButton_4">
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="../../images/images.qrc">
-       <normaloff>:/editor/text_editor/StrikeThrough.svg</normaloff>:/editor/text_editor/StrikeThrough.svg</iconset>
+       <normaloff>:/editor/text_editor/Redo.svg</normaloff>:/editor/text_editor/Redo.svg</iconset>
      </property>
     </widget>
    </item>
    <item>
     <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButton_9">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../../images/images.qrc">
+       <normaloff>:/editor/text_editor/Cut.svg</normaloff>:/editor/text_editor/Cut.svg</iconset>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButton_10">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../../images/images.qrc">
+       <normaloff>:/editor/text_editor/Copy.svg</normaloff>:/editor/text_editor/Copy.svg</iconset>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButton_11">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../../images/images.qrc">
+       <normaloff>:/editor/text_editor/Paste.svg</normaloff>:/editor/text_editor/Paste.svg</iconset>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="Line" name="line_2">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
@@ -122,11 +128,116 @@
     </widget>
    </item>
    <item>
-    <widget class="Line" name="line_2">
+    <widget class="Line" name="line_3">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
     </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButton">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../../images/images.qrc">
+       <normaloff>:/editor/text_editor/Italic.svg</normaloff>:/editor/text_editor/Italic.svg</iconset>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButton_2">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../../images/images.qrc">
+       <normaloff>:/editor/text_editor/Bold.svg</normaloff>:/editor/text_editor/Bold.svg</iconset>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButton_3">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../../images/images.qrc">
+       <normaloff>:/editor/text_editor/Underlined.svg</normaloff>:/editor/text_editor/Underlined.svg</iconset>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButton_4">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../../images/images.qrc">
+       <normaloff>:/editor/text_editor/StrikeThrough.svg</normaloff>:/editor/text_editor/StrikeThrough.svg</iconset>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="Line" name="line_4">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="fontHorizontalLayout">
+     <property name="rightMargin">
+      <number>20</number>
+     </property>
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="minimumSize">
+        <size>
+         <width>16</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="pixmap">
+        <pixmap resource="../../images/images.qrc">:/editor/text_editor/FontSize.svg</pixmap>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="spinBox"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="maximumSize">
+        <size>
+         <width>16</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="pixmap">
+        <pixmap resource="../../images/images.qrc">:/editor/text_editor/TextColor.svg</pixmap>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <spacer name="horizontalSpacer">

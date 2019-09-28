@@ -128,14 +128,34 @@
         <item>
          <widget class="QPushButton" name="showColorsPushButton">
           <property name="text">
-           <string>Show users colors</string>
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../../images/images.qrc">
+            <normaloff>:/editor/text_editor/ShowColors.png</normaloff>:/editor/text_editor/ShowColors.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="hideColorsPushButton">
           <property name="text">
-           <string>Hide users colors</string>
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../../images/images.qrc">
+            <normaloff>:/editor/text_editor/TextColor.svg</normaloff>:/editor/text_editor/TextColor.svg</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
           </property>
          </widget>
         </item>
@@ -238,6 +258,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../../images/images.qrc"/>
+ </resources>
  <connections/>
 </ui>
