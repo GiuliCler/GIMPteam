@@ -77,12 +77,14 @@ FORMS += \
         GUI/ui/gui_profile.ui \
     GUI/ui/gui_uri.ui
 
+RESOURCES += \
+    GUI/images/images.qrc
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
+win32:RC_ICONS += GUI/images/logo/gimpLogo.ico
 
-RESOURCES += \
-    GUI/images/images.qrc
 

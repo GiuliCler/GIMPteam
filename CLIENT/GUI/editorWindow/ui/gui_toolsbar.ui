@@ -15,7 +15,7 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <property name="spacing">
-    <number>11</number>
+    <number>12</number>
    </property>
    <property name="leftMargin">
     <number>0</number>
@@ -254,6 +254,9 @@
       <enum>Qt::Vertical</enum>
      </property>
     </widget>
+   </item>
+   <item>
+    <widget class="QFontComboBox" name="fontComboBox"/>
    </item>
    <item>
     <layout class="QHBoxLayout" name="fontHorizontalLayout">
