@@ -21,7 +21,8 @@ GUI_MyScrollArea::GUI_MyScrollArea(QWidget *parent) : QScrollArea(parent){
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     setFrameShape(Shape::NoFrame);
     //il 2 bilancia il margin sotto, un 17 sta al posto della scrollbar e l'altro 17 sta soprae bilancia la scrollbar per avere simmetria
-    setMaximumHeight(GUI_Icons::iconSize + (2+17) + 17);
+    setMaximumHeight(getFixedHeight());
+    //qDebug() << maximumHeight();
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     //content style

@@ -127,6 +127,9 @@
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QPushButton" name="showColorsPushButton">
+          <property name="toolTip">
+           <string>Apply users colors</string>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -144,6 +147,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="hideColorsPushButton">
+          <property name="toolTip">
+           <string>Apply text colors</string>
+          </property>
           <property name="text">
            <string/>
           </property>

@@ -37,16 +37,13 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="autoFillBackground">
-      <bool>false</bool>
-     </property>
      <property name="styleSheet">
       <string notr="true">QTabWidget#tabWidget{
 border-color: rgb(220, 220, 0);
 }</string>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -154,7 +151,7 @@ border-color: rgb(220, 220, 0);
      </widget>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
-       <string>Stuff</string>
+       <string>Tools</string>
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <property name="leftMargin">
@@ -171,7 +168,14 @@ border-color: rgb(220, 220, 0);
        </property>
        <item>
         <widget class="QWidget" name="toolsBarWidget" native="true">
-         <layout class="QHBoxLayout" name="horizontalLayout_5"/>
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+         </layout>
         </widget>
        </item>
       </layout>

@@ -12,6 +12,9 @@ public:
     explicit GUI_ToolsBar(QWidget *parent);
     ~GUI_ToolsBar();
 
+private slots:
+    void on_colorPushButton_clicked();
+
 private:
     Ui::GUI_ToolsBar *ui;
 };

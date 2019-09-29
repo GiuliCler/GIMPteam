@@ -5,6 +5,7 @@
 #include "gui_usersbar.h"
 #include "../gui_uri.h"
 #include "gui_toolsbar.h"
+#include "gui_myscrollarea.h"
 #include <memory>
 #include <QBitmap>
 #include <QPainter>
@@ -29,6 +30,10 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
     ui->usersBarWidget->layout()->addWidget(usersbar);
     GUI_ToolsBar *toolsbar = new GUI_ToolsBar(this);
     ui->toolsBarWidget->layout()->addWidget(toolsbar);
+
+    //la toolsbar è più bassa, quindi ne eguaglio la height alla height della users bar
+    toolsbar->setMinimumHeight(GUI_MyScrollArea::getFixedHeight());
+
 
     //ottengo l'elenco degli utenti che al momento stanno guardando il mio stesso document e ne creo icona e cursore
     std::shared_ptr<QSet<long>> users = Stub::getWorkingUsersOnDocument(documentId);
