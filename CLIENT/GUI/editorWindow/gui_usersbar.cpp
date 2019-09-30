@@ -26,6 +26,10 @@ GUI_UsersBar::GUI_UsersBar(QWidget *parent) : QWidget(parent){
     contributorIconsScrollArea->setObjectName(getContributorsAreaName());
     static_cast<QVBoxLayout*>(ui->contributorUsersWidget->layout())->insertWidget(2, contributorIconsScrollArea);
 
+    //connetto le signals dei pulsanti per fare alternare i pulsanti nella menù bar
+    connect(ui->showColorsPushButton, &QPushButton::clicked, this->editorParent, &GUI_Editor::on_actionApplyUsersColors);
+    connect(ui->hideColorsPushButton, &QPushButton::clicked, this->editorParent, &GUI_Editor::on_actionApplyTextColors);
+
 }
 
 GUI_UsersBar::~GUI_UsersBar(){

@@ -34,7 +34,9 @@ public:
     void connectMenuBarActions();
     void launchSetUi1();
 
-private slots:
+public slots:
+    void on_actionApplyUsersColors();
+    void on_actionApplyTextColors();
     //debug
     void timerSlot();
 
@@ -44,7 +46,7 @@ private:
     //debug
     QTimer *timer;
 
-    void setUsersBar();
+    //void setUsersBar();
 
 };
 

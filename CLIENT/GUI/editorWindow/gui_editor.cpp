@@ -64,6 +64,12 @@ void GUI_Editor::connectMenuBarActions(){
         GUI_URI *box = new GUI_URI(this, Stub::getDocumentURI(documentId));
         box->setVisible(true);
     });
+
+    //ho connesso le 2 action in modo da alternarsi l'un l'altra ed in modo da comportarsi come se avessi premuto un pulsante
+    connect(gimpParent->ui2->actionApplyUsersColors, &QAction::triggered, this, &GUI_Editor::on_actionApplyUsersColors);
+    connect(gimpParent->ui2->actionApplyUsersColors, &QAction::triggered, findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName()), &GUI_UsersBar::on_showColorsPushButton_clicked);
+    connect(gimpParent->ui2->actionApplyTextColors, &QAction::triggered, this, &GUI_Editor::on_actionApplyTextColors);
+    connect(gimpParent->ui2->actionApplyTextColors, &QAction::triggered, findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName()), &GUI_UsersBar::on_hideColorsPushButton_clicked);
 }
 
 void GUI_Editor::launchSetUi1(){
@@ -71,6 +77,16 @@ void GUI_Editor::launchSetUi1(){
 
     GUI_Menu *widget = new GUI_Menu(this->gimpParent);
     static_cast<GIMPdocs*>(this->gimpParent)->setUi1(widget);
+}
+
+void GUI_Editor::on_actionApplyUsersColors(){
+    this->gimpParent->ui2->actionApplyTextColors->setEnabled(true);
+    this->gimpParent->ui2->actionApplyUsersColors->setEnabled(false);
+}
+
+void GUI_Editor::on_actionApplyTextColors(){
+    this->gimpParent->ui2->actionApplyUsersColors->setEnabled(true);
+    this->gimpParent->ui2->actionApplyTextColors->setEnabled(false);
 }
 
 void GUI_Editor::addUserToEditorGUI(long userid){

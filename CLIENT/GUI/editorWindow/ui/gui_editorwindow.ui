@@ -49,11 +49,38 @@
     <property name="title">
      <string>Edit</string>
     </property>
-    <addaction name="actionCopy"/>
+    <widget class="QMenu" name="menuAlign">
+     <property name="title">
+      <string>Align</string>
+     </property>
+     <addaction name="actionLeft"/>
+     <addaction name="actionRight"/>
+     <addaction name="actionRight_2"/>
+     <addaction name="actionJustified"/>
+    </widget>
+    <addaction name="actionUndo"/>
+    <addaction name="actionRedo"/>
+    <addaction name="separator"/>
     <addaction name="actionCut"/>
+    <addaction name="actionCopy"/>
     <addaction name="actionPaste"/>
+    <addaction name="separator"/>
+    <addaction name="menuAlign"/>
+    <addaction name="separator"/>
+    <addaction name="actionItalic"/>
+    <addaction name="actionBold"/>
+    <addaction name="actionUnderlined"/>
+    <addaction name="actionStrikethrough"/>
+   </widget>
+   <widget class="QMenu" name="menuUsers">
+    <property name="title">
+     <string>Users</string>
+    </property>
+    <addaction name="actionApplyUsersColors"/>
+    <addaction name="actionApplyTextColors"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuUsers"/>
    <addaction name="menuEdit"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -80,6 +107,69 @@
   <action name="getURIAction">
    <property name="text">
     <string>Get URI</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="text">
+    <string>Undo</string>
+   </property>
+  </action>
+  <action name="actionRedo">
+   <property name="text">
+    <string>Redo</string>
+   </property>
+  </action>
+  <action name="actionLeft">
+   <property name="text">
+    <string>Left</string>
+   </property>
+  </action>
+  <action name="actionRight">
+   <property name="text">
+    <string>Center</string>
+   </property>
+  </action>
+  <action name="actionRight_2">
+   <property name="text">
+    <string>Right</string>
+   </property>
+  </action>
+  <action name="actionJustified">
+   <property name="text">
+    <string>Justified</string>
+   </property>
+  </action>
+  <action name="actionItalic">
+   <property name="text">
+    <string>Italic</string>
+   </property>
+  </action>
+  <action name="actionBold">
+   <property name="text">
+    <string>Bold</string>
+   </property>
+  </action>
+  <action name="actionUnderlined">
+   <property name="text">
+    <string>Underlined</string>
+   </property>
+  </action>
+  <action name="actionStrikethrough">
+   <property name="text">
+    <string>Strikethrough</string>
+   </property>
+  </action>
+  <action name="actionApplyUsersColors">
+   <property name="text">
+    <string>Apply users colors</string>
+   </property>
+  </action>
+  <action name="actionApplyTextColors">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Apply text colors</string>
    </property>
   </action>
  </widget>

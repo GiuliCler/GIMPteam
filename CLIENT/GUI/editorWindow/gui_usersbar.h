@@ -22,7 +22,7 @@ public:
     void addContributorUserIcon(long userId, QColor color);
     void removeContributorUserIcon(long userId);
 
-private slots:
+public slots:
     //questi 2 metodi non servono solo per la users bar, ma anche per attivare il comando che cambia colore al testo
     void on_showColorsPushButton_clicked();
     void on_hideColorsPushButton_clicked();
@@ -31,7 +31,6 @@ private slots:
     void on_pushButton_clicked();
     void on_pushButton_2_clicked();
     void on_pushButton_3_clicked();
-
     void on_pushButton_4_clicked();
 
 private:
