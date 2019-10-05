@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QPaintEvent>
 #include <QPoint>
+#include <QTextEdit>
 
 class GUI_ColoredCursor : public QObject
 {
@@ -14,6 +15,7 @@ public:
     void paint();
 
 private:
+    QTextEdit *textEditParent;
     QPoint cursorPosition;
     QColor cursorColor;
 

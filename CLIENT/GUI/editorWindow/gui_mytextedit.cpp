@@ -9,6 +9,7 @@ GUI_MyTextEdit::GUI_MyTextEdit(QWidget *parent) : QTextEdit(parent) {
     editorParent = static_cast<GUI_Editor*>(parent);
 
     this->setCursorWidth(2);
+    this->setFontPointSize(12);
 }
 
 void GUI_MyTextEdit::paintEvent(QPaintEvent *event)

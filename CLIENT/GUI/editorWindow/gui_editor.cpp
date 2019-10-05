@@ -12,6 +12,7 @@
 #include <QTime>
 #include <QMessageBox>
 #include <QTabBar>
+#include <QScrollBar>
 
 
 GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), documentId(documentId)
@@ -104,7 +105,9 @@ void GUI_Editor::addUserToEditorGUI(long userid){
 
     //nota: la findChild è ricorsiva e funziona anche coi nipoti
     findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->addOnlineUserIcon(userid, *color);
-    findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->addUserCursor(userid, QPoint(userid *2, 4), *color);
+    GUI_MyTextEdit *son = findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName());
+    QPoint p = QPoint (son->cursorRect().topLeft().x(), son->cursorRect().topLeft().y() + son->verticalScrollBar()->value());
+    findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->addUserCursor(userid, p, *color);
 }
 
 void GUI_Editor::removeUserFromEditorGUI(long userid){
