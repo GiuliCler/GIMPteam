@@ -17,6 +17,8 @@ private slots:
 
 private:
     Ui::GUI_ToolsBar *ui;
+
+    void setTextColorIconColor(const QColor color);
 };
 
 #endif // GUI_TOOLSBAR_H

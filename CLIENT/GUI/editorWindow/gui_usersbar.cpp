@@ -60,8 +60,6 @@ QLabel *GUI_UsersBar::getUserIcon(long userId, QColor color){
 }
 
 void GUI_UsersBar::addOnlineUserIcon(long userId, QColor color){
-    /*if(this->onlineUsersIconMap.find(userId) != onlineUsersIconMap.end())
-        return;*/
 
     QLabel *iconLabel = getUserIcon(userId, color);
     onlineUsersIconMap.insert(userId, iconLabel);
@@ -92,6 +90,10 @@ void GUI_UsersBar::removeOnlineUserIcon(long userId){
 void GUI_UsersBar::addContributorUserIcon(long userId, QColor color){
     //nota il CLIENT può essere un contributor
 
+    //questo non dovrebbe succedere, ma non si sa mai
+    if(contributorUsersIconMap.find(userId) != contributorUsersIconMap.end())
+        return;
+
     QLabel *iconLabel = getUserIcon(userId, color);
     contributorUsersIconMap.insert(userId, iconLabel);
     ui->numberContributorUsersLabel->setNum(contributorUsersIconMap.size());
@@ -117,6 +119,16 @@ void GUI_UsersBar::removeContributorUserIcon(long userId){
     if(contributorUsersIconMap.size() <= GUI_MyScrollArea::getMaxUsersIconsNumber()+1)
         this->findChild<GUI_MyScrollArea*>(getContributorsAreaName())->updateSize(contributorUsersIconMap.size());
 }
+
+bool GUI_UsersBar::isOnline(long userId){
+    return onlineUsersIconMap.find(userId) != onlineUsersIconMap.end();
+}
+
+bool GUI_UsersBar::isContributor(long userId){
+    return contributorUsersIconMap.find(userId) != contributorUsersIconMap.end();
+}
+
+/******************SLOTS**************************************/
 
 void GUI_UsersBar::on_showColorsPushButton_clicked(){
     editorParent->usersColors = true;

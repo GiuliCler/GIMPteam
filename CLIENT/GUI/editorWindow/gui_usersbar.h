@@ -22,6 +22,9 @@ public:
     void addContributorUserIcon(long userId, QColor color);
     void removeContributorUserIcon(long userId);
 
+    bool isOnline(long userId);
+    bool isContributor(long userId);
+
 public slots:
     //questi 2 metodi non servono solo per la users bar, ma anche per attivare il comando che cambia colore al testo
     void on_showColorsPushButton_clicked();

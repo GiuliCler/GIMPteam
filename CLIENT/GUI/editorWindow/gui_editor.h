@@ -41,8 +41,9 @@ public slots:
 private:
     Ui::GUI_Editor *ui;
     GUI_ColorsManager colorsManager;
-    //debug
-    //QTimer *timer;
+
+    QColor *getUserColor(long userId);
+    void forgetUserColor(long userId);
 
 };
 

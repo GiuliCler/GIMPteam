@@ -5,11 +5,7 @@ GUI_ToolsBar::GUI_ToolsBar(QWidget *parent) : QWidget(parent){
     ui = new Ui::GUI_ToolsBar();
     ui->setupUi(this);
 
-    //TODO: devo mettere 'ste istruzioni in una funzione apposta
-    QPixmap p(16,16);
-    p.fill(Stub::getCurrentTextColor());
-    const QIcon ic(p);
-    ui->colorPushButton->setIcon(ic);
+    setTextColorIconColor(Stub::getCurrentTextColor());
 }
 
 GUI_ToolsBar::~GUI_ToolsBar(){
@@ -18,10 +14,14 @@ GUI_ToolsBar::~GUI_ToolsBar(){
 
 void GUI_ToolsBar::on_colorPushButton_clicked(){
     QColor chosenColor = QColorDialog::getColor(); //return the color chosen by user
+    setTextColorIconColor(chosenColor);
+
+    Stub::setCurrentTextColor(chosenColor);
+}
+
+void GUI_ToolsBar::setTextColorIconColor(const QColor color){
     QPixmap p(16,16);
-    p.fill(chosenColor);
+    p.fill(color);
     const QIcon ic(p);
     ui->colorPushButton->setIcon(ic);
-
-    //TODO:qualche stregoneria per cambiare colore al testo
 }

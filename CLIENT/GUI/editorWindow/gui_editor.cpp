@@ -88,47 +88,53 @@ void GUI_Editor::on_actionApplyTextColors(){
 void GUI_Editor::addUserToEditorGUI(long userid){
 
     //ottengo un colore per cursore e icona
-    QColor *color;
-    //controllo che l'user non abbia già u colore assegnato, o perchè si è disconnesso e riconnesso o perchè è già presente fra i contributors
-    if(userColorMap.find(userid) == userColorMap.end() ){
-        color = colorsManager.takeColor();
-        userColorMap.insert(userid, color);
-    }
-    else{
-        color = userColorMap[userid];
-    }
+    QColor *color = getUserColor(userid);
 
     //nota: la findChild è ricorsiva e funziona anche coi nipoti
     findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->addOnlineUserIcon(userid, *color);
     GUI_MyTextEdit *son = findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName());
+
+    //TODO: per ora sto mettendo delle posizioni a caso ma più avanti dovrò mettere quelle reali
     QPoint p = QPoint (son->cursorRect().topLeft().x(), son->cursorRect().topLeft().y() + son->verticalScrollBar()->value());
     findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->addUserCursor(userid, p, *color);
 }
 
 void GUI_Editor::removeUserFromEditorGUI(long userid){
-    findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->removeOnlineUserIcon(userid);
     findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->removeUserCursor(userid);
+    findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->removeOnlineUserIcon(userid);
+    //se l'utente non è nè un contributor e non è più online ne gli tolgo il colore associato per poterlo assegnare a qualcun altro
+    if(!findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->isContributor(userid))
+        forgetUserColor(userid);
 }
 
 void GUI_Editor::addContributorToCurrentDocument(long userid){
-    //nota, il CLIENT può comparire fra i contributors
-
-    //ottengo un colore per cursore e icona
-    QColor *color;
-    //controllo che l'user non abbia già u colore assegnato, o perchè si è disconnesso e riconnesso o perchè è già presente fra i contributors
-    if(userColorMap.find(userid) == userColorMap.end() ){
-        color = colorsManager.takeColor();
-        userColorMap.insert(userid, color);
-    }
-    else{
-        color = userColorMap[userid];
-    }
-
-    //nota: la findChild è ricorsiva e funziona anche coi nipoti
+    QColor *color = getUserColor(userid);
     findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->addContributorUserIcon(userid, *color);
 }
 
 void GUI_Editor::removeContributorFromCurrentDocument(long userid){
     findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->removeContributorUserIcon(userid);
+    if(!findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->isOnline(userid))
+        forgetUserColor(userid);
 }
 
+QColor *GUI_Editor::getUserColor(long userId){
+    QColor *color;
+    //controllo che l'user non abbia già un colore assegnato, o perchè si è disconnesso e riconnesso o perchè è già presente fra i contributors
+    if(userColorMap.find(userId) == userColorMap.end() ){
+        color = colorsManager.takeColor();
+        userColorMap.insert(userId, color);
+    }
+    else
+        color = userColorMap[userId];
+
+    return color;
+}
+
+void GUI_Editor::forgetUserColor(long userId){
+    if(userColorMap.find(userId) == userColorMap.end())
+        return;
+
+    colorsManager.returnColor(userColorMap[userId]);
+    userColorMap.remove(userId);
+}
