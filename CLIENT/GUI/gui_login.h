@@ -1,10 +1,9 @@
 #ifndef GUI_LOGIN_H
 #define GUI_LOGIN_H
 
-
-#include <QWidget>
 #include "ui_gui_login.h"
 #include "gimpdocs.h"
+#include <QWidget>
 
 class GUI_Login : public QWidget
 {

@@ -1,20 +1,19 @@
 #include "gui_login.h"
 #include "gui_profile.h"
-#include "gimpdocs.h"
 #include "gui_menu.h"
 #include <QMessageBox>
 
 GUI_Login::GUI_Login(QWidget *parent) : QWidget(parent)
 {
     this->setObjectName(GUI_Login::getObjectName());
-    //devo ancora vedere come fare il controllo sul parent
     gimpParent = static_cast<GIMPdocs*>(parent);
     ui = new Ui::GUI_Login();
     ui->setupUi(this);
+
     //serve a segnalare che non ci sono utenti attivi e rimuove l'id dell'eventuale user che ha appena fatto il logout
     gimpParent->userid = -1;
 
-    //la connect fra il pushbutton è già stata fatta di default dall'edito in maniera implicita, ma queste devo farle in maniera esplicita perchè mi collego alla stessa slot e non posso cambiarle nome per fare l'Autoconnect
+    //la connect col pushbutton è già stata fatta di default dall'editor in maniera implicita, ma queste devo farle in maniera esplicita perchè mi collego alla stessa slot e non posso cambiarle nome per fare l'Autoconnect
     connect(ui->usernameLineEdit, &QLineEdit::returnPressed, this, &GUI_Login::on_loginButton_clicked);
     connect(ui->passwordLineEdit, &QLineEdit::returnPressed, this, &GUI_Login::on_loginButton_clicked);
 }
@@ -32,6 +31,7 @@ void GUI_Login::on_newAccountButton_clicked()
 
 void GUI_Login::on_loginButton_clicked()
 {
+    //faccio un po' di controlli sui contenuti delle lineEdit di username e password
     if(ui->usernameLineEdit->text().isEmpty()){
         QMessageBox::information(this, "", "\"Username\" field is empty");
         return;

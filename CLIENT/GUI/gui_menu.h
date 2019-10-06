@@ -1,9 +1,9 @@
 #ifndef GUI_MENU_H
 #define GUI_MENU_H
 
-#include <QWidget>
 #include "ui_gui_menu.h"
 #include "gimpdocs.h"
+#include <QWidget>
 
 class GUI_Menu : public QWidget
 {

@@ -6,6 +6,7 @@
 #include <QAbstractScrollArea>
 #include <QPushButton>
 #include <QScrollBar>
+#include <QRandomGenerator>
 
 GUI_UsersBar::GUI_UsersBar(QWidget *parent) : QWidget(parent){
     this->setObjectName(GUI_UsersBar::getObjectName());

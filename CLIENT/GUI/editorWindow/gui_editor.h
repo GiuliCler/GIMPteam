@@ -37,16 +37,12 @@ public:
 public slots:
     void on_actionApplyUsersColors();
     void on_actionApplyTextColors();
-    //debug
-    void timerSlot();
 
 private:
     Ui::GUI_Editor *ui;
     GUI_ColorsManager colorsManager;
     //debug
-    QTimer *timer;
-
-    //void setUsersBar();
+    //QTimer *timer;
 
 };
 

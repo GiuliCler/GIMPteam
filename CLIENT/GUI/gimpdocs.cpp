@@ -3,7 +3,7 @@
 #include "gui_menu.h"
 #include "editorWindow/gui_editor.h"
 
-#include <iostream>
+//#include <iostream>
 #include <QWindow>
 
 GIMPdocs::GIMPdocs(QWidget *parent) : QMainWindow(parent), userid(-1)
@@ -27,8 +27,6 @@ void GIMPdocs::setUi1(QWidget *widget){
 
 }
 
-/*******Qui sotto in pratica gestisco la menù bar dell'editor*************/
-
 void GIMPdocs::setUi2(QWidget *widget){
 
     ui2->setupUi(this);
@@ -36,14 +34,15 @@ void GIMPdocs::setUi2(QWidget *widget){
     //è importante che showMaximized venga lanciato dopo il cambio di ui perchè sì, atrimenti fa casini
     showMaximized();
 
+    //devo attivare qui le connect e non posso farlo prima nel costruttore perchè quando chiamo il costruttore ui2 non è ancora stato caricato
     static_cast<GUI_Editor*>(widget)->connectMenuBarActions();
 }
 
-void GIMPdocs::launchSetUi1(){
+/**void GIMPdocs::launchSetUi1(){
     long docId = this->findChild<GUI_Editor*>(GUI_Editor::getObjectName())->documentId;
     Stub::closeDocument(this->userid, docId);
 
     GUI_Menu *widget = new GUI_Menu(this);
     this->setUi1(widget);
-}
+}*/
 

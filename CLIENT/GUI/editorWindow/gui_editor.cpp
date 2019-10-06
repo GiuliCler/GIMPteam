@@ -48,11 +48,6 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
         addContributorToCurrentDocument(*userId);
     }
 
-    /*
-    //debug purpose only
-    timer = new QTimer(this);
-    timer->start(3000);
-    connect(timer, SIGNAL(timeout()), this, SLOT(timerSlot()));*/
 }
 
 GUI_Editor::~GUI_Editor(){
@@ -137,8 +132,3 @@ void GUI_Editor::removeContributorFromCurrentDocument(long userid){
     findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->removeContributorUserIcon(userid);
 }
 
-//serve solo per il debug
-void GUI_Editor::timerSlot(){
-
-    //addUserToEditorGUI(QRandomGenerator::global()->bounded(2000));
-}

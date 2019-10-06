@@ -12,8 +12,9 @@ GUI_Newdoc::GUI_Newdoc(QWidget *parent) : QWidget(parent)
     ui = new Ui::GUI_Newdoc;
     ui->setupUi(this);
 
-    //imposto la connect per premere invio ed aprire il doc
+    //imposto la connect per premere invio
     connect(ui->nameLineEdit, &QLineEdit::returnPressed, this, &GUI_Newdoc::on_createPushButton_clicked);
+    connect(ui->URILineEdit, &QLineEdit::returnPressed, this, &GUI_Newdoc::on_openURIPushButton_clicked);
 }
 
 GUI_Newdoc::~GUI_Newdoc(){
@@ -35,5 +36,24 @@ void GUI_Newdoc::on_createPushButton_clicked()
     }
 
     GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), id);
+    static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
+}
+
+void GUI_Newdoc::on_openURIPushButton_clicked()
+{
+    if(ui->URILineEdit->text().isEmpty()){
+        QMessageBox::information(this, "", "\"URI\" field is empty");
+        return;
+    }
+
+    long id = Stub::openWithURI(ui->URILineEdit->text());
+
+    if(id < 0){
+        QMessageBox::information(this, "", "Generic error opening with URI");
+        //TODO gestire più dettagliatamente
+        return;
+    }
+
+    GUI_Editor *widget = new GUI_Editor(gimpParent, id);
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
 }

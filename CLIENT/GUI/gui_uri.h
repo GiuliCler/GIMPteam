@@ -1,9 +1,9 @@
 #ifndef GUI_URI_H
 #define GUI_URI_H
 
-#include <QDialog>
 #include "gimpdocs.h"
 #include "ui_gui_uri.h"
+#include <QDialog>
 
 class GUI_URI : public QDialog
 {

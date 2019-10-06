@@ -3,8 +3,6 @@
 #include "gui_profile.h"
 #include "gui_newdoc.h"
 #include "gui_opendoc.h"
-#include "gui_forgetdoc.h"
-
 #include <QPixmap>
 
 GUI_Menu::GUI_Menu(QWidget *parent) : QWidget(parent)
@@ -23,23 +21,18 @@ GUI_Menu::~GUI_Menu(){
 }
 
 void GUI_Menu::setProfileArea(){
+    //carico nickname e icona dell'utente
     ui->nicknameLabel->setText(Stub::getNickname(gimpParent->userid));
+
     int iconId = Stub::getIconId(gimpParent->userid);
     QPixmap image = QPixmap(GUI_Icons::getIconPath(iconId));
     ui->iconLabel->setPixmap(image);
 }
 
 void GUI_Menu::setDocumentArea(){
-    //setto un layout ai tab ed aggiungo ai layout i widget
-    ui->newdocTab->setLayout(new QGridLayout());
     //so che il parent verrà modificato nel momento in cui lo aggiungo al layout, ma viene salvato come GimpParent
     ui->newdocTab->layout()->addWidget(new GUI_Newdoc(this));
-
-    ui->opendocTab->setLayout(new QGridLayout());
     ui->opendocTab->layout()->addWidget(new GUI_Opendoc(this));
-
-    ui->forgetdocTab->setLayout(new QGridLayout());
-    ui->forgetdocTab->layout()->addWidget(new GUI_Forgetdoc(this));
 }
 
 void GUI_Menu::on_editPushButton_clicked()

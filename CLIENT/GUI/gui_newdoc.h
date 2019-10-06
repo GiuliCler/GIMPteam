@@ -16,6 +16,7 @@ public:
 
 private slots:
     void on_createPushButton_clicked();
+    void on_openURIPushButton_clicked();
 
 private:
     Ui::GUI_Newdoc *ui;

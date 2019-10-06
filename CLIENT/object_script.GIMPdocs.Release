@@ -5,7 +5,6 @@ release/gui_usersbar.o
 release/gimpdocs.o
 release/gui_coloredcursor.o
 release/gui_editor.o
-release/gui_forgetdoc.o
 release/gui_icons.o
 release/gui_login.o
 release/gui_menu.o
@@ -24,7 +23,6 @@ release/moc_gui_usersbar.o
 release/moc_gimpdocs.o
 release/moc_gui_coloredcursor.o
 release/moc_gui_editor.o
-release/moc_gui_forgetdoc.o
 release/moc_gui_login.o
 release/moc_gui_menu.o
 release/moc_gui_mytextedit.o
