@@ -2,16 +2,13 @@
 #include "gui_editor.h"
 #include "gui_myscrollarea.h"
 #include <QPainter>
-#include <QScrollArea>
-#include <QAbstractScrollArea>
-#include <QPushButton>
 #include <QScrollBar>
+//debug purpose
 #include <QRandomGenerator>
 
 GUI_UsersBar::GUI_UsersBar(QWidget *parent) : QWidget(parent){
     this->setObjectName(GUI_UsersBar::getObjectName());
     editorParent = static_cast<GUI_Editor*>(parent);
-
     ui = new Ui::GUI_UsersBar();
     ui->setupUi(this);
 
@@ -30,7 +27,6 @@ GUI_UsersBar::GUI_UsersBar(QWidget *parent) : QWidget(parent){
     //connetto le signals dei pulsanti per fare alternare i pulsanti nella menù bar
     connect(ui->showColorsPushButton, &QPushButton::clicked, this->editorParent, &GUI_Editor::on_actionApplyUsersColors);
     connect(ui->hideColorsPushButton, &QPushButton::clicked, this->editorParent, &GUI_Editor::on_actionApplyTextColors);
-
 }
 
 GUI_UsersBar::~GUI_UsersBar(){
@@ -45,13 +41,13 @@ QLabel *GUI_UsersBar::getUserIcon(long userId, QColor color){
     background->fill(color);
     QPainter painter(background);
     const QRect rect(image->rect());
+    //disegno la pixmap sopra il background
     painter.drawPixmap(rect, *image);
 
     QLabel *label = new QLabel(this);
 
     label->setPixmap(*background);
     label->setScaledContents(true);
-    label->setProperty("background-color", "#e1e1e1");
     label->setMaximumSize(GUI_Icons::iconSize,GUI_Icons::iconSize);
     label->setMinimumSize(GUI_Icons::iconSize,GUI_Icons::iconSize);
     label->setToolTip(Stub::getNickname(userId));
@@ -60,14 +56,17 @@ QLabel *GUI_UsersBar::getUserIcon(long userId, QColor color){
 }
 
 void GUI_UsersBar::addOnlineUserIcon(long userId, QColor color){
+    //questo non dovrebbe succedere, ma non si sa mai
+    if(onlineUsersIconMap.find(userId) != onlineUsersIconMap.end())
+        return;
 
     QLabel *iconLabel = getUserIcon(userId, color);
     onlineUsersIconMap.insert(userId, iconLabel);
     ui->numberOnlineUsersLabel->setNum(onlineUsersIconMap.size());
-
     this->findChild<GUI_MyScrollArea*>(getOnlineAreaName())->widget()->layout()->addWidget(iconLabel);
-    /*faccio l'update sia se devo allargare e stringere la size, sia se devo modificare i margini per aggiungere la scrollbar. Per questo ho messo il +1
-     * Poi potrei anche lancirlo sempre per comodità, tanto i controlli interni ci sono, ma è uno spreco di operzioni inutili
+
+    /*faccio l'update sia se devo allargare la size, sia se devo modificare i margini per aggiungere la scrollbar. Per questo ho messo il +1
+     * Poi potrei anche lanciarlo sempre per comodità, tanto i controlli interni ci sono, ma è uno spreco di operzioni evitabile
      */
     if(onlineUsersIconMap.size() <= GUI_MyScrollArea::getMaxUsersIconsNumber()+1)
         this->findChild<GUI_MyScrollArea*>(getOnlineAreaName())->updateSize(onlineUsersIconMap.size());
@@ -80,16 +79,14 @@ void GUI_UsersBar::removeOnlineUserIcon(long userId){
     onlineUsersIconMap[userId]->close();
     onlineUsersIconMap.remove(userId);
     ui->numberOnlineUsersLabel->setNum(onlineUsersIconMap.size());
-    /*faccio l'update sia se devo allargare e stringere la size, sia se devo modificare i margini per aggiungere la scrollbar. Per questo ho messo il +1
-     * Poi potrei anche lancirlo sempre per comodità, tanto i controlli interni ci sono, ma è uno spreco di operzioni inutili
+    /*faccio l'update sia se devo stringere la size, sia se devo modificare i margini per togliere la scrollbar. Per questo ho messo il +1
+     * Poi potrei anche lanciarlo sempre per comodità, tanto i controlli interni ci sono, ma è uno spreco di operzioni inutili
      */
     if(onlineUsersIconMap.size() <= GUI_MyScrollArea::getMaxUsersIconsNumber()+1)
         this->findChild<GUI_MyScrollArea*>(getOnlineAreaName())->updateSize(onlineUsersIconMap.size());
 }
 
 void GUI_UsersBar::addContributorUserIcon(long userId, QColor color){
-    //nota il CLIENT può essere un contributor
-
     //questo non dovrebbe succedere, ma non si sa mai
     if(contributorUsersIconMap.find(userId) != contributorUsersIconMap.end())
         return;
@@ -97,11 +94,8 @@ void GUI_UsersBar::addContributorUserIcon(long userId, QColor color){
     QLabel *iconLabel = getUserIcon(userId, color);
     contributorUsersIconMap.insert(userId, iconLabel);
     ui->numberContributorUsersLabel->setNum(contributorUsersIconMap.size());
-
     this->findChild<GUI_MyScrollArea*>(getContributorsAreaName())->widget()->layout()->addWidget(iconLabel);
-    /*faccio l'update sia se devo allargare e stringere la size, sia se devo modificare i margini per aggiungere la scrollbar. Per questo ho messo il +1
-     * Poi potrei anche lancirlo sempre per comodità, tanto i controlli interni ci sono, ma è uno spreco di operzioni inutili
-     */
+
     if(contributorUsersIconMap.size() <= GUI_MyScrollArea::getMaxUsersIconsNumber()+1)
         this->findChild<GUI_MyScrollArea*>(getContributorsAreaName())->updateSize(contributorUsersIconMap.size());
 }
@@ -113,9 +107,7 @@ void GUI_UsersBar::removeContributorUserIcon(long userId){
     contributorUsersIconMap[userId]->close();
     contributorUsersIconMap.remove(userId);
     ui->numberContributorUsersLabel->setNum(contributorUsersIconMap.size());
-    /*faccio l'update sia se devo allargare e stringere la size, sia se devo modificare i margini per aggiungere la scrollbar. Per questo ho messo il +1
-     * Poi potrei anche lancirlo sempre per comodità, tanto i controlli interni ci sono, ma è uno spreco di operzioni inutili
-     */
+
     if(contributorUsersIconMap.size() <= GUI_MyScrollArea::getMaxUsersIconsNumber()+1)
         this->findChild<GUI_MyScrollArea*>(getContributorsAreaName())->updateSize(contributorUsersIconMap.size());
 }
@@ -146,7 +138,8 @@ void GUI_UsersBar::on_hideColorsPushButton_clicked(){
     ui->hideColorsPushButton->hide();
 }
 
-//serve solo per il debug
+/**********************************DEBUG**********************************/
+
 void GUI_UsersBar::on_pushButton_clicked()
 {
     editorParent->addUserToEditorGUI(QRandomGenerator::global()->bounded(2000));

@@ -22,9 +22,6 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
     ui = new Ui::GUI_Editor();
     ui->setupUi(this);
 
-    //questo serve a togliere quel fastidioso bordino bianco attorno alle labels del tabwidget
-    ui->tabWidget->tabBar()->setStyleSheet(ui->tabWidget->tabBar()->styleSheet().append("background: rgb(240,240,240);"));
-
     GUI_MyTextEdit *textEdit = new GUI_MyTextEdit(this);
     ui->textWidget->layout()->addWidget(textEdit);
     GUI_UsersBar *usersbar = new GUI_UsersBar(this);
@@ -32,6 +29,8 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
     GUI_ToolsBar *toolsbar = new GUI_ToolsBar(this);
     ui->toolsBarWidget->layout()->addWidget(toolsbar);
 
+    //questo serve a togliere quel fastidioso bordino bianco attorno alle labels del tabwidget
+    ui->tabWidget->tabBar()->setStyleSheet(ui->tabWidget->tabBar()->styleSheet().append("background: rgb(240,240,240);"));
     //la toolsbar è più bassa, quindi ne eguaglio la height alla height della users bar
     toolsbar->setMinimumHeight(GUI_MyScrollArea::getFixedHeight());
 

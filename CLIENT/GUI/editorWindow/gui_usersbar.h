@@ -1,10 +1,10 @@
 #ifndef GUI_USERSBAR_H
 #define GUI_USERSBAR_H
 
-#include <QWidget>
 #include "ui_gui_usersbar.h"
 #include "../gimpdocs.h"
 #include "gui_editor.h"
+#include <QWidget>
 
 class GUI_UsersBar : public QWidget
 {
@@ -43,8 +43,8 @@ private:
     QMap<long, QLabel*> contributorUsersIconMap;
 
     //serve per ritrovare i figli. Avrei anche potuto salvarmi direttamente un pointer ai figli
-    static QString getOnlineAreaName() {return QString("onlineIconsScrollArea");}
-    static QString getContributorsAreaName() {return QString("contributorIconsScrollArea");}
+    inline static QString getOnlineAreaName() {return QString("onlineIconsScrollArea");}
+    inline static QString getContributorsAreaName() {return QString("contributorIconsScrollArea");}
     QLabel *getUserIcon(long userId, QColor color);
 };
 

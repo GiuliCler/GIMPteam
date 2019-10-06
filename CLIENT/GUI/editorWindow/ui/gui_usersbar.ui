@@ -17,13 +17,7 @@
    </sizepolicy>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,0,1,0">
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
    <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
     <number>0</number>
    </property>
    <property name="bottomMargin">
@@ -65,11 +59,11 @@
       </item>
       <item>
        <widget class="QLabel" name="numberOnlineUsersLabel">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+        <property name="minimumSize">
+         <size>
+          <width>14</width>
+          <height>0</height>
+         </size>
         </property>
         <property name="cursor">
          <cursorShape>IBeamCursor</cursorShape>
@@ -86,9 +80,6 @@
        <spacer name="horizontalSpacer_5">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Expanding</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -118,7 +109,7 @@
        <number>0</number>
       </property>
       <property name="rightMargin">
-       <number>10</number>
+       <number>0</number>
       </property>
       <property name="bottomMargin">
        <number>0</number>
@@ -197,6 +188,12 @@
          </item>
          <item>
           <widget class="QLabel" name="numberContributorUsersLabel">
+           <property name="minimumSize">
+            <size>
+             <width>14</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="cursor">
             <cursorShape>IBeamCursor</cursorShape>
            </property>
@@ -207,6 +204,19 @@
             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
            </property>
           </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </widget>

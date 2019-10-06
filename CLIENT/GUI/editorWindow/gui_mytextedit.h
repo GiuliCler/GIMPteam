@@ -1,13 +1,11 @@
 #ifndef GUI_MYTEXTEDIT_H
 #define GUI_MYTEXTEDIT_H
 
-#include <QTextEdit>
-#include <QTimer>
-#include "gui_coloredcursor.h"
 #include "../gimpdocs.h"
+#include "gui_coloredcursor.h"
 #include "gui_editor.h"
+#include <QTextEdit>
 #include <QMap>
-#include <QPoint>
 
 class GUI_MyTextEdit : public QTextEdit
 {

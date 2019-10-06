@@ -1,7 +1,5 @@
 #include "gui_mytextedit.h"
 #include "gui_editor.h"
-
-#include <QPainter>
 #include <QColor>
 
 GUI_MyTextEdit::GUI_MyTextEdit(QWidget *parent) : QTextEdit(parent) {
@@ -14,20 +12,20 @@ GUI_MyTextEdit::GUI_MyTextEdit(QWidget *parent) : QTextEdit(parent) {
 
 void GUI_MyTextEdit::paintEvent(QPaintEvent *event)
 {
-    // questo serve a disegnare tutto quanto il resto. Normalmente disegnerebbe anche il cursore nero, ma gli ho messo spessore 0
+    // questo serve a disegnare tutto quanto il resto normalmente
     QTextEdit::paintEvent(event);
 
-    for(auto pair = cursorsMap.begin(); pair != cursorsMap.end(); pair++){
+    //e qui do l'ordine di disegnare sopra al foglio i cursori secondari
+    for(auto pair = cursorsMap.begin(); pair != cursorsMap.end(); pair++)
       pair.value()->paint();
-    }
 }
 
 void GUI_MyTextEdit::addUserCursor(long userId, QPoint position, QColor color){
     if(cursorsMap.find(userId) != cursorsMap.end()){
         //TODO: gestione intelligente
-        //cursorsMap[userId]->updatePosition(position);
         return;
     }
+
     cursorsMap.insert(userId, new GUI_ColoredCursor(this, position, color));
     //per ridisegnare tutto, nuovo cursore soprattutto
     this->viewport()->update();
@@ -36,6 +34,7 @@ void GUI_MyTextEdit::addUserCursor(long userId, QPoint position, QColor color){
 void GUI_MyTextEdit::removeUserCursor(long userId){
     if(cursorsMap.find(userId) == cursorsMap.end()){
         //TODO:: gestione intelligente
+        return;
     }
 
     cursorsMap.remove(userId);

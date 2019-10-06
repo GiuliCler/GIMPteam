@@ -1,9 +1,8 @@
 #ifndef GUI_MYSCROLLAREA_H
 #define GUI_MYSCROLLAREA_H
 
-#include <QWidget>
 #include <QScrollArea>
-#include "../gui_icons.h"
+#include "../gimpdocs.h"
 
 class GUI_MyScrollArea : public QScrollArea
 {
@@ -12,9 +11,10 @@ public:
     QWidget *content;
 
     explicit GUI_MyScrollArea(QWidget *parent = nullptr);
-//    virtual void resizeEvent(QResizeEvent *event) override;
     void updateSize(int numberOfUsers);
+
     inline static int getMaxUsersIconsNumber(){return 10;}
+    //il 2 bilancia il margin sotto, un 17 sta al posto della scrollbar e l'altro 17 sta sopra e bilancia la scrollbar per avere simmetria
     inline static int getFixedHeight(){return GUI_Icons::iconSize + (2+17) + 17;}
 };
 

@@ -1,12 +1,10 @@
 #ifndef GUI_EDITOR_H
 #define GUI_EDITOR_H
 
-#include <QWidget>
 #include "ui_gui_editor.h"
 #include "../gimpdocs.h"
 #include "gui_colorsmanager.h"
-#include <QTimer>
-#include <QLabel>
+#include <QWidget>
 #include <QMap>
 #include <QColor>
 
@@ -32,9 +30,9 @@ public:
 
     //mi serve perchè non posso fare le connect direttamente nel costruttore. Quando sono nel costruttore, la ui2 non è ancora stata caricata quindi la connect va fatta in un secondo momento
     void connectMenuBarActions();
-    void launchSetUi1();
 
 public slots:
+    void launchSetUi1();
     void on_actionApplyUsersColors();
     void on_actionApplyTextColors();
 
