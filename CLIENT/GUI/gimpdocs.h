@@ -15,6 +15,9 @@ class GIMPdocs : public QMainWindow
 
 public:
     long userid;
+    QSize regularWindowSize;
+    //serve per ripristinare lo stato maximized/normal dopo la chiusura del document in base a com'era prima
+    bool alreadyMaximized;
     //mi servono public per fare delle connect
     Ui::GIMPdocs *ui1;
     Ui::GUI_EditWindow *ui2;

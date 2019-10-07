@@ -1,17 +1,11 @@
 #include "gui_editor.h"
-#include "../gimpdocs.h"
 #include "../gui_menu.h"
+#include "../gui_uri.h"
 #include "gui_mytextedit.h"
 #include "gui_usersbar.h"
-#include "../gui_uri.h"
 #include "gui_toolsbar.h"
 #include "gui_myscrollarea.h"
-#include <memory>
-#include <QBitmap>
-#include <QPainter>
-#include <QTime>
 #include <QMessageBox>
-#include <QTabBar>
 #include <QScrollBar>
 
 
@@ -37,15 +31,13 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
 
     //ottengo l'elenco degli utenti che al momento stanno guardando il mio stesso document e ne creo icona e cursore
     std::shared_ptr<QSet<long>> users = Stub::getWorkingUsersOnDocument(documentId);
-    for (QSet<long>::iterator userId = users->begin(); userId != users->end(); userId++){
+    for (QSet<long>::iterator userId = users->begin(); userId != users->end(); userId++)
         addUserToEditorGUI(*userId);
-    }
 
     //creo l'icona per gli user che hanno contribuito al document
     std::shared_ptr<QSet<long>> contributors = Stub::getContributorsUsersOnDocument(documentId);
-    for (QSet<long>::iterator userId = contributors->begin(); userId != contributors->end(); userId++){
+    for (QSet<long>::iterator userId = contributors->begin(); userId != contributors->end(); userId++)
         addContributorToCurrentDocument(*userId);
-    }
 
 }
 
@@ -85,7 +77,6 @@ void GUI_Editor::on_actionApplyTextColors(){
 }
 
 void GUI_Editor::addUserToEditorGUI(long userid){
-
     //ottengo un colore per cursore e icona
     QColor *color = getUserColor(userid);
 
@@ -101,7 +92,7 @@ void GUI_Editor::addUserToEditorGUI(long userid){
 void GUI_Editor::removeUserFromEditorGUI(long userid){
     findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->removeUserCursor(userid);
     findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->removeOnlineUserIcon(userid);
-    //se l'utente non è nè un contributor e non è più online ne gli tolgo il colore associato per poterlo assegnare a qualcun altro
+    //se l'utente non è un contributor e non è più online gli tolgo il colore associato per poterlo assegnare a qualcun altro
     if(!findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->isContributor(userid))
         forgetUserColor(userid);
 }

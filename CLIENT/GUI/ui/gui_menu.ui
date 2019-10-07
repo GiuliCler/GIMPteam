@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>GUI_Menu</class>
  <widget class="QWidget" name="GUI_Menu">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>418</width>
-    <height>323</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
