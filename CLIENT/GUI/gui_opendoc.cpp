@@ -2,6 +2,7 @@
 #include "gimpdocs.h"
 #include "editorWindow/gui_editor.h"
 #include "gui_menu.h"
+#include "gui_uri.h"
 #include <QMessageBox>
 
 GUI_Opendoc::GUI_Opendoc(QWidget *parent) : QWidget(parent)
@@ -12,10 +13,21 @@ GUI_Opendoc::GUI_Opendoc(QWidget *parent) : QWidget(parent)
     ui->setupUi(this);
 
     fillList();
+
+    //imposto la connect per premere invio ed aprire il doc
+    connect(ui->docsListWidget, &QListWidget::doubleClicked, this, &GUI_Opendoc::on_openDocsPushButton_clicked);
 }
 
 GUI_Opendoc::~GUI_Opendoc(){
     delete ui;
+}
+
+void GUI_Opendoc::fillList(){
+    std::shared_ptr<QVector<QString>> vp = Stub::getDocuments(static_cast<GIMPdocs*>(gimpParent)->userid);
+
+    for(QString *s = vp->begin(); s != vp->end(); s++){
+        ui->docsListWidget->addItem(*s);
+    }
 }
 
 void GUI_Opendoc::on_openDocsPushButton_clicked()
@@ -36,29 +48,31 @@ void GUI_Opendoc::on_openDocsPushButton_clicked()
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
 }
 
-void GUI_Opendoc::on_openURIPushButton_clicked()
-{
-    if(ui->URILineEdit->text().isEmpty()){
-        QMessageBox::information(this, "", "\"URI\" field is empty");
+void GUI_Opendoc::on_getURIPushButton_clicked(){
+    if(ui->docsListWidget->currentItem() == nullptr){
+        QMessageBox::information(this, "", "Please, select a document");
         return;
     }
 
-    long id = Stub::openWithURI(ui->URILineEdit->text());
+    GUI_URI *box = new GUI_URI(this, Stub::getDocumentURI(Stub::getDocumentId(ui->docsListWidget->currentItem()->text())));
+    box->setVisible(true);
+}
 
+void GUI_Opendoc::on_forgetPushButton_clicked(){
+    if(ui->docsListWidget->currentItem() == nullptr){
+        QMessageBox::information(this, "", "Please, select a document");
+        return;
+    }
+
+    if(QMessageBox::question(this, "", "Do you really want to forget \"" + ui->docsListWidget->currentItem()->text() + "\" document?") == QMessageBox::No)
+        return;
+
+    int id = Stub::forgetDocumentWithName(this->gimpParent->userid, ui->docsListWidget->currentItem()->text());
     if(id < 0){
-        QMessageBox::information(this, "", "Generic error opening with URI");
+        QMessageBox::information(this, "", "PANIC! Qualcosa è andato storto");
         //TODO gestire più dettagliatamente
         return;
     }
 
-    GUI_Editor *widget = new GUI_Editor(gimpParent, id);
-    static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
-}
-
-void GUI_Opendoc::fillList(){
-    std::shared_ptr<QVector<QString>> vp = Stub::getDocuments(static_cast<GIMPdocs*>(gimpParent)->userid);
-
-    for(QString *s = vp->begin(); s != vp->end(); s++){
-        ui->docsListWidget->addItem(*s);
-    }
+    ui->docsListWidget->takeItem(ui->docsListWidget->currentRow());
 }

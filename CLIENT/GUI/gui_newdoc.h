@@ -1,9 +1,9 @@
 #ifndef GUI_NEWDOC_H
 #define GUI_NEWDOC_H
 
-#include <QWidget>
 #include "ui_gui_newdoc.h"
 #include "gimpdocs.h"
+#include <QWidget>
 
 class GUI_Newdoc: public QWidget{
     Q_OBJECT
@@ -16,6 +16,7 @@ public:
 
 private slots:
     void on_createPushButton_clicked();
+    void on_openURIPushButton_clicked();
 
 private:
     Ui::GUI_Newdoc *ui;

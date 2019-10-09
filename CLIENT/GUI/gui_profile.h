@@ -1,10 +1,9 @@
 #ifndef GUI_PROFILE_H
 #define GUI_PROFILE_H
 
-#include <QWidget>
 #include "ui_gui_profile.h"
 #include "gimpdocs.h"
-
+#include <QWidget>
 
 class GUI_Profile : public QWidget
 {
@@ -17,7 +16,7 @@ public:
     static QString getObjectName() {return QString("GUI_Profile");}
 
 private slots:
-    //se sono sto modificando e non creando questa fuzione imposta gli attuali valori
+    //serve per riempire il form quando sto accedendo alla window per modificare un account già esistente
     void fillForm();
     //questa serve solo a riempire la combobox
     void loadIcons();

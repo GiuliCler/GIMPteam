@@ -1,17 +1,13 @@
 #ifndef GIMPDOCS_H
 #define GIMPDOCS_H
 
-#include <QMainWindow>
-#include <QDebug>
-#include <QRandomGenerator>
+
 #include "stub.h"
 #include "gui_icons.h"
 #include "ui_gimpdocs.h"
 #include "ui_gui_editorwindow.h"
-
-//se proprio non posso usarla me la tengo qui per fare copia incolla
-//#define PARENT static_cast<GIMPdocs*>(this->parent())
-
+#include <QMainWindow>
+#include <QDebug>
 
 class GIMPdocs : public QMainWindow
 {
@@ -19,6 +15,12 @@ class GIMPdocs : public QMainWindow
 
 public:
     long userid;
+    QSize regularWindowSize;
+    //serve per ripristinare lo stato maximized/normal dopo la chiusura del document in base a com'era prima
+    bool alreadyMaximized;
+    //mi servono public per fare delle connect
+    Ui::GIMPdocs *ui1;
+    Ui::GUI_EditWindow *ui2;
 
     explicit GIMPdocs(QWidget *parent = nullptr);
     ~GIMPdocs();
@@ -27,13 +29,6 @@ public:
     void setUi1(QWidget *widget);
     void setUi2(QWidget *widget);
 
-private slots:
-    //serve per l'azione close document che ha bisogno di uno slot
-    void launchSetUi2();
-
-private:
-    Ui::GIMPdocs *ui1;
-    Ui::GUI_EditWindow *ui2;
 };
 
 #endif // GIMPDOCS_H

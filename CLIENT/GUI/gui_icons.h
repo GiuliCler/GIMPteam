@@ -7,7 +7,7 @@ class GUI_Icons{
 public:
     static int iconSize;
     //è per caricare i path delle icone nel vettore una volta sola
-    static bool loaded, a;
+    static bool loaded;
     static QVector<QString> icons;
 
     static QString getIconPath(long userId);

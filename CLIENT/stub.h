@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <memory>
+#include <QColor>
 
 class Stub : public QObject
 {
@@ -28,11 +29,19 @@ public:
     static long openWithName(QString name);
     static std::shared_ptr<QVector<QString>> getDocuments(long userId);
     static void closeDocument(long userId, long docId);
+    //volendo può ritornare un codice d'errore
+    static int forgetDocumentWithName(long userId, QString docname);
+    static QString getDocumentURI(long docId);
+    static long getDocumentId(QString name);
 
     //ritorna un set cogli userId
     static std::shared_ptr<QSet<long>> getWorkingUsersOnDocument(long docId);
     //ritorna tutti gli id degli users che hanno conrtibuito al document. Viene chiamata appena aperto il doc, mentre per l'update metto a disposizione altre funzioni
     static std::shared_ptr<QSet<long>> getContributorsUsersOnDocument(long docId);
+
+    //questo serve per quando si sposta il cursore e bisogna cambiare automaticamente colore al pulsante
+    static QColor getCurrentTextColor();
+    static void setCurrentTextColor(QColor color);
 };
 
 #endif // STUB_H

@@ -16,7 +16,8 @@ public:
 
 private slots:
     void on_openDocsPushButton_clicked();
-    void on_openURIPushButton_clicked();
+    void on_getURIPushButton_clicked();
+    void on_forgetPushButton_clicked();
 
 private:
     Ui::GUI_Opendoc *ui;

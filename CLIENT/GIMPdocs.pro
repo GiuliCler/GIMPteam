@@ -27,6 +27,7 @@ CONFIG += c++11
 SOURCES += \
         GUI/editorWindow/gui_colorsmanager.cpp \
         GUI/editorWindow/gui_myscrollarea.cpp \
+        GUI/editorWindow/gui_toolsbar.cpp \
         GUI/editorWindow/gui_usersbar.cpp \
         GUI/gimpdocs.cpp \
         GUI/editorWindow/gui_coloredcursor.cpp \
@@ -38,12 +39,14 @@ SOURCES += \
         GUI/gui_newdoc.cpp \
         GUI/gui_opendoc.cpp \
         GUI/gui_profile.cpp \
+        GUI/gui_uri.cpp \
         main.cpp \
         stub.cpp
 
 HEADERS += \
         GUI/editorWindow/gui_colorsmanager.h \
         GUI/editorWindow/gui_myscrollarea.h \
+        GUI/editorWindow/gui_toolsbar.h \
         GUI/editorWindow/gui_usersbar.h \
         GUI/gimpdocs.h \
         GUI/editorWindow/gui_coloredcursor.h \
@@ -55,9 +58,11 @@ HEADERS += \
         GUI/gui_newdoc.h \
         GUI/gui_opendoc.h \
         GUI/gui_profile.h \
+        GUI/gui_uri.h \
         stub.h
 
 FORMS += \
+    GUI/editorWindow/ui/gui_toolsbar.ui \
     GUI/editorWindow/ui/gui_usersbar.ui \
     GUI/ui/gimpdocs.ui \
     GUI/editorWindow/ui/gui_editor.ui \
@@ -66,14 +71,17 @@ FORMS += \
         GUI/ui/gui_menu.ui \
     GUI/ui/gui_newdoc.ui \
     GUI/ui/gui_opendoc.ui \
-        GUI/ui/gui_profile.ui
+        GUI/ui/gui_profile.ui \
+    GUI/ui/gui_uri.ui
+
+RESOURCES += \
+    GUI/images/images.qrc
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
+win32:RC_ICONS += GUI/images/logo/gimpLogo.ico
 
-RESOURCES += \
-    GUI/images/images.qrc
 

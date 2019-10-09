@@ -96,6 +96,27 @@ void Stub::closeDocument(long userId, long docId){
     //I don't know. Do something
 }
 
+int Stub::forgetDocumentWithName(long userId, QString docname){
+    int docId = userId;;
+    userId = docId;
+    QString pippo = docname;
+
+    //I don't know. Do something
+    return 0;
+}
+
+QString Stub::getDocumentURI(long docId){
+    long n = docId;
+    docId= n;
+
+    return "httpippo";
+}
+
+long Stub::getDocumentId(QString name){
+    QString pippo = name;
+     return 1;
+}
+
 std::shared_ptr<QVector<QString>> Stub::getDocuments(long userId){
     long n = userId;
     userId = n;
@@ -128,4 +149,16 @@ std::shared_ptr<QSet<long>> Stub::getContributorsUsersOnDocument(long docId){
         vpointer->insert(i);
 
     return vpointer;
+}
+
+QColor Stub::getCurrentTextColor(){
+    return QColor(0,0,0,255);
+}
+
+void Stub::setCurrentTextColor(QColor color){
+    //al solito, è per evitare i warnings
+    QColor c = color;
+    color = c;
+
+    return;
 }

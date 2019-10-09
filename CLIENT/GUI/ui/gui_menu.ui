@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>GUI_Menu</class>
  <widget class="QWidget" name="GUI_Menu">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>418</width>
-    <height>323</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -108,36 +100,23 @@
         <property name="currentIndex">
          <number>0</number>
         </property>
+        <widget class="QWidget" name="opendocTab">
+         <property name="autoFillBackground">
+          <bool>true</bool>
+         </property>
+         <attribute name="title">
+          <string>Accessible documents</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_2"/>
+        </widget>
         <widget class="QWidget" name="newdocTab">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="accessibleName">
-          <string/>
-         </property>
          <property name="autoFillBackground">
           <bool>true</bool>
          </property>
          <attribute name="title">
           <string>New document</string>
          </attribute>
-        </widget>
-        <widget class="QWidget" name="opendocTab">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="autoFillBackground">
-          <bool>true</bool>
-         </property>
-         <attribute name="title">
-          <string>Open document</string>
-         </attribute>
+         <layout class="QGridLayout" name="gridLayout_3"/>
         </widget>
        </widget>
       </item>

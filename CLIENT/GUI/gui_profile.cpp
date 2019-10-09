@@ -8,10 +8,11 @@
 GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
 {
     this->setObjectName(GUI_Profile::getObjectName());
-    //needs to be controlled before
     gimpParent = static_cast<GIMPdocs*>(parent);
     ui = new Ui::GUI_Profile;
     ui->setupUi(this);
+
+    //qui controllo se sto creando un nuovo utente o se ne sto modificando uno già loggato
     if(gimpParent->userid > -1){
         ui->backPushButton->hide();
         ui->usernameLineEdit->hide();
@@ -22,6 +23,12 @@ GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
     }
 
     loadIcons();
+
+    //faccio le connect così premendo Enter prova a salvare
+    connect(ui->nicknameLineEdit, &QLineEdit::returnPressed, this, &GUI_Profile::on_savePushButton_clicked);
+    connect(ui->usernameLineEdit, &QLineEdit::returnPressed, this, &GUI_Profile::on_savePushButton_clicked);
+    connect(ui->passwordLineEdit, &QLineEdit::returnPressed, this, &GUI_Profile::on_savePushButton_clicked);
+    connect(ui->repeatLineEdit, &QLineEdit::returnPressed, this, &GUI_Profile::on_savePushButton_clicked);
 }
 
 GUI_Profile::~GUI_Profile(){
@@ -87,6 +94,7 @@ void GUI_Profile::on_backPushButton_clicked()
 }
 
 void GUI_Profile::fillForm(){
+    //questo if non dovrebbe mai attivarsi, ma non si sa mai
     if(gimpParent->userid < 0)
         return;
 
@@ -98,7 +106,6 @@ void GUI_Profile::fillForm(){
 
 void GUI_Profile::loadIcons(){
     QVector<QString> *v = GUI_Icons::getIconPaths();
-    QString *s;
-    for (s = v->begin(); s != v->end(); s++)
+    for (QString *s = v->begin(); s != v->end(); s++)
         ui->iconComboBox->addItem(QIcon(*s), "", s - v->begin());
 }
