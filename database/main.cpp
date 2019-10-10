@@ -12,6 +12,7 @@ int main(int argc, char *argv[]) {
     link->connettiDB("gimpdocs_db");
 
     std::cout<<"---------------------------------------------"<<std::endl;
+    std::cout<<"----------------- PROVA: SIGNUP -------------------"<<std::endl;
 
     /* Creo due utenti */
     int uno = link->signup("utente1@p.it", "cane", "paxerello22", "image1");
@@ -28,6 +29,7 @@ int main(int argc, char *argv[]) {
     std::cout<<"Inserimento quattro: "<<quattro<<std::endl;     // valore di ritorno atteso: 1
 
     std::cout<<"---------------------------------------------"<<std::endl;
+    std::cout<<"----------------- PROVA: CREA DOC -------------------"<<std::endl;
 
     /* Creo due documenti */
     int one = link->creaDoc("DivinaCommedia");
@@ -40,6 +42,7 @@ int main(int argc, char *argv[]) {
     std::cout<<"Inserimento three: "<<three<<std::endl;     // valore di ritorno atteso: 0
 
     std::cout<<"---------------------------------------------"<<std::endl;
+    std::cout<<"----------------- PROVA: BOUNDARIES SIGNUP E CREA DOC -------------------"<<std::endl;
 
     /* Provo i boundary case (stringhe vuote) --> valori di ritorno attesi: 0 */
     int rit;
@@ -53,6 +56,7 @@ int main(int argc, char *argv[]) {
     std::cout<<"Nome doc vuoto: "<<rit<<std::endl;
 
     std::cout<<"---------------------------------------------"<<std::endl;
+    std::cout<<"----------------- PROVA: AGGIUNGI PARTECIPANTE -------------------"<<std::endl;
 
     /* Segno che l'utente 1 è abilitato alla modifica del documento 1 */
     // Valore di ritorno atteso: 1
@@ -86,6 +90,7 @@ int main(int argc, char *argv[]) {
     std::cout<<"Utente1DocVuoto: "<<m<<std::endl;
 
     std::cout<<"---------------------------------------------"<<std::endl;
+    std::cout<<"----------------- PROVA: RECUPERA DOCS -------------------"<<std::endl;
 
     /* Recupero i documenti dell'utente 1 (doc1 e doc2) */
     std::vector<std::string> doc_utente1 = link->recuperaDocs("utente1@p.it");
@@ -100,6 +105,7 @@ int main(int argc, char *argv[]) {
         std::cout<<"\t"<<(*j)<<std::endl;
 
     std::cout<<"---------------------------------------------"<<std::endl;
+    std::cout<<"----------------- PROVA: LOGIN -------------------"<<std::endl;
 
     /* Corretto login utente 1 */
     std::vector<std::string> log1 = link->login("utente1@p.it", "cane");
@@ -143,6 +149,7 @@ int main(int argc, char *argv[]) {
         std::cout<<"\t"<<(*i)<<std::endl;
 
     std::cout<<"---------------------------------------------"<<std::endl;
+    std::cout<<"----------------- PROVA: RECUPERA URI -------------------"<<std::endl;
 
     /* Richiedo l'uri del doc 1 --> valore di ritorno atteso: URI */
     std::string uri0 = link->recuperaURI("DivinaCommedia");
@@ -157,6 +164,7 @@ int main(int argc, char *argv[]) {
     std::cout<<"URI doc vuoto: "<<uri2<<std::endl;
 
     std::cout<<"---------------------------------------------"<<std::endl;
+    std::cout<<"----------------- PROVA: AGGIORNA USER -------------------"<<std::endl;
 
    /* Modifico il nickname dell'utente1 */
     int upd0 = link->aggiornaUser("utente1@p.it", "cane", "puzzettaXD", "image1");
@@ -192,6 +200,7 @@ int main(int argc, char *argv[]) {
     std::cout<<"Icona vuota: "<<upd7<<std::endl;
 
     std::cout<<"---------------------------------------------"<<std::endl;
+    std::cout<<"----------------- PROVA: RECUPERA DOC DATO URI -------------------"<<std::endl;
 
     /* Fornisco l'uri del documento 1 */
     std::string doc0 = link->recuperaDocDatoURI("://GIMPdocs/80423b4c7a9c3e047148ececb88d1d41");
