@@ -2,10 +2,13 @@
 #include <QColorDialog>
 
 GUI_ToolsBar::GUI_ToolsBar(QWidget *parent) : QWidget(parent){
+    editorParent = static_cast<GUI_Editor*>(parent);
     ui = new Ui::GUI_ToolsBar();
     ui->setupUi(this);
 
     setTextColorIconColor(Stub::getCurrentTextColor());
+
+    connect(ui->closePushButton, &QPushButton::clicked, editorParent, &GUI_Editor::launchSetUi1);
 }
 
 GUI_ToolsBar::~GUI_ToolsBar(){

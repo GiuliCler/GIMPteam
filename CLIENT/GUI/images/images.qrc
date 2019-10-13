@@ -27,5 +27,6 @@
         <file>text_editor/Undo.svg</file>
         <file>text_editor/TextColor.svg</file>
         <file>text_editor/ShowColors.png</file>
+        <file>text_editor/Close.svg</file>
     </qresource>
 </RCC>

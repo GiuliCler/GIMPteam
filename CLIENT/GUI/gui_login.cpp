@@ -36,8 +36,16 @@ void GUI_Login::on_loginButton_clicked()
         QMessageBox::information(this, "", "\"Username\" field is empty");
         return;
     }
+    if(ui->usernameLineEdit->text().contains('\\')){
+        QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"Username\"");
+        return;
+    }
     if(ui->passwordLineEdit->text().isEmpty()){
         QMessageBox::information(this, "", "\"Password\" field is empty");
+        return;
+    }
+    if(ui->passwordLineEdit->text().contains('\\')){
+        QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"Password\"");
         return;
     }
 

@@ -24,9 +24,9 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
     ui->toolsBarWidget->layout()->addWidget(toolsbar);
 
     //questo serve a togliere quel fastidioso bordino bianco attorno alle labels del tabwidget
-    ui->tabWidget->tabBar()->setStyleSheet(ui->tabWidget->tabBar()->styleSheet().append("background: rgb(240,240,240);"));
+    //ui->tabWidget->tabBar()->setStyleSheet(ui->tabWidget->tabBar()->styleSheet().append("background: rgb(240,240,240);"));
     //la toolsbar è più bassa, quindi ne eguaglio la height alla height della users bar
-    toolsbar->setMinimumHeight(GUI_MyScrollArea::getFixedHeight());
+    //toolsbar->setMinimumHeight(GUI_MyScrollArea::getFixedHeight());
 
 
     //ottengo l'elenco degli utenti che al momento stanno guardando il mio stesso document e ne creo icona e cursore
