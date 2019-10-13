@@ -29,4 +29,9 @@
         <file>text_editor/ShowColors.png</file>
         <file>text_editor/Close.svg</file>
     </qresource>
+    <qresource prefix="/widgets_parts">
+        <file>widgets_parts/arrowdown.png</file>
+        <file>widgets_parts/arrow-down.png</file>
+        <file>widgets_parts/arrow-up.png</file>
+    </qresource>
 </RCC>
