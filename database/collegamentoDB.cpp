@@ -282,19 +282,25 @@ int CollegamentoDB::aggiungiPartecipante(std::string nomeDOC, std::string userna
                 /* L'utente non è ancora stato abilitato alla modifica del documento */
 
                 /* Ricavo il site_id che verra' assegnato all' utente che partecipa per la prima volta alla modifica del documento */
-                std::string queryMAX = "SELECT MAX(site_id) FROM utente_doc WHERE nome_doc=:doc";
+                int n, max = -1;
+                std::string queryMAX = "SELECT site_id FROM utente_doc WHERE nome_doc=:doc";
                 QSqlQuery risMAX;
                 risMAX.prepare(QString::fromStdString(queryMAX));
                 risMAX.bindValue(":doc", QString::fromStdString(nomeDOC));
 
                 risMAX.exec();
                 int siteID;
-                std::string testNULL = risMAX.value(0).toString().toUtf8().constData();
-                if(testNULL == "NULL"){
+
+                if(risMAX.size() == 0){
                     siteID = 0;
                 }
                 else{
-                    siteID = std::stoi(testNULL);
+                    while(risMAX.next()){
+                        n = risMAX.value(0).toInt();
+                        if(n > max)
+                            max = n;
+                    }
+                    siteID = max + 1;
                 }
 
                 /* Inserisco la riga relativa a utente-documento nel DB */
@@ -408,6 +414,8 @@ std::vector<std::string> CollegamentoDB::recuperaDocs(std::string username){
  *      =0 collaboratori -> vettore contenentente il solo elemento "nessuno"
  */
 std::vector<std::string> CollegamentoDB::recuperaCollaboratori(std::string nomeDOC){
+    std::vector<std::string> ritorno;
+    return ritorno;
     // TODO ------------------------------------------------------------------------------------------
 }
 
@@ -422,7 +430,13 @@ std::vector<std::string> CollegamentoDB::recuperaCollaboratori(std::string nomeD
  *      errore -> vettore composto dal solo valore -1
  */
 std::vector<int> CollegamentoDB::recuperaInfoUtenteDoc(std::string nomeDOC, std::string username){
+
     std::vector<int> rit;
+
+    if(nomeDOC.empty() || username.empty()){
+        rit.push_back(-1);
+        return rit;
+    }
 
     std::string query = "SELECT site_id, site_counter FROM utente_doc WHERE username=:user AND nome_doc=:doc";
     QSqlQuery ris;

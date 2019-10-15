@@ -20,10 +20,10 @@ public:
     std::string recuperaDocDatoURI(std::string uri);
     std::vector<std::string> recuperaDocs(std::string username);
     std::vector<std::string> recuperaCollaboratori(std::string nomeDOC);                    // TODO
-    std::vector<int> recuperaInfoUtenteDoc(std::string nomeDOC, std::string username);      // TODO -- to test
-    int aggiungiPartecipante(std::string nomeDOC, std::string username);                     // TODO -- to re-test
+    std::vector<int> recuperaInfoUtenteDoc(std::string nomeDOC, std::string username);
+    int aggiungiPartecipante(std::string nomeDOC, std::string username);
     int rimuoviPartecipante(std::string nomeDOC, std::string username);                      // TODO -- to test
-    int aggiornaSiteCounter(std::string nomeDOC, std::string username, int siteCount);      // TODO -- to test
+    int aggiornaSiteCounter(std::string nomeDOC, std::string username, int siteCount);
     int aggiornaUser(std::string username, std::string nuova_password, std::string nuovo_nickname, std::string nuova_icona);
 };
 

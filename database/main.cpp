@@ -11,7 +11,6 @@ int main(int argc, char *argv[]) {
     CollegamentoDB* link = new CollegamentoDB();
     link->connettiDB("gimpdocs_db");
 
-    std::cout<<"---------------------------------------------"<<std::endl;
     std::cout<<"----------------- PROVA: SIGNUP -------------------"<<std::endl;
 
     /* Creo due utenti */
@@ -28,7 +27,6 @@ int main(int argc, char *argv[]) {
     int quattro = link->signup("utente3@p.it", "scimmia", "carciofomalefico", "");
     std::cout<<"Inserimento quattro: "<<quattro<<std::endl;     // valore di ritorno atteso: 1
 
-    std::cout<<"---------------------------------------------"<<std::endl;
     std::cout<<"----------------- PROVA: CREA DOC -------------------"<<std::endl;
 
     /* Creo due documenti */
@@ -41,7 +39,6 @@ int main(int argc, char *argv[]) {
     int three = link->creaDoc("DivinaCommedia");
     std::cout<<"Inserimento three: "<<three<<std::endl;     // valore di ritorno atteso: 0
 
-    std::cout<<"---------------------------------------------"<<std::endl;
     std::cout<<"----------------- PROVA: BOUNDARIES SIGNUP E CREA DOC -------------------"<<std::endl;
 
     /* Provo i boundary case (stringhe vuote) --> valori di ritorno attesi: 0 */
@@ -55,7 +52,6 @@ int main(int argc, char *argv[]) {
     rit = link->creaDoc("");
     std::cout<<"Nome doc vuoto: "<<rit<<std::endl;
 
-    std::cout<<"---------------------------------------------"<<std::endl;
     std::cout<<"----------------- PROVA: AGGIUNGI PARTECIPANTE -------------------"<<std::endl;
 
     /* Segno che l'utente 1 è abilitato alla modifica del documento 1 */
@@ -89,7 +85,6 @@ int main(int argc, char *argv[]) {
     m = link->aggiungiPartecipante("", "utente1@p.it");
     std::cout<<"Utente1DocVuoto: "<<m<<std::endl;
 
-    std::cout<<"---------------------------------------------"<<std::endl;
     std::cout<<"----------------- PROVA: RECUPERA DOCS -------------------"<<std::endl;
 
     /* Recupero i documenti dell'utente 1 (doc1 e doc2) */
@@ -104,7 +99,6 @@ int main(int argc, char *argv[]) {
     for(auto j=doc_utente3.begin(); j!=doc_utente3.end(); j++)
         std::cout<<"\t"<<(*j)<<std::endl;
 
-    std::cout<<"---------------------------------------------"<<std::endl;
     std::cout<<"----------------- PROVA: LOGIN -------------------"<<std::endl;
 
     /* Corretto login utente 1 */
@@ -148,7 +142,6 @@ int main(int argc, char *argv[]) {
     for(auto i=log6.begin(); i!=log6.end(); i++)
         std::cout<<"\t"<<(*i)<<std::endl;
 
-    std::cout<<"---------------------------------------------"<<std::endl;
     std::cout<<"----------------- PROVA: RECUPERA URI -------------------"<<std::endl;
 
     /* Richiedo l'uri del doc 1 --> valore di ritorno atteso: URI */
@@ -163,7 +156,6 @@ int main(int argc, char *argv[]) {
     std::string uri2 = link->recuperaURI("");
     std::cout<<"URI doc vuoto: "<<uri2<<std::endl;
 
-    std::cout<<"---------------------------------------------"<<std::endl;
     std::cout<<"----------------- PROVA: AGGIORNA USER -------------------"<<std::endl;
 
    /* Modifico il nickname dell'utente1 */
@@ -199,7 +191,6 @@ int main(int argc, char *argv[]) {
     int upd7 = link->aggiornaUser("utente2@p.it", "fenicottero", "paperella14", "");
     std::cout<<"Icona vuota: "<<upd7<<std::endl;
 
-    std::cout<<"---------------------------------------------"<<std::endl;
     std::cout<<"----------------- PROVA: RECUPERA DOC DATO URI -------------------"<<std::endl;
 
     /* Fornisco l'uri del documento 1 */
@@ -214,7 +205,65 @@ int main(int argc, char *argv[]) {
     std::string doc2 = link->recuperaDocDatoURI("");
     std::cout<<"URI vuoto... "<<doc2<<std::endl;
 
-    std::cout<<"---------------------------------------------"<<std::endl;
+    std::cout<<"----------------- PROVA: RECUPERA SITE_ID E SITE_COUNTER -------------------"<<std::endl;
+    /* Recupero site_id e site_counter della coppia utente2@p.it-DivinaCommedia */
+    std::vector<int> siteUTENTE2 = link->recuperaInfoUtenteDoc("DivinaCommedia", "utente2@p.it");
+    std::cout<<"site_id e site_counter di utente2-DivinaCommedia:"<<std::endl;
+    for(auto i=siteUTENTE2.begin(); i!=siteUTENTE2.end(); i++)
+        std::cout<<"\t"<<(*i)<<std::endl;
+
+    /* Recupero site_id e site_counter di un utente inesistente e di un doc esistente */
+    std::vector<int> siteUtenteNonEsistente = link->recuperaInfoUtenteDoc("DivinaCommedia", "utente40@p.it");
+    std::cout<<"site_id e site_counter di utenteINESISTENTE-DivinaCommedia:"<<std::endl;
+    for(auto i=siteUtenteNonEsistente.begin(); i!=siteUtenteNonEsistente.end(); i++)
+        std::cout<<"\t"<<(*i)<<std::endl;
+
+    /* Recupero site_id e site_counter di un utente esistente e di un doc inesistente */
+    std::vector<int> siteDocNonEsistente = link->recuperaInfoUtenteDoc("IlFuMattiaPascal", "utente2@p.it");
+    std::cout<<"site_id e site_counter di utente2-docINESISTENTE:"<<std::endl;
+    for(auto i=siteDocNonEsistente.begin(); i!=siteDocNonEsistente.end(); i++)
+        std::cout<<"\t"<<(*i)<<std::endl;
+
+    /* Boundary case: nomeDOC vuoto */
+    std::vector<int> siteDOCvuoto = link->recuperaInfoUtenteDoc("", "utente2@p.it");
+    std::cout<<"site_id e site_counter di utente2-docVUOTO:"<<std::endl;
+    for(auto i=siteDOCvuoto.begin(); i!=siteDOCvuoto.end(); i++)
+        std::cout<<"\t"<<(*i)<<std::endl;
+
+    /* Boundary case: username vuoto */
+    std::vector<int> siteUTENTEvuoto = link->recuperaInfoUtenteDoc("DivinaCommedia", "");
+    std::cout<<"site_id e site_counter di utenteVUOTO-DivinaCommedia:"<<std::endl;
+    for(auto i=siteUTENTEvuoto.begin(); i!=siteUTENTEvuoto.end(); i++)
+        std::cout<<"\t"<<(*i)<<std::endl;
+
+    std::cout<<"----------------- PROVA: AGGIORNA SITE_COUNTER -------------------"<<std::endl;
+    /* Modifico il site_counter della coppia utente1@p.it - Promessi Sposi*/
+    // valore di ritorno atteso: 1
+    int k0 = link->aggiornaSiteCounter("PromessiSposi", "utente1@p.it", 50);
+    std::cout<<"Aggiornamento site_couter coppia utente1@p.it - Promessi Sposi:  "<<k0<<std::endl;
+
+    /* Modifico il site_counter di una coppia con nomeDOC inesistente */
+    // valore di ritorno atteso: 0
+    int k1 = link->aggiornaSiteCounter("IlFuMattiaPascal", "utente1@p.it", 33);
+    std::cout<<"Aggiornamento site_couter doc inesistente:  "<<k1<<std::endl;
+
+    /* Modifico il site_counter di una coppia con username inesistente */
+    // valore di ritorno atteso: 0
+    int k2 = link->aggiornaSiteCounter("PromessiSposi", "utente55@p.it", 55);
+    std::cout<<"Aggiornamento site_couter username inesistente:  "<<k2<<std::endl;
+
+    /* Boundary case: nomeDOC vuoto */
+    // valore di ritorno atteso: 0
+    int k3 = link->aggiornaSiteCounter("", "utente1@p.it", 44);
+    std::cout<<"Aggiornamento site_couter doc vuoto:  "<<k3<<std::endl;
+
+    /* Boundary case: username vuoto */
+    // valore di ritorno atteso: 0
+    int k4 = link->aggiornaSiteCounter("PromessiSposi", "", 68);
+    std::cout<<"Aggiornamento site_couter username vuoto:  "<<k4<<std::endl;
+
+    std::cout<<"----------------- PROVA: RIMUOVI PARTECIPANTE -------------------"<<std::endl;
+    // TODO --------------
 
     return a.exec();
 }
