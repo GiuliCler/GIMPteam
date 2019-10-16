@@ -25,8 +25,6 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
     GUI_MyTextEdit *textEdit = new GUI_MyTextEdit(this);
     ui->textWidget->layout()->addWidget(textEdit);
     crdtController = new CRDT_controller(*textEdit, *toolsbar);
-    //TODO: questa è una posizione estremamente provvisoria per questa connect
-    connect(toolsbar->ui->italicPushButton, &QPushButton::clicked, crdtController, &CRDT_controller::setItalic);
 
     //questo serve a togliere quel fastidioso bordino bianco attorno alle labels del tabwidget
     //ui->tabWidget->tabBar()->setStyleSheet(ui->tabWidget->tabBar()->styleSheet().append("background: rgb(240,240,240);"));
