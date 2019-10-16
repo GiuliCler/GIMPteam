@@ -424,13 +424,56 @@ std::vector<std::string> CollegamentoDB::recuperaDocs(std::string username){
  * Parametri:
  *      nomeDOC: documento di cui si devono conoscere i collaboratori
  * Ritorno:
- *      >0 collaboratori -> vettore composto dagli username/nickname (??????) degli utenti collaboratori
- *      =0 collaboratori -> vettore contenentente il solo elemento "nessuno"
+ *      >0 collaboratori -> vettore composto da vettori con (username, nickname, icona) degli utenti collaboratori
+ *      =0 collaboratori, ovvero no righe trovate in utente_doc -> vettore contenentente un solo vettore con ("no")
+ *      errere -> vettore contenentente un solo vettore con ("errore")
  */
-std::vector<std::string> CollegamentoDB::recuperaCollaboratori(std::string nomeDOC){
-    std::vector<std::string> ritorno;
+std::vector<std::vector<std::string>> CollegamentoDB::recuperaCollaboratori(std::string nomeDOC){
+    std::vector<std::vector<std::string>> ritorno;
+
+    if(nomeDOC.empty()){
+        std::vector<std::string> error;
+        error.emplace_back("errore");
+        ritorno.push_back(error);
+        return ritorno;
+    }
+
+    std::string query = "SELECT utente_doc.username, nickname, icona FROM utenti, utente_doc WHERE utenti.username=utente_doc.username AND utente_doc.nome_doc=:doc";
+    QSqlQuery ris;
+    ris.prepare(QString::fromStdString(query));
+    ris.bindValue(":doc", QString::fromStdString(nomeDOC));
+
+    if(ris.exec()){
+        if(ris.size() == 0){
+
+            /* No collaboratori per il doc nomeDoc */
+            std::vector<std::string> nocollab;
+            nocollab.emplace_back("no");
+            ritorno.push_back(nocollab);
+
+        } else {
+
+            /* Si, ci sono collaboratori per il doc nomeDoc */
+            while(ris.next()){
+                std::vector<std::string> collaboratore;
+                std::string s;
+                s = ris.value(0).toString().toUtf8().constData();   // username
+                collaboratore.push_back(s);
+                s = ris.value(1).toString().toUtf8().constData();   // nickname
+                collaboratore.push_back(s);
+                s = ris.value(2).toString().toUtf8().constData();   // icona
+                collaboratore.push_back(s);
+                ritorno.push_back(collaboratore);
+            }
+
+        }
+    } else {
+        std::vector<std::string> error;
+        error.emplace_back("errore");
+        ritorno.push_back(error);
+    }
+
     return ritorno;
-    // TODO ------------------------------------------------------------------------------------------
 }
 
 /*

@@ -295,5 +295,49 @@ int main(int argc, char *argv[]) {
     int rimuovi5 = link->rimuoviPartecipante("", "utente1@p.it");
     std::cout<<"Rimozione riga doc VUOTO:  "<<rimuovi5<<std::endl;
 
+    std::cout<<"----------------- PROVA: RECUPERA COLLABORATORI -------------------"<<std::endl;
+
+    /* Ripristino la situazione a prima della funzione "rimuoviPartecipante" */
+    int p;
+    p = link->creaDoc("DivinaCommedia");
+    p = link->aggiungiPartecipante("DivinaCommedia", "utente1@p.it");
+    p = link->aggiungiPartecipante("DivinaCommedia", "utente2@p.it");
+
+    /* Recupero collaboratori documento: DivinaCommedia */
+    std::vector<std::vector<std::string>> collab0 = link->recuperaCollaboratori("DivinaCommedia");
+    std::cout<<"Collaboratori documento DivinaCommedia:"<<std::endl;
+    for(auto i=collab0.begin(); i!=collab0.end(); i++){
+        for(auto elem : (*i)){
+            std::cout<<"\t"<<elem<<std::endl;
+        }
+    }
+
+    /* Recupero collaboratori documento: PromessiSposi */
+    std::vector<std::vector<std::string>> collab1 = link->recuperaCollaboratori("PromessiSposi");
+    std::cout<<"Collaboratori documento PromessiSposi:"<<std::endl;
+    for(auto i=collab1.begin(); i!=collab1.end(); i++){
+        for(auto elem : (*i)){
+            std::cout<<"\t"<<elem<<std::endl;
+        }
+    }
+
+    /* Recupero collaboratori documento inesistente */
+    std::vector<std::vector<std::string>> collab2 = link->recuperaCollaboratori("IlFuMattiaPascal");
+    std::cout<<"Collaboratori documento inesistente:"<<std::endl;
+    for(auto i=collab2.begin(); i!=collab2.end(); i++){
+        for(auto elem : (*i)){
+            std::cout<<"\t"<<elem<<std::endl;
+        }
+    }
+
+    /* Recupero collaboratori documento vuoto */
+    std::vector<std::vector<std::string>> collab3 = link->recuperaCollaboratori("");
+    std::cout<<"Collaboratori documento vuoto:"<<std::endl;
+    for(auto i=collab3.begin(); i!=collab3.end(); i++){
+        for(auto elem : (*i)){
+            std::cout<<"\t"<<elem<<std::endl;
+        }
+    }
+
     return a.exec();
 }

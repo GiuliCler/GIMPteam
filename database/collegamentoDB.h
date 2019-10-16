@@ -19,7 +19,7 @@ public:
     std::string recuperaURI(std::string nomeDOC);
     std::string recuperaDocDatoURI(std::string uri);
     std::vector<std::string> recuperaDocs(std::string username);
-    std::vector<std::string> recuperaCollaboratori(std::string nomeDOC);                    // TODO
+    std::vector<std::vector<std::string>> recuperaCollaboratori(std::string nomeDOC);
     std::vector<int> recuperaInfoUtenteDoc(std::string nomeDOC, std::string username);
     int aggiungiPartecipante(std::string nomeDOC, std::string username);
     int rimuoviPartecipante(std::string nomeDOC, std::string username);
