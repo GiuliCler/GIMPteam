@@ -340,13 +340,19 @@ int CollegamentoDB::rimuoviPartecipante(std::string nomeDOC, std::string usernam
 
     std::string query1 = "SELECT * FROM utente_doc WHERE username=:user AND nome_doc=:doc";
     std::string query2 = "DELETE FROM utente_doc WHERE username=:user AND nome_doc=:doc";
-    QSqlQuery ris1, ris2;
+    std::string query3 = "SELECT * FROM utente_doc WHERE nome_doc=:doc";
+    std::string query4 = "DELETE FROM doc WHERE nome_doc=:doc";
+    QSqlQuery ris1, ris2, ris3, ris4;
     ris1.prepare(QString::fromStdString(query1));
     ris2.prepare(QString::fromStdString(query2));
+    ris3.prepare(QString::fromStdString(query3));
+    ris4.prepare(QString::fromStdString(query4));
     ris1.bindValue(":user", QString::fromStdString(username));
     ris1.bindValue(":doc", QString::fromStdString(nomeDOC));
     ris2.bindValue(":user", QString::fromStdString(username));
     ris2.bindValue(":doc", QString::fromStdString(nomeDOC));
+    ris3.bindValue(":doc", QString::fromStdString(nomeDOC));
+    ris4.bindValue(":doc", QString::fromStdString(nomeDOC));
 
     if(QSqlDatabase::database().driver()->hasFeature(QSqlDriver::Transactions)){
 
@@ -360,8 +366,16 @@ int CollegamentoDB::rimuoviPartecipante(std::string nomeDOC, std::string usernam
 
         } else {
 
-            /* Riga (username, nomeDOC) esistente nella tabella UTENTE_DOC */
+            /* Riga (username, nomeDOC) esistente nella tabella UTENTE_DOC --> elimino tale riga dalla tabella UTENTE_DOC */
             ris2.exec();
+
+            /* Verifico se esistono altre righe nella tabella UTENTE_DOC relative al documento nomeDOC e, se non esistono,
+             * cancello il documento dalla tabella DOC */
+            ris3.exec();
+            if(ris3.size() == 0){
+                ris4.exec();
+            }
+
             QSqlDatabase::database().commit();
 
         }

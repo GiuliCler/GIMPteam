@@ -263,7 +263,37 @@ int main(int argc, char *argv[]) {
     std::cout<<"Aggiornamento site_couter username vuoto:  "<<k4<<std::endl;
 
     std::cout<<"----------------- PROVA: RIMUOVI PARTECIPANTE -------------------"<<std::endl;
-    // TODO --------------
+    // int rimuoviPartecipante(std::string nomeDOC, std::string username);
+
+    /* Rimozione riga utente2-DivinaCommedia (NO eliminazione da tabella DOC) */
+    // valore di ritorno atteso: 1
+    int rimuovi0 = link->rimuoviPartecipante("DivinaCommedia", "utente2@p.it");
+    std::cout<<"Rimozione riga utente2-DivinaCommedia:  "<<rimuovi0<<std::endl;
+
+    /* Rimozione riga utente1-DivinaCommedia (SI eliminazione da tabella DOC del documento DivinaCommedia) */
+    // valore di ritorno atteso: 1
+    int rimuovi1 = link->rimuoviPartecipante("DivinaCommedia", "utente1@p.it");
+    std::cout<<"Rimozione riga utente1-DivinaCommedia:  "<<rimuovi1<<std::endl;
+
+    /* Rimozione riga utente NON ESISTENTE */
+    // valore di ritorno atteso: 0
+    int rimuovi2 = link->rimuoviPartecipante("DivinaCommedia", "utente55@p.it");
+    std::cout<<"Rimozione riga utente NON ESISTENTE:  "<<rimuovi2<<std::endl;
+
+    /* Rimozione riga doc NON ESISTENTE */
+    // valore di ritorno atteso: 0
+    int rimuovi3 = link->rimuoviPartecipante("IlFuMattiaPascal", "utente1@p.it");
+    std::cout<<"Rimozione riga doc NON ESISTENTE:  "<<rimuovi3<<std::endl;
+
+    /* Rimozione riga utente VUOTO */
+    // valore di ritorno atteso: 0
+    int rimuovi4 = link->rimuoviPartecipante("DivinaCommedia", "");
+    std::cout<<"Rimozione riga utente VUOTO:  "<<rimuovi4<<std::endl;
+
+    /* Rimozione riga doc VUOTO */
+    // valore di ritorno atteso: 0
+    int rimuovi5 = link->rimuoviPartecipante("", "utente1@p.it");
+    std::cout<<"Rimozione riga doc VUOTO:  "<<rimuovi5<<std::endl;
 
     return a.exec();
 }
