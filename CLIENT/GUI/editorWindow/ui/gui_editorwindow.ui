@@ -67,8 +67,8 @@
     <addaction name="separator"/>
     <addaction name="menuAlign"/>
     <addaction name="separator"/>
-    <addaction name="actionItalic"/>
     <addaction name="actionBold"/>
+    <addaction name="actionItalic"/>
     <addaction name="actionUnderlined"/>
     <addaction name="actionStrikethrough"/>
    </widget>

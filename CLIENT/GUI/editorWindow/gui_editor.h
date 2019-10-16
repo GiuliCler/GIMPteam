@@ -8,12 +8,19 @@
 #include <QMap>
 #include <QColor>
 
+class GUI_ToolsBar;
+class GUI_UsersBar;
+class GUI_MyTextEdit;
+
 class GUI_Editor : public QWidget
 {
     Q_OBJECT
 public:
     long documentId;
     GIMPdocs *gimpParent;
+    GUI_ToolsBar *childToolsBar;
+    GUI_UsersBar *childUsersBar;
+    GUI_MyTextEdit *childMyTextEdit;
     QMap<long, QColor*> userColorMap;
     //indica se il testo è colorato coi colori degli utenti per identificarli
     bool usersColors;
@@ -35,6 +42,11 @@ public slots:
     void launchSetUi1();
     void on_actionApplyUsersColors();
     void on_actionApplyTextColors();
+
+    void on_actionBold();
+    void on_actionItalic();
+    void on_actionUnderlined();
+    void on_actionStrikethrough();
 
 private:
     Ui::GUI_Editor *ui;

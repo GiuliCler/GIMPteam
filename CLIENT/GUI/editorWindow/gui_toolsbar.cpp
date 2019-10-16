@@ -8,6 +8,8 @@ GUI_ToolsBar::GUI_ToolsBar(QWidget *parent) : QWidget(parent){
 
     setTextColorIconColor(Stub::getCurrentTextColor());
 
+    connect(ui->boldPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionBold);
+    connect(ui->italicPushButton, &QPushButton::pressed, editorParent, &GUI_Editor::on_actionItalic);
     connect(ui->closePushButton, &QPushButton::clicked, editorParent, &GUI_Editor::launchSetUi1);
 }
 

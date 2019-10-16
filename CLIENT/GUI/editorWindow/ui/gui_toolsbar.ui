@@ -37,7 +37,7 @@ QPushButton:hover:!pressed{
 	border-left-color: hsv(165, 200, 255);
 }
 
-QPushButton:pressed{
+QPushButton:pressed,QPushButton:checked {
     border-style: inset;
 	background-color: hsv(165, 55, 220);
 }
@@ -678,6 +678,9 @@ QSpinBox::down-button:pressed,QSpinBox::up-button:pressed {
              <property name="icon">
               <iconset resource="../../images/images.qrc">
                <normaloff>:/editor/text_editor/Bold.svg</normaloff>:/editor/text_editor/Bold.svg</iconset>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
              </property>
             </widget>
            </item>

@@ -16,12 +16,12 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
     ui = new Ui::GUI_Editor();
     ui->setupUi(this);
 
-    GUI_MyTextEdit *textEdit = new GUI_MyTextEdit(this);
-    ui->textWidget->layout()->addWidget(textEdit);
-    GUI_UsersBar *usersbar = new GUI_UsersBar(this);
-    ui->usersBarWidget->layout()->addWidget(usersbar);
-    GUI_ToolsBar *toolsbar = new GUI_ToolsBar(this);
-    ui->toolsBarWidget->layout()->addWidget(toolsbar);
+    childMyTextEdit = new GUI_MyTextEdit(this);
+    ui->textWidget->layout()->addWidget(childMyTextEdit);
+    childUsersBar = new GUI_UsersBar(this);
+    ui->usersBarWidget->layout()->addWidget(childUsersBar);
+    childToolsBar = new GUI_ToolsBar(this);
+    ui->toolsBarWidget->layout()->addWidget(childToolsBar);
 
     //questo serve a togliere quel fastidioso bordino bianco attorno alle labels del tabwidget
     //ui->tabWidget->tabBar()->setStyleSheet(ui->tabWidget->tabBar()->styleSheet().append("background: rgb(240,240,240);"));
@@ -44,6 +44,8 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
 GUI_Editor::~GUI_Editor(){
     delete ui;
 }
+
+/*************ACTIONS*********************************/
 
 void GUI_Editor::connectMenuBarActions(){
     connect(this->gimpParent->ui2->closeDocumentAction, &QAction::triggered, this, &GUI_Editor::launchSetUi1);
@@ -74,6 +76,40 @@ void GUI_Editor::on_actionApplyUsersColors(){
 void GUI_Editor::on_actionApplyTextColors(){
     this->gimpParent->ui2->actionApplyUsersColors->setEnabled(true);
     this->gimpParent->ui2->actionApplyTextColors->setEnabled(false);
+}
+
+void GUI_Editor::on_actionBold(){
+    //questo serve a counterare il fatto che in caso di click il button cambia automaticamente stato da chechek ad unchechek e viceversa, ma voglio essere io a decidere quando cambiare stato
+    childToolsBar->ui->boldPushButton->setChecked(!childToolsBar->ui->boldPushButton->isChecked());
+
+    //non so se devo cambiare lo stato di checked o no, quindi lo chiedo al text editor
+    childToolsBar->ui->boldPushButton->setChecked(Stub::isGenericFontAttributeActivated(childToolsBar->ui->boldPushButton->isChecked()));
+}
+
+void GUI_Editor::on_actionItalic(){
+    /*childToolsBar->ui->italicPushButton->setChecked(!childToolsBar->ui->boldPushButton->isChecked());
+
+    childToolsBar->ui->italicPushButton->setChecked(Stub::isGenericFontAttributeActivated(childToolsBar->ui->boldPushButton->isChecked()));
+    */
+    childToolsBar->ui->italicPushButton->setDown(!childToolsBar->ui->italicPushButton->isDown());
+    //childToolsBar->ui->strikethroughPushButton->setDown(true);
+}
+
+void GUI_Editor::on_actionUnderlined(){
+    //questo serve a counterare il fatto che in caso di click il button cambia automaticamente stato da chechek ad unchechek e viceversa, ma voglio essere io a decidere quando cambiare stato
+    childToolsBar->ui->underlinedPushButton->setChecked(!childToolsBar->ui->boldPushButton->isChecked());
+
+    //non so se devo cambiare lo stato di checked o no, quindi lo chiedo al text editor
+    childToolsBar->ui->underlinedPushButton->setChecked(Stub::isGenericFontAttributeActivated(childToolsBar->ui->boldPushButton->isChecked()));
+}
+
+void GUI_Editor::on_actionStrikethrough(){
+    //questo serve a counterare il fatto che in caso di click il button cambia automaticamente stato da chechek ad unchechek e viceversa, ma voglio essere io a decidere quando cambiare stato
+    childToolsBar->ui->strikethroughPushButton->setChecked(!childToolsBar->ui->boldPushButton->isChecked());
+
+    //non so se devo cambiare lo stato di checked o no, quindi lo chiedo al text editor
+    childToolsBar->ui->strikethroughPushButton->setChecked(Stub::isGenericFontAttributeActivated(childToolsBar->ui->boldPushButton->isChecked()));
+
 }
 
 void GUI_Editor::addUserToEditorGUI(long userid){
