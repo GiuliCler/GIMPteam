@@ -5,6 +5,7 @@
 #include "gui_usersbar.h"
 #include "gui_toolsbar.h"
 #include "gui_myscrollarea.h"
+#include "../../CRDT/crdt_controller.h"
 #include <QMessageBox>
 #include <QScrollBar>
 

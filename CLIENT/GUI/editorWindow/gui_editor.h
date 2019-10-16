@@ -8,6 +8,8 @@
 #include <QMap>
 #include <QColor>
 
+class CRDT_controller;
+
 class GUI_ToolsBar;
 class GUI_UsersBar;
 class GUI_MyTextEdit;
@@ -23,6 +25,7 @@ public:
     GUI_ToolsBar *childToolsBar;
     GUI_UsersBar *childUsersBar;
     GUI_MyTextEdit *childMyTextEdit;
+    CRDT_controller *crdtController;
     QMap<long, QColor*> userColorMap;
     //indica se il testo è colorato coi colori degli utenti per identificarli
     bool usersColors;

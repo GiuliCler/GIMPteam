@@ -1,4 +1,5 @@
 #include "gui_toolsbar.h"
+#include "../../CRDT/crdt_controller.h"
 #include <QColorDialog>
 
 GUI_ToolsBar::GUI_ToolsBar(QWidget *parent) : QWidget(parent){
@@ -18,6 +19,8 @@ GUI_ToolsBar::GUI_ToolsBar(QWidget *parent) : QWidget(parent){
     connect(ui->alignJustifiedPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionJustified);
 
     connect(ui->closePushButton, &QPushButton::clicked, editorParent, &GUI_Editor::launchSetUi1);
+    //TODO: questa è una posizione estremamente provvisoria per questa connect
+    //connect(ui->italicPushButton, &QPushButton::clicked, editorParent->crdtController, &CRDT_controller::setItalic);
 }
 
 GUI_ToolsBar::~GUI_ToolsBar(){

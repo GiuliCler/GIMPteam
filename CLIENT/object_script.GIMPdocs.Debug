@@ -1,3 +1,4 @@
+debug/crdt_controller.o
 debug/gui_colorsmanager.o
 debug/gui_myscrollarea.o
 debug/gui_toolsbar.o
@@ -16,6 +17,7 @@ debug/gui_uri.o
 debug/main.o
 debug/stub.o
 debug/qrc_images.o
+debug/moc_crdt_controller.o
 debug/moc_gui_colorsmanager.o
 debug/moc_gui_myscrollarea.o
 debug/moc_gui_toolsbar.o
