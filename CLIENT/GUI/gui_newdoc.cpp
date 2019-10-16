@@ -27,6 +27,10 @@ void GUI_Newdoc::on_createPushButton_clicked()
         QMessageBox::information(this, "", "\"Name\" field is empty");
         return;
     }
+    if(ui->nameLineEdit->text().contains('\\')){
+        QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"Name\"");
+        return;
+    }
 
     long id = Stub::createDocument(static_cast<GIMPdocs*>(gimpParent)->userid, ui->nameLineEdit->text());
     if(id < 0){
@@ -43,6 +47,10 @@ void GUI_Newdoc::on_openURIPushButton_clicked()
 {
     if(ui->URILineEdit->text().isEmpty()){
         QMessageBox::information(this, "", "\"URI\" field is empty");
+        return;
+    }
+    if(ui->nameLineEdit->text().contains('\\')){
+        QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"URI\"");
         return;
     }
 

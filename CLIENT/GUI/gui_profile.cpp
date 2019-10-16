@@ -42,13 +42,27 @@ void GUI_Profile::on_savePushButton_clicked()
         QMessageBox::information(this, "", "\"Nickname\" field is empty");
         return;
     }
-    //in caso di modifica questo non ha bisogno di essere controllato perchè è read only
-    if(gimpParent->userid < 0 && ui->usernameLineEdit->text().isEmpty()){
-        QMessageBox::information(this, "", "\"Username\" field is empty");
+    if(ui->nicknameLineEdit->text().contains('\\')){
+        QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"Nickname\"");
         return;
+    }
+    //in caso di modifica questo non ha bisogno di essere controllato perchè è read only
+    if(gimpParent->userid < 0){
+        if(ui->usernameLineEdit->text().isEmpty()){
+            QMessageBox::information(this, "", "\"Username\" field is empty");
+            return;
+        }
+        if(ui->usernameLineEdit->text().contains('\\')){
+            QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"Username\"");
+            return;
+        }
     }
     if(ui->passwordLineEdit->text().isEmpty()){
         QMessageBox::information(this, "", "\"Password\" field is empty");
+        return;
+    }
+    if(ui->passwordLineEdit->text().contains('\\')){
+        QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"Password\"");
         return;
     }
     if(ui->repeatLineEdit->text().isEmpty()){
@@ -60,7 +74,7 @@ void GUI_Profile::on_savePushButton_clicked()
         return;
     }
 
-    //creo un nuovo utente o aggirno quello vecchio
+    //creo un nuovo utente o aggiorno quello vecchio
     if(gimpParent->userid < 0){
         //creo un nuovo user
         long n = Stub::createUser(ui->usernameLineEdit->text(), ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), 1);

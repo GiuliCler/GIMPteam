@@ -80,10 +80,9 @@
     <addaction name="actionApplyTextColors"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuUsers"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuUsers"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <action name="closeDocumentAction">
    <property name="text">
     <string>Close document</string>
