@@ -25,6 +25,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        CRDT/crdt_controller.cpp \
         GUI/editorWindow/gui_colorsmanager.cpp \
         GUI/editorWindow/gui_myscrollarea.cpp \
         GUI/editorWindow/gui_toolsbar.cpp \
@@ -44,6 +45,7 @@ SOURCES += \
         stub.cpp
 
 HEADERS += \
+        CRDT/crdt_controller.h \
         GUI/editorWindow/gui_colorsmanager.h \
         GUI/editorWindow/gui_myscrollarea.h \
         GUI/editorWindow/gui_toolsbar.h \
