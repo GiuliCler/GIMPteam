@@ -11,6 +11,7 @@ class GUI_ToolsBar : public QWidget
     Q_OBJECT
 public:
     GUI_Editor *editorParent;
+    Ui::GUI_ToolsBar *ui;
 
     explicit GUI_ToolsBar(QWidget *parent);
     ~GUI_ToolsBar();
@@ -19,7 +20,7 @@ private slots:
     void on_colorPushButton_clicked();
 
 private:
-    Ui::GUI_ToolsBar *ui;
+
 
     void setTextColorIconColor(const QColor color);
 };

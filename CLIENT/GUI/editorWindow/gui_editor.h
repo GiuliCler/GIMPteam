@@ -8,12 +8,15 @@
 #include <QMap>
 #include <QColor>
 
+class CRDT_controller;
+
 class GUI_Editor : public QWidget
 {
     Q_OBJECT
 public:
     long documentId;
     GIMPdocs *gimpParent;
+    CRDT_controller *crdtController;
     QMap<long, QColor*> userColorMap;
     //indica se il testo è colorato coi colori degli utenti per identificarli
     bool usersColors;

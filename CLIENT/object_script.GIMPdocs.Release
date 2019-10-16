@@ -1,3 +1,4 @@
+release/crdt_controller.o
 release/gui_colorsmanager.o
 release/gui_myscrollarea.o
 release/gui_toolsbar.o
@@ -16,6 +17,7 @@ release/gui_uri.o
 release/main.o
 release/stub.o
 release/qrc_images.o
+release/moc_crdt_controller.o
 release/moc_gui_colorsmanager.o
 release/moc_gui_myscrollarea.o
 release/moc_gui_toolsbar.o
