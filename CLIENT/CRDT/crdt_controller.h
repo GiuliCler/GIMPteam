@@ -16,8 +16,29 @@ private:
 public:
     CRDT_controller(GUI_MyTextEdit& textEdit, GUI_ToolsBar& toolbar);
 
-public slots:
+private slots:
+    void setLeft();
+    void setCenter();
+    void setRight();
+    void setJustified();
+
+    void setBold();
     void setItalic();
+    void setStrikethrough();
+    void setUnderlined();
+
+    void setSize(int size);
+    void setFont(const QFont &f);
+
+    void copy();
+    void cut();
+    void paste();
+
+    void setTextColor(QColor color);
+
+    void currentCharFormatChanged(const QTextFormat &format);
+    void cursorMoved();
+    void contentChanged(int pos, int add, int del);
 };
 
 #endif // CRDT_CONTROLLER_H
