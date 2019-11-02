@@ -13,7 +13,7 @@ public:
     explicit GUI_MyScrollArea(QWidget *parent = nullptr);
     void updateSize(int numberOfUsers);
 
-    inline static int getMaxUsersIconsNumber(){return 10;}
+    inline static int getMaxUsersIconsNumber(){return 15;}
     //il 2 bilancia il margin sotto, un 17 sta al posto della scrollbar e l'altro 17 sta sopra e bilancia la scrollbar per avere simmetria
     inline static int getFixedHeight(){return GUI_Icons::iconSize + (2+17) + 17;}
 };

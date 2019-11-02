@@ -1,7 +1,6 @@
 #include "gui_myscrollarea.h"
 #include "gui_usersbar.h"
 #include <QHBoxLayout>
-//#include <QScrollBar>
 #include <QStyle>
 
 GUI_MyScrollArea::GUI_MyScrollArea(QWidget *parent) : QScrollArea(parent){
