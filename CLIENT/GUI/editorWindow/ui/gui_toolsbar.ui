@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>982</width>
+    <width>992</width>
     <height>70</height>
    </rect>
   </property>
@@ -40,6 +40,11 @@ QPushButton:hover:!pressed{
 QPushButton:pressed,QPushButton:checked {
     border-style: inset;
 	background-color: hsv(165, 55, 220);
+}
+
+QPushButton:checked{
+    border-style: inset;
+	background-color: hsv(165, 55, 235);
 }
 
 QFontComboBox{
