@@ -1,7 +1,7 @@
 #include "crdt_controller.h"
 #include <iostream>
 
-CRDT_controller::CRDT_controller(GUI_MyTextEdit& textEdit, GUI_ToolsBar& toolbar): textEdit(textEdit), toolbar(toolbar){
+CRDT_controller::CRDT_controller(GUI_MyTextEdit& textEdit, GUI_ToolsBar& toolbar): textEdit(textEdit), toolbar(toolbar), rememberFormatChange(false){
     QObject::connect(this->toolbar.findChild<QPushButton*>("alignLeftPushButton"), &QPushButton::clicked, this, &CRDT_controller::setLeft);
     QObject::connect(this->toolbar.findChild<QPushButton*>("alignCenterPushButton"), &QPushButton::clicked, this, &CRDT_controller::setCenter);
     QObject::connect(this->toolbar.findChild<QPushButton*>("alignRightPushButton"), &QPushButton::clicked, this, &CRDT_controller::setRight);
@@ -32,7 +32,15 @@ void CRDT_controller::setRight(){}
 void CRDT_controller::setJustified(){}
 
 void CRDT_controller::setBold(){}
-void CRDT_controller::setItalic(){}
+void CRDT_controller::setItalic(){
+    if(textEdit.textCursor().hasSelection() && textEdit.textCursor().position() < textEdit.textCursor().anchor()){
+        QTextCursor tmp(textEdit.textCursor());
+        tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+        textEdit.setFontItalic(!tmp.charFormat().fontItalic());
+    } else
+        textEdit.setFontItalic(!textEdit.fontItalic());
+    textEdit.setFocus();
+}
 void CRDT_controller::setStrikethrough(){}
 void CRDT_controller::setUnderlined(){}
 
@@ -45,6 +53,20 @@ void CRDT_controller::paste(){}
 
 void CRDT_controller::setTextColor(QColor color){}
 
-void CRDT_controller::currentCharFormatChanged(const QTextFormat &format){}
-void CRDT_controller::cursorMoved(){}
+void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
+    if(textEdit.textCursor().hasSelection() && textEdit.textCursor().position() < textEdit.textCursor().anchor()){
+        QTextCursor tmp = textEdit.textCursor();
+        tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+        toolbar.findChild<QPushButton*>("italicPushButton")->setChecked(tmp.charFormat().fontItalic());
+        rememberFormatChange = true;
+    } else
+        toolbar.findChild<QPushButton*>("italicPushButton")->setChecked(format.fontItalic());
+}
+
+void CRDT_controller::cursorMoved(){
+    if(rememberFormatChange){
+        rememberFormatChange = false;
+        currentCharFormatChanged(textEdit.currentCharFormat());
+    }
+}
 void CRDT_controller::contentChanged(int pos, int add, int del){}
