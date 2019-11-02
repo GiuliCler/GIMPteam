@@ -16,18 +16,12 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
     ui = new Ui::GUI_Editor();
     ui->setupUi(this);
 
-    GUI_MyTextEdit *textEdit = new GUI_MyTextEdit(this);
-    ui->textWidget->layout()->addWidget(textEdit);
-    GUI_UsersBar *usersbar = new GUI_UsersBar(this);
-    ui->usersBarWidget->layout()->addWidget(usersbar);
-    GUI_ToolsBar *toolsbar = new GUI_ToolsBar(this);
-    ui->toolsBarWidget->layout()->addWidget(toolsbar);
-
-    //questo serve a togliere quel fastidioso bordino bianco attorno alle labels del tabwidget
-    //ui->tabWidget->tabBar()->setStyleSheet(ui->tabWidget->tabBar()->styleSheet().append("background: rgb(240,240,240);"));
-    //la toolsbar è più bassa, quindi ne eguaglio la height alla height della users bar
-    //toolsbar->setMinimumHeight(GUI_MyScrollArea::getFixedHeight());
-
+    childMyTextEdit = new GUI_MyTextEdit(this);
+    ui->textWidget->layout()->addWidget(childMyTextEdit);
+    childUsersBar = new GUI_UsersBar(this);
+    ui->usersBarWidget->layout()->addWidget(childUsersBar);
+    childToolsBar = new GUI_ToolsBar(this);
+    ui->toolsBarWidget->layout()->addWidget(childToolsBar);
 
     //ottengo l'elenco degli utenti che al momento stanno guardando il mio stesso document e ne creo icona e cursore
     std::shared_ptr<QSet<long>> users = Stub::getWorkingUsersOnDocument(documentId);
@@ -45,6 +39,8 @@ GUI_Editor::~GUI_Editor(){
     delete ui;
 }
 
+/*************ACTIONS*********************************/
+
 void GUI_Editor::connectMenuBarActions(){
     connect(this->gimpParent->ui2->closeDocumentAction, &QAction::triggered, this, &GUI_Editor::launchSetUi1);
     connect(gimpParent->ui2->getURIAction, &QAction::triggered, [this](){
@@ -57,6 +53,15 @@ void GUI_Editor::connectMenuBarActions(){
     connect(gimpParent->ui2->actionApplyUsersColors, &QAction::triggered, findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName()), &GUI_UsersBar::on_showColorsPushButton_clicked);
     connect(gimpParent->ui2->actionApplyTextColors, &QAction::triggered, this, &GUI_Editor::on_actionApplyTextColors);
     connect(gimpParent->ui2->actionApplyTextColors, &QAction::triggered, findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName()), &GUI_UsersBar::on_hideColorsPushButton_clicked);
+
+    connect(gimpParent->ui2->actionBold, &QAction::triggered, this, &GUI_Editor::on_actionBold);
+    connect(gimpParent->ui2->actionItalic, &QAction::triggered, this, &GUI_Editor::on_actionItalic);
+    connect(gimpParent->ui2->actionUnderlined, &QAction::triggered, this, &GUI_Editor::on_actionUnderlined);
+    connect(gimpParent->ui2->actionStrikethrough, &QAction::triggered, this, &GUI_Editor::on_actionStrikethrough);
+    connect(gimpParent->ui2->actionLeft, &QAction::triggered, this, &GUI_Editor::on_actionLeft);
+    connect(gimpParent->ui2->actionCenter, &QAction::triggered, this, &GUI_Editor::on_actionCenter);
+    connect(gimpParent->ui2->actionRight, &QAction::triggered, this, &GUI_Editor::on_actionRight);
+    connect(gimpParent->ui2->actionJustified, &QAction::triggered, this, &GUI_Editor::on_actionJustified);
 }
 
 void GUI_Editor::launchSetUi1(){
@@ -75,6 +80,141 @@ void GUI_Editor::on_actionApplyTextColors(){
     this->gimpParent->ui2->actionApplyUsersColors->setEnabled(true);
     this->gimpParent->ui2->actionApplyTextColors->setEnabled(false);
 }
+
+void GUI_Editor::on_actionBold(){
+
+    menuTools_event(BOLD_ON);
+
+    //debug purpose
+    //setMenuToolStatus(BOLD_ON);
+}
+
+void GUI_Editor::on_actionItalic(){
+
+    menuTools_event(ITALIC_ON);
+
+    //childToolsBar->ui->italicPushButton->setDown(!childToolsBar->ui->italicPushButton->isDown());
+    //childToolsBar->ui->strikethroughPushButton->setDown(true);
+    //debug purpose
+    //setMenuToolStatus(BOLD_OFF);
+}
+
+void GUI_Editor::on_actionUnderlined(){
+
+    menuTools_event(UNDERLINED_ON);
+
+    //questo serve a counterare il fatto che in caso di click il button cambia automaticamente stato da chechek ad unchechek e viceversa, ma voglio essere io a decidere quando cambiare stato
+    //childToolsBar->ui->underlinedPushButton->setChecked(!childToolsBar->ui->boldPushButton->isChecked());
+
+    //non so se devo cambiare lo stato di checked o no, quindi lo chiedo al text editor
+    //childToolsBar->ui->underlinedPushButton->setChecked(Stub::isGenericFontAttributeActivated(childToolsBar->ui->boldPushButton->isChecked()));
+    //setMenuToolStatus(UNDERLINED_ON);
+}
+
+void GUI_Editor::on_actionStrikethrough(){
+
+    menuTools_event(STRIKETHROUGH_ON);
+
+    //questo serve a counterare il fatto che in caso di click il button cambia automaticamente stato da chechek ad unchechek e viceversa, ma voglio essere io a decidere quando cambiare stato
+    //childToolsBar->ui->strikethroughPushButton->setChecked(!childToolsBar->ui->boldPushButton->isChecked());
+
+    //non so se devo cambiare lo stato di checked o no, quindi lo chiedo al text editor
+    //childToolsBar->ui->strikethroughPushButton->setChecked(Stub::isGenericFontAttributeActivated(childToolsBar->ui->boldPushButton->isChecked()));
+    //setMenuToolStatus(UNDERLINED_OFF);
+}
+
+void GUI_Editor::on_actionLeft(){
+    menuTools_event(A_LEFT);
+}
+
+void GUI_Editor::on_actionCenter(){
+    menuTools_event(A_CENTER);
+}
+
+void GUI_Editor::on_actionRight(){
+    menuTools_event(A_RIGHT);
+}
+
+void GUI_Editor::on_actionJustified(){
+    menuTools_event(A_JUSTIFIED);
+}
+
+void GUI_Editor::setMenuToolStatus(menuTools code){
+
+    if(A_LEFT <= code && code <= A_JUSTIFIED){
+        childToolsBar->ui->alignLeftPushButton->setChecked(false);
+        gimpParent->ui2->actionLeft->setChecked(false);
+        childToolsBar->ui->alignCenterPushButton->setChecked(false);
+        gimpParent->ui2->actionCenter->setChecked(false);
+        childToolsBar->ui->alignRightPushButton->setChecked(false);
+        gimpParent->ui2->actionRight->setChecked(false);
+        childToolsBar->ui->alignJustifiedPushButton->setChecked(false);
+        gimpParent->ui2->actionJustified->setChecked(false);
+    }
+
+    switch(code){
+    case BOLD_ON:
+        childToolsBar->ui->boldPushButton->setChecked(true);
+        gimpParent->ui2->actionBold->setChecked(true);
+        break;
+
+    case BOLD_OFF:
+        childToolsBar->ui->boldPushButton->setChecked(false);
+        gimpParent->ui2->actionBold->setChecked(false);
+        break;
+
+    case ITALIC_ON:
+        childToolsBar->ui->italicPushButton->setChecked(true);
+        gimpParent->ui2->actionItalic->setChecked(true);
+        break;
+
+    case ITALIC_OFF:
+        childToolsBar->ui->italicPushButton->setChecked(false);
+        gimpParent->ui2->actionItalic->setChecked(false);
+        break;
+
+    case UNDERLINED_ON:
+        childToolsBar->ui->underlinedPushButton->setChecked(true);
+        gimpParent->ui2->actionUnderlined->setChecked(true);
+        break;
+
+    case UNDERLINED_OFF:
+        childToolsBar->ui->underlinedPushButton->setChecked(false);
+        gimpParent->ui2->actionUnderlined->setChecked(false);
+        break;
+
+    case STRIKETHROUGH_ON:
+        childToolsBar->ui->strikethroughPushButton->setChecked(true);
+        gimpParent->ui2->actionStrikethrough->setChecked(true);
+        break;
+
+    case STRIKETHROUGH_OFF:
+        childToolsBar->ui->strikethroughPushButton->setChecked(false);
+        gimpParent->ui2->actionStrikethrough->setChecked(false);
+        break;
+
+    case A_LEFT:
+        childToolsBar->ui->alignLeftPushButton->setChecked(true);
+        gimpParent->ui2->actionLeft->setChecked(true);
+        break;
+
+    case A_CENTER:
+        childToolsBar->ui->alignCenterPushButton->setChecked(true);
+        gimpParent->ui2->actionCenter->setChecked(true);
+        break;
+
+    case A_RIGHT:
+        childToolsBar->ui->alignRightPushButton->setChecked(true);
+        gimpParent->ui2->actionRight->setChecked(true);
+        break;
+
+    case A_JUSTIFIED:
+        childToolsBar->ui->alignJustifiedPushButton->setChecked(true);
+        gimpParent->ui2->actionJustified->setChecked(true);
+        break;
+    }
+}
+
 
 void GUI_Editor::addUserToEditorGUI(long userid){
     //ottengo un colore per cursore e icona

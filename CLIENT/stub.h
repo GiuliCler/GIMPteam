@@ -42,6 +42,8 @@ public:
     //questo serve per quando si sposta il cursore e bisogna cambiare automaticamente colore al pulsante
     static QColor getCurrentTextColor();
     static void setCurrentTextColor(QColor color);
+
+
 };
 
 #endif // STUB_H

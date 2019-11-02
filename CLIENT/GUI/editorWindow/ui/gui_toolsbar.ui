@@ -37,7 +37,7 @@ QPushButton:hover:!pressed{
 	border-left-color: hsv(165, 200, 255);
 }
 
-QPushButton:pressed{
+QPushButton:pressed,QPushButton:checked {
     border-style: inset;
 	background-color: hsv(165, 55, 220);
 }
@@ -477,6 +477,9 @@ QSpinBox::down-button:pressed,QSpinBox::up-button:pressed {
               <iconset resource="../../images/images.qrc">
                <normaloff>:/editor/text_editor/LeftAlign.svg</normaloff>:/editor/text_editor/LeftAlign.svg</iconset>
              </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
            <item>
@@ -490,6 +493,9 @@ QSpinBox::down-button:pressed,QSpinBox::up-button:pressed {
              <property name="icon">
               <iconset resource="../../images/images.qrc">
                <normaloff>:/editor/text_editor/CentralAlign.svg</normaloff>:/editor/text_editor/CentralAlign.svg</iconset>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -505,6 +511,9 @@ QSpinBox::down-button:pressed,QSpinBox::up-button:pressed {
               <iconset resource="../../images/images.qrc">
                <normaloff>:/editor/text_editor/RightAlign.svg</normaloff>:/editor/text_editor/RightAlign.svg</iconset>
              </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
            <item>
@@ -518,6 +527,9 @@ QSpinBox::down-button:pressed,QSpinBox::up-button:pressed {
              <property name="icon">
               <iconset resource="../../images/images.qrc">
                <normaloff>:/editor/text_editor/JustifiedAlign.svg</normaloff>:/editor/text_editor/JustifiedAlign.svg</iconset>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -665,6 +677,9 @@ QSpinBox::down-button:pressed,QSpinBox::up-button:pressed {
               <iconset resource="../../images/images.qrc">
                <normaloff>:/editor/text_editor/Italic.svg</normaloff>:/editor/text_editor/Italic.svg</iconset>
              </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
            <item>
@@ -678,6 +693,9 @@ QSpinBox::down-button:pressed,QSpinBox::up-button:pressed {
              <property name="icon">
               <iconset resource="../../images/images.qrc">
                <normaloff>:/editor/text_editor/Bold.svg</normaloff>:/editor/text_editor/Bold.svg</iconset>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -693,6 +711,9 @@ QSpinBox::down-button:pressed,QSpinBox::up-button:pressed {
               <iconset resource="../../images/images.qrc">
                <normaloff>:/editor/text_editor/Underlined.svg</normaloff>:/editor/text_editor/Underlined.svg</iconset>
              </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
            <item>
@@ -706,6 +727,9 @@ QSpinBox::down-button:pressed,QSpinBox::up-button:pressed {
              <property name="icon">
               <iconset resource="../../images/images.qrc">
                <normaloff>:/editor/text_editor/StrikeThrough.svg</normaloff>:/editor/text_editor/StrikeThrough.svg</iconset>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
              </property>
             </widget>
            </item>

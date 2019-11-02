@@ -162,3 +162,4 @@ void Stub::setCurrentTextColor(QColor color){
 
     return;
 }
+

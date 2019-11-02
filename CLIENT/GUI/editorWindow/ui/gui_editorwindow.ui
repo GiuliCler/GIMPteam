@@ -54,8 +54,8 @@
       <string>Align</string>
      </property>
      <addaction name="actionLeft"/>
+     <addaction name="actionCenter"/>
      <addaction name="actionRight"/>
-     <addaction name="actionRight_2"/>
      <addaction name="actionJustified"/>
     </widget>
     <addaction name="actionUndo"/>
@@ -67,8 +67,8 @@
     <addaction name="separator"/>
     <addaction name="menuAlign"/>
     <addaction name="separator"/>
-    <addaction name="actionItalic"/>
     <addaction name="actionBold"/>
+    <addaction name="actionItalic"/>
     <addaction name="actionUnderlined"/>
     <addaction name="actionStrikethrough"/>
    </widget>
@@ -119,16 +119,25 @@
    </property>
   </action>
   <action name="actionLeft">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Left</string>
    </property>
   </action>
-  <action name="actionRight">
+  <action name="actionCenter">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Center</string>
    </property>
   </action>
-  <action name="actionRight_2">
+  <action name="actionRight">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Right</string>
    </property>
@@ -139,21 +148,33 @@
    </property>
   </action>
   <action name="actionItalic">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Italic</string>
    </property>
   </action>
   <action name="actionBold">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Bold</string>
    </property>
   </action>
   <action name="actionUnderlined">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Underlined</string>
    </property>
   </action>
   <action name="actionStrikethrough">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Strikethrough</string>
    </property>

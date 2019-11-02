@@ -8,12 +8,21 @@
 #include <QMap>
 #include <QColor>
 
+class GUI_ToolsBar;
+class GUI_UsersBar;
+class GUI_MyTextEdit;
+
+enum menuTools {A_LEFT, A_CENTER, A_RIGHT, A_JUSTIFIED, BOLD_ON, BOLD_OFF, ITALIC_ON, ITALIC_OFF, UNDERLINED_ON, UNDERLINED_OFF, STRIKETHROUGH_ON, STRIKETHROUGH_OFF};
+
 class GUI_Editor : public QWidget
 {
     Q_OBJECT
 public:
     long documentId;
     GIMPdocs *gimpParent;
+    GUI_ToolsBar *childToolsBar;
+    GUI_UsersBar *childUsersBar;
+    GUI_MyTextEdit *childMyTextEdit;
     QMap<long, QColor*> userColorMap;
     //indica se il testo è colorato coi colori degli utenti per identificarli
     bool usersColors;
@@ -36,12 +45,26 @@ public slots:
     void on_actionApplyUsersColors();
     void on_actionApplyTextColors();
 
+    void on_actionBold();
+    void on_actionItalic();
+    void on_actionUnderlined();
+    void on_actionStrikethrough();
+    void on_actionLeft();
+    void on_actionCenter();
+    void on_actionRight();
+    void on_actionJustified();
+
+    void setMenuToolStatus(menuTools code);
+
 private:
     Ui::GUI_Editor *ui;
     GUI_ColorsManager colorsManager;
 
     QColor *getUserColor(long userId);
     void forgetUserColor(long userId);
+
+signals:
+    void menuTools_event(menuTools code);
 
 };
 
