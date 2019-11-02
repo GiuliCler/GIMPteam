@@ -37,7 +37,7 @@ QPushButton:hover:!pressed{
 	border-left-color: hsv(165, 200, 255);
 }
 
-QPushButton:pressed,QPushButton:checked {
+QPushButton:pressed{
     border-style: inset;
 	background-color: hsv(165, 55, 220);
 }

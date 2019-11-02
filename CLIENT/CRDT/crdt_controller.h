@@ -12,12 +12,9 @@ class CRDT_controller : public QObject
 
 private:
     GUI_MyTextEdit& textEdit;
-    GUI_ToolsBar& toolbar;
+    menuTools lastOp;
     bool rememberFormatChange;
-public:
-    CRDT_controller(GUI_MyTextEdit& textEdit, GUI_ToolsBar& toolbar);
 
-private slots:
     void setLeft();
     void setCenter();
     void setRight();
@@ -40,6 +37,15 @@ private slots:
     void currentCharFormatChanged(const QTextCharFormat &format);
     void cursorMoved();
     void contentChanged(int pos, int add, int del);
+
+public:
+    CRDT_controller(GUI_Editor *parent, GUI_MyTextEdit& textEdit);
+
+private slots:
+    void menuCall(menuTools op);
+
+signals:
+    void menuSet(menuTools set);
 };
 
 #endif // CRDT_CONTROLLER_H

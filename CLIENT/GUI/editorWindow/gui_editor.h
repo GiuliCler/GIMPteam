@@ -9,7 +9,6 @@
 #include <QColor>
 
 class CRDT_controller;
-
 class GUI_ToolsBar;
 class GUI_UsersBar;
 class GUI_MyTextEdit;

@@ -23,6 +23,7 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
     ui->usersBarWidget->layout()->addWidget(childUsersBar);
     childToolsBar = new GUI_ToolsBar(this);
     ui->toolsBarWidget->layout()->addWidget(childToolsBar);
+    crdtController = new CRDT_controller(this, *childMyTextEdit);
 
     //ottengo l'elenco degli utenti che al momento stanno guardando il mio stesso document e ne creo icona e cursore
     std::shared_ptr<QSet<long>> users = Stub::getWorkingUsersOnDocument(documentId);
