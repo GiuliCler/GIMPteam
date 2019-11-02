@@ -42,10 +42,8 @@ public:
     //questo serve per quando si sposta il cursore e bisogna cambiare automaticamente colore al pulsante
     static QColor getCurrentTextColor();
     static void setCurrentTextColor(QColor color);
-    //Paul, questo è per te. Mi serve sapere,quando premo bold, italic, ecc. se il pulsante e l'azione devono essere mostrare come attive o disattive
-    //(il problema è che ad alto livello non so, nel caso in cui il pulsante è nello stato attivo su una selezione di roba, se il testo selezionato è già tutto bold e quindi devo disattivare lo stato activated oppure se è mezzo e mezzo e devo lasciarlo activated perchè lo porti tutto a bold)
-    //poi è gestibile in diversi modi, ma inizio a scrivere che mi serve quest'info
-    static bool isGenericFontAttributeActivated(bool debugParameter);
+
+
 };
 
 #endif // STUB_H

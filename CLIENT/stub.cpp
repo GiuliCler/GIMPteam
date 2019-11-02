@@ -163,6 +163,3 @@ void Stub::setCurrentTextColor(QColor color){
     return;
 }
 
-bool Stub::isGenericFontAttributeActivated(bool debugParameter){
-    return !debugParameter;
-}

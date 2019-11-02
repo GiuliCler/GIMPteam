@@ -12,6 +12,8 @@ class GUI_ToolsBar;
 class GUI_UsersBar;
 class GUI_MyTextEdit;
 
+enum menuTools {A_LEFT, A_CENTER, A_RIGHT, A_JUSTIFIED, BOLD_ON, BOLD_OFF, ITALIC_ON, ITALIC_OFF, UNDERLINED_ON, UNDERLINED_OFF, STRIKETHROUGH_ON, STRIKETHROUGH_OFF};
+
 class GUI_Editor : public QWidget
 {
     Q_OBJECT
@@ -47,6 +49,12 @@ public slots:
     void on_actionItalic();
     void on_actionUnderlined();
     void on_actionStrikethrough();
+    void on_actionLeft();
+    void on_actionCenter();
+    void on_actionRight();
+    void on_actionJustified();
+
+    void setMenuToolStatus(menuTools code);
 
 private:
     Ui::GUI_Editor *ui;
@@ -54,6 +62,9 @@ private:
 
     QColor *getUserColor(long userId);
     void forgetUserColor(long userId);
+
+signals:
+    void menuTools_event(menuTools code);
 
 };
 
