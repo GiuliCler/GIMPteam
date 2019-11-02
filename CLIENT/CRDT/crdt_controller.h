@@ -13,6 +13,7 @@ class CRDT_controller : public QObject
 private:
     GUI_MyTextEdit& textEdit;
     GUI_ToolsBar& toolbar;
+    bool rememberFormatChange;
 public:
     CRDT_controller(GUI_MyTextEdit& textEdit, GUI_ToolsBar& toolbar);
 
@@ -36,7 +37,7 @@ private slots:
 
     void setTextColor(QColor color);
 
-    void currentCharFormatChanged(const QTextFormat &format);
+    void currentCharFormatChanged(const QTextCharFormat &format);
     void cursorMoved();
     void contentChanged(int pos, int add, int del);
 };
