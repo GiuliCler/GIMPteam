@@ -16,10 +16,22 @@ CRDT_controller::CRDT_controller(GUI_Editor *parent, GUI_MyTextEdit& textEdit): 
     QObject::connect(this->textEdit.document(), &QTextDocument::contentsChange, this, &CRDT_controller::contentChanged);
 }
 
-void CRDT_controller::setLeft(){}
-void CRDT_controller::setCenter(){}
-void CRDT_controller::setRight(){}
-void CRDT_controller::setJustified(){}
+void CRDT_controller::setLeft(){
+    textEdit.setAlignment(Qt::AlignLeft);
+    emit menuSet(menuTools::A_LEFT);
+}
+void CRDT_controller::setCenter(){
+    textEdit.setAlignment(Qt::AlignCenter);
+    emit menuSet(menuTools::A_CENTER);
+}
+void CRDT_controller::setRight(){
+    textEdit.setAlignment(Qt::AlignRight);
+    emit menuSet(menuTools::A_RIGHT);
+}
+void CRDT_controller::setJustified(){
+    textEdit.setAlignment(Qt::AlignJustify);
+    emit menuSet(menuTools::A_JUSTIFIED);
+}
 
 void CRDT_controller::setBold(){
     BACKWARD_SEL(textEdit.setFontWeight(tmp.charFormat().fontWeight() >= QFont::Bold ? QFont::Normal : QFont::Bold);)
@@ -61,6 +73,20 @@ void CRDT_controller::setCurrentTextColor(QColor color){
 }
 
 void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
+    switch (textEdit.alignment()) {
+        case Qt::AlignLeft:
+            emit menuSet(menuTools::A_LEFT);
+            break;
+        case Qt::AlignCenter:
+            emit menuSet(menuTools::A_CENTER);
+            break;
+        case Qt::AlignRight:
+            emit menuSet(menuTools::A_RIGHT);
+            break;
+        case Qt::AlignJustify:
+            emit menuSet(menuTools::A_JUSTIFIED);
+            break;
+    }
     BACKWARD_SEL(
                 emit menuSet(tmp.charFormat().fontItalic() ? menuTools::ITALIC_ON : menuTools::ITALIC_OFF);
                 emit menuSet(tmp.charFormat().fontStrikeOut() ? menuTools::STRIKETHROUGH_ON : menuTools::STRIKETHROUGH_OFF);

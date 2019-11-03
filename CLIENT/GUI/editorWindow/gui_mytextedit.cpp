@@ -7,7 +7,8 @@ GUI_MyTextEdit::GUI_MyTextEdit(QWidget *parent) : QTextEdit(parent) {
     editorParent = static_cast<GUI_Editor*>(parent);
 
     this->setCursorWidth(2);
-    this->setFontPointSize(12);
+    this->setFontPointSize(12); //TODO: fix this in a default font
+    //TODO: start with left alignment on text (button left_alignment in the toolsbar should be checked at start)
     this->setText("I pulsanti funzionano un po' a caso per ragioni di debug");
 }
 
