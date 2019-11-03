@@ -151,15 +151,3 @@ std::shared_ptr<QSet<long>> Stub::getContributorsUsersOnDocument(long docId){
     return vpointer;
 }
 
-QColor Stub::getCurrentTextColor(){
-    return QColor(0,0,0,255);
-}
-
-void Stub::setCurrentTextColor(QColor color){
-    //al solito, è per evitare i warnings
-    QColor c = color;
-    color = c;
-
-    return;
-}
-

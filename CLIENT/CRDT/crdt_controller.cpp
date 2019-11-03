@@ -7,8 +7,8 @@
         rememberFormatChange = true; \
     }
 
-CRDT_controller::CRDT_controller(GUI_Editor *parent, GUI_MyTextEdit& textEdit): textEdit(textEdit), rememberFormatChange(false){
-    QObject::connect(parent, &GUI_Editor::menuTools_event, this, &CRDT_controller::menuCall);
+CRDT_controller::CRDT_controller(GUI_Editor *parent, GUI_MyTextEdit& textEdit): parent(parent), textEdit(textEdit), rememberFormatChange(false){
+    QObject::connect(this->parent, &GUI_Editor::menuTools_event, this, &CRDT_controller::menuCall);
     QObject::connect(this, &CRDT_controller::menuSet, parent, &GUI_Editor::setMenuToolStatus);
     QObject::connect(&this->textEdit, &QTextEdit::currentCharFormatChanged, this, &CRDT_controller::currentCharFormatChanged);
     QObject::connect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
@@ -55,7 +55,10 @@ void CRDT_controller::copy(){}
 void CRDT_controller::cut(){}
 void CRDT_controller::paste(){}
 
-void CRDT_controller::setTextColor(QColor color){}
+void CRDT_controller::setCurrentTextColor(QColor color){
+    textEdit.setTextColor(color);
+    textEdit.setFocus();
+}
 
 void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
     BACKWARD_SEL(
@@ -63,12 +66,14 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
                 emit menuSet(tmp.charFormat().fontStrikeOut() ? menuTools::STRIKETHROUGH_ON : menuTools::STRIKETHROUGH_OFF);
                 emit menuSet(tmp.charFormat().fontUnderline() ? menuTools::UNDERLINED_ON : menuTools::UNDERLINED_OFF);
                 emit menuSet(tmp.charFormat().fontWeight() >= QFont::Bold ? menuTools::BOLD_ON : menuTools::BOLD_OFF);
+                parent->childToolsBar->setTextColorIconColor(tmp.charFormat().foreground().color());
             )
     else{
         emit menuSet(format.fontItalic() ? menuTools::ITALIC_ON : menuTools::ITALIC_OFF);
         emit menuSet(format.fontStrikeOut() ? menuTools::STRIKETHROUGH_ON : menuTools::STRIKETHROUGH_OFF);
         emit menuSet(format.fontUnderline() ? menuTools::UNDERLINED_ON : menuTools::UNDERLINED_OFF);
         emit menuSet(format.fontWeight() >= QFont::Bold ? menuTools::BOLD_ON : menuTools::BOLD_OFF);
+        parent->childToolsBar->setTextColorIconColor(format.foreground().color());
     }
 }
 

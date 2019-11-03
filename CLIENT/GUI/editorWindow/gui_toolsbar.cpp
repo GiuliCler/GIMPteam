@@ -7,7 +7,7 @@ GUI_ToolsBar::GUI_ToolsBar(QWidget *parent) : QWidget(parent){
     ui = new Ui::GUI_ToolsBar();
     ui->setupUi(this);
 
-    setTextColorIconColor(Stub::getCurrentTextColor());
+    setTextColorIconColor(QColor(0,0,0)); //TODO: check whether this is needed or not
 
     connect(ui->boldPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionBold);
     connect(ui->italicPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionItalic);
@@ -29,9 +29,7 @@ GUI_ToolsBar::~GUI_ToolsBar(){
 
 void GUI_ToolsBar::on_colorPushButton_clicked(){
     QColor chosenColor = QColorDialog::getColor(); //return the color chosen by user
-    setTextColorIconColor(chosenColor);
-
-    Stub::setCurrentTextColor(chosenColor);
+    editorParent->crdtController->setCurrentTextColor(chosenColor);
 }
 
 void GUI_ToolsBar::setTextColorIconColor(const QColor color){

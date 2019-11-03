@@ -39,11 +39,6 @@ public:
     //ritorna tutti gli id degli users che hanno conrtibuito al document. Viene chiamata appena aperto il doc, mentre per l'update metto a disposizione altre funzioni
     static std::shared_ptr<QSet<long>> getContributorsUsersOnDocument(long docId);
 
-    //questo serve per quando si sposta il cursore e bisogna cambiare automaticamente colore al pulsante
-    static QColor getCurrentTextColor();
-    static void setCurrentTextColor(QColor color);
-
-
 };
 
 #endif // STUB_H

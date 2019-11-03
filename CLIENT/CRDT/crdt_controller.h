@@ -11,6 +11,7 @@ class CRDT_controller : public QObject
     Q_OBJECT
 
 private:
+    GUI_Editor *parent;
     GUI_MyTextEdit& textEdit;
     menuTools lastOp;
     bool rememberFormatChange;
@@ -32,10 +33,9 @@ private:
     void cut();
     void paste();
 
-    void setTextColor(QColor color);
-
 public:
     CRDT_controller(GUI_Editor *parent, GUI_MyTextEdit& textEdit);
+    void setCurrentTextColor(QColor color);
 
 private slots:
     void menuCall(menuTools op);
