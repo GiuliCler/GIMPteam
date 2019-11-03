@@ -3,7 +3,7 @@
     if(textEdit.textCursor().hasSelection() && textEdit.textCursor().position() < textEdit.textCursor().anchor()){ \
         QTextCursor tmp(textEdit.textCursor()); \
         tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor); \
-        action; \
+        action \
         rememberFormatChange = true; \
     }
 
@@ -23,13 +23,18 @@ void CRDT_controller::setJustified(){}
 
 void CRDT_controller::setBold(){}
 void CRDT_controller::setItalic(){
-    BACKWARD_SEL(textEdit.setFontItalic(!tmp.charFormat().fontItalic()))
+    BACKWARD_SEL(textEdit.setFontItalic(!tmp.charFormat().fontItalic());)
     else
         textEdit.setFontItalic(!textEdit.fontItalic());
     textEdit.setFocus();
 }
 void CRDT_controller::setStrikethrough(){}
-void CRDT_controller::setUnderlined(){}
+void CRDT_controller::setUnderlined(){
+    BACKWARD_SEL(textEdit.setFontUnderline(!tmp.charFormat().fontUnderline());)
+    else
+        textEdit.setFontUnderline(!textEdit.fontUnderline());
+    textEdit.setFocus();
+}
 
 void CRDT_controller::setSize(int size){}
 void CRDT_controller::setFont(const QFont &f){}
@@ -41,9 +46,14 @@ void CRDT_controller::paste(){}
 void CRDT_controller::setTextColor(QColor color){}
 
 void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
-    BACKWARD_SEL(emit menuSet(tmp.charFormat().fontItalic() ? menuTools::ITALIC_ON : menuTools::ITALIC_OFF))
-    else
+    BACKWARD_SEL(
+                emit menuSet(tmp.charFormat().fontItalic() ? menuTools::ITALIC_ON : menuTools::ITALIC_OFF);
+                emit menuSet(tmp.charFormat().fontUnderline() ? menuTools::UNDERLINED_ON : menuTools::UNDERLINED_OFF);
+            )
+    else{
         emit menuSet(format.fontItalic() ? menuTools::ITALIC_ON : menuTools::ITALIC_OFF);
+        emit menuSet(format.fontUnderline() ? menuTools::UNDERLINED_ON : menuTools::UNDERLINED_OFF);
+    }
 }
 
 void CRDT_controller::cursorMoved(){
