@@ -21,14 +21,26 @@ void CRDT_controller::setCenter(){}
 void CRDT_controller::setRight(){}
 void CRDT_controller::setJustified(){}
 
-void CRDT_controller::setBold(){}
+void CRDT_controller::setBold(){
+    BACKWARD_SEL(textEdit.setFontWeight(tmp.charFormat().fontWeight() >= QFont::Bold ? QFont::Normal : QFont::Bold);)
+    else
+        textEdit.setFontWeight(textEdit.fontWeight() >= QFont::Bold ? QFont::Normal : QFont::Bold);
+    textEdit.setFocus();
+}
 void CRDT_controller::setItalic(){
     BACKWARD_SEL(textEdit.setFontItalic(!tmp.charFormat().fontItalic());)
     else
         textEdit.setFontItalic(!textEdit.fontItalic());
     textEdit.setFocus();
 }
-void CRDT_controller::setStrikethrough(){}
+void CRDT_controller::setStrikethrough(){
+    QTextCharFormat fmt;
+    BACKWARD_SEL(fmt.setFontStrikeOut(!tmp.charFormat().fontStrikeOut());)
+    else
+        fmt.setFontStrikeOut(!textEdit.fontItalic());
+    textEdit.mergeCurrentCharFormat(fmt);
+    textEdit.setFocus();
+}
 void CRDT_controller::setUnderlined(){
     BACKWARD_SEL(textEdit.setFontUnderline(!tmp.charFormat().fontUnderline());)
     else
@@ -48,11 +60,15 @@ void CRDT_controller::setTextColor(QColor color){}
 void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
     BACKWARD_SEL(
                 emit menuSet(tmp.charFormat().fontItalic() ? menuTools::ITALIC_ON : menuTools::ITALIC_OFF);
+                emit menuSet(tmp.charFormat().fontStrikeOut() ? menuTools::STRIKETHROUGH_ON : menuTools::STRIKETHROUGH_OFF);
                 emit menuSet(tmp.charFormat().fontUnderline() ? menuTools::UNDERLINED_ON : menuTools::UNDERLINED_OFF);
+                emit menuSet(tmp.charFormat().fontWeight() >= QFont::Bold ? menuTools::BOLD_ON : menuTools::BOLD_OFF);
             )
     else{
         emit menuSet(format.fontItalic() ? menuTools::ITALIC_ON : menuTools::ITALIC_OFF);
+        emit menuSet(format.fontStrikeOut() ? menuTools::STRIKETHROUGH_ON : menuTools::STRIKETHROUGH_OFF);
         emit menuSet(format.fontUnderline() ? menuTools::UNDERLINED_ON : menuTools::UNDERLINED_OFF);
+        emit menuSet(format.fontWeight() >= QFont::Bold ? menuTools::BOLD_ON : menuTools::BOLD_OFF);
     }
 }
 
