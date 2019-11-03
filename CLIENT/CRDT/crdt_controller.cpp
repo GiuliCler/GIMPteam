@@ -7,7 +7,8 @@
         rememberFormatChange = true; \
     }
 
-CRDT_controller::CRDT_controller(GUI_Editor *parent, GUI_MyTextEdit& textEdit): parent(parent), textEdit(textEdit), rememberFormatChange(false), validateSpin(true){
+CRDT_controller::CRDT_controller(GUI_Editor *parent, GUI_MyTextEdit& textEdit): parent(parent), textEdit(textEdit),
+                        rememberFormatChange(false), validateSpin(true), validateFontCombo(true){
     QObject::connect(this->parent, &GUI_Editor::menuTools_event, this, &CRDT_controller::menuCall);
     QObject::connect(this, &CRDT_controller::menuSet, parent, &GUI_Editor::setMenuToolStatus);
     QObject::connect(&this->textEdit, &QTextEdit::currentCharFormatChanged, this, &CRDT_controller::currentCharFormatChanged);
@@ -15,6 +16,7 @@ CRDT_controller::CRDT_controller(GUI_Editor *parent, GUI_MyTextEdit& textEdit): 
     QObject::connect(&this->textEdit, &QTextEdit::selectionChanged, this, &CRDT_controller::selectionChanged);
     QObject::connect(this->textEdit.document(), &QTextDocument::contentsChange, this, &CRDT_controller::contentChanged);
     QObject::connect(parent->childToolsBar->ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &CRDT_controller::setSize);
+    QObject::connect(parent->childToolsBar->ui->fontComboBox, &QFontComboBox::currentFontChanged, this, &CRDT_controller::setFont);
 }
 
 void CRDT_controller::setLeft(){
@@ -69,7 +71,12 @@ void CRDT_controller::setSize(int size){
     textEdit.setFocus();
 }
 
-void CRDT_controller::setFont(const QFont &f){}
+void CRDT_controller::setFont(const QFont &f){
+    if(validateFontCombo){
+    } else
+        validateFontCombo = true;
+    textEdit.setFocus();
+}
 
 void CRDT_controller::copy(){}
 void CRDT_controller::cut(){}
@@ -105,6 +112,10 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
                     validateSpin = false;
                     parent->childToolsBar->ui->spinBox->setValue(static_cast<int>(tmp.charFormat().fontPointSize()));
                 }
+                if(tmp.charFormat().font() != parent->childToolsBar->ui->fontComboBox->currentFont()){
+                    validateFontCombo = false;
+                    parent->childToolsBar->ui->fontComboBox->setCurrentFont(tmp.charFormat().font());
+                }
             )
     else{
         emit menuSet(format.fontItalic() ? menuTools::ITALIC_ON : menuTools::ITALIC_OFF);
@@ -113,10 +124,15 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
         emit menuSet(format.fontWeight() >= QFont::Bold ? menuTools::BOLD_ON : menuTools::BOLD_OFF);
 
         parent->childToolsBar->setTextColorIconColor(format.foreground().color());
-        if(textEdit.textCursor().hasSelection() &&
-                static_cast<int>(textEdit.fontPointSize()) != parent->childToolsBar->ui->spinBox->value()){
-            validateSpin = false;
-            parent->childToolsBar->ui->spinBox->setValue(static_cast<int>(textEdit.fontPointSize()));
+        if(textEdit.textCursor().hasSelection()) {
+            if(static_cast<int>(textEdit.fontPointSize()) != parent->childToolsBar->ui->spinBox->value()){
+                validateSpin = false;
+                parent->childToolsBar->ui->spinBox->setValue(static_cast<int>(textEdit.fontPointSize()));
+            }
+            if(textEdit.font() != parent->childToolsBar->ui->fontComboBox->currentFont()){
+                validateFontCombo = false;
+                parent->childToolsBar->ui->fontComboBox->setCurrentFont(textEdit.font());
+            }
         }
     }
 }

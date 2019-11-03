@@ -16,6 +16,7 @@ private:
     menuTools lastOp;
     bool rememberFormatChange;
     bool validateSpin;
+    bool validateFontCombo;
 
     void setLeft();
     void setCenter();
