@@ -34,15 +34,15 @@ private:
 
     void setTextColor(QColor color);
 
-    void currentCharFormatChanged(const QTextCharFormat &format);
-    void cursorMoved();
-    void contentChanged(int pos, int add, int del);
-
 public:
     CRDT_controller(GUI_Editor *parent, GUI_MyTextEdit& textEdit);
 
 private slots:
     void menuCall(menuTools op);
+    void currentCharFormatChanged(const QTextCharFormat &format);
+    void cursorMoved();
+    void contentChanged(int pos, int add, int del);
+    void selectionChanged();
 
 signals:
     void menuSet(menuTools set);
