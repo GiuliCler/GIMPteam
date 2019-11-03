@@ -12,10 +12,10 @@ GUI_UsersBar::GUI_UsersBar(QWidget *parent) : QWidget(parent){
     ui = new Ui::GUI_UsersBar();
     ui->setupUi(this);
 
-    //carico gli users già online e l'elenco dei contributors
     GUI_MyScrollArea *onlineIconsScrollArea = new GUI_MyScrollArea(this);
     onlineIconsScrollArea->setObjectName(getOnlineAreaName());
-    static_cast<QVBoxLayout*>(ui->onlineUsersWidget->layout())->insertWidget(2, onlineIconsScrollArea);
+    ui->interiorOnlineIgnoredWrapper->layout()->addWidget(onlineIconsScrollArea);
+    //static_cast<QVBoxLayout*>(ui->onlineUsersWidget->layout())->insertWidget(2, onlineIconsScrollArea);
 
     ui->hideColorsPushButton->hide();
     ui->contributorUsersWidget->hide();
@@ -23,6 +23,9 @@ GUI_UsersBar::GUI_UsersBar(QWidget *parent) : QWidget(parent){
     GUI_MyScrollArea *contributorIconsScrollArea = new GUI_MyScrollArea(this);
     contributorIconsScrollArea->setObjectName(getContributorsAreaName());
     static_cast<QVBoxLayout*>(ui->contributorUsersWidget->layout())->insertWidget(2, contributorIconsScrollArea);
+
+    //debug
+    //contributorIconsScrollArea->hide();
 
     //connetto le signals dei pulsanti per fare alternare i pulsanti nella menù bar
     connect(ui->showColorsPushButton, &QPushButton::clicked, this->editorParent, &GUI_Editor::on_actionApplyUsersColors);
@@ -70,6 +73,14 @@ void GUI_UsersBar::addOnlineUserIcon(long userId, QColor color){
      */
     if(onlineUsersIconMap.size() <= GUI_MyScrollArea::getMaxUsersIconsNumber()+1)
         this->findChild<GUI_MyScrollArea*>(getOnlineAreaName())->updateSize(onlineUsersIconMap.size());
+
+    //debug
+    //qDebug() << this->findChild<GUI_MyScrollArea*>(getOnlineAreaName())->height();
+    //qDebug() << this->findChild<GUI_MyScrollArea*>(getOnlineAreaName())->content->height();
+    //qDebug() << static_cast<QWidget*>(this->findChild<GUI_MyScrollArea*>(getOnlineAreaName())->horizontalScrollBar()->parent())->height();
+    //static_cast<QWidget*>(this->findChild<GUI_MyScrollArea*>(getOnlineAreaName())->horizontalScrollBar()->parent())->move(0, 5);
+    //this->findChild<GUI_MyScrollArea*>(getOnlineAreaName())->horizontalScrollBar()->move(0, 5);
+
 }
 
 void GUI_UsersBar::removeOnlineUserIcon(long userId){
