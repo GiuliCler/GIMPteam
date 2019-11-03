@@ -15,6 +15,7 @@ private:
     GUI_MyTextEdit& textEdit;
     menuTools lastOp;
     bool rememberFormatChange;
+    bool validateSpin;
 
     void setLeft();
     void setCenter();

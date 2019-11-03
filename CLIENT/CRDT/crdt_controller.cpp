@@ -7,13 +7,14 @@
         rememberFormatChange = true; \
     }
 
-CRDT_controller::CRDT_controller(GUI_Editor *parent, GUI_MyTextEdit& textEdit): parent(parent), textEdit(textEdit), rememberFormatChange(false){
+CRDT_controller::CRDT_controller(GUI_Editor *parent, GUI_MyTextEdit& textEdit): parent(parent), textEdit(textEdit), rememberFormatChange(false), validateSpin(true){
     QObject::connect(this->parent, &GUI_Editor::menuTools_event, this, &CRDT_controller::menuCall);
     QObject::connect(this, &CRDT_controller::menuSet, parent, &GUI_Editor::setMenuToolStatus);
     QObject::connect(&this->textEdit, &QTextEdit::currentCharFormatChanged, this, &CRDT_controller::currentCharFormatChanged);
     QObject::connect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
     QObject::connect(&this->textEdit, &QTextEdit::selectionChanged, this, &CRDT_controller::selectionChanged);
     QObject::connect(this->textEdit.document(), &QTextDocument::contentsChange, this, &CRDT_controller::contentChanged);
+    QObject::connect(parent->childToolsBar->ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &CRDT_controller::setSize);
 }
 
 void CRDT_controller::setLeft(){
@@ -60,7 +61,14 @@ void CRDT_controller::setUnderlined(){
     textEdit.setFocus();
 }
 
-void CRDT_controller::setSize(int size){}
+void CRDT_controller::setSize(int size){
+    if(validateSpin)
+        textEdit.setFontPointSize(size);
+    else
+        validateSpin = true;
+    textEdit.setFocus();
+}
+
 void CRDT_controller::setFont(const QFont &f){}
 
 void CRDT_controller::copy(){}
@@ -93,13 +101,23 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
                 emit menuSet(tmp.charFormat().fontUnderline() ? menuTools::UNDERLINED_ON : menuTools::UNDERLINED_OFF);
                 emit menuSet(tmp.charFormat().fontWeight() >= QFont::Bold ? menuTools::BOLD_ON : menuTools::BOLD_OFF);
                 parent->childToolsBar->setTextColorIconColor(tmp.charFormat().foreground().color());
+                if(static_cast<int>(tmp.charFormat().fontPointSize()) != parent->childToolsBar->ui->spinBox->value()){
+                    validateSpin = false;
+                    parent->childToolsBar->ui->spinBox->setValue(static_cast<int>(tmp.charFormat().fontPointSize()));
+                }
             )
     else{
         emit menuSet(format.fontItalic() ? menuTools::ITALIC_ON : menuTools::ITALIC_OFF);
         emit menuSet(format.fontStrikeOut() ? menuTools::STRIKETHROUGH_ON : menuTools::STRIKETHROUGH_OFF);
         emit menuSet(format.fontUnderline() ? menuTools::UNDERLINED_ON : menuTools::UNDERLINED_OFF);
         emit menuSet(format.fontWeight() >= QFont::Bold ? menuTools::BOLD_ON : menuTools::BOLD_OFF);
+
         parent->childToolsBar->setTextColorIconColor(format.foreground().color());
+        if(textEdit.textCursor().hasSelection() &&
+                static_cast<int>(textEdit.fontPointSize()) != parent->childToolsBar->ui->spinBox->value()){
+            validateSpin = false;
+            parent->childToolsBar->ui->spinBox->setValue(static_cast<int>(textEdit.fontPointSize()));
+        }
     }
 }
 
