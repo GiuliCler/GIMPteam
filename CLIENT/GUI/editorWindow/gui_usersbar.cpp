@@ -12,17 +12,17 @@ GUI_UsersBar::GUI_UsersBar(QWidget *parent) : QWidget(parent){
     ui = new Ui::GUI_UsersBar();
     ui->setupUi(this);
 
-    //carico gli users già online e l'elenco dei contributors
-    GUI_MyScrollArea *onlineIconsScrollArea = new GUI_MyScrollArea(this);
+    GUI_MyScrollArea *onlineIconsScrollArea = new GUI_MyScrollArea(ui->onlineIgnoredWrapper);
     onlineIconsScrollArea->setObjectName(getOnlineAreaName());
-    static_cast<QVBoxLayout*>(ui->onlineUsersWidget->layout())->insertWidget(2, onlineIconsScrollArea);
+    ui->onlineIgnoredWrapper->layout()->addWidget(onlineIconsScrollArea);
 
     ui->hideColorsPushButton->hide();
     ui->contributorUsersWidget->hide();
 
-    GUI_MyScrollArea *contributorIconsScrollArea = new GUI_MyScrollArea(this);
+    GUI_MyScrollArea *contributorIconsScrollArea = new GUI_MyScrollArea(ui->contributorsIgnoredWrapper);
     contributorIconsScrollArea->setObjectName(getContributorsAreaName());
-    static_cast<QVBoxLayout*>(ui->contributorUsersWidget->layout())->insertWidget(2, contributorIconsScrollArea);
+    ui->contributorsIgnoredWrapper->layout()->addWidget(contributorIconsScrollArea);
+    //static_cast<QVBoxLayout*>(ui->contributorUsersWidget->layout())->insertWidget(2, contributorIconsScrollArea);
 
     //connetto le signals dei pulsanti per fare alternare i pulsanti nella menù bar
     connect(ui->showColorsPushButton, &QPushButton::clicked, this->editorParent, &GUI_Editor::on_actionApplyUsersColors);

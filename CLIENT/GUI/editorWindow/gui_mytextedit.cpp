@@ -8,7 +8,7 @@ GUI_MyTextEdit::GUI_MyTextEdit(QWidget *parent) : QTextEdit(parent) {
 
     this->setCursorWidth(2);
     this->setFontPointSize(12);
-    this->setText("I pulsanti funzionano un po' a caso per ragioni di debug");
+    //this->setText("I pulsanti funzionano un po' a caso per ragioni di debug");
 }
 
 void GUI_MyTextEdit::paintEvent(QPaintEvent *event)

@@ -10,6 +10,9 @@ class Stub : public QObject
     Q_OBJECT
 public:
     explicit Stub(QObject *parent = nullptr);
+
+    //tutti i long degli id sono da modificare in int
+
     //questa serve per fare il login. Restituisc l'id se username e password sono corretti, altrimenti 0 o -1, basta metterci d'accordo
     static long tryLogin(QString username, QString password);
     //anche qui mi srve che ritorni un id
@@ -34,7 +37,7 @@ public:
     static QString getDocumentURI(long docId);
     static long getDocumentId(QString name);
 
-    //ritorna un set cogli userId
+    //ritorna un set con un vettore di vettori con <carciofo, nickname, id-icona/nome-icona/carciofo-icona>
     static std::shared_ptr<QSet<long>> getWorkingUsersOnDocument(long docId);
     //ritorna tutti gli id degli users che hanno conrtibuito al document. Viene chiamata appena aperto il doc, mentre per l'update metto a disposizione altre funzioni
     static std::shared_ptr<QSet<long>> getContributorsUsersOnDocument(long docId);

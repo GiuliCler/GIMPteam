@@ -2,7 +2,7 @@
 #include <QDirIterator>
 
 //è la dimensione in pixels
-int GUI_Icons::iconSize = 30;
+int GUI_Icons::iconSize = 28;
 bool GUI_Icons::loaded = false;
 // lo inizializzo qui perchè è static
 QVector<QString> GUI_Icons::icons;
@@ -26,9 +26,12 @@ QVector<QString> *GUI_Icons::getIconPaths(){
     return &GUI_Icons::icons;
 }
 
-QString GUI_Icons::getIconPath(long userId){
+QString GUI_Icons::getIconPath(long iconId){
     if(!loaded)
         load();
-    //TODO fare un check di sicurezza su id... ma forse non serve... aspetto di vedere come salviamo alla fine le immagini nel DB
-    return icons[userId];
+
+    if(iconId < 0 || icons.length() <= iconId)
+        return "";
+
+    return icons[iconId];
 }
