@@ -2,7 +2,7 @@
 #include <QDirIterator>
 
 //è la dimensione in pixels
-int GUI_Icons::iconSize = 30;
+int GUI_Icons::iconSize = 28;
 bool GUI_Icons::loaded = false;
 // lo inizializzo qui perchè è static
 QVector<QString> GUI_Icons::icons;
