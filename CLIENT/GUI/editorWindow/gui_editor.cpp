@@ -35,6 +35,8 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
     for (QSet<long>::iterator userId = contributors->begin(); userId != contributors->end(); userId++)
         addContributorToCurrentDocument(*userId);
 
+    //childMyTextEdit->setFocus();
+    childMyTextEdit->setupTextEdit();
 }
 
 GUI_Editor::~GUI_Editor(){
@@ -84,21 +86,11 @@ void GUI_Editor::on_actionApplyTextColors(){
 }
 
 void GUI_Editor::on_actionBold(){
-
     menuTools_event(BOLD_ON);
-
-    //debug purpose
-    //setMenuToolStatus(BOLD_ON);
 }
 
 void GUI_Editor::on_actionItalic(){
-
     menuTools_event(ITALIC_ON);
-
-    //childToolsBar->ui->italicPushButton->setDown(!childToolsBar->ui->italicPushButton->isDown());
-    //childToolsBar->ui->strikethroughPushButton->setDown(true);
-    //debug purpose
-    //setMenuToolStatus(BOLD_OFF);
 }
 
 void GUI_Editor::on_actionUnderlined(){
@@ -127,18 +119,22 @@ void GUI_Editor::on_actionStrikethrough(){
 
 void GUI_Editor::on_actionLeft(){
     menuTools_event(A_LEFT);
+    this->childMyTextEdit->setFocus();
 }
 
 void GUI_Editor::on_actionCenter(){
     menuTools_event(A_CENTER);
+    this->childMyTextEdit->setFocus();
 }
 
 void GUI_Editor::on_actionRight(){
     menuTools_event(A_RIGHT);
+    this->childMyTextEdit->setFocus();
 }
 
 void GUI_Editor::on_actionJustified(){
     menuTools_event(A_JUSTIFIED);
+    this->childMyTextEdit->setFocus();
 }
 
 void GUI_Editor::setMenuToolStatus(menuTools code){
