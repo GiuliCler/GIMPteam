@@ -7,7 +7,7 @@ GUI_ToolsBar::GUI_ToolsBar(QWidget *parent) : QWidget(parent){
     ui = new Ui::GUI_ToolsBar();
     ui->setupUi(this);
 
-    setTextColorIconColor(QColor(0,0,0)); //TODO: check whether this is needed or not
+    //setTextColorIconColor(QColor(0,0,0)); //TODO: check whether this is needed or not
 
     connect(ui->boldPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionBold);
     connect(ui->italicPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionItalic);
