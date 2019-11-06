@@ -35,8 +35,7 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
     for (QSet<long>::iterator userId = contributors->begin(); userId != contributors->end(); userId++)
         addContributorToCurrentDocument(*userId);
 
-    //childMyTextEdit->setFocus();
-    childMyTextEdit->setupTextEdit();
+    //childMyTextEdit->setupTextEdit();
 }
 
 GUI_Editor::~GUI_Editor(){
@@ -58,6 +57,11 @@ void GUI_Editor::connectMenuBarActions(){
     connect(gimpParent->ui2->actionApplyTextColors, &QAction::triggered, this, &GUI_Editor::on_actionApplyTextColors);
     connect(gimpParent->ui2->actionApplyTextColors, &QAction::triggered, findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName()), &GUI_UsersBar::on_hideColorsPushButton_clicked);
 
+    connect(gimpParent->ui2->actionUndo, &QAction::triggered, this, &GUI_Editor::on_actionUndo);
+    connect(gimpParent->ui2->actionRedo, &QAction::triggered, this, &GUI_Editor::on_actionRedo);
+    connect(gimpParent->ui2->actionCut, &QAction::triggered, this, &GUI_Editor::on_actionCut);
+    connect(gimpParent->ui2->actionCopy, &QAction::triggered, this, &GUI_Editor::on_actionCopy);
+    connect(gimpParent->ui2->actionPaste, &QAction::triggered, this, &GUI_Editor::on_actionPaste);
     connect(gimpParent->ui2->actionBold, &QAction::triggered, this, &GUI_Editor::on_actionBold);
     connect(gimpParent->ui2->actionItalic, &QAction::triggered, this, &GUI_Editor::on_actionItalic);
     connect(gimpParent->ui2->actionUnderlined, &QAction::triggered, this, &GUI_Editor::on_actionUnderlined);
@@ -66,6 +70,13 @@ void GUI_Editor::connectMenuBarActions(){
     connect(gimpParent->ui2->actionCenter, &QAction::triggered, this, &GUI_Editor::on_actionCenter);
     connect(gimpParent->ui2->actionRight, &QAction::triggered, this, &GUI_Editor::on_actionRight);
     connect(gimpParent->ui2->actionJustified, &QAction::triggered, this, &GUI_Editor::on_actionJustified);
+
+}
+
+//sto faceno una funzione wrapper giusto per renderlo più ordinato
+void GUI_Editor::setupTextEdit(){
+    //non posso metterlo nel costruttore perchè forse le actions non sono ancora pronte per essere modificate a checke, come verrei fare coll'action dell'align
+    childMyTextEdit->setupTextEdit();
 }
 
 void GUI_Editor::launchSetUi1(){
@@ -83,6 +94,27 @@ void GUI_Editor::on_actionApplyUsersColors(){
 void GUI_Editor::on_actionApplyTextColors(){
     this->gimpParent->ui2->actionApplyUsersColors->setEnabled(true);
     this->gimpParent->ui2->actionApplyTextColors->setEnabled(false);
+}
+
+
+void GUI_Editor::on_actionUndo(){
+    menuTools_event(UNDO);
+}
+
+void GUI_Editor::on_actionRedo(){
+    menuTools_event(REDO);
+}
+
+void GUI_Editor::on_actionCut(){
+    menuTools_event(CUT);
+}
+
+void GUI_Editor::on_actionCopy(){
+    menuTools_event(COPY);
+}
+
+void GUI_Editor::on_actionPaste(){
+    menuTools_event(PASTE);
 }
 
 void GUI_Editor::on_actionBold(){
@@ -151,6 +183,26 @@ void GUI_Editor::setMenuToolStatus(menuTools code){
     }
 
     switch(code){
+    case UNDO:
+        //do nothing, ma almeno rimuovo il warning
+        break;
+
+    case REDO:
+        //do nothing
+        break;
+
+    case CUT:
+        //do nothing
+        break;
+
+    case COPY:
+        //do nothing
+        break;
+
+    case PASTE:
+        //do nothing
+        break;
+
     case BOLD_ON:
         childToolsBar->ui->boldPushButton->setChecked(true);
         gimpParent->ui2->actionBold->setChecked(true);

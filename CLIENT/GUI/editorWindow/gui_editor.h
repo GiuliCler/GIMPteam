@@ -13,7 +13,7 @@ class GUI_ToolsBar;
 class GUI_UsersBar;
 class GUI_MyTextEdit;
 
-enum menuTools {A_LEFT, A_CENTER, A_RIGHT, A_JUSTIFIED, BOLD_ON, BOLD_OFF, ITALIC_ON, ITALIC_OFF, UNDERLINED_ON, UNDERLINED_OFF, STRIKETHROUGH_ON, STRIKETHROUGH_OFF};
+enum menuTools {UNDO, REDO, CUT, COPY, PASTE, A_LEFT, A_CENTER, A_RIGHT, A_JUSTIFIED, BOLD_ON, BOLD_OFF, ITALIC_ON, ITALIC_OFF, UNDERLINED_ON, UNDERLINED_OFF, STRIKETHROUGH_ON, STRIKETHROUGH_OFF};
 
 class GUI_Editor : public QWidget
 {
@@ -41,12 +41,18 @@ public:
 
     //mi serve perchè non posso fare le connect direttamente nel costruttore. Quando sono nel costruttore, la ui2 non è ancora stata caricata quindi la connect va fatta in un secondo momento
     void connectMenuBarActions();
+    void setupTextEdit();
 
 public slots:
     void launchSetUi1();
     void on_actionApplyUsersColors();
     void on_actionApplyTextColors();
 
+    void on_actionUndo();
+    void on_actionRedo();
+    void on_actionCut();
+    void on_actionCopy();
+    void on_actionPaste();
     void on_actionBold();
     void on_actionItalic();
     void on_actionUnderlined();
