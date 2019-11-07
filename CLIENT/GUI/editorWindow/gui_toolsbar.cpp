@@ -19,8 +19,6 @@ GUI_ToolsBar::GUI_ToolsBar(QWidget *parent) : QWidget(parent){
     connect(ui->alignJustifiedPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionJustified);
 
     connect(ui->closePushButton, &QPushButton::clicked, editorParent, &GUI_Editor::launchSetUi1);
-    //TODO: questa è una posizione estremamente provvisoria per questa connect
-    //connect(ui->italicPushButton, &QPushButton::clicked, editorParent->crdtController, &CRDT_controller::setItalic);
 }
 
 GUI_ToolsBar::~GUI_ToolsBar(){
@@ -30,6 +28,21 @@ GUI_ToolsBar::~GUI_ToolsBar(){
 void GUI_ToolsBar::on_colorPushButton_clicked(){
     QColor chosenColor = QColorDialog::getColor(); //return the color chosen by user
     editorParent->crdtController->setCurrentTextColor(chosenColor);
+}
+
+void GUI_ToolsBar::setFontComboBoxText(QFont font){
+    //questa block sygnalserve ad evitare un loop infinito
+    ui->fontComboBox->blockSignals(true);
+    ui->fontComboBox->setCurrentFont(font);
+    ui->fontComboBox->blockSignals(false);
+}
+
+void GUI_ToolsBar::setSpinBoxValue(int size){
+
+    //questa block sygnalserve ad evitare un loop infinito
+    ui->spinBox->blockSignals(true);
+    ui->spinBox->setValue(size);
+    ui->spinBox->blockSignals(false);
 }
 
 void GUI_ToolsBar::setTextColorIconColor(const QColor color){

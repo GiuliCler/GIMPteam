@@ -23,7 +23,6 @@ void GUI_MyTextEdit::setupTextEdit(){
     QFont font = this->font();
     font.setPointSize(12);
     this->setFont(font);
-    //TODO: start with left alignment on text (button left_alignment in the toolsbar should be checked at start)
 
     currentCharFormatChanged(this->currentCharFormat());
     cursorPositionChanged();
