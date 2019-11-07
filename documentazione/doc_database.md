@@ -1,9 +1,9 @@
 # GIMPteam - Documentazione - DATABASE
 
 ## Tabelle
-- Tabella **doc** (nome_doc*, uri)
-- Tabella **utente_doc** (username*, nome_doc*, site_id, site_counter)
-- Tabella **utenti** (username*, password, sale, nickname, icona)
+- Tabella **doc** (**nome_doc**, uri)
+- Tabella **utente_doc** (**username**, **nome_doc**, site_id, site_counter)
+- Tabella **utenti** (**username**, password, sale, nickname, icona)
 
 ## File
 - **main.cpp** : file utilizzato unicamente per testare le funzioni di _collegamentoDB.cpp_
