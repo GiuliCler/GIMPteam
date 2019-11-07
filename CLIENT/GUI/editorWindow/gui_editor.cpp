@@ -128,13 +128,6 @@ void GUI_Editor::on_actionItalic(){
 void GUI_Editor::on_actionUnderlined(){
 
     menuTools_event(UNDERLINED_ON);
-
-    //questo serve a counterare il fatto che in caso di click il button cambia automaticamente stato da chechek ad unchechek e viceversa, ma voglio essere io a decidere quando cambiare stato
-    //childToolsBar->ui->underlinedPushButton->setChecked(!childToolsBar->ui->boldPushButton->isChecked());
-
-    //non so se devo cambiare lo stato di checked o no, quindi lo chiedo al text editor
-    //childToolsBar->ui->underlinedPushButton->setChecked(Stub::isGenericFontAttributeActivated(childToolsBar->ui->boldPushButton->isChecked()));
-    //setMenuToolStatus(UNDERLINED_ON);
 }
 
 void GUI_Editor::on_actionStrikethrough(){
