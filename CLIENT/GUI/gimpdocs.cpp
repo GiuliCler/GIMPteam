@@ -19,38 +19,36 @@ GIMPdocs::~GIMPdocs(){
 
 void GIMPdocs::setUi1(QWidget *widget){
     //serve ad annullare showMaximized e lo metto qui perchè se lo metto dopo la set central window mi sballa il corner topLeft della window
-    if(!alreadyMaximized)
-        showNormal();
+    showNormal();
 
     ui1->setupUi(this);
     this->setCentralWidget(widget);
 
-    if(alreadyMaximized){
-        //la resize (consigliata dal forum) serve perchè altrimenti mi mostra una window non maximized ma che non so perchè conta come maximized
-        resize(maximumWidth(), maximumHeight());
-        //è importante che showMaximized venga lanciato dopo il cambio di ui perchè sì, atrimenti fa casini e non massimizza
+    //la resize serve in ogni caso perchè anche se torno maximized, se poi tolgo il maximized voglio comunque riavere la vecchia size (che avevo prima di aprire l'editor. Senza la resize, togliendo il maximized, mi metterebbe la size dell'editor non massimizzato
+    //la adjustSize, che dovrebbe adeguare la size al contenuto, in realtà serve solo come trucco magico per poter usare la resize. Per qualche strana ragione, senza la adjustSize la resize viene eseguita prima della setCentralWwidget
+    adjustSize();
+    //questa ripristina le dimensioni precedenti alla showMaximized
+    resize(regularWindowSize);
+
+    //se prima di aprire un document era già maximized lo rimetto maximized
+    if(alreadyMaximized)
         showMaximized();
-    }
-    else {
-        //la adjustSize, che dovrebbe adeguare la size al contenuto, in realtà serve solo come trucco magico per poter usare la resize. Per qualche strana ragione, senza la adjustSize la resize viene eseguita prima della setCentralWwidget
-        adjustSize();
-        //questa ripristina le dimensioni precedenti alla showMaximized
-        resize(regularWindowSize);
-    }
 }
 
 void GIMPdocs::setUi2(QWidget *widget){
 
+    //serve per quando chiudo il document e voglio ripristinare la vecchia size
     alreadyMaximized = isMaximized();
     if(!alreadyMaximized)
         regularWindowSize = this->size();
 
+    //prima di caricare l'altra Ui la riporto a not-maximized a prescindere, altrimenti mi da problemi quando setto a maximized l'editor
+    showNormal();
+
     ui2->setupUi(this);
     this->setCentralWidget(widget);
 
-    //la resize (consigliata dal forum) serve perchè altrimenti mi mostra una window non maximized ma che non so perchè conta come maximized
-    resize(maximumWidth(), maximumHeight());
-    //è importante che showMaximized venga lanciato dopo il cambio di ui perchè sì, atrimenti fa casini e non massimizza
+    //voglio che mi venga sempre aperta maximized
     showMaximized();
 
     //devo attivare qui le connect e non posso farlo prima nel costruttore perchè quando chiamo il costruttore ui2 non è ancora stato caricato

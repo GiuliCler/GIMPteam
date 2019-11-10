@@ -32,7 +32,6 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
     std::shared_ptr<QSet<long>> contributors = Stub::getContributorsUsersOnDocument(documentId);
     for (QSet<long>::iterator userId = contributors->begin(); userId != contributors->end(); userId++)
         addContributorToCurrentDocument(*userId);
-
 }
 
 GUI_Editor::~GUI_Editor(){
