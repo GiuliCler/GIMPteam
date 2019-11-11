@@ -8,6 +8,9 @@
 #include <QMessageBox>
 #include <QScrollBar>
 
+#include <QPrinter>
+#include <QFileDialog>
+#include <QFileInfo>
 
 GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), documentId(documentId)
 {
@@ -45,6 +48,20 @@ void GUI_Editor::connectMenuBarActions(){
     connect(gimpParent->ui2->getURIAction, &QAction::triggered, [this](){
         GUI_URI *box = new GUI_URI(this, Stub::getDocumentURI(documentId));
         box->setVisible(true);
+    });
+    connect(gimpParent->ui2->exportPDFAction, &QAction::triggered, [this](){
+        QString fileName = QFileDialog::getSaveFileName(this, "Export PDF", "", "*.pdf");
+        if (QFileInfo(fileName).suffix().isEmpty())
+            fileName.append(".pdf");
+
+        QPrinter printer(QPrinter::PrinterResolution);
+        printer.setOutputFormat(QPrinter::PdfFormat);
+        printer.setPaperSize(QPrinter::A4);
+        printer.setOutputFileName(fileName);
+
+        std::shared_ptr<QTextDocument> docp = Stub::getTextDocument();
+        docp->setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
+        docp->print(&printer);
     });
 
     //ho connesso le 2 action in modo da alternarsi l'un l'altra ed in modo da comportarsi come se avessi premuto un pulsante

@@ -163,3 +163,9 @@ void Stub::setCurrentTextColor(QColor color){
     return;
 }
 
+std::shared_ptr<QTextDocument> Stub::getTextDocument(){
+    std::shared_ptr<QTextDocument> docpointer(new QTextDocument());
+    docpointer->setHtml("<h1>Hello, World!</h1>\n<p>Sopra la panca la capra studia. Sotto la panca la capra studia</p>");
+
+    return docpointer;
+}

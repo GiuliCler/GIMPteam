@@ -4,6 +4,7 @@
 #include <QObject>
 #include <memory>
 #include <QColor>
+#include <QTextDocument>
 
 class Stub : public QObject
 {
@@ -46,6 +47,8 @@ public:
     static QColor getCurrentTextColor();
     static void setCurrentTextColor(QColor color);
 
+    //mi serve per l'export PDF
+    static std::shared_ptr<QTextDocument> getTextDocument();
 
 };
 

@@ -19,6 +19,8 @@ private slots:
     void on_getURIPushButton_clicked();
     void on_forgetPushButton_clicked();
 
+    void on_exportPDFPushButton_clicked();
+
 private:
     Ui::GUI_Opendoc *ui;
 
