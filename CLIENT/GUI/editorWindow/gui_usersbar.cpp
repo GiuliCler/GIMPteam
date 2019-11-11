@@ -35,7 +35,7 @@ GUI_UsersBar::~GUI_UsersBar(){
 
 QLabel *GUI_UsersBar::getUserIcon(long userId, QColor color){
     //carico l'icona e le metto uno sfondo
-    long iconId = Stub::getIconId(userId);
+    QString iconId = Stub::getIconId(userId);
     QPixmap *image = new QPixmap(GUI_Icons::getIconPath(iconId));
     QPixmap *background = new QPixmap(image->height(), image->width());
     background->fill(color);

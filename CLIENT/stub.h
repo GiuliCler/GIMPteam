@@ -16,12 +16,12 @@ public:
     //questa serve per fare il login. Restituisc l'id se username e password sono corretti, altrimenti 0 o -1, basta metterci d'accordo
     static long tryLogin(QString username, QString password);
     //anche qui mi srve che ritorni un id
-    static long createUser(QString username, QString password, QString nickname, int iconId);
+    static long createUser(QString username, QString password, QString nickname, QString iconId);
     //a seconda del codice di errore stamperò un messaggio appropriato. Oppure può ritornare direttamente il messaggio
-    static int updateUser(long id, QString password, QString nickname, int iconId);
+    static int updateUser(long id, QString password, QString nickname, QString iconId);
 
     //dato l'id restituiscono parametri
-    static int getIconId(long userid);
+    static QString getIconId(long userid);
     static QString getNickname(long userid);
     static QString getUsername(long userid);
     static QString getPassword(long userid);

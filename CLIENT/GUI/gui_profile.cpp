@@ -4,6 +4,8 @@
 
 #include <QMessageBox>
 #include <QIcon>
+#include <QFile>
+#include <QDir>
 
 GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
 {
@@ -18,9 +20,8 @@ GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
         ui->usernameLineEdit->hide();
         fillForm();
     }
-    else{
+    else
         ui->usernameLabelReadonly->hide();
-    }
 
     loadIcons();
 
@@ -77,7 +78,7 @@ void GUI_Profile::on_savePushButton_clicked()
     //creo un nuovo utente o aggiorno quello vecchio
     if(gimpParent->userid < 0){
         //creo un nuovo user
-        long n = Stub::createUser(ui->usernameLineEdit->text(), ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), 1);
+        long n = Stub::createUser(ui->usernameLineEdit->text(), ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData()));
         if(n > -1)
             gimpParent->userid = n;
         else{
@@ -89,12 +90,11 @@ void GUI_Profile::on_savePushButton_clicked()
     }
     else{
         //faccio l'update del vecchio user
-        int code = Stub::updateUser(gimpParent->userid, ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), 1);
+        int code = Stub::updateUser(gimpParent->userid, ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData()));
         if(code != 0){
             QMessageBox::information(this, "", "Generic error");
             return;
         }
-
     }
 
     GUI_Menu *widget = new GUI_Menu(gimpParent);
@@ -119,7 +119,7 @@ void GUI_Profile::fillForm(){
 }
 
 void GUI_Profile::loadIcons(){
-    QVector<QString> *v = GUI_Icons::getIconPaths();
-    for (QString *s = v->begin(); s != v->end(); s++)
-        ui->iconComboBox->addItem(QIcon(*s), "", s - v->begin());
+    QMap<QString, QString> *m = GUI_Icons::getIconPaths();
+    for (QMap<QString, QString>::iterator iter = m->begin(); iter != m->end(); iter++ )
+        ui->iconComboBox->addItem(QIcon(iter.value()), "", iter.key());
 }

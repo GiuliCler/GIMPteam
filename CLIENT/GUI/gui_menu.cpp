@@ -24,7 +24,7 @@ void GUI_Menu::setProfileArea(){
     //carico nickname e icona dell'utente
     ui->nicknameLabel->setText(Stub::getNickname(gimpParent->userid));
 
-    int iconId = Stub::getIconId(gimpParent->userid);
+    QString iconId = Stub::getIconId(gimpParent->userid);
     QPixmap image = QPixmap(GUI_Icons::getIconPath(iconId));
     ui->iconLabel->setPixmap(image);
 }
@@ -35,14 +35,12 @@ void GUI_Menu::setDocumentArea(){
     ui->opendocTab->layout()->addWidget(new GUI_Opendoc(this));
 }
 
-void GUI_Menu::on_editPushButton_clicked()
-{
+void GUI_Menu::on_editPushButton_clicked(){
     GUI_Profile *widget = new GUI_Profile(gimpParent);
     gimpParent->setCentralWidget(widget);
 }
 
-void GUI_Menu::on_logoutPushButton_clicked()
-{
+void GUI_Menu::on_logoutPushButton_clicked(){
     GUI_Login *widget = new GUI_Login(gimpParent);
     gimpParent->setCentralWidget(widget);
 }

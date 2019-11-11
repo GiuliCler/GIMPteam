@@ -16,11 +16,11 @@ long Stub::tryLogin(QString username, QString password){
     return 1;
 }
 
-int Stub::getIconId(long userId){
+QString Stub::getIconId(long userId){
     int n =userId;
     userId = n;
 
-    return 1;
+    return "Mew.png";
 }
 
 QString Stub::getNickname(long userid){
@@ -50,21 +50,21 @@ QString Stub::getPassword(long userid){
     return "Boh";
 }
 
-long Stub::createUser(QString username, QString password, QString nickname, int iconId){
+long Stub::createUser(QString username, QString password, QString nickname, QString iconId){
     //tutte 'ste assegnazioni sono solo per togliere i warning
     username = password;
     password = nickname;
-    int n = iconId;
-    iconId = n;
+    password = iconId;
 
     return 1;
 }
 
-int Stub::updateUser(long id, QString password, QString nickname, int iconId){
+int Stub::updateUser(long id, QString password, QString nickname, QString iconId){
     //tutte 'ste assegnazioni sono solo per togliere i warning
     password = nickname;
-    id = iconId;
-    iconId = id;
+    password = iconId;
+    int n = id;
+    id = n;
 
     return 0;
 }

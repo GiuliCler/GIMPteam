@@ -2,6 +2,7 @@
 #define ICONS_H
 
 #include <QVector>
+#include <QMap>
 
 class GUI_Icons{
 public:
@@ -9,10 +10,10 @@ public:
     static int iconSize;
     //è per caricare i path delle icone nel vettore una volta sola
     static bool loaded;
-    static QVector<QString> icons;
+    static QMap<QString, QString> icons;
 
-    static QString getIconPath(long iconId);
-    static QVector<QString> *getIconPaths();
+    static QString getIconPath(QString iconId);
+    static QMap<QString, QString> *getIconPaths();
 
     //riempe il vettore coi path
     static void load();
