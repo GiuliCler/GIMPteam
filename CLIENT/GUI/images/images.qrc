@@ -1,12 +1,13 @@
 <RCC>
     <qresource prefix="/icons">
         <file>Mew.png</file>
-        <file>Celebi.png</file>
         <file>Jirachi.png</file>
         <file>Manaphy.png</file>
         <file>Victini.png</file>
         <file>Diancie.png</file>
         <file>Marshadow.png</file>
+        <file>Deoxys_Attack.png</file>
+        <file>Shaymin.png</file>
     </qresource>
     <qresource prefix="/editor">
         <file>text_editor/Bold.svg</file>

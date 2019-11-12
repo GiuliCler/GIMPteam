@@ -59,9 +59,9 @@ void GUI_Editor::connectMenuBarActions(){
         printer.setPaperSize(QPrinter::A4);
         printer.setOutputFileName(fileName);
 
-        std::shared_ptr<QTextDocument> docp = Stub::getTextDocument();
-        docp->setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
-        docp->print(&printer);
+        QTextDocument *doc = this->childMyTextEdit->document();
+        doc->setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
+        doc->print(&printer);
     });
 
     //ho connesso le 2 action in modo da alternarsi l'un l'altra ed in modo da comportarsi come se avessi premuto un pulsante

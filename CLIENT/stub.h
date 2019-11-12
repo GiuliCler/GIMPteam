@@ -47,7 +47,7 @@ public:
     static QColor getCurrentTextColor();
     static void setCurrentTextColor(QColor color);
 
-    //mi serve per l'export PDF
+    //mi serve per l'export PDF da parte del server perchè i document sono ancora tutti chiusi (quindi non è per te Paul)
     static std::shared_ptr<QTextDocument> getTextDocument();
 
 };
