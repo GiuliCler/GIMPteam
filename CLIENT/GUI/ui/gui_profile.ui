@@ -251,6 +251,12 @@ QComboBox QAbstractItemView {
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>25</height>
+           </size>
+          </property>
          </widget>
         </item>
         <item row="2" column="0" rowspan="2">
@@ -302,7 +308,7 @@ QComboBox QAbstractItemView {
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>30</height>
+              <height>25</height>
              </size>
             </property>
            </widget>
@@ -340,6 +346,12 @@ QComboBox QAbstractItemView {
         </item>
         <item row="4" column="2">
          <widget class="QLineEdit" name="passwordLineEdit">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>25</height>
+           </size>
+          </property>
           <property name="echoMode">
            <enum>QLineEdit::PasswordEchoOnEdit</enum>
           </property>
@@ -366,6 +378,12 @@ QComboBox QAbstractItemView {
         </item>
         <item row="5" column="2">
          <widget class="QLineEdit" name="repeatLineEdit">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>25</height>
+           </size>
+          </property>
           <property name="echoMode">
            <enum>QLineEdit::PasswordEchoOnEdit</enum>
           </property>
