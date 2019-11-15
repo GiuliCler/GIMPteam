@@ -13,7 +13,44 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" rowstretch="1,0,3,0,0,0,4" columnstretch="1,1,0,2">
+  <property name="styleSheet">
+   <string notr="true">QPushButton {
+	min-height: 25px;
+	min-width: 75px;
+	padding: 5px;	
+	padding-left: 10px;
+	padding-right: 10px;
+    background-color: hsv(165, 55, 255);
+    border-width: 1px;
+	border-style: outset;
+	border-color: hsv(165, 55, 205);
+}
+
+QPushButton:hover:!pressed{
+	border-color: hsv(165, 255, 255);
+	border-top-color: hsv(165, 200, 255);	
+	border-left-color: hsv(165, 200, 255);
+}
+
+QPushButton:pressed,QPushButton:checked {
+    border-style: inset;
+	background-color: hsv(165, 55, 220);
+}
+
+QLineEdit{
+    border-width: 2px;
+	border-style: inset;
+	border-color: hsv(165, 55, 205);
+}
+
+QLineEdit:focus{
+	border-color: hsv(165, 105, 205);
+}</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout" rowstretch="2,0,3,0,0,0,4" columnstretch="1,1,0,2">
+   <property name="verticalSpacing">
+    <number>10</number>
+   </property>
    <item row="4" column="1">
     <widget class="QLabel" name="label_2">
      <property name="cursor">
@@ -45,6 +82,12 @@
    </item>
    <item row="3" column="2">
     <widget class="QLineEdit" name="usernameLineEdit">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>25</height>
+      </size>
+     </property>
      <property name="text">
       <string>I'm</string>
      </property>
@@ -52,6 +95,12 @@
    </item>
    <item row="4" column="2">
     <widget class="QLineEdit" name="passwordLineEdit">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>25</height>
+      </size>
+     </property>
      <property name="text">
       <string>lazy</string>
      </property>
@@ -102,12 +151,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLabel" name="label_3">
-       <property name="font">
-        <font>
-         <pointsize>18</pointsize>
-        </font>
-       </property>
+      <widget class="QLabel" name="titleLabel">
        <property name="cursor">
         <cursorShape>IBeamCursor</cursorShape>
        </property>

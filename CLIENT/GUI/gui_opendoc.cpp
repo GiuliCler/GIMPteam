@@ -5,6 +5,10 @@
 #include "gui_uri.h"
 #include <QMessageBox>
 
+#include <QPrinter>
+#include <QFileDialog>
+#include <QFileInfo>
+
 GUI_Opendoc::GUI_Opendoc(QWidget *parent) : QWidget(parent)
 {
     this->setObjectName(GUI_Opendoc::getObjectName());
@@ -14,7 +18,7 @@ GUI_Opendoc::GUI_Opendoc(QWidget *parent) : QWidget(parent)
 
     fillList();
 
-    //imposto la connect per premere invio ed aprire il doc
+    //imposto la connect per il doppio click ed aprire il doc
     connect(ui->docsListWidget, &QListWidget::doubleClicked, this, &GUI_Opendoc::on_openDocsPushButton_clicked);
 }
 
@@ -58,6 +62,26 @@ void GUI_Opendoc::on_getURIPushButton_clicked(){
     box->setVisible(true);
 }
 
+void GUI_Opendoc::on_exportPDFPushButton_clicked(){
+    if(ui->docsListWidget->currentItem() == nullptr){
+        QMessageBox::information(this, "", "Please, select a document");
+        return;
+    }
+
+    QString fileName = QFileDialog::getSaveFileName(this, "Export PDF", "", "*.pdf");
+    if (QFileInfo(fileName).suffix().isEmpty())
+        fileName.append(".pdf");
+
+    QPrinter printer(QPrinter::PrinterResolution);
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setPaperSize(QPrinter::A4);
+    printer.setOutputFileName(fileName);
+
+    std::shared_ptr<QTextDocument> docp = Stub::getTextDocument();
+    docp->setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
+    docp->print(&printer);
+}
+
 void GUI_Opendoc::on_forgetPushButton_clicked(){
     if(ui->docsListWidget->currentItem() == nullptr){
         QMessageBox::information(this, "", "Please, select a document");
@@ -76,3 +100,5 @@ void GUI_Opendoc::on_forgetPushButton_clicked(){
 
     ui->docsListWidget->takeItem(ui->docsListWidget->currentRow());
 }
+
+

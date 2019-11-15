@@ -132,9 +132,6 @@ background-color: qlineargradient(spread:reflect, x1:0.5, y1:1, x2:0.5, y2:0, st
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <property name="autoFillBackground">
-           <bool>false</bool>
-          </property>
           <layout class="QGridLayout" name="gridLayout_2">
            <property name="leftMargin">
             <number>0</number>

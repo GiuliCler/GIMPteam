@@ -21,11 +21,9 @@
 	background-color: qlineargradient(spread:reflect, x1:0.5, y1:0, x2:0.5, y2:0.50, stop:0 rgba(207, 245, 236, 255), stop:0.20 rgba(215, 255, 245, 255), stop:1 rgba(230, 255, 249, 255));
 }
 
-#line{
+#line_1{
 background-color: rgb(203, 240, 251);
 }
-
-
 
 QPushButton {
     background-color: hsv(165, 55, 255);
@@ -183,7 +181,7 @@ QPushButton:pressed,QPushButton:checked {
           <number>5</number>
          </property>
          <item>
-          <widget class="Line" name="line">
+          <widget class="Line" name="line_1">
            <property name="palette">
             <palette>
              <active>

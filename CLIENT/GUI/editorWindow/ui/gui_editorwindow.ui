@@ -43,6 +43,7 @@
      <string>File</string>
     </property>
     <addaction name="getURIAction"/>
+    <addaction name="exportPDFAction"/>
     <addaction name="closeDocumentAction"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -190,6 +191,11 @@
    </property>
    <property name="text">
     <string>Apply text colors</string>
+   </property>
+  </action>
+  <action name="exportPDFAction">
+   <property name="text">
+    <string>Export to PDF</string>
    </property>
   </action>
  </widget>

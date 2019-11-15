@@ -48,6 +48,11 @@ QFontComboBox{
 	border-color: hsv(165, 55, 205);
 }
 
+QFontComboBox:focus{
+    border-width: 2px;
+	border-color: hsv(165, 55, 205);
+}
+
 QComboBox::down-arrow {
 	image: url(:/widgets_parts/widgets_parts/arrowdown.png);
 }

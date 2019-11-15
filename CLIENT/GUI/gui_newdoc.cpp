@@ -15,6 +15,15 @@ GUI_Newdoc::GUI_Newdoc(QWidget *parent) : QWidget(parent)
     //imposto la connect per premere invio
     connect(ui->nameLineEdit, &QLineEdit::returnPressed, this, &GUI_Newdoc::on_createPushButton_clicked);
     connect(ui->URILineEdit, &QLineEdit::returnPressed, this, &GUI_Newdoc::on_openURIPushButton_clicked);
+
+    //style
+    QFont font = ui->newDocumentTitleLabel->font();
+    font.setPixelSize(font.pixelSize() + 3);
+    ui->newDocumentTitleLabel->setFont(font);
+
+    font = ui->uriDocumentTitleLabel->font();
+    font.setPixelSize(font.pixelSize() + 3);
+    ui->uriDocumentTitleLabel->setFont(font);
 }
 
 GUI_Newdoc::~GUI_Newdoc(){

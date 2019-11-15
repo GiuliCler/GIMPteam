@@ -10,14 +10,46 @@
     <height>450</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <family>Gill Sans Ultra Bold</family>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>GIMPdocs</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QMainWindow{background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 rgba(122, 158, 126, 255), stop:1 rgba(198, 255, 194, 255));}
+   <string notr="true">/*font: bold italic 40px &quot;Times New Roman&quot;;*/
+
+QMainWindow, QDialog{
+background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 rgba(122, 158, 126, 255), stop:1 rgba(198, 255, 194, 255));
+}
 </string>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+	padding-left: 30px;
+	/*height: 25px;
+	width: 75px;*/
+    background-color: hsv(165, 55, 255);
+    border-width: 1px;
+	border-style: outset;
+	border-color: hsv(165, 55, 205);
+}
+
+QPushButton:hover:!pressed{
+	border-color: hsv(165, 255, 255);
+	border-top-color: hsv(165, 200, 255);	
+	border-left-color: hsv(165, 200, 255);
+}
+
+QPushButton:pressed,QPushButton:checked {
+    border-style: inset;
+	background-color: hsv(165, 55, 220);
+}</string>
+   </property>
+  </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
