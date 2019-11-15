@@ -21,10 +21,12 @@
 	border-color: hsv(165, 55, 205);
 }
 
-
 QPushButton {
-	height: 25px;
-	width: 75px;
+	min-height: 25px;
+	min-width: 75px;
+	padding: 5px;	
+	padding-left: 10px;
+	padding-right: 10px;
     background-color: hsv(165, 55, 255);
     border-width: 1px;
 	border-style: outset;
@@ -126,11 +128,6 @@ QComboBox QAbstractItemView {
         </item>
         <item>
          <widget class="QLabel" name="titleLabel">
-          <property name="font">
-           <font>
-            <pointsize>14</pointsize>
-           </font>
-          </property>
           <property name="cursor">
            <cursorShape>IBeamCursor</cursorShape>
           </property>

@@ -14,6 +14,11 @@ GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
     ui = new Ui::GUI_Profile;
     ui->setupUi(this);
 
+    //style
+    QFont font = ui->titleLabel->font();
+    font.setPixelSize(font.pixelSize() + 10);
+    ui->titleLabel->setFont(font);
+
     //qui controllo se sto creando un nuovo utente o se ne sto modificando uno già loggato
     if(gimpParent->userid > -1){
         ui->backPushButton->hide();

@@ -51,8 +51,11 @@ QTabBar::tab:!selected:hover {
 }
 
 QPushButton {
-	height: 25px;
-	width: 75px;
+	min-height: 25px;
+	min-width: 75px;
+	padding: 5px;	
+	padding-left: 10px;
+	padding-right: 10px;
     background-color: hsv(165, 55, 255);
     border-width: 1px;
 	border-style: outset;

@@ -46,12 +46,7 @@ background-color: rgb(203, 240, 251);
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QLabel" name="label_3">
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
+        <widget class="QLabel" name="newDocumentTitleLabel">
          <property name="cursor">
           <cursorShape>IBeamCursor</cursorShape>
          </property>
@@ -327,12 +322,7 @@ background-color: rgb(203, 240, 251);
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
-        <widget class="QLabel" name="label_4">
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
+        <widget class="QLabel" name="uriDocumentTitleLabel">
          <property name="cursor">
           <cursorShape>IBeamCursor</cursorShape>
          </property>

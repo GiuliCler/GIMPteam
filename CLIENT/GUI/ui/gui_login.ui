@@ -14,13 +14,12 @@
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QWidget#opendocTab,QWidget#newdocTab{
-	background-color: qlineargradient(spread:reflect, x1:0.5, y1:0, x2:0.5, y2:0.49, stop:0 rgba(207, 245, 236, 255), stop:0.17 rgba(215, 255, 245, 255), stop:1 rgba(230, 255, 249, 255));
-}
-
-QPushButton {
-	height: 25px;
-	width: 75px;
+   <string notr="true">QPushButton {
+	min-height: 25px;
+	min-width: 75px;
+	padding: 5px;	
+	padding-left: 10px;
+	padding-right: 10px;
     background-color: hsv(165, 55, 255);
     border-width: 1px;
 	border-style: outset;
@@ -46,10 +45,9 @@ QLineEdit{
 
 QLineEdit:focus{
 	border-color: hsv(165, 105, 205);
-}
-</string>
+}</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" rowstretch="1,0,3,0,0,0,4" columnstretch="1,1,0,2">
+  <layout class="QGridLayout" name="gridLayout" rowstretch="2,0,3,0,0,0,4" columnstretch="1,1,0,2">
    <property name="verticalSpacing">
     <number>10</number>
    </property>
@@ -153,12 +151,7 @@ QLineEdit:focus{
       </spacer>
      </item>
      <item>
-      <widget class="QLabel" name="label_3">
-       <property name="font">
-        <font>
-         <pointsize>18</pointsize>
-        </font>
-       </property>
+      <widget class="QLabel" name="titleLabel">
        <property name="cursor">
         <cursorShape>IBeamCursor</cursorShape>
        </property>

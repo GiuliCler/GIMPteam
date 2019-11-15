@@ -7,6 +7,11 @@ GIMPdocs::GIMPdocs(QWidget *parent) : QMainWindow(parent), userid(-1)
     ui1 = new Ui::GIMPdocs;
     ui2 = new Ui::GUI_EditWindow;
 
+    QFont font("Calisto MT");
+    font.setPixelSize(14);
+    //font.setStyleHint(QFont::Monospace);
+    QApplication::setFont(font);
+
     regularWindowSize = this->size();
     alreadyMaximized = false;
     setUi1(new GUI_Login(this));
