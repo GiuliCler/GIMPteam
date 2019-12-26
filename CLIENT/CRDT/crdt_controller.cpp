@@ -1,4 +1,5 @@
 #include "crdt_controller.h"
+
 #define BACKWARD_SEL(action) \
     if(textEdit.textCursor().hasSelection() && textEdit.textCursor().position() < textEdit.textCursor().anchor()){ \
         QTextCursor tmp(textEdit.textCursor()); \
@@ -64,18 +65,18 @@ void CRDT_controller::setUnderlined(){
 }
 
 void CRDT_controller::setSize(int size){
-    if(validateSpin)
-        textEdit.setFontPointSize(size);
-    else
-        validateSpin = true;
-    textEdit.setFocus();
+//    if(validateSpin)
+//        textEdit.setFontPointSize(size);
+//    else
+//        validateSpin = true;
+//    textEdit.setFocus();
 }
 
 void CRDT_controller::setFont(const QFont &f){
-    if(validateFontCombo){
-    } else
-        validateFontCombo = true;
-    textEdit.setFocus();
+//    if(validateFontCombo){
+//    } else
+//        validateFontCombo = true;
+//    textEdit.setFocus();
 }
 
 void CRDT_controller::copy(){}
@@ -88,6 +89,42 @@ void CRDT_controller::setCurrentTextColor(QColor color){
 }
 
 void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
+    BACKWARD_SEL(
+                emit menuSet(tmp.charFormat().fontItalic() ? menuTools::ITALIC_ON : menuTools::ITALIC_OFF);
+                emit menuSet(tmp.charFormat().fontStrikeOut() ? menuTools::STRIKETHROUGH_ON : menuTools::STRIKETHROUGH_OFF);
+                emit menuSet(tmp.charFormat().fontUnderline() ? menuTools::UNDERLINED_ON : menuTools::UNDERLINED_OFF);
+                emit menuSet(tmp.charFormat().fontWeight() >= QFont::Bold ? menuTools::BOLD_ON : menuTools::BOLD_OFF);
+                parent->childToolsBar->setTextColorIconColor(tmp.charFormat().foreground().color());
+//                if(static_cast<int>(tmp.charFormat().fontPointSize()) != parent->childToolsBar->ui->spinBox->value()){
+//                    validateSpin = false;
+//                    parent->childToolsBar->ui->spinBox->setValue(static_cast<int>(tmp.charFormat().fontPointSize()));
+//                }
+//                if(tmp.charFormat().font() != parent->childToolsBar->ui->fontComboBox->currentFont()){
+//                    validateFontCombo = false;
+//                    parent->childToolsBar->ui->fontComboBox->setCurrentFont(tmp.charFormat().font());
+//                }
+            )
+    else{
+        emit menuSet(format.fontItalic() ? menuTools::ITALIC_ON : menuTools::ITALIC_OFF);
+        emit menuSet(format.fontStrikeOut() ? menuTools::STRIKETHROUGH_ON : menuTools::STRIKETHROUGH_OFF);
+        emit menuSet(format.fontUnderline() ? menuTools::UNDERLINED_ON : menuTools::UNDERLINED_OFF);
+        emit menuSet(format.fontWeight() >= QFont::Bold ? menuTools::BOLD_ON : menuTools::BOLD_OFF);
+
+        parent->childToolsBar->setTextColorIconColor(format.foreground().color());
+//        if(textEdit.textCursor().hasSelection()) {
+//            if(static_cast<int>(textEdit.fontPointSize()) != parent->childToolsBar->ui->spinBox->value()){
+//                validateSpin = false;
+//                parent->childToolsBar->ui->spinBox->setValue(static_cast<int>(textEdit.fontPointSize()));
+//            }
+//            if(textEdit.font() != parent->childToolsBar->ui->fontComboBox->currentFont()){
+//                validateFontCombo = false;
+//                parent->childToolsBar->ui->fontComboBox->setCurrentFont(textEdit.font());
+//            }
+//        }
+    }
+}
+
+void CRDT_controller::cursorMoved(){
     switch (textEdit.alignment()) {
         case Qt::AlignLeft:
             emit menuSet(menuTools::A_LEFT);
@@ -102,42 +139,7 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
             emit menuSet(menuTools::A_JUSTIFIED);
             break;
     }
-    BACKWARD_SEL(
-                emit menuSet(tmp.charFormat().fontItalic() ? menuTools::ITALIC_ON : menuTools::ITALIC_OFF);
-                emit menuSet(tmp.charFormat().fontStrikeOut() ? menuTools::STRIKETHROUGH_ON : menuTools::STRIKETHROUGH_OFF);
-                emit menuSet(tmp.charFormat().fontUnderline() ? menuTools::UNDERLINED_ON : menuTools::UNDERLINED_OFF);
-                emit menuSet(tmp.charFormat().fontWeight() >= QFont::Bold ? menuTools::BOLD_ON : menuTools::BOLD_OFF);
-                parent->childToolsBar->setTextColorIconColor(tmp.charFormat().foreground().color());
-                if(static_cast<int>(tmp.charFormat().fontPointSize()) != parent->childToolsBar->ui->spinBox->value()){
-                    validateSpin = false;
-                    parent->childToolsBar->ui->spinBox->setValue(static_cast<int>(tmp.charFormat().fontPointSize()));
-                }
-                if(tmp.charFormat().font() != parent->childToolsBar->ui->fontComboBox->currentFont()){
-                    validateFontCombo = false;
-                    parent->childToolsBar->ui->fontComboBox->setCurrentFont(tmp.charFormat().font());
-                }
-            )
-    else{
-        emit menuSet(format.fontItalic() ? menuTools::ITALIC_ON : menuTools::ITALIC_OFF);
-        emit menuSet(format.fontStrikeOut() ? menuTools::STRIKETHROUGH_ON : menuTools::STRIKETHROUGH_OFF);
-        emit menuSet(format.fontUnderline() ? menuTools::UNDERLINED_ON : menuTools::UNDERLINED_OFF);
-        emit menuSet(format.fontWeight() >= QFont::Bold ? menuTools::BOLD_ON : menuTools::BOLD_OFF);
 
-        parent->childToolsBar->setTextColorIconColor(format.foreground().color());
-        if(textEdit.textCursor().hasSelection()) {
-            if(static_cast<int>(textEdit.fontPointSize()) != parent->childToolsBar->ui->spinBox->value()){
-                validateSpin = false;
-                parent->childToolsBar->ui->spinBox->setValue(static_cast<int>(textEdit.fontPointSize()));
-            }
-            if(textEdit.font() != parent->childToolsBar->ui->fontComboBox->currentFont()){
-                validateFontCombo = false;
-                parent->childToolsBar->ui->fontComboBox->setCurrentFont(textEdit.font());
-            }
-        }
-    }
-}
-
-void CRDT_controller::cursorMoved(){
     if(rememberFormatChange){
         rememberFormatChange = false;
         currentCharFormatChanged(textEdit.currentCharFormat());
