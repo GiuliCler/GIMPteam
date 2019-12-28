@@ -75,10 +75,11 @@ void CRDT_controller::setSize(int size){
 }
 
 void CRDT_controller::setFont(const QFont &f){
-//    if(validateFontCombo){
-//    } else
-//        validateFontCombo = true;
-//    textEdit.setFocus();
+    if(validateFontCombo){
+        textEdit.setCurrentFont(f);
+    } else
+        validateFontCombo = true;
+    textEdit.setFocus();
 }
 
 void CRDT_controller::copy(){}
@@ -105,10 +106,10 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
                         parent->childToolsBar->ui->spinBox->setValue(12); // TODO define a default font size?
                     }
                 }
-//                if(tmp.charFormat().font() != parent->childToolsBar->ui->fontComboBox->currentFont()){
-//                    validateFontCombo = false;
-//                    parent->childToolsBar->ui->fontComboBox->setCurrentFont(tmp.charFormat().font());
-//                }
+                if(tmp.charFormat().font() != parent->childToolsBar->ui->fontComboBox->currentFont()){
+                    validateFontCombo = false;
+                    parent->childToolsBar->ui->fontComboBox->setCurrentFont(tmp.charFormat().font());
+                }
             )
     else{
         emit menuSet(format.fontItalic() ? menuTools::ITALIC_ON : menuTools::ITALIC_OFF);
@@ -126,10 +127,11 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
                     validateSpin = false;
                 parent->childToolsBar->ui->spinBox->setValue(12); // TODO define a default font size?
             }
-//            if(textEdit.font() != parent->childToolsBar->ui->fontComboBox->currentFont()){
-//                validateFontCombo = false;
-//                parent->childToolsBar->ui->fontComboBox->setCurrentFont(textEdit.font());
-//            }
+        }
+        if(textEdit.currentFont() != parent->childToolsBar->ui->fontComboBox->currentFont()) {
+            if(textEdit.textCursor().hasSelection())
+                validateFontCombo = false;
+            parent->childToolsBar->ui->fontComboBox->setCurrentFont(textEdit.currentFont());
         }
     }
 }
