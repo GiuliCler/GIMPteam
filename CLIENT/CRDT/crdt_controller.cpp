@@ -18,6 +18,8 @@ CRDT_controller::CRDT_controller(GUI_Editor *parent, GUI_MyTextEdit& textEdit): 
     QObject::connect(this->textEdit.document(), &QTextDocument::contentsChange, this, &CRDT_controller::contentChanged);
     QObject::connect(parent->childToolsBar->ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &CRDT_controller::setSize);
     QObject::connect(parent->childToolsBar->ui->fontComboBox, &QFontComboBox::currentFontChanged, this, &CRDT_controller::setFont);
+
+    parent->childToolsBar->ui->spinBox->setSpecialValueText("Default");
 }
 
 void CRDT_controller::setLeft(){
@@ -65,11 +67,11 @@ void CRDT_controller::setUnderlined(){
 }
 
 void CRDT_controller::setSize(int size){
-//    if(validateSpin)
-//        textEdit.setFontPointSize(size);
-//    else
-//        validateSpin = true;
-//    textEdit.setFocus();
+    if(validateSpin)
+        textEdit.setFontPointSize(size);
+    else
+        validateSpin = true;
+    textEdit.setFocus();
 }
 
 void CRDT_controller::setFont(const QFont &f){
@@ -95,10 +97,14 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
                 emit menuSet(tmp.charFormat().fontUnderline() ? menuTools::UNDERLINED_ON : menuTools::UNDERLINED_OFF);
                 emit menuSet(tmp.charFormat().fontWeight() >= QFont::Bold ? menuTools::BOLD_ON : menuTools::BOLD_OFF);
                 parent->childToolsBar->setTextColorIconColor(tmp.charFormat().foreground().color());
-//                if(static_cast<int>(tmp.charFormat().fontPointSize()) != parent->childToolsBar->ui->spinBox->value()){
-//                    validateSpin = false;
-//                    parent->childToolsBar->ui->spinBox->setValue(static_cast<int>(tmp.charFormat().fontPointSize()));
-//                }
+                if(static_cast<int>(tmp.charFormat().fontPointSize()) != parent->childToolsBar->ui->spinBox->value()){
+                    validateSpin = false;
+                    parent->childToolsBar->ui->spinBox->setValue(static_cast<int>(tmp.charFormat().fontPointSize()));
+                    if(parent->childToolsBar->ui->spinBox->value() == parent->childToolsBar->ui->spinBox->minimum()){
+                        validateSpin = false;
+                        parent->childToolsBar->ui->spinBox->setValue(12); // TODO define a default font size?
+                    }
+                }
 //                if(tmp.charFormat().font() != parent->childToolsBar->ui->fontComboBox->currentFont()){
 //                    validateFontCombo = false;
 //                    parent->childToolsBar->ui->fontComboBox->setCurrentFont(tmp.charFormat().font());
@@ -111,16 +117,20 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
         emit menuSet(format.fontWeight() >= QFont::Bold ? menuTools::BOLD_ON : menuTools::BOLD_OFF);
 
         parent->childToolsBar->setTextColorIconColor(format.foreground().color());
-//        if(textEdit.textCursor().hasSelection()) {
-//            if(static_cast<int>(textEdit.fontPointSize()) != parent->childToolsBar->ui->spinBox->value()){
-//                validateSpin = false;
-//                parent->childToolsBar->ui->spinBox->setValue(static_cast<int>(textEdit.fontPointSize()));
-//            }
+        if(static_cast<int>(textEdit.fontPointSize()) != parent->childToolsBar->ui->spinBox->value()){
+            if(textEdit.textCursor().hasSelection())
+                validateSpin = false;
+            parent->childToolsBar->ui->spinBox->setValue(static_cast<int>(textEdit.fontPointSize()));
+            if(parent->childToolsBar->ui->spinBox->value() == parent->childToolsBar->ui->spinBox->minimum()){
+                if(textEdit.textCursor().hasSelection())
+                    validateSpin = false;
+                parent->childToolsBar->ui->spinBox->setValue(12); // TODO define a default font size?
+            }
 //            if(textEdit.font() != parent->childToolsBar->ui->fontComboBox->currentFont()){
 //                validateFontCombo = false;
 //                parent->childToolsBar->ui->fontComboBox->setCurrentFont(textEdit.font());
 //            }
-//        }
+        }
     }
 }
 

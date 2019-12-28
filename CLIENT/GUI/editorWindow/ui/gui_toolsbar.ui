@@ -916,6 +916,9 @@ QSpinBox::down-button:pressed,QSpinBox::up-button:pressed {
            </item>
            <item>
             <widget class="QSpinBox" name="spinBox">
+             <property name="wrapping">
+              <bool>false</bool>
+             </property>
              <property name="correctionMode">
               <enum>QAbstractSpinBox::CorrectToPreviousValue</enum>
              </property>
@@ -923,7 +926,10 @@ QSpinBox::down-button:pressed,QSpinBox::up-button:pressed {
               <bool>false</bool>
              </property>
              <property name="minimum">
-              <number>1</number>
+              <number>0</number>
+             </property>
+             <property name="value">
+              <number>12</number>
              </property>
             </widget>
            </item>
