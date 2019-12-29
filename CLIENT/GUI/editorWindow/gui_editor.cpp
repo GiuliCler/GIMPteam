@@ -106,15 +106,15 @@ void GUI_Editor::on_actionRedo(){
 }
 
 void GUI_Editor::on_actionCut(){
-    menuTools_event(CUT);
+    menuTools_event(CUT_ON);
 }
 
 void GUI_Editor::on_actionCopy(){
-    menuTools_event(COPY);
+    menuTools_event(COPY_ON);
 }
 
 void GUI_Editor::on_actionPaste(){
-    menuTools_event(PASTE);
+    menuTools_event(PASTE_ON);
 }
 
 void GUI_Editor::on_actionBold(){
@@ -184,16 +184,28 @@ void GUI_Editor::setMenuToolStatus(menuTools code){
         //do nothing
         break;
 
-    case CUT:
-        //do nothing
+    case CUT_ON:
+        //TO DO enable cut
         break;
 
-    case COPY:
-        //do nothing
+    case CUT_OFF:
+        //TO DO disable cut
         break;
 
-    case PASTE:
-        //do nothing
+    case COPY_ON:
+        //TO DO enable copy
+        break;
+
+    case COPY_OFF:
+        //TO DO disable copy
+        break;
+
+    case PASTE_ON:
+        //TO DO enable paste
+        break;
+
+    case PASTE_OFF:
+        //TO DO disable paste
         break;
 
     case BOLD_ON:

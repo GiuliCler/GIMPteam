@@ -45,6 +45,7 @@ private slots:
     void cursorMoved();
     void contentChanged(int pos, int add, int del);
     void selectionChanged();
+    void clipboardDataChanged();
 
 signals:
     void menuSet(menuTools set);

@@ -1,4 +1,6 @@
 #include "crdt_controller.h"
+#include "QClipboard"
+#include "QMimeData"
 
 #define BACKWARD_SEL(action) \
     if(textEdit.textCursor().hasSelection() && textEdit.textCursor().position() < textEdit.textCursor().anchor()){ \
@@ -18,6 +20,7 @@ CRDT_controller::CRDT_controller(GUI_Editor *parent, GUI_MyTextEdit& textEdit): 
     QObject::connect(this->textEdit.document(), &QTextDocument::contentsChange, this, &CRDT_controller::contentChanged);
     QObject::connect(parent->childToolsBar->ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &CRDT_controller::setSize);
     QObject::connect(parent->childToolsBar->ui->fontComboBox, &QFontComboBox::currentFontChanged, this, &CRDT_controller::setFont);
+    connect(QApplication::clipboard(), &QClipboard::dataChanged, this, &CRDT_controller::clipboardDataChanged);
 
     parent->childToolsBar->ui->spinBox->setSpecialValueText("Default");
 }
@@ -82,9 +85,17 @@ void CRDT_controller::setFont(const QFont &f){
     textEdit.setFocus();
 }
 
-void CRDT_controller::copy(){}
-void CRDT_controller::cut(){}
-void CRDT_controller::paste(){}
+void CRDT_controller::copy(){
+    textEdit.copy();
+}
+
+void CRDT_controller::cut(){
+    textEdit.cut();
+}
+
+void CRDT_controller::paste(){
+    textEdit.paste();
+}
 
 void CRDT_controller::setCurrentTextColor(QColor color){
     textEdit.setTextColor(color);
@@ -162,12 +173,33 @@ void CRDT_controller::selectionChanged(){
         rememberFormatChange = false;
         currentCharFormatChanged(textEdit.currentCharFormat());
     }
+
+    if(textEdit.textCursor().hasSelection()){
+        parent->setMenuToolStatus(CUT_ON);
+        parent->setMenuToolStatus(COPY_ON);
+    } else {
+        parent->setMenuToolStatus(CUT_OFF);
+        parent->setMenuToolStatus(COPY_OFF);
+    }
 }
 void CRDT_controller::contentChanged(int pos, int add, int del){}
 
+void CRDT_controller::clipboardDataChanged(){
+    if (const QMimeData *md = QApplication::clipboard()->mimeData())
+        parent->setMenuToolStatus(md->hasText() ? PASTE_ON : PASTE_OFF);
+}
 
 void CRDT_controller::menuCall(menuTools op){
     switch (op) {
+        case COPY_ON:
+            copy();
+            break;
+        case CUT_ON:
+            cut();
+            break;
+        case PASTE_ON:
+            paste();
+            break;
         case A_LEFT:
             setLeft();
             break;
@@ -191,6 +223,8 @@ void CRDT_controller::menuCall(menuTools op){
             break;
         case STRIKETHROUGH_ON:
             setStrikethrough();
+            break;
+        default:
             break;
     }
 }
