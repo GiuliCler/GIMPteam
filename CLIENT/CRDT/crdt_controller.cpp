@@ -60,7 +60,7 @@ void CRDT_controller::setStrikethrough(){
     QTextCharFormat fmt;
     BACKWARD_SEL(fmt.setFontStrikeOut(!tmp.charFormat().fontStrikeOut());)
     else
-        fmt.setFontStrikeOut(!textEdit.fontItalic());
+        fmt.setFontStrikeOut(!textEdit.currentCharFormat().fontStrikeOut());
     textEdit.mergeCurrentCharFormat(fmt);
     textEdit.setFocus();
 }
