@@ -185,27 +185,33 @@ void GUI_Editor::setMenuToolStatus(menuTools code){
         break;
 
     case CUT_ON:
-        //TO DO enable cut
+        childToolsBar->ui->cutPushButton->setEnabled(true);
+        gimpParent->ui2->actionCut->setEnabled(true);
         break;
 
     case CUT_OFF:
-        //TO DO disable cut
+        childToolsBar->ui->cutPushButton->setEnabled(false);
+        gimpParent->ui2->actionCut->setEnabled(false);
         break;
 
     case COPY_ON:
-        //TO DO enable copy
+        childToolsBar->ui->copyPushButton->setEnabled(true);
+        gimpParent->ui2->actionCopy->setEnabled(true);
         break;
 
     case COPY_OFF:
-        //TO DO disable copy
+        childToolsBar->ui->copyPushButton->setEnabled(false);
+        gimpParent->ui2->actionCopy->setEnabled(false);
         break;
 
     case PASTE_ON:
-        //TO DO enable paste
+        childToolsBar->ui->pastePushButton->setEnabled(true);
+        gimpParent->ui2->actionPaste->setEnabled(true);
         break;
 
     case PASTE_OFF:
-        //TO DO disable paste
+        childToolsBar->ui->pastePushButton->setEnabled(false);
+        gimpParent->ui2->actionPaste->setEnabled(false);
         break;
 
     case BOLD_ON:

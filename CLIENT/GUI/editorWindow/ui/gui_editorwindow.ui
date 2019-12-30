@@ -92,11 +92,17 @@
    </property>
   </action>
   <action name="actionCopy">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Copy</string>
    </property>
   </action>
   <action name="actionCut">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Cut</string>
    </property>
