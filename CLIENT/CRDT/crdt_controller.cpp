@@ -20,7 +20,9 @@ CRDT_controller::CRDT_controller(GUI_Editor *parent, GUI_MyTextEdit& textEdit): 
     QObject::connect(this->textEdit.document(), &QTextDocument::contentsChange, this, &CRDT_controller::contentChanged);
     QObject::connect(parent->childToolsBar->ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &CRDT_controller::setSize);
     QObject::connect(parent->childToolsBar->ui->fontComboBox, &QFontComboBox::currentFontChanged, this, &CRDT_controller::setFont);
-    connect(QApplication::clipboard(), &QClipboard::dataChanged, this, &CRDT_controller::clipboardDataChanged);
+    QObject::connect(QApplication::clipboard(), &QClipboard::dataChanged, this, &CRDT_controller::clipboardDataChanged);
+    QObject::connect(textEdit.document(), &QTextDocument::undoAvailable, this, &CRDT_controller::undoAvailableChanged);
+    QObject::connect(textEdit.document(), &QTextDocument::redoAvailable, this, &CRDT_controller::redoAvailableChanged);
 
     parent->childToolsBar->ui->spinBox->setSpecialValueText("Default");
 }
@@ -95,6 +97,14 @@ void CRDT_controller::cut(){
 
 void CRDT_controller::paste(){
     textEdit.paste();
+}
+
+void CRDT_controller::undo(){
+    textEdit.undo();
+}
+
+void CRDT_controller::redo(){
+    textEdit.redo();
 }
 
 void CRDT_controller::setCurrentTextColor(QColor color){
@@ -189,8 +199,22 @@ void CRDT_controller::clipboardDataChanged(){
         parent->setMenuToolStatus(md->hasText() ? PASTE_ON : PASTE_OFF);
 }
 
+void CRDT_controller::undoAvailableChanged(bool available){
+    parent->setMenuToolStatus(available ? UNDO_ON : UNDO_OFF);
+}
+
+void CRDT_controller::redoAvailableChanged(bool available){
+    parent->setMenuToolStatus(available ? REDO_ON : REDO_OFF);
+}
+
 void CRDT_controller::menuCall(menuTools op){
     switch (op) {
+        case UNDO_ON:
+            undo();
+            break;
+        case REDO_ON:
+            redo();
+            break;
         case COPY_ON:
             copy();
             break;

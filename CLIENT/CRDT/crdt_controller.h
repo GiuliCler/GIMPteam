@@ -35,6 +35,9 @@ private:
     void cut();
     void paste();
 
+    void undo();
+    void redo();
+
 public:
     CRDT_controller(GUI_Editor *parent, GUI_MyTextEdit& textEdit);
     void setCurrentTextColor(QColor color);
@@ -46,6 +49,8 @@ private slots:
     void contentChanged(int pos, int add, int del);
     void selectionChanged();
     void clipboardDataChanged();
+    void undoAvailableChanged(bool available);
+    void redoAvailableChanged(bool available);
 
 signals:
     void menuSet(menuTools set);

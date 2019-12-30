@@ -98,11 +98,11 @@ void GUI_Editor::on_actionApplyTextColors(){
 
 
 void GUI_Editor::on_actionUndo(){
-    menuTools_event(UNDO);
+    menuTools_event(UNDO_ON);
 }
 
 void GUI_Editor::on_actionRedo(){
-    menuTools_event(REDO);
+    menuTools_event(REDO_ON);
 }
 
 void GUI_Editor::on_actionCut(){
@@ -176,12 +176,24 @@ void GUI_Editor::setMenuToolStatus(menuTools code){
     }
 
     switch(code){
-    case UNDO:
-        //do nothing, ma almeno rimuovo il warning
+    case UNDO_ON:
+        childToolsBar->ui->undoPushButton->setEnabled(true);
+        gimpParent->ui2->actionUndo->setEnabled(true);
         break;
 
-    case REDO:
-        //do nothing
+    case UNDO_OFF:
+        childToolsBar->ui->undoPushButton->setEnabled(false);
+        gimpParent->ui2->actionUndo->setEnabled(false);
+        break;
+
+    case REDO_ON:
+        childToolsBar->ui->redoPushButton->setEnabled(true);
+        gimpParent->ui2->actionRedo->setEnabled(true);
+        break;
+
+    case REDO_OFF:
+        childToolsBar->ui->redoPushButton->setEnabled(false);
+        gimpParent->ui2->actionRedo->setEnabled(false);
         break;
 
     case CUT_ON:

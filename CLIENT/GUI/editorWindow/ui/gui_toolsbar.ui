@@ -138,6 +138,9 @@ QSpinBox::down-button:pressed,QSpinBox::up-button:pressed {
           <layout class="QHBoxLayout" name="horizontalLayout_2">
            <item>
             <widget class="QPushButton" name="undoPushButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="toolTip">
               <string>Undo</string>
              </property>
@@ -152,6 +155,9 @@ QSpinBox::down-button:pressed,QSpinBox::up-button:pressed {
            </item>
            <item>
             <widget class="QPushButton" name="redoPushButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="toolTip">
               <string>Redo</string>
              </property>
