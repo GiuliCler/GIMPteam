@@ -1,6 +1,6 @@
 #include "crdt_controller.h"
-#include "QClipboard"
-#include "QMimeData"
+#include <QClipboard>
+#include <QMimeData>
 
 #define BACKWARD_SEL(action) \
     if(textEdit.textCursor().hasSelection() && textEdit.textCursor().position() < textEdit.textCursor().anchor()){ \

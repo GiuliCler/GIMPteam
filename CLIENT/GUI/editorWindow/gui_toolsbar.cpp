@@ -9,6 +9,9 @@ GUI_ToolsBar::GUI_ToolsBar(QWidget *parent) : QWidget(parent){
 
     //setTextColorIconColor(QColor(0,0,0)); //TODO: check whether this is needed or not
 
+    connect(ui->cutPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionCut);
+    connect(ui->copyPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionCopy);
+    connect(ui->pastePushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionPaste);
     connect(ui->boldPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionBold);
     connect(ui->italicPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionItalic);
     connect(ui->underlinedPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionUnderlined);
