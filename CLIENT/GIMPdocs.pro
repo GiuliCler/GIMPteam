@@ -26,6 +26,9 @@ CONFIG += c++11
 
 SOURCES += \
         CRDT/crdt_controller.cpp \
+        CRDT/crdt_message.cpp \
+        CRDT/crdt_sharededitor.cpp \
+        CRDT/crdt_symbol.cpp \
         GUI/editorWindow/gui_colorsmanager.cpp \
         GUI/editorWindow/gui_myscrollarea.cpp \
         GUI/editorWindow/gui_toolsbar.cpp \
@@ -46,6 +49,9 @@ SOURCES += \
 
 HEADERS += \
         CRDT/crdt_controller.h \
+        CRDT/crdt_message.h \
+        CRDT/crdt_sharededitor.h \
+        CRDT/crdt_symbol.h \
         GUI/editorWindow/gui_colorsmanager.h \
         GUI/editorWindow/gui_myscrollarea.h \
         GUI/editorWindow/gui_toolsbar.h \
