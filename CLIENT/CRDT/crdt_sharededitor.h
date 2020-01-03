@@ -1,13 +1,14 @@
 #ifndef CRDT_SHAREDEDITOR_H
 #define CRDT_SHAREDEDITOR_H
 
-#include <QObject>
 //#include "NetworkServer.h"
+#include <vector>
+#include <string>
 
 class CRDT_Symbol;
 class CRDT_Message;
 
-class CRDT_SharedEditor : public QObject
+class CRDT_SharedEditor
 {
 private:
 //    NetworkServer& _server;

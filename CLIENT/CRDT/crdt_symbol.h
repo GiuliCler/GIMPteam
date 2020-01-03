@@ -1,11 +1,10 @@
 #ifndef CRDT_SYMBOL_H
 #define CRDT_SYMBOL_H
 
-//#include<QObject>
 #include <string>
 #include <vector>
 
-class CRDT_Symbol/* : public QObject*/
+class CRDT_Symbol
 {
 private:
     char carattere;

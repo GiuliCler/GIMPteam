@@ -1,14 +1,13 @@
 #ifndef CRDT_MESSAGE_H
 #define CRDT_MESSAGE_H
 
-#include <QObject>
 #include <string>
 #include <vector>
 #include "crdt_symbol.h"
 
 class CRDT_Symbol;
 
-class CRDT_Message : public QObject
+class CRDT_Message
 {
 private:
     std::string azione;
