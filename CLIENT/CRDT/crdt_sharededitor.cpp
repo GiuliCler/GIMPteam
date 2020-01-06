@@ -1,12 +1,13 @@
 #include "crdt_sharededitor.h"
 #include "crdt_symbol.h"
 #include "crdt_message.h"
+#include "crdt_controller.h"
 #include <iostream>
 #include <string>
 #include <vector>
 #include <cmath>
 
-CRDT_SharedEditor::CRDT_SharedEditor(/*NetworkServer& s*/)/*: _server(s)*/{
+CRDT_SharedEditor::CRDT_SharedEditor(CRDT_controller *parent/*, NetworkServer& s*/): parent(parent)/*, _server(s)*/{
 //        _siteId = _server.connect(this);
         _counter = 0;
 }
@@ -15,10 +16,11 @@ int CRDT_SharedEditor::getSiteId() const{
     return this->_siteId;
 }
 
-void CRDT_SharedEditor::localInsert(int index, char value){
-    std::vector<int> posizione, posPREV, posNEXT;
+void CRDT_SharedEditor::localInsert(int index, QChar value, QTextCharFormat fmt, Qt::Alignment align){
+    QVector<int> posizione, posPREV, posNEXT;
 
-    //printf("Sto inserendo... %c\n", value);     // DEBUG -----
+//    printf("Sto inserendo... %c\n", value);     // DEBUG -----
+    std::cout << "Adding " << value.toLatin1() << " to CRDT in pos " << index << std::endl; // DEBUG
 
     if(index<0 || index>_symbols.size())
         throw std::exception();     //TODO eccezioniiii
@@ -47,7 +49,7 @@ void CRDT_SharedEditor::localInsert(int index, char value){
     //printf("%d\n", _siteId);       // DEBUG ------
 
     /* Creazione del nuovo simbolo e inserimento nella corretta posizione all'interno del vettore _symbols */
-    auto simbolo = new CRDT_Symbol(value, this->_siteId, this->_counter++, posizione);
+    auto simbolo = new CRDT_Symbol(value, this->_siteId, this->_counter++, posizione, fmt, align);
     auto it = _symbols.begin()+index;
     _symbols.insert(it, *simbolo);
 
@@ -56,8 +58,8 @@ void CRDT_SharedEditor::localInsert(int index, char value){
 //    _server.send(*messaggio);
 }
 
-std::vector<int> CRDT_SharedEditor::generaPosizione(std::vector<int> prev, std::vector<int> next){
-    std::vector<int> pos;
+QVector<int> CRDT_SharedEditor::generaPosizione(QVector<int> prev, QVector<int> next){
+    QVector<int> pos;
     int delta;
     auto SX = prev.begin();
     auto DX = next.begin();
@@ -117,7 +119,7 @@ void CRDT_SharedEditor::localErase(int index){
     /* Recupero dal vettore di simboli il simbolo da eliminare */
     CRDT_Symbol simbolo = _symbols[index];
 
-    //std::cout<< "Ho pescato... "<<simbolo.getCarattere()<<" -- "<<simbolo.getIDunivoco()<<std::endl;            // DEBUG ----
+    std::cout<< "Ho pescato... "<< simbolo.getCarattere().toLatin1() <<" -- "<<simbolo.getIDunivoco()<<std::endl;            // DEBUG ----
 
     /* Elimino il simbolo */
     auto it = _symbols.begin()+index;
@@ -133,34 +135,38 @@ void CRDT_SharedEditor::localErase(int index){
 void CRDT_SharedEditor::process(const CRDT_Message& m){
         std::string azione = m.getAzione();
         CRDT_Symbol simbolo = m.getSimbolo();
-        auto it = _symbols.begin();
+        QVector<CRDT_Symbol>::iterator it = _symbols.begin();
 
         if(azione == "insert"){                 /* SIMBOLO INSERITO */
-            std::vector<int> posNew = m.getSimbolo().getPosizione();
+            QVector<int> posNew = m.getSimbolo().getPosizione();
             if(!_symbols.empty()){
                 it = trovaPosizione(posNew);
             }
+
             _symbols.insert(it, simbolo);
+            parent->remoteInsert(it - _symbols.begin(), simbolo.getCarattere(), simbolo.getFormat(), simbolo.getAlignment());
+
 
         } else if(azione == "delete"){           /* SIMBOLO CANCELLATO */
             //std::cout<<"(dispatch nell'ed "<<_siteId<<"): elimino il carattere "<<simbolo.getCarattere()<<" di id "<<simbolo.getIDunivoco()<<std::endl;     // DEBUG ------
-            for(; it<_symbols.end(); it++){
-                CRDT_Symbol s = (*it);
+            for(; it < _symbols.end(); it++){
+                CRDT_Symbol s = *it;
                 //std::cout<<s.getCarattere()<<" "<<s.getIDunivoco()<<std::endl;      // DEBUG -------------
                 if((s.getPosizione()==simbolo.getPosizione()) && (s.getIDunivoco()==simbolo.getIDunivoco())) {
                     _symbols.erase(it);
+                    parent->remoteDelete(it - _symbols.begin());
                     break;
                 }
             }
         }
 }
 
-std::vector<CRDT_Symbol, std::allocator<CRDT_Symbol>>::iterator CRDT_SharedEditor::trovaPosizione(std::vector<int> pos) {
-    std::vector<int> currentPos;
+QVector<CRDT_Symbol>::iterator CRDT_SharedEditor::trovaPosizione(QVector<int> pos) {
+    QVector<int> currentPos;
     int esito = 0;
-    std::vector<CRDT_Symbol, std::allocator<CRDT_Symbol>>::iterator it;
+    QVector<CRDT_Symbol>::iterator it;
 
-    for(it = _symbols.begin(); it<_symbols.end(); it++){
+    for(it = _symbols.begin(); it < _symbols.end(); it++){
         currentPos = (*it).getPosizione();
         esito = confrontaPos(pos, currentPos);
         if(esito)
@@ -177,7 +183,7 @@ std::vector<CRDT_Symbol, std::allocator<CRDT_Symbol>>::iterator CRDT_SharedEdito
  * ESITO = 1 --> currentPos > pos ==> posso inserire il nuovo elemento qui
  * ESITO = 0 --> currentPos < pos ==> devo continuare la ricerca guardando il prossimo elemento
 */
-int CRDT_SharedEditor::confrontaPos(std::vector<int> pos,std::vector<int> currentPos){
+int CRDT_SharedEditor::confrontaPos(QVector<int> pos, QVector<int> currentPos){
     for(int index=0; index<pos.size(); index++){
         if(currentPos.size()>index){
             if(currentPos[index] == pos[index]) {
@@ -195,26 +201,26 @@ int CRDT_SharedEditor::confrontaPos(std::vector<int> pos,std::vector<int> curren
     return 0;
 }
 
-std::string CRDT_SharedEditor::to_string() {
-    std::string documento;
-    for(auto i=_symbols.begin(); i<_symbols.end(); i++)
-        documento += (*i).getCarattere();
-    return documento;
-}
+//std::string CRDT_SharedEditor::to_string() {
+//    std::string documento;
+//    for(auto i=_symbols.begin(); i<_symbols.end(); i++)
+//        documento((*i).getCarattere();
+//    return documento;
+//}
 
-/* funzione per debug - mostra l'elenco dei caratteri e le rispettive posizioni*/
-std::string CRDT_SharedEditor::print(){
-    std::string posizioni = "--- SiteId: " + std::to_string(_siteId) + " ---\n";
-    for(const CRDT_Symbol &s: _symbols){
-        posizioni += s.getCarattere();
-        posizioni += " -- " + s.getIDunivoco();
-        posizioni += ": [ ";
-        std::vector<int> vet = s.getPosizione();
-        for(int num: vet){
-            posizioni += std::to_string(num) + " ";
-        }
-        posizioni += "]\n";
-    }
+///* funzione per debug - mostra l'elenco dei caratteri e le rispettive posizioni*/
+//std::string CRDT_SharedEditor::print(){
+//    std::string posizioni = "--- SiteId: " + std::to_string(_siteId) + " ---\n";
+//    for(const CRDT_Symbol &s: _symbols){
+//        posizioni += s.getCarattere();
+//        posizioni += " -- " + s.getIDunivoco();
+//        posizioni += ": [ ";
+//        std::vector<int> vet = s.getPosizione();
+//        for(int num: vet){
+//            posizioni += std::to_string(num) + " ";
+//        }
+//        posizioni += "]\n";
+//    }
 
-    return posizioni;
-}
+//    return posizioni;
+//}

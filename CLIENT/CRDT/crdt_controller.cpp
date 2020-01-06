@@ -1,6 +1,7 @@
 #include "crdt_controller.h"
 #include <QClipboard>
 #include <QMimeData>
+#include <iostream>
 
 #define BACKWARD_SEL(action) \
     if(textEdit.textCursor().hasSelection() && textEdit.textCursor().position() < textEdit.textCursor().anchor()){ \
@@ -10,8 +11,8 @@
         rememberFormatChange = true; \
     }
 
-CRDT_controller::CRDT_controller(GUI_Editor *parent, GUI_MyTextEdit& textEdit): parent(parent), textEdit(textEdit),
-                        rememberFormatChange(false), validateSpin(true), validateFontCombo(true){
+CRDT_controller::CRDT_controller(GUI_Editor *parent, GUI_MyTextEdit& textEdit): parent(parent), textEdit(textEdit), crdt(this),
+                        rememberFormatChange(false), validateSpin(true), validateFontCombo(true) {
     QObject::connect(this->parent, &GUI_Editor::menuTools_event, this, &CRDT_controller::menuCall);
     QObject::connect(this, &CRDT_controller::menuSet, parent, &GUI_Editor::setMenuToolStatus);
     QObject::connect(&this->textEdit, &QTextEdit::currentCharFormatChanged, this, &CRDT_controller::currentCharFormatChanged);
@@ -113,6 +114,9 @@ void CRDT_controller::setCurrentTextColor(QColor color){
 }
 
 void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
+    if(processingMessage)
+        return;
+
     BACKWARD_SEL(
                 emit menuSet(tmp.charFormat().fontItalic() ? menuTools::ITALIC_ON : menuTools::ITALIC_OFF);
                 emit menuSet(tmp.charFormat().fontStrikeOut() ? menuTools::STRIKETHROUGH_ON : menuTools::STRIKETHROUGH_OFF);
@@ -158,6 +162,9 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
 }
 
 void CRDT_controller::cursorMoved(){
+    if(processingMessage)
+        return;
+
     switch (textEdit.alignment()) {
         case Qt::AlignLeft:
             emit menuSet(menuTools::A_LEFT);
@@ -179,6 +186,9 @@ void CRDT_controller::cursorMoved(){
     }
 }
 void CRDT_controller::selectionChanged(){
+    if(processingMessage)
+        return;
+
     if(rememberFormatChange){
         rememberFormatChange = false;
         currentCharFormatChanged(textEdit.currentCharFormat());
@@ -192,7 +202,29 @@ void CRDT_controller::selectionChanged(){
         parent->setMenuToolStatus(COPY_OFF);
     }
 }
-void CRDT_controller::contentChanged(int pos, int add, int del){}
+
+void CRDT_controller::contentChanged(int pos, int del, int add){
+    if(processingMessage)
+        return;
+
+    //    DEBUG: get some info on what has been modified
+        std::cout << "pos: " << pos << "; add: " << add << "; del: " << del << std::endl;
+
+    if(del > 0){
+        for(int i = pos + del - 1; i >= pos; --i)
+            crdt.localErase(i);
+    }
+
+    if(add > 0){
+        QTextCursor tmp = textEdit.textCursor();
+        textEdit.textCursor().setPosition(pos + 1);
+
+        for(int i = pos; i < pos + add; ++i, textEdit.textCursor().movePosition(QTextCursor::NextCharacter))
+            crdt.localInsert(i, textEdit.toPlainText().at(i), textEdit.currentCharFormat(), textEdit.alignment());
+
+        textEdit.setTextCursor(tmp);
+    }
+}
 
 void CRDT_controller::clipboardDataChanged(){
     if (const QMimeData *md = QApplication::clipboard()->mimeData())
@@ -251,4 +283,27 @@ void CRDT_controller::menuCall(menuTools op){
         default:
             break;
     }
+}
+
+void CRDT_controller::remoteDelete(int pos){
+    processingMessage = true;
+    QTextCursor tmp = textEdit.textCursor();
+
+    textEdit.textCursor().setPosition(pos);
+    textEdit.textCursor().deleteChar();
+
+    textEdit.textCursor() = tmp;
+    processingMessage = false;
+}
+
+void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align){
+    processingMessage = true;
+    QTextCursor tmp = textEdit.textCursor();
+
+    textEdit.textCursor().setPosition(pos);
+    textEdit.textCursor().blockFormat().setAlignment(align);
+    textEdit.textCursor().insertText(c, fmt);
+
+    textEdit.textCursor() = tmp;
+    processingMessage = false;
 }

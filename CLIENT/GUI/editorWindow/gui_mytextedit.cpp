@@ -12,7 +12,7 @@ GUI_MyTextEdit::GUI_MyTextEdit(QWidget *parent) : QTextEdit(parent) {
     palette.setColor(QPalette::Inactive, QPalette::Highlight, palette.color(QPalette::Active, QPalette::Highlight));
     this->setPalette(palette);
 
-    this->setText("I pulsanti funzionano un po' a caso per ragioni di debug");
+//    this->setText("I pulsanti funzionano un po' a caso per ragioni di debug");
 }
 
 void GUI_MyTextEdit::setupTextEdit(){

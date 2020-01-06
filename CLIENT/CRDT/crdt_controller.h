@@ -4,7 +4,10 @@
 #include <QObject>
 #include "../GUI/editorWindow/gui_mytextedit.h"
 #include "../GUI/editorWindow/gui_toolsbar.h"
+#include "crdt_sharededitor.h"
 
+
+class CRDT_SharedEditor;
 
 class CRDT_controller : public QObject
 {
@@ -13,10 +16,12 @@ class CRDT_controller : public QObject
 private:
     GUI_Editor *parent;
     GUI_MyTextEdit& textEdit;
+    CRDT_SharedEditor crdt;
     menuTools lastOp;
     bool rememberFormatChange;
     bool validateSpin;
     bool validateFontCombo;
+    bool processingMessage = false;
 
     void setLeft();
     void setCenter();
@@ -42,11 +47,14 @@ public:
     CRDT_controller(GUI_Editor *parent, GUI_MyTextEdit& textEdit);
     void setCurrentTextColor(QColor color);
 
+    void remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align);
+    void remoteDelete(int pos);
+
 private slots:
     void menuCall(menuTools op);
     void currentCharFormatChanged(const QTextCharFormat &format);
     void cursorMoved();
-    void contentChanged(int pos, int add, int del);
+    void contentChanged(int pos, int del, int add);
     void selectionChanged();
     void clipboardDataChanged();
     void undoAvailableChanged(bool available);

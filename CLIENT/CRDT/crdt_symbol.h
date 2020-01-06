@@ -1,21 +1,29 @@
 #ifndef CRDT_SYMBOL_H
 #define CRDT_SYMBOL_H
 
+#include <QChar>
+#include <QTextCharFormat>
+#include <QVector>
 #include <string>
-#include <vector>
 
 class CRDT_Symbol
 {
 private:
-    char carattere;
+    QChar carattere;
     std::string id;
-    std::vector<int> posizione;
+    QVector<int> posizione;
+    QTextCharFormat format;
+    Qt::Alignment align;
 
 public:
-    CRDT_Symbol(char car, int clientID, int num, std::vector<int> vet);
-    char getCarattere() const;
+
+    CRDT_Symbol();
+    CRDT_Symbol(QChar car, int clientID, int num, QVector<int> vet, QTextCharFormat fmt, Qt::Alignment align);
+    QChar getCarattere() const;
+    QTextCharFormat getFormat() const;
+    Qt::Alignment getAlignment() const;
     std::string getIDunivoco()const;
-    std::vector<int> getPosizione() const;
+    QVector<int> getPosizione() const;
 };
 
 #endif // CRDT_SYMBOL_H
