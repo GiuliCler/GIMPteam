@@ -83,7 +83,8 @@ void GUI_Profile::on_savePushButton_clicked()
     //creo un nuovo utente o aggiorno quello vecchio
     if(gimpParent->userid < 0){
         //creo un nuovo user
-        long n = Stub::createUser(ui->usernameLineEdit->text(), ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData()));
+        //long n = Stub::createUser(ui->usernameLineEdit->text(), ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData()));
+        long n = gimpParent->getConnection()->requestNewAccount(ui->usernameLineEdit->text(), ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData()));
         if(n > -1)
             gimpParent->userid = n;
         else{

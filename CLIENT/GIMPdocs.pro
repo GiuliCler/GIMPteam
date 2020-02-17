@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui sql printsupport
+QT       += network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -40,6 +41,7 @@ SOURCES += \
         GUI/gui_opendoc.cpp \
         GUI/gui_profile.cpp \
         GUI/gui_uri.cpp \
+        connection_to_server.cpp \
         main.cpp \
         stub.cpp
 
@@ -59,6 +61,7 @@ HEADERS += \
         GUI/gui_opendoc.h \
         GUI/gui_profile.h \
         GUI/gui_uri.h \
+        connection_to_server.h \
         stub.h
 
 FORMS += \

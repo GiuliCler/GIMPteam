@@ -6,6 +6,7 @@
 #include "gui_icons.h"
 #include "ui_gimpdocs.h"
 #include "ui_gui_editorwindow.h"
+#include "../connection_to_server.h"
 #include <QMainWindow>
 #include <QDebug>
 
@@ -28,6 +29,8 @@ public:
     //servono a cambiare l'ui attiva. Widget è il central widget da caricare
     void setUi1(QWidget *widget);
     void setUi2(QWidget *widget);
+    connection_to_server *c;
+    connection_to_server *getConnection();
 
 };
 
