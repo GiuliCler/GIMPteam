@@ -22,6 +22,7 @@ public:
     connection_to_server(QString port, QString ipAddress);
     long requestTryLogin(QString username, QString password);
     long requestNewAccount(QString username, QString password, QString nickname, QString icon);
+    long requestUpdateAccount(QString username, QString password, QString nickname, QString icon);
 
 private slots:
     void showFile(const QString &file);

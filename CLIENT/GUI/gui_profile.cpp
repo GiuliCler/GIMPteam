@@ -83,21 +83,23 @@ void GUI_Profile::on_savePushButton_clicked()
     //creo un nuovo utente o aggiorno quello vecchio
     if(gimpParent->userid < 0){
         //creo un nuovo user
-        //long n = Stub::createUser(ui->usernameLineEdit->text(), ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData()));
         long n = gimpParent->getConnection()->requestNewAccount(ui->usernameLineEdit->text(), ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData()));
-        if(n > -1)
+        if(n > -1){
+            //debug
+            //QMessageBox::information(this, "", "ok");
             gimpParent->userid = n;
-        else{
+        }else{
             //TODO I don't know. Do something
-            QMessageBox::information(this, "", "Generic error");
+            QMessageBox::information(this, "", "Username already present.");
             return;
         }
 
     }
     else{
         //faccio l'update del vecchio user
-        int code = Stub::updateUser(gimpParent->userid, ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData()));
-        if(code != 0){
+        //PROBLEMA DI GESTIONE DELLO USERID TODO!!
+        long n = gimpParent->getConnection()->requestUpdateAccount(gimpParent->userid.toStdString(), ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData()));
+        if(n != 0){
             QMessageBox::information(this, "", "Generic error");
             return;
         }
