@@ -26,7 +26,7 @@ signals:
     void error(QTcpSocket::SocketError socketError);
 
 public slots:
-    void disconnectFromClient();
+    //void disconnectFromClient();
     void runServer();
 
 private:
