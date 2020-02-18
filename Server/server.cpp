@@ -32,8 +32,8 @@ void Server::incomingConnection(qintptr socketDescriptor)
         emit error(socket->error());
         return;
     }
-        //connect(socket, &QTcpSocket::disconnected, this, &Server::disconnectFromClient);
-        connect(socket, &QTcpSocket::readyRead, this, &Server::runServer);
+    //connect(socket, &QTcpSocket::disconnected, this, &Server::disconnectFromClient);
+    connect(socket, &QTcpSocket::readyRead, this, &Server::runServer);
 }
 void Server::runServer()
 {
@@ -57,7 +57,8 @@ void Server::runServer()
     in >> icon;
     if(this->database->signup(username.toStdString(),password.toStdString(), nickname.toStdString(), icon.toStdString())){
       //correttamente inseriti nel db
-      out << "ok";
+      userId++;
+      out << userId;
       socket->write(blocko);
      }else{
       out << "errore";
@@ -95,6 +96,23 @@ void Server::runServer()
        socket->write(blocko);
       }
      }
+
+     c = "NEW_DOC";
+     if(text.contains(c.toUtf8())){
+     QByteArray userId, name;
+     in >> name;
+     in >> userId;
+     //TODO: e lo userId???
+     if(this->database->creaDoc(name.toStdString())){
+       //correttamente inseriti nel db
+       out << "ok";
+       socket->write(blocko);
+      }else{
+       out << "errore";
+       socket->write(blocko);
+      }
+     }
+
     socket->disconnectFromHost();
     socket->waitForDisconnected();
 }

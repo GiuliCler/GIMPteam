@@ -34,6 +34,7 @@ private:
     CollegamentoDB *database;
     int socketDescriptor;
     QTcpSocket *socket;
+    int userId=0; //TODO: da gestire con mutex per la concorrenza!!PROBLEMA: se il server è down, viene azzerato! lo gestiamo come?
 };
 //! [0]
 
