@@ -41,7 +41,7 @@ void GUI_Newdoc::on_createPushButton_clicked()
         return;
     }
 
-    long id = Stub::createDocument(static_cast<GIMPdocs*>(gimpParent)->userid, ui->nameLineEdit->text());
+    long id = gimpParent->getConnection()->requestCreateDocument(static_cast<GIMPdocs*>(gimpParent)->userid, ui->nameLineEdit->text());
     if(id < 0){
         QMessageBox::information(this, "", "Generic error creating document");
         //TODO gestire più dettagliatamente

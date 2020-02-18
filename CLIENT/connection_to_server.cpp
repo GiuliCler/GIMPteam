@@ -67,6 +67,52 @@ long connection_to_server::requestTryLogin(QString username, QString password)
     }
 }
 
+long connection_to_server::requestCreateDocument(int userId, QString name)
+{
+    this->tcpSocket->abort();
+    this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+
+    if (!tcpSocket->waitForConnected(Timeout)) {
+        emit error(tcpSocket->error(), tcpSocket->errorString());
+        return -1;
+    }
+    QByteArray buffer;
+    QDataStream out(&buffer, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_10);
+
+    out << "NEW_DOC";
+    out << name;
+    out << userId;
+
+    this->tcpSocket->write(buffer);
+
+    if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        return -1;
+    }
+
+    //ora attendo una risposta dal server, sul login al db
+    QByteArray file;
+    QDataStream in;
+    in.setDevice(this->tcpSocket);
+    in.setVersion(QDataStream::Qt_4_0);
+    do {
+        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
+            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+            return -1;
+        }
+
+        in.startTransaction();
+        in >> file;
+    } while (!in.commitTransaction());
+    QString c = "ok";
+    if(file.contains(c.toUtf8())){
+        return 0;
+    }else{
+        return -1;
+    }
+}
+
 long connection_to_server::requestNewAccount(QString username, QString password, QString nickname, QString icon)
 {
     long n=0; ///ATTENZIONE! è DA SISTEMARE, SERVE PER TENERE LO USERID
@@ -108,11 +154,11 @@ long connection_to_server::requestNewAccount(QString username, QString password,
         in.startTransaction();
         in >> file;
     } while (!in.commitTransaction());
-    QString c = "ok";
+    QString c = "errore";
     if(file.contains(c.toUtf8())){
-        return n++;
-    }else{
         return -1;
+    }else{
+        return file.toLong();
     }
 }
 

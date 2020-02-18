@@ -23,6 +23,7 @@ public:
     long requestTryLogin(QString username, QString password);
     long requestNewAccount(QString username, QString password, QString nickname, QString icon);
     long requestUpdateAccount(QString username, QString password, QString nickname, QString icon);
+    long requestCreateDocument(int userId, QString name);
 
 private slots:
     void showFile(const QString &file);

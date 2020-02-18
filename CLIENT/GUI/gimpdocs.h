@@ -15,7 +15,7 @@ class GIMPdocs : public QMainWindow
     Q_OBJECT
 
 public:
-    long userid;
+    int userid;
     QSize regularWindowSize;
     //serve per ripristinare lo stato maximized/normal dopo la chiusura del document in base a com'era prima
     bool alreadyMaximized;

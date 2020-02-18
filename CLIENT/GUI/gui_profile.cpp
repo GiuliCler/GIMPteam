@@ -83,7 +83,7 @@ void GUI_Profile::on_savePushButton_clicked()
     //creo un nuovo utente o aggiorno quello vecchio
     if(gimpParent->userid < 0){
         //creo un nuovo user
-        long n = gimpParent->getConnection()->requestNewAccount(ui->usernameLineEdit->text(), ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData()));
+        int n = gimpParent->getConnection()->requestNewAccount(ui->usernameLineEdit->text(), ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData()));
         if(n > -1){
             //debug
             //QMessageBox::information(this, "", "ok");
@@ -97,8 +97,9 @@ void GUI_Profile::on_savePushButton_clicked()
     }
     else{
         //faccio l'update del vecchio user
-        //PROBLEMA DI GESTIONE DELLO USERID TODO!!
-        long n = gimpParent->getConnection()->requestUpdateAccount(gimpParent->userid.toStdString(), ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData()));
+        //TODO: PROBLEMA CON USERID
+        QString username = QString::number(gimpParent->userid);
+        long n = gimpParent->getConnection()->requestUpdateAccount(username, ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData()));
         if(n != 0){
             QMessageBox::information(this, "", "Generic error");
             return;
