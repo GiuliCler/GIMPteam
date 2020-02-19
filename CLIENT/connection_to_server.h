@@ -24,6 +24,8 @@ public:
     long requestNewAccount(QString username, QString password, QString nickname, QString icon);
     long requestUpdateAccount(QString username, QString password, QString nickname, QString icon);
     long requestCreateDocument(int userId, QString name);
+    std::string requestUri(long docId);
+    std::string requestDocDatoUri(QString uri);
 
 private slots:
     void showFile(const QString &file);

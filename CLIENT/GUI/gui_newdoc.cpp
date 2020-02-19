@@ -63,14 +63,14 @@ void GUI_Newdoc::on_openURIPushButton_clicked()
         return;
     }
 
-    long id = Stub::openWithURI(ui->URILineEdit->text());
-
-    if(id < 0){
+    QString file = QString::fromStdString(gimpParent->getConnection()->requestDocDatoUri(ui->URILineEdit->text()));
+    QString c = "errore";
+    if(file.contains(c.toUtf8())){
         QMessageBox::information(this, "", "Generic error opening with URI");
         //TODO gestire più dettagliatamente
         return;
     }
 
-    GUI_Editor *widget = new GUI_Editor(gimpParent, id);
-    static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
+    //GESTIRE GUI_Editor *widget = new GUI_Editor(gimpParent, id);
+    //static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
 }

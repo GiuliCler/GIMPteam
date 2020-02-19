@@ -210,6 +210,49 @@ long connection_to_server::requestUpdateAccount( QString username, QString passw
     }
 }
 
+std::string connection_to_server::requestDocDatoUri(QString uri){
+    this->tcpSocket->abort();
+    this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+
+    if (!tcpSocket->waitForConnected(Timeout)) {
+        emit error(tcpSocket->error(), tcpSocket->errorString());
+        return "errore";
+    }
+    QByteArray buffer;
+    QDataStream out(&buffer, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_10);
+
+    out << "GET_DOCUMENT_DATO_URI";
+    out << uri;
+
+    this->tcpSocket->write(buffer);
+
+    if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        return "errore";
+    }
+
+    //ora attendo una risposta dal server, sul login al db
+    QByteArray file;
+    QDataStream in;
+    in.setDevice(this->tcpSocket);
+    in.setVersion(QDataStream::Qt_4_0);
+    do {
+        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
+            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+            return "errore";
+        }
+
+        in.startTransaction();
+        in >> file;
+    } while (!in.commitTransaction());
+    return std::string(file);
+}
+
+std::string connection_to_server::requestUri(long docId){
+    return "";
+}
+
 //per mostrare i file (nomi)<--------TODO
 void connection_to_server::showFile(const QString &next)
 {
