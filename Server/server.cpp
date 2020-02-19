@@ -59,11 +59,10 @@ void Server::runServer()
       //correttamente inseriti nel db
       userId++;
       out << userId;
-      socket->write(blocko);
      }else{
       out << "errore";
-      socket->write(blocko);
      }
+    socket->write(blocko);
     }
      c = "LOGIN";
      if(text.contains(c.toUtf8())){
@@ -73,11 +72,10 @@ void Server::runServer()
         std::vector<std::string> v = this->database->login(username.toStdString(),password.toStdString());
         if(v.size()==2){
            out << "ok";
-           socket->write(blocko);
         }else{
            out << "errore";
-           socket->write(blocko);
         }
+        socket->write(blocko);
       }
 
      c = "UPDATE";
@@ -90,11 +88,10 @@ void Server::runServer()
      if(this->database->aggiornaUser(username.toStdString(),password.toStdString(), nickname.toStdString(), icon.toStdString())){
        //correttamente inseriti nel db
        out << "ok";
-       socket->write(blocko);
       }else{
        out << "errore";
-       socket->write(blocko);
       }
+     socket->write(blocko);
      }
 
      c = "NEW_DOC";
@@ -106,11 +103,25 @@ void Server::runServer()
      if(this->database->creaDoc(name.toStdString())){
        //correttamente inseriti nel db
        out << "ok";
-       socket->write(blocko);
       }else{
        out << "errore";
-       socket->write(blocko);
       }
+     socket->write(blocko);
+     }
+
+     c = "GET_DOCUMENT_DATO_URI";
+     if(text.contains(c.toUtf8())){
+     QByteArray uri;
+     in >> uri;
+     QString doc = QString::fromStdString(this->database->recuperaDocDatoURI(uri.toStdString()));
+     if(doc != "errore"){
+       //correttamente ottenuto il nome del doc con quell'uri
+         //TODO: CERCARE DOCUMENTO NEL FILE SYSTEM CON NOME uguale a quello della variable doc e inviarlo
+       out << doc;
+      }else{
+       out << "errore";
+      }
+     socket->write(blocko);
      }
 
     socket->disconnectFromHost();
