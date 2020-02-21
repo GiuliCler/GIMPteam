@@ -20,9 +20,9 @@ class connection_to_server : public QWidget
 
 public:
     connection_to_server(QString port, QString ipAddress);
-    long requestTryLogin(QString username, QString password);
-    long requestNewAccount(QString username, QString password, QString nickname, QString icon);
-    long requestUpdateAccount(QString username, QString password, QString nickname, QString icon);
+    int requestTryLogin(QString username, QString password);
+    int requestNewAccount(QString username, QString password, QString nickname, QString icon);
+    long requestUpdateAccount(int userId, QString password, QString nickname, QString icon);
     long requestCreateDocument(int userId, QString name);
     std::string requestUri(long docId);
     std::string requestDocDatoUri(QString uri);

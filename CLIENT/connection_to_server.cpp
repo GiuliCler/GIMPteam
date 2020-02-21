@@ -1,12 +1,10 @@
 #include "connection_to_server.h"
-
+#include <stdlib.h>
+#include <sstream>
 #include <QtWidgets>
 
 connection_to_server::connection_to_server(QString port, QString ipAddress){
     this->tcpSocket=new QTcpSocket(this);
-    //connect(tcpSocket, &QIODevice::readyRead, this, &connection_to_server::requestNewAccount);
-    //connect(tcpSocket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error),this, &connection_to_server::displayError);
-
     this->port = port;
     this->ipAddress = ipAddress;
 
@@ -18,10 +16,9 @@ connection_to_server::connection_to_server(QString port, QString ipAddress){
     connect(&file, SIGNAL(error(int,QString)),
             this, SLOT(displayError(int,QString)));*/
 
-
 }
 
-long connection_to_server::requestTryLogin(QString username, QString password)
+int connection_to_server::requestTryLogin(QString username, QString password)
 {
     this->tcpSocket->abort();
     this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
@@ -48,6 +45,7 @@ long connection_to_server::requestTryLogin(QString username, QString password)
     //ora attendo una risposta dal server, sul login al db
     QByteArray file;
     QDataStream in;
+    int userId;
     in.setDevice(this->tcpSocket);
     in.setVersion(QDataStream::Qt_4_0);
     do {
@@ -58,10 +56,11 @@ long connection_to_server::requestTryLogin(QString username, QString password)
 
         in.startTransaction();
         in >> file;
+        in >> userId;
     } while (!in.commitTransaction());
     QString c = "ok";
     if(file.contains(c.toUtf8())){
-        return 1; //TODO: da sistemare anche qui per userid
+        return userId;
     }else{
         return -1;
     }
@@ -111,11 +110,11 @@ long connection_to_server::requestCreateDocument(int userId, QString name)
     }else{
         return -1;
     }
+    //TODO: il documento viene ritornato e aperto => gestione con CRDT
 }
 
-long connection_to_server::requestNewAccount(QString username, QString password, QString nickname, QString icon)
+int connection_to_server::requestNewAccount(QString username, QString password, QString nickname, QString icon)
 {
-    long n=0; ///ATTENZIONE! è DA SISTEMARE, SERVE PER TENERE LO USERID
     this->tcpSocket->abort();
     this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
@@ -142,6 +141,7 @@ long connection_to_server::requestNewAccount(QString username, QString password,
 
     //ora attendo una risposta dal server, sul login al db
     QByteArray file;
+    int id;
     QDataStream in;
     in.setDevice(this->tcpSocket);
     in.setVersion(QDataStream::Qt_4_0);
@@ -153,16 +153,17 @@ long connection_to_server::requestNewAccount(QString username, QString password,
 
         in.startTransaction();
         in >> file;
+        in >> id;
     } while (!in.commitTransaction());
     QString c = "errore";
     if(file.contains(c.toUtf8())){
         return -1;
     }else{
-        return file.toLong();
+        return id;
     }
 }
 
-long connection_to_server::requestUpdateAccount( QString username, QString password, QString nickname, QString icon)
+long connection_to_server::requestUpdateAccount( int userId, QString password, QString nickname, QString icon)
 {
     this->tcpSocket->abort();
     this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
@@ -176,7 +177,7 @@ long connection_to_server::requestUpdateAccount( QString username, QString passw
     out.setVersion(QDataStream::Qt_5_10);
 
     out << "UPDATE";
-    out << username;
+    out << userId;
     out << password;
     out << nickname;
     out << icon;
