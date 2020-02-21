@@ -24,6 +24,9 @@ public:
     int requestNewAccount(QString username, QString password, QString nickname, QString icon);
     long requestUpdateAccount(int userId, QString password, QString nickname, QString icon);
     long requestCreateDocument(int userId, QString name);
+    QString requestGetNickname(int userId);
+    QString requestGetUsername(int userId);
+    QString requestIconId(int userId);
     std::string requestUri(long docId);
     std::string requestDocDatoUri(QString uri);
 

@@ -4,6 +4,7 @@
 #include "gui_newdoc.h"
 #include "gui_opendoc.h"
 #include <QPixmap>
+#include <QTextCodec>
 
 GUI_Menu::GUI_Menu(QWidget *parent) : QWidget(parent)
 {
@@ -22,11 +23,15 @@ GUI_Menu::~GUI_Menu(){
 
 void GUI_Menu::setProfileArea(){
     //carico nickname e icona dell'utente
-    ui->nicknameLabel->setText(Stub::getNickname(gimpParent->userid));
+    ui->nicknameLabel->setText(gimpParent->getConnection()->requestGetNickname(gimpParent->userid));
 
-    QString iconId = Stub::getIconId(gimpParent->userid);
-    QPixmap image = QPixmap(GUI_Icons::getIconPath(iconId));
-    ui->iconLabel->setPixmap(image);
+    QString iconId = gimpParent->getConnection()->requestIconId(gimpParent->userid);
+    if(iconId != ""){
+        QPixmap image = QPixmap(GUI_Icons::getIconPath(iconId));
+        ui->iconLabel->setPixmap(image);
+    }else{
+        return;
+    }
 }
 
 void GUI_Menu::setDocumentArea(){

@@ -117,11 +117,17 @@ void GUI_Profile::fillForm(){
     if(gimpParent->userid < 0)
         return;
 
-    //TODO: da fixare in base allo userid
-    ui->nicknameLineEdit->setText("");
-    ui->usernameLabelReadonly->setText("");
+    QString nickname = gimpParent->getConnection()->requestGetNickname(gimpParent->userid);
+    QString username = gimpParent->getConnection()->requestGetUsername(gimpParent->userid);
+    if(nickname != "errore" && username != "errore"){
+    ui->nicknameLineEdit->setText(nickname);
+    ui->usernameLabelReadonly->setText(username);
     ui->passwordLineEdit->setText("");
     ui->repeatLineEdit->setText("");
+    }else{
+        QMessageBox::information(this, "", "Error in server communication");
+        return;
+    }
 }
 
 void GUI_Profile::loadIcons(){
