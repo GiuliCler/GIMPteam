@@ -323,6 +323,45 @@ std::vector<std::string> CollegamentoDB::recuperaDocs(std::string username){
 
     return elenco;
 }
+/*
+ * Funzione che ritorna il nickname dato username.
+ * Se tutto ok => nickname
+ * Se errore => stringa vuota
+ *
+ */
+QString CollegamentoDB::getNickname(std::string username){
+
+    std::string query = "SELECT nickname FROM utenti WHERE username=:user";
+    QSqlQuery ris;
+    ris.prepare(QString::fromStdString(query));
+    ris.bindValue(":user", QString::fromStdString(username));
+
+    ris.exec();
+
+    if(ris.size() > 0){
+        ris.next();
+        return ris.value(0).toString();
+    } else {
+        return "";
+    }
+}
+
+QString CollegamentoDB::getIconId(std::string username){
+
+    std::string query = "SELECT icona FROM utenti WHERE username=:user";
+    QSqlQuery ris;
+    ris.prepare(QString::fromStdString(query));
+    ris.bindValue(":user", QString::fromStdString(username));
+
+    ris.exec();
+
+    if(ris.size() > 0){
+        ris.next();
+        return ris.value(0).toString();
+    } else {
+        return "";
+    }
+}
 
 
 /*

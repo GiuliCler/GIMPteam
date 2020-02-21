@@ -20,6 +20,8 @@ public:
     std::string recuperaDocDatoURI(std::string uri);
     int aggiungiPartecipante(std::string nomeDOC, std::string username);
     std::vector<std::string> recuperaDocs(std::string username);
+    QString getNickname(std::string username);
+    QString getIconId(std::string username);
     int aggiornaUser(std::string username, std::string nuova_password, std::string nuovo_nickname, std::string nuova_icona);
 };
 
