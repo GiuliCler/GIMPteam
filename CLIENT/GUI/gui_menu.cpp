@@ -23,9 +23,9 @@ GUI_Menu::~GUI_Menu(){
 
 void GUI_Menu::setProfileArea(){
     //carico nickname e icona dell'utente
-    ui->nicknameLabel->setText(gimpParent->getConnection()->requestGetNickname(gimpParent->userid));
+    ui->nicknameLabel->setText(QString::fromStdString(gimpParent->getConnection()->requestGetNickname(gimpParent->userid)));
 
-    QString iconId = gimpParent->getConnection()->requestIconId(gimpParent->userid);
+    QString iconId = QString::fromStdString(gimpParent->getConnection()->requestIconId(gimpParent->userid));
     if(iconId != ""){
         QPixmap image = QPixmap(GUI_Icons::getIconPath(iconId));
         ui->iconLabel->setPixmap(image);

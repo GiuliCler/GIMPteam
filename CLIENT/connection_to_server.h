@@ -2,7 +2,6 @@
 #define CONNECTION_TO_SERVER_H
 
 #include <QWidget>
-
 #include <QtNetwork/QTcpSocket>
 
 
@@ -24,9 +23,9 @@ public:
     int requestNewAccount(QString username, QString password, QString nickname, QString icon);
     long requestUpdateAccount(int userId, QString password, QString nickname, QString icon);
     long requestCreateDocument(int userId, QString name);
-    QString requestGetNickname(int userId);
-    QString requestGetUsername(int userId);
-    QString requestIconId(int userId);
+    std::string requestGetNickname(int userId);
+    std::string requestGetUsername(int userId);
+    std::string requestIconId(int userId);
     std::string requestUri(long docId);
     std::string requestDocDatoUri(QString uri);
 
@@ -38,6 +37,7 @@ private slots:
 signals:
     void error(int socketError, const QString &message);
     void error(QTcpSocket::SocketError socketError);
+    void newFile(const QString &fortune);
 
 private:
     QString port;

@@ -117,11 +117,11 @@ void GUI_Profile::fillForm(){
     if(gimpParent->userid < 0)
         return;
 
-    QString nickname = gimpParent->getConnection()->requestGetNickname(gimpParent->userid);
-    QString username = gimpParent->getConnection()->requestGetUsername(gimpParent->userid);
+    std::string nickname = gimpParent->getConnection()->requestGetNickname(gimpParent->userid);
+    std::string username = gimpParent->getConnection()->requestGetUsername(gimpParent->userid);
     if(nickname != "errore" && username != "errore"){
-    ui->nicknameLineEdit->setText(nickname);
-    ui->usernameLabelReadonly->setText(username);
+    ui->nicknameLineEdit->setText(QString::fromStdString(nickname));
+    ui->usernameLabelReadonly->setText(QString::fromStdString(username));
     ui->passwordLineEdit->setText("");
     ui->repeatLineEdit->setText("");
     }else{

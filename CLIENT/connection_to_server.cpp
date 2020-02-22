@@ -11,10 +11,8 @@ connection_to_server::connection_to_server(QString port, QString ipAddress){
     //richiedo i file di un dato utente al momento del login
     //chiudo la connessione quando viene premuto X (termina il programma)
     //connect(quitButton, SIGNAL(clicked()), this, SLOT(close())); <---------- SISTEMARE
-    /*connect(&file, SIGNAL(newFile(QString)),
-            this, SLOT(showFile(QString)));
-    connect(&file, SIGNAL(error(int,QString)),
-            this, SLOT(displayError(int,QString)));*/
+    //connect(&file, SIGNAL(newFile(QString)),this, SLOT(showString(QString)));
+    //connect(&file, SIGNAL(error(int,QString)),this, SLOT(displayError(int,QString)));
 
 }
 
@@ -269,7 +267,7 @@ void connection_to_server::showFile(const QString &next)
 
 }
 
-QString connection_to_server::requestGetNickname(int userId){
+std::string connection_to_server::requestGetNickname(int userId){
     this->tcpSocket->abort();
     this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
@@ -292,10 +290,11 @@ QString connection_to_server::requestGetNickname(int userId){
     }
 
     //ora attendo una risposta dal server, sul login al db
-    QString nickname;
+    QByteArray nickname;
     QDataStream in;
     in.setDevice(this->tcpSocket);
     in.setVersion(QDataStream::Qt_4_0);
+
     do {
         if (!this->tcpSocket->waitForReadyRead(Timeout)) {
             emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -305,10 +304,11 @@ QString connection_to_server::requestGetNickname(int userId){
         in.startTransaction();
         in >> nickname;
     } while (!in.commitTransaction());
-    return nickname;
+    nickname.replace('\0',"");
+    return nickname.toStdString();
 }
 
-QString connection_to_server::requestIconId(int userId){
+std::string connection_to_server::requestIconId(int userId){
     this->tcpSocket->abort();
     this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
@@ -331,10 +331,11 @@ QString connection_to_server::requestIconId(int userId){
     }
 
     //ora attendo una risposta dal server, sul login al db
-    QString iconId;
+    QByteArray iconId;
     QDataStream in;
     in.setDevice(this->tcpSocket);
     in.setVersion(QDataStream::Qt_4_0);
+
    do {
         if (!this->tcpSocket->waitForReadyRead(Timeout)) {
             emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -344,12 +345,11 @@ QString connection_to_server::requestIconId(int userId){
         in.startTransaction();
         in >> iconId;
    } while (!in.commitTransaction());
-    //PROBLEMI QUIII AAAAA
-    QString data = iconId.replace("\\000", "").replace(" ","");
-    return iconId;
+    iconId.replace('\0',"");
+    return iconId.toStdString();
 }
 
-QString connection_to_server::requestGetUsername(int userId){
+std::string connection_to_server::requestGetUsername(int userId){
     this->tcpSocket->abort();
     this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
@@ -372,7 +372,7 @@ QString connection_to_server::requestGetUsername(int userId){
     }
 
     //ora attendo una risposta dal server, sul login al db
-    QString username;
+    QByteArray username;
     QDataStream in;
     in.setDevice(this->tcpSocket);
     in.setVersion(QDataStream::Qt_4_0);
@@ -385,7 +385,8 @@ QString connection_to_server::requestGetUsername(int userId){
         in.startTransaction();
         in >> username;
     } while (!in.commitTransaction());
-    return username;
+    username.replace('\0',"");
+    return username.toStdString();
 }
 
 void connection_to_server::responseAtRequest(){
