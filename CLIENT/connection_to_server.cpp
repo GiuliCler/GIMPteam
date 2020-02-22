@@ -249,7 +249,44 @@ std::string connection_to_server::requestDocDatoUri(QString uri){
 }
 
 std::string connection_to_server::requestUri(long docId){
-    return "";
+    this->tcpSocket->abort();
+    this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+
+    if (!tcpSocket->waitForConnected(Timeout)) {
+        emit error(tcpSocket->error(), tcpSocket->errorString());
+        return "errore";
+    }
+    QByteArray buffer;
+    QDataStream out(&buffer, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_10);
+
+    out << "GET_URI";
+    out << QString::number(docId);
+
+    this->tcpSocket->write(buffer);
+
+    if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        return "errore";
+    }
+
+    //ora attendo una risposta dal server, sul login al db
+    QByteArray uri;
+    QDataStream in;
+    in.setDevice(this->tcpSocket);
+    in.setVersion(QDataStream::Qt_4_0);
+
+    do {
+        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
+            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+            return "errore";
+        }
+
+        in.startTransaction();
+        in >> uri;
+    } while (!in.commitTransaction());
+    uri.replace('\0',"");
+    return uri.toStdString();
 }
 
 //per mostrare i file (nomi)<--------TODO
