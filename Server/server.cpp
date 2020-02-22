@@ -1,28 +1,15 @@
 #include "server.h"
-#include "threaded.h"
 
 #include <stdlib.h>
 
-//! [0]
 Server::Server(QObject *parent)
     : QTcpServer(parent), socketDescriptor(socketDescriptor)
 {
-    //qui ci andrà la lista di files sul file system del server
-    /*fortunes << tr("You've been leading a dog's life. Stay off the furniture.")
-             << tr("You've got to think about tomorrow.")
-             << tr("You will be surprised by a loud noise.")
-             << tr("You will feel hungry again in another hour.")
-             << tr("You might have mail.")
-             << tr("You cannot kill time without injuring eternity.")
-             << tr("Computers are not intelligent. They only think they are.");
-*/
     //connessione col DB
     this->database = new CollegamentoDB();
     this->database->connettiDB("gimpdocs_db");
 }
-//! [0]
 
-//! [1] 
 void Server::incomingConnection(qintptr socketDescriptor)
 {
     socket=new QTcpSocket(this);
@@ -35,6 +22,7 @@ void Server::incomingConnection(qintptr socketDescriptor)
     //connect(socket, &QTcpSocket::disconnected, this, &Server::disconnectFromClient);
     connect(socket, &QTcpSocket::readyRead, this, &Server::runServer);
 }
+
 void Server::runServer()
 {
 
@@ -57,12 +45,16 @@ void Server::runServer()
     in >> icon;
     if(this->database->signup(username.toStdString(),password.toStdString(), nickname.toStdString(), icon.toStdString())){
       //correttamente inseriti nel db
-      userId++;
-      out << userId;
+      int id = this->users.size();
+      id++;
+      this->users.insert(username.toStdString(),id);
+      out << "ok";
+      out << id;
+      socket->write(blocko);
      }else{
       out << "errore";
+      socket->write(blocko);
      }
-    socket->write(blocko);
     }
      c = "LOGIN";
      if(text.contains(c.toUtf8())){
@@ -71,42 +63,165 @@ void Server::runServer()
         in >> password;
         std::vector<std::string> v = this->database->login(username.toStdString(),password.toStdString());
         if(v.size()==2){
-           out << "ok";
+            //GESTIRE
+            int id = this->users[username.toStdString()]; //dovrebbe essere in realtà ritornato dal DB
+            if(id == 0){
+                id = this->users.size();
+                id++;
+                this->users.insert(username.toStdString(),id);
+            }
+            out << "ok";
+            out << id;
+            socket->write(blocko);
         }else{
            out << "errore";
+           socket->write(blocko);
         }
-        socket->write(blocko);
       }
 
      c = "UPDATE";
      if(text.contains(c.toUtf8())){
-     QByteArray userId, username, password, nickname, icon;
-     in >> username;
+     QByteArray password, nickname, icon;
+     int userId;
+     std::string username;
+     in >> userId;
      in >> password;
      in >> nickname;
      in >> icon;
-     if(this->database->aggiornaUser(username.toStdString(),password.toStdString(), nickname.toStdString(), icon.toStdString())){
-       //correttamente inseriti nel db
-       out << "ok";
-      }else{
-       out << "errore";
-      }
-     socket->write(blocko);
+     QMapIterator<std::string, int> i(this->users);
+     while (i.hasNext()) {
+         i.next();
+         if(i.value()==userId){
+             username=i.key();
+             break;
+         }
+     }
+     if(username != ""){
+        if(this->database->aggiornaUser(username,password.toStdString(), nickname.toStdString(), icon.toStdString())){
+            //correttamente aggiornato nel db
+            out << "ok";
+            socket->write(blocko);
+        }else{
+            out << "errore";
+            socket->write(blocko);
+        }
+     }else{
+         out << "errore";
+         socket->write(blocko);
+     }
+     }
+
+     c = "GET_USERNAME";
+     if(text.contains(c.toUtf8())){
+     int userId;
+     std::string username;
+     in >> userId;
+     QMapIterator<std::string, int> i(this->users);
+     while (i.hasNext()) {
+         i.next();
+         if(i.value()==userId){
+             username=i.key();
+             break;
+         }
+     }
+     if(username != ""){
+        out << QString::fromStdString(username);
+        socket->write(blocko);
+     }else{
+         out << "errore";
+         socket->write(blocko);
+     }
+     }
+
+     c = "GET_NICKNAME";
+     if(text.contains(c.toUtf8())){
+     int userId;
+     std::string username;
+     in >> userId;
+     QMapIterator<std::string, int> i(this->users);
+     while (i.hasNext()) {
+         i.next();
+         if(i.value()==userId){
+             username=i.key();
+             break;
+         }
+     }
+     if(username != ""){
+            out << QString::fromStdString(this->database->getNickname(username));
+           socket->write(blocko);
+     }else{
+         out << "errore";
+         socket->write(blocko);
+     }
+     }
+
+     c = "GET_ICON";
+     if(text.contains(c.toUtf8())){
+     int userId;
+     std::string username;
+     in >> userId;
+     QMapIterator<std::string, int> i(this->users);
+     while (i.hasNext()) {
+         i.next();
+         if(i.value()==userId){
+             username=i.key();
+             break;
+         }
+     }
+     if(username != ""){
+         out << QString::fromStdString(this->database->getIconId(username));
+         socket->write(blocko);
+     }else{
+         out << "errore";
+         socket->write(blocko);
+     }
      }
 
      c = "NEW_DOC";
      if(text.contains(c.toUtf8())){
-     QByteArray userId, name;
+     QByteArray name;
+     int userId;
      in >> name;
      in >> userId;
-     //TODO: e lo userId???
+     //associo allo userId il docId
      if(this->database->creaDoc(name.toStdString())){
-       //correttamente inseriti nel db
-       out << "ok";
+         int id = this->documents.size();
+         id++;
+         this->users.insert(name.toStdString(),id);
+         //correttamente inseriti nel db
+         //creo il file
+         QString filename=QString::fromStdString(name.toStdString());
+         QFile file( ":/Files/"+filename );
+         if ( file.open(QIODevice::ReadWrite) )
+         {
+             QTextStream stream( &file );
+             stream << "something" << endl;
+             //TODO: gestione CRT
+         }
+         std::string username;
+         QMapIterator<std::string, int> i(this->users);
+         while (i.hasNext()) {
+             i.next();
+             if(i.value()==userId){
+                 username=i.key();
+                 break;
+             }
+         }
+         if(username != ""){
+            if(this->database->aggiungiPartecipante(name.toStdString(),username)!=2){
+                out << "ok";
+                out << id;
+                socket->write(blocko);
+            }else{
+                out << "errore";
+                socket->write(blocko);
+            }
+         }
+         //TODO: gestire meglio il "ritorno" e le modifiche su file -> crt
       }else{
        out << "errore";
+       socket->write(blocko);
       }
-     socket->write(blocko);
      }
 
      c = "GET_DOCUMENT_DATO_URI";
@@ -118,10 +233,33 @@ void Server::runServer()
        //correttamente ottenuto il nome del doc con quell'uri
          //TODO: CERCARE DOCUMENTO NEL FILE SYSTEM CON NOME uguale a quello della variable doc e inviarlo
        out << doc;
+       socket->write(blocko);
       }else{
        out << "errore";
+       socket->write(blocko);
       }
-     socket->write(blocko);
+     }
+
+     c = "GET_URI";
+     if(text.contains(c.toUtf8())){
+     int docId;
+     std::string name;
+     in >> docId;
+     QMapIterator<std::string, int> i(this->documents);
+     while (i.hasNext()) {
+         i.next();
+         if(i.value()==docId){
+             name=i.key();
+             break;
+         }
+     }
+     if(name != ""){
+         out << QString::fromStdString(this->database->recuperaURI(name));
+         socket->write(blocko);
+     }else{
+         out << "errore";
+         socket->write(blocko);
+     }
      }
 
     socket->disconnectFromHost();
