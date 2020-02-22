@@ -329,7 +329,7 @@ std::vector<std::string> CollegamentoDB::recuperaDocs(std::string username){
  * Se errore => stringa vuota
  *
  */
-QString CollegamentoDB::getNickname(std::string username){
+std::string CollegamentoDB::getNickname(std::string username){
 
     std::string query = "SELECT nickname FROM utenti WHERE username=:user";
     QSqlQuery ris;
@@ -340,13 +340,13 @@ QString CollegamentoDB::getNickname(std::string username){
 
     if(ris.size() > 0){
         ris.next();
-        return ris.value(0).toString();
+        return ris.value(0).toString().toStdString();
     } else {
-        return "";
+        return "errore";
     }
 }
 
-QString CollegamentoDB::getIconId(std::string username){
+std::string CollegamentoDB::getIconId(std::string username){
 
     std::string query = "SELECT icona FROM utenti WHERE username=:user";
     QSqlQuery ris;
@@ -357,9 +357,9 @@ QString CollegamentoDB::getIconId(std::string username){
 
     if(ris.size() > 0){
         ris.next();
-        return ris.value(0).toString();
+        return ris.value(0).toString().toStdString();
     } else {
-        return "";
+        return "errore";
     }
 }
 
