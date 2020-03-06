@@ -22,6 +22,10 @@ public:
     std::vector<std::string> recuperaDocs(std::string username);
     std::string getNickname(std::string username);
     std::string getIconId(std::string username);
+    std::vector<std::vector<std::string>> recuperaCollaboratori(std::string nomeDOC);
+    std::vector<int> recuperaInfoUtenteDoc(std::string nomeDOC, std::string username);
+    int rimuoviPartecipante(std::string nomeDOC, std::string username);
+    int aggiornaSiteCounter(std::string nomeDOC, std::string username, int siteCount);
     int aggiornaUser(std::string username, std::string nuova_password, std::string nuovo_nickname, std::string nuova_icona);
 };
 
