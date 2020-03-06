@@ -55,6 +55,7 @@ long Stub::createUser(QString username, QString password, QString nickname, QStr
     username = password;
     password = nickname;
     password = iconId;
+    //qui comunico col server per creare un nuovo utente
 
     return 1;
 }
@@ -65,6 +66,7 @@ int Stub::updateUser(long id, QString password, QString nickname, QString iconId
     password = iconId;
     int n = id;
     id = n;
+    //qui comunico col server per fare l'update di un nuovo utente
 
     return 0;
 }

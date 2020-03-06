@@ -57,9 +57,14 @@ void GUI_Opendoc::on_getURIPushButton_clicked(){
         QMessageBox::information(this, "", "Please, select a document");
         return;
     }
-
-    GUI_URI *box = new GUI_URI(this, Stub::getDocumentURI(Stub::getDocumentId(ui->docsListWidget->currentItem()->text())));
+    QString uri = QString::fromStdString(gimpParent->getConnection()->requestUri(Stub::getDocumentId(ui->docsListWidget->currentItem()->text())));
+    if(uri!="errore"){
+    GUI_URI *box = new GUI_URI(this, uri);
     box->setVisible(true);
+    }else{
+        QMessageBox::information(this, "", "Generic Error");
+        return;
+    }
 }
 
 void GUI_Opendoc::on_exportPDFPushButton_clicked(){

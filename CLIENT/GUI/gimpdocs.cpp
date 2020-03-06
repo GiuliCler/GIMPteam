@@ -15,6 +15,7 @@ GIMPdocs::GIMPdocs(QWidget *parent) : QMainWindow(parent), userid(-1)
     regularWindowSize = this->size();
     alreadyMaximized = false;
     setUi1(new GUI_Login(this));
+    c = new connection_to_server("52814", "192.168.0.110");
 }
 
 GIMPdocs::~GIMPdocs(){
@@ -59,3 +60,8 @@ void GIMPdocs::setUi2(QWidget *widget){
     //devo attivare qui le connect e non posso farlo prima nel costruttore perchè quando chiamo il costruttore ui2 non è ancora stato caricato
     static_cast<GUI_Editor*>(widget)->connectMenuBarActions();
 }
+
+connection_to_server *GIMPdocs::getConnection(){
+   return c;
+}
+

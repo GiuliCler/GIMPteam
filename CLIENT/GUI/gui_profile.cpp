@@ -83,20 +83,20 @@ void GUI_Profile::on_savePushButton_clicked()
     //creo un nuovo utente o aggiorno quello vecchio
     if(gimpParent->userid < 0){
         //creo un nuovo user
-        long n = Stub::createUser(ui->usernameLineEdit->text(), ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData()));
-        if(n > -1)
+        int n = gimpParent->getConnection()->requestNewAccount(ui->usernameLineEdit->text(), ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData()));
+        if(n > -1){
             gimpParent->userid = n;
-        else{
+        }else{
             //TODO I don't know. Do something
-            QMessageBox::information(this, "", "Generic error");
+            QMessageBox::information(this, "", "Username already present.");
             return;
         }
 
-    }
-    else{
+    }else{
         //faccio l'update del vecchio user
-        int code = Stub::updateUser(gimpParent->userid, ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData()));
-        if(code != 0){
+        //TODO: PROBLEMA CON USERID, deve essere associato allo username=>gestione lato database??
+        long n = gimpParent->getConnection()->requestUpdateAccount(gimpParent->userid, ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData()));
+        if(n != 0){
             QMessageBox::information(this, "", "Generic error");
             return;
         }
@@ -117,10 +117,17 @@ void GUI_Profile::fillForm(){
     if(gimpParent->userid < 0)
         return;
 
-    ui->nicknameLineEdit->setText(Stub::getNickname(gimpParent->userid));
-    ui->usernameLabelReadonly->setText(Stub::getUsername(gimpParent->userid));
-    ui->passwordLineEdit->setText(Stub::getPassword(gimpParent->userid));
-    ui->repeatLineEdit->setText(Stub::getPassword(gimpParent->userid));
+    std::string nickname = gimpParent->getConnection()->requestGetNickname(gimpParent->userid);
+    std::string username = gimpParent->getConnection()->requestGetUsername(gimpParent->userid);
+    if(nickname != "errore" && username != "errore"){
+    ui->nicknameLineEdit->setText(QString::fromStdString(nickname));
+    ui->usernameLabelReadonly->setText(QString::fromStdString(username));
+    ui->passwordLineEdit->setText("");
+    ui->repeatLineEdit->setText("");
+    }else{
+        QMessageBox::information(this, "", "Error in server communication");
+        return;
+    }
 }
 
 void GUI_Profile::loadIcons(){
