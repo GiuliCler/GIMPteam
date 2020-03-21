@@ -21,7 +21,7 @@ GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
 
     //qui controllo se sto creando un nuovo utente o se ne sto modificando uno già loggato
     if(gimpParent->userid > -1){
-        ui->backPushButton->hide();
+        //ui->backPushButton->hide();
         ui->usernameLineEdit->hide();
         fillForm();
     }
@@ -108,8 +108,16 @@ void GUI_Profile::on_savePushButton_clicked()
 
 void GUI_Profile::on_backPushButton_clicked()
 {
-    GUI_Login *widget = new GUI_Login(gimpParent);
-    gimpParent->setCentralWidget(widget);
+
+    if(gimpParent->userid < 0){
+        GUI_Login *widget = new GUI_Login(gimpParent);
+        gimpParent->setCentralWidget(widget);
+    }
+    else{
+        GUI_Menu *widget = new GUI_Menu(gimpParent);
+        gimpParent->setCentralWidget(widget);
+    }
+
 }
 
 void GUI_Profile::fillForm(){

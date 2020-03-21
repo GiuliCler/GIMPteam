@@ -80,6 +80,13 @@ void GUI_Editor::connectMenuBarActions(){
     connect(gimpParent->ui2->actionJustified, &QAction::triggered, this, &GUI_Editor::on_actionJustified);
 }
 
+void GUI_Editor::changeWindowName(){
+
+    //modifico il nome della finestra
+    QString documentName = Stub::getDocumentName(documentId);
+    gimpParent->setWindowTitle("GIMPdocs - " + documentName);
+}
+
 void GUI_Editor::launchSetUi1(){
     Stub::closeDocument(this->gimpParent->userid, documentId);
 
