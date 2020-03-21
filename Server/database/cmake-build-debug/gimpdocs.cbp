@@ -144,6 +144,12 @@
 		<Unit filename="C:/Users/ilari/Google Drive/Politecnico/Programmazione di sistema/Malnati/Progetto/GIMPteam/Server/database/sha256.h">
 			<Option target="gimpdocs"/>
 		</Unit>
+		<Unit filename="C:/Users/ilari/Google Drive/Politecnico/Programmazione di sistema/Malnati/Progetto/GIMPteam/Server/server.cpp">
+			<Option target="gimpdocs"/>
+		</Unit>
+		<Unit filename="C:/Users/ilari/Google Drive/Politecnico/Programmazione di sistema/Malnati/Progetto/GIMPteam/Server/server.h">
+			<Option target="gimpdocs"/>
+		</Unit>
 		<Unit filename="C:/Users/ilari/Google Drive/Politecnico/Programmazione di sistema/Malnati/Progetto/GIMPteam/Server/database/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>

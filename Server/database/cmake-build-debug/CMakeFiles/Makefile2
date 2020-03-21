@@ -74,12 +74,12 @@ preinstall:
 CMakeFiles/gimpdocs.dir/all: CMakeFiles/gimpdocs_autogen.dir/all
 	$(MAKE) -f CMakeFiles\gimpdocs.dir\build.make CMakeFiles/gimpdocs.dir/depend
 	$(MAKE) -f CMakeFiles\gimpdocs.dir\build.make CMakeFiles/gimpdocs.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="C:\Users\ilari\Google Drive\Politecnico\Programmazione di sistema\Malnati\Progetto\GIMPteam\Server\database\cmake-build-debug\CMakeFiles" --progress-num=1,2,3,4,5 "Built target gimpdocs"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="C:\Users\ilari\Google Drive\Politecnico\Programmazione di sistema\Malnati\Progetto\GIMPteam\Server\database\cmake-build-debug\CMakeFiles" --progress-num=1,2,3,4,5,6 "Built target gimpdocs"
 .PHONY : CMakeFiles/gimpdocs.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/gimpdocs.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\ilari\Google Drive\Politecnico\Programmazione di sistema\Malnati\Progetto\GIMPteam\Server\database\cmake-build-debug\CMakeFiles" 6
+	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\ilari\Google Drive\Politecnico\Programmazione di sistema\Malnati\Progetto\GIMPteam\Server\database\cmake-build-debug\CMakeFiles" 7
 	$(MAKE) -f CMakeFiles\Makefile2 CMakeFiles/gimpdocs.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\ilari\Google Drive\Politecnico\Programmazione di sistema\Malnati\Progetto\GIMPteam\Server\database\cmake-build-debug\CMakeFiles" 0
 .PHONY : CMakeFiles/gimpdocs.dir/rule
@@ -101,7 +101,7 @@ CMakeFiles/gimpdocs.dir/clean:
 CMakeFiles/gimpdocs_autogen.dir/all:
 	$(MAKE) -f CMakeFiles\gimpdocs_autogen.dir\build.make CMakeFiles/gimpdocs_autogen.dir/depend
 	$(MAKE) -f CMakeFiles\gimpdocs_autogen.dir\build.make CMakeFiles/gimpdocs_autogen.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="C:\Users\ilari\Google Drive\Politecnico\Programmazione di sistema\Malnati\Progetto\GIMPteam\Server\database\cmake-build-debug\CMakeFiles" --progress-num=6 "Built target gimpdocs_autogen"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="C:\Users\ilari\Google Drive\Politecnico\Programmazione di sistema\Malnati\Progetto\GIMPteam\Server\database\cmake-build-debug\CMakeFiles" --progress-num=7 "Built target gimpdocs_autogen"
 .PHONY : CMakeFiles/gimpdocs_autogen.dir/all
 
 # Build rule for subdir invocation for target.

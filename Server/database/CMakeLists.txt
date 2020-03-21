@@ -19,6 +19,6 @@ list(APPEND LIBRARIES
         )
 list(REMOVE_DUPLICATES LIBRARIES)
 
-add_executable(gimpdocs main.cpp collegamentoDB.h collegamentoDB.cpp sha256.h sha256.cpp)
+add_executable(gimpdocs main.cpp collegamentoDB.h collegamentoDB.cpp sha256.h sha256.cpp ./../server.cpp ./../server.h)
 target_link_libraries(gimpdocs ${LIBRARIES})
 target_link_libraries(gimpdocs Qt5::Core Qt5::Quick Qt5::Sql)

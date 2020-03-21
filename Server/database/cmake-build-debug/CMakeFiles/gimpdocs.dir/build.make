@@ -112,12 +112,27 @@ CMakeFiles/gimpdocs.dir/sha256.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/gimpdocs.dir/sha256.cpp.s"
 	C:\PROGRA~1\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "C:\Users\ilari\Google Drive\Politecnico\Programmazione di sistema\Malnati\Progetto\GIMPteam\Server\database\sha256.cpp" -o CMakeFiles\gimpdocs.dir\sha256.cpp.s
 
+CMakeFiles/gimpdocs.dir/ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.cpp.obj: CMakeFiles/gimpdocs.dir/flags.make
+CMakeFiles/gimpdocs.dir/ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.cpp.obj: CMakeFiles/gimpdocs.dir/includes_CXX.rsp
+CMakeFiles/gimpdocs.dir/ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.cpp.obj: C:/Users/ilari/Google\ Drive/Politecnico/Programmazione\ di\ sistema/Malnati/Progetto/GIMPteam/Server/server.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="C:\Users\ilari\Google Drive\Politecnico\Programmazione di sistema\Malnati\Progetto\GIMPteam\Server\database\cmake-build-debug\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/gimpdocs.dir/ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.cpp.obj"
+	C:\PROGRA~1\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\g++.exe  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\gimpdocs.dir\ee054647f66975b6106103e24fd92459\Malnati\Progetto\GIMPteam\Server\server.cpp.obj -c "C:\Users\ilari\Google Drive\Politecnico\Programmazione di sistema\Malnati\Progetto\GIMPteam\Server\server.cpp"
+
+CMakeFiles/gimpdocs.dir/ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/gimpdocs.dir/ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.cpp.i"
+	C:\PROGRA~1\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "C:\Users\ilari\Google Drive\Politecnico\Programmazione di sistema\Malnati\Progetto\GIMPteam\Server\server.cpp" > CMakeFiles\gimpdocs.dir\ee054647f66975b6106103e24fd92459\Malnati\Progetto\GIMPteam\Server\server.cpp.i
+
+CMakeFiles/gimpdocs.dir/ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/gimpdocs.dir/ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.cpp.s"
+	C:\PROGRA~1\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "C:\Users\ilari\Google Drive\Politecnico\Programmazione di sistema\Malnati\Progetto\GIMPteam\Server\server.cpp" -o CMakeFiles\gimpdocs.dir\ee054647f66975b6106103e24fd92459\Malnati\Progetto\GIMPteam\Server\server.cpp.s
+
 # Object files for target gimpdocs
 gimpdocs_OBJECTS = \
 "CMakeFiles/gimpdocs.dir/gimpdocs_autogen/mocs_compilation.cpp.obj" \
 "CMakeFiles/gimpdocs.dir/main.cpp.obj" \
 "CMakeFiles/gimpdocs.dir/collegamentoDB.cpp.obj" \
-"CMakeFiles/gimpdocs.dir/sha256.cpp.obj"
+"CMakeFiles/gimpdocs.dir/sha256.cpp.obj" \
+"CMakeFiles/gimpdocs.dir/ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.cpp.obj"
 
 # External object files for target gimpdocs
 gimpdocs_EXTERNAL_OBJECTS =
@@ -126,6 +141,7 @@ gimpdocs.exe: CMakeFiles/gimpdocs.dir/gimpdocs_autogen/mocs_compilation.cpp.obj
 gimpdocs.exe: CMakeFiles/gimpdocs.dir/main.cpp.obj
 gimpdocs.exe: CMakeFiles/gimpdocs.dir/collegamentoDB.cpp.obj
 gimpdocs.exe: CMakeFiles/gimpdocs.dir/sha256.cpp.obj
+gimpdocs.exe: CMakeFiles/gimpdocs.dir/ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.cpp.obj
 gimpdocs.exe: CMakeFiles/gimpdocs.dir/build.make
 gimpdocs.exe: C:/Qt/5.12.3/mingw73_64/lib/libQt5Widgetsd.a
 gimpdocs.exe: C:/Qt/5.12.3/mingw73_64/lib/libQt5Quickd.a
@@ -137,7 +153,7 @@ gimpdocs.exe: C:/Qt/5.12.3/mingw73_64/lib/libQt5Cored.a
 gimpdocs.exe: CMakeFiles/gimpdocs.dir/linklibs.rsp
 gimpdocs.exe: CMakeFiles/gimpdocs.dir/objects1.rsp
 gimpdocs.exe: CMakeFiles/gimpdocs.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir="C:\Users\ilari\Google Drive\Politecnico\Programmazione di sistema\Malnati\Progetto\GIMPteam\Server\database\cmake-build-debug\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable gimpdocs.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir="C:\Users\ilari\Google Drive\Politecnico\Programmazione di sistema\Malnati\Progetto\GIMPteam\Server\database\cmake-build-debug\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable gimpdocs.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\gimpdocs.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

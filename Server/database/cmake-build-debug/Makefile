@@ -162,6 +162,33 @@ collegamentoDB.cpp.s:
 	$(MAKE) -f CMakeFiles\gimpdocs.dir\build.make CMakeFiles/gimpdocs.dir/collegamentoDB.cpp.s
 .PHONY : collegamentoDB.cpp.s
 
+ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.obj: ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.cpp.obj
+
+.PHONY : ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.obj
+
+# target to build an object file
+ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.cpp.obj:
+	$(MAKE) -f CMakeFiles\gimpdocs.dir\build.make CMakeFiles/gimpdocs.dir/ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.cpp.obj
+.PHONY : ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.cpp.obj
+
+ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.i: ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.cpp.i
+
+.PHONY : ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.i
+
+# target to preprocess a source file
+ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.cpp.i:
+	$(MAKE) -f CMakeFiles\gimpdocs.dir\build.make CMakeFiles/gimpdocs.dir/ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.cpp.i
+.PHONY : ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.cpp.i
+
+ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.s: ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.cpp.s
+
+.PHONY : ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.s
+
+# target to generate assembly for a file
+ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.cpp.s:
+	$(MAKE) -f CMakeFiles\gimpdocs.dir\build.make CMakeFiles/gimpdocs.dir/ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.cpp.s
+.PHONY : ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.cpp.s
+
 gimpdocs_autogen/mocs_compilation.obj: gimpdocs_autogen/mocs_compilation.cpp.obj
 
 .PHONY : gimpdocs_autogen/mocs_compilation.obj
@@ -256,6 +283,9 @@ help:
 	@echo ... collegamentoDB.obj
 	@echo ... collegamentoDB.i
 	@echo ... collegamentoDB.s
+	@echo ... ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.obj
+	@echo ... ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.i
+	@echo ... ee054647f66975b6106103e24fd92459/Malnati/Progetto/GIMPteam/Server/server.s
 	@echo ... gimpdocs_autogen/mocs_compilation.obj
 	@echo ... gimpdocs_autogen/mocs_compilation.i
 	@echo ... gimpdocs_autogen/mocs_compilation.s
