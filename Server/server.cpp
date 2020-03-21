@@ -92,7 +92,7 @@ void Server::runServer() {
                 break;
             }
         }
-        if(username != ""){
+        if(!username.empty()){
             if(this->database->aggiornaUser(username,password.toStdString(), nickname.toStdString(), icon.toStdString())){
                 //correttamente aggiornato nel db
                 out << "ok";
@@ -120,7 +120,7 @@ void Server::runServer() {
                 break;
             }
         }
-        if(username != ""){
+        if(!username.empty()){
             out << QString::fromStdString(username);
             socket->write(blocko);
         }else{
@@ -142,7 +142,7 @@ void Server::runServer() {
                 break;
             }
         }
-        if(username != ""){
+        if(!username.empty()){
             out << QString::fromStdString(this->database->getNickname(username));
             socket->write(blocko);
         }else{
@@ -164,7 +164,7 @@ void Server::runServer() {
                 break;
             }
         }
-        if(username != ""){
+        if(!username.empty()){
             out << QString::fromStdString(this->database->getIconId(username));
             socket->write(blocko);
         }else{
@@ -203,7 +203,7 @@ void Server::runServer() {
                     break;
                 }
             }
-            if(username != ""){
+            if(!username.empty()){
                 if(this->database->aggiungiPartecipante(name.toStdString(),username)!=2){
                     out << "ok";
                     out << id;
@@ -249,7 +249,7 @@ void Server::runServer() {
                 break;
             }
         }
-        if(name != ""){
+        if(!name.empty()){
             out << QString::fromStdString(this->database->recuperaURI(name));
             socket->write(blocko);
         }else{
