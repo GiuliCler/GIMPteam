@@ -1,5 +1,6 @@
 #include "gimpdocs.h"
 #include "gui_login.h"
+#include "gui_server.h"
 #include "editorWindow/gui_editor.h"
 
 GIMPdocs::GIMPdocs(QWidget *parent) : QMainWindow(parent), userid(-1)
@@ -15,7 +16,11 @@ GIMPdocs::GIMPdocs(QWidget *parent) : QMainWindow(parent), userid(-1)
     regularWindowSize = this->size();
     alreadyMaximized = false;
     setUi1(new GUI_Login(this));
-    c = new connection_to_server("55066", "192.168.1.9");
+
+    //connection
+    c = nullptr;
+    GUI_Server *box = new GUI_Server(this);
+    box->setVisible(true);
 }
 
 GIMPdocs::~GIMPdocs(){
@@ -62,7 +67,12 @@ void GIMPdocs::setUi2(QWidget *widget){
     static_cast<GUI_Editor*>(widget)->changeWindowName();
 }
 
+//Warning! May return a nullptr if the user hasn't set up the correction
 connection_to_server *GIMPdocs::getConnection(){
    return c;
+}
+
+void GIMPdocs::setConnection(connection_to_server *connection){
+    c = connection;
 }
 
