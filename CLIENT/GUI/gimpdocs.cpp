@@ -1,5 +1,6 @@
 #include "gimpdocs.h"
 #include "gui_login.h"
+#include "gui_server.h"
 #include "editorWindow/gui_editor.h"
 
 GIMPdocs::GIMPdocs(QWidget *parent) : QMainWindow(parent), userid(-1)
@@ -14,8 +15,7 @@ GIMPdocs::GIMPdocs(QWidget *parent) : QMainWindow(parent), userid(-1)
 
     regularWindowSize = this->size();
     alreadyMaximized = false;
-    setUi1(new GUI_Login(this));
-    c = new connection_to_server("52814", "192.168.0.110");
+    setUi1(new GUI_Server(this));
 }
 
 GIMPdocs::~GIMPdocs(){
@@ -59,9 +59,15 @@ void GIMPdocs::setUi2(QWidget *widget){
 
     //devo attivare qui le connect e non posso farlo prima nel costruttore perchè quando chiamo il costruttore ui2 non è ancora stato caricato
     static_cast<GUI_Editor*>(widget)->connectMenuBarActions();
+    static_cast<GUI_Editor*>(widget)->changeWindowName();
 }
 
+//Warning! May return a nullptr if the user hasn't set up the correction
 connection_to_server *GIMPdocs::getConnection(){
    return c;
+}
+
+void GIMPdocs::setConnection(connection_to_server *connection){
+    c = connection;
 }
 

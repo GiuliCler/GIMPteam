@@ -119,6 +119,11 @@ long Stub::getDocumentId(QString name){
      return 1;
 }
 
+QString Stub::getDocumentName(long docId){
+    long n = docId;
+    return "The Tales of Beedle the Bard";
+}
+
 std::shared_ptr<QVector<QString>> Stub::getDocuments(long userId){
     long n = userId;
     userId = n;

@@ -29,8 +29,11 @@ public:
     //servono a cambiare l'ui attiva. Widget è il central widget da caricare
     void setUi1(QWidget *widget);
     void setUi2(QWidget *widget);
-    connection_to_server *c;
     connection_to_server *getConnection();
+    void setConnection(connection_to_server *connection);
+
+private:
+    connection_to_server *c;
 
 };
 

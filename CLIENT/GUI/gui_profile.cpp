@@ -21,7 +21,7 @@ GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
 
     //qui controllo se sto creando un nuovo utente o se ne sto modificando uno già loggato
     if(gimpParent->userid > -1){
-        ui->backPushButton->hide();
+        //ui->backPushButton->hide();
         ui->usernameLineEdit->hide();
         fillForm();
     }
@@ -44,41 +44,20 @@ GUI_Profile::~GUI_Profile(){
 void GUI_Profile::on_savePushButton_clicked()
 {
     //controllo che tutti i campi siano compilati
-    if(ui->nicknameLineEdit->text().isEmpty()){
-        QMessageBox::information(this, "", "\"Nickname\" field is empty");
+    if(!checkFieldValidity(ui->nicknameLineEdit->text(), "Nickname"))
         return;
-    }
-    if(ui->nicknameLineEdit->text().contains('\\')){
-        QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"Nickname\"");
-        return;
-    }
     //in caso di modifica questo non ha bisogno di essere controllato perchè è read only
     if(gimpParent->userid < 0){
-        if(ui->usernameLineEdit->text().isEmpty()){
-            QMessageBox::information(this, "", "\"Username\" field is empty");
+        if(!checkFieldValidity(ui->usernameLineEdit->text(), "Username"))
             return;
-        }
-        if(ui->usernameLineEdit->text().contains('\\')){
-            QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"Username\"");
-            return;
-        }
     }
-    if(ui->passwordLineEdit->text().isEmpty()){
-        QMessageBox::information(this, "", "\"Password\" field is empty");
+    if(!checkFieldValidity(ui->passwordLineEdit->text(), "Password"))
         return;
-    }
-    if(ui->passwordLineEdit->text().contains('\\')){
-        QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"Password\"");
+    if(!checkFieldValidity(ui->repeatLineEdit->text(), "Repeat password"))
         return;
-    }
-    if(ui->repeatLineEdit->text().isEmpty()){
-        QMessageBox::information(this, "", "\"Repeat password\" field is empty");
+
+    if(!checkPasswordSecurity(ui->passwordLineEdit->text()))
         return;
-    }
-    if(ui->passwordLineEdit->text() != ui->repeatLineEdit->text()){
-        QMessageBox::information(this, "", "\"Password\" and \"Repeat password\" fields don't match");
-        return;
-    }
 
     //creo un nuovo utente o aggiorno quello vecchio
     if(gimpParent->userid < 0){
@@ -108,8 +87,16 @@ void GUI_Profile::on_savePushButton_clicked()
 
 void GUI_Profile::on_backPushButton_clicked()
 {
-    GUI_Login *widget = new GUI_Login(gimpParent);
-    gimpParent->setCentralWidget(widget);
+
+    if(gimpParent->userid < 0){
+        GUI_Login *widget = new GUI_Login(gimpParent);
+        gimpParent->setCentralWidget(widget);
+    }
+    else{
+        GUI_Menu *widget = new GUI_Menu(gimpParent);
+        gimpParent->setCentralWidget(widget);
+    }
+
 }
 
 void GUI_Profile::fillForm(){
@@ -134,4 +121,28 @@ void GUI_Profile::loadIcons(){
     QMap<QString, QString> *m = GUI_Icons::getIconPaths();
     for (QMap<QString, QString>::iterator iter = m->begin(); iter != m->end(); iter++ )
         ui->iconComboBox->addItem(QIcon(iter.value()), "", iter.key());
+}
+
+bool GUI_Profile::checkFieldValidity(QString value, QString fieldName){
+    if(value.isEmpty()){
+        QMessageBox::information(this, "", "\"" + fieldName + "\" field is empty");
+        return false;
+    }
+    if(value.contains('\\')){
+        QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"" + fieldName + "\" field");
+        return false;
+    }
+
+    return true;
+}
+
+bool GUI_Profile::checkPasswordSecurity(QString password){
+    int minLength = 4;
+
+    if(password.length() < minLength){
+        QMessageBox::information(this, "", "Password should be at least " + QString::number(minLength) + " characters long");
+        return false;
+    }
+
+    return true;
 }
