@@ -15,12 +15,7 @@ GIMPdocs::GIMPdocs(QWidget *parent) : QMainWindow(parent), userid(-1)
 
     regularWindowSize = this->size();
     alreadyMaximized = false;
-    setUi1(new GUI_Login(this));
-
-    //connection
-    c = nullptr;
-    GUI_Server *box = new GUI_Server(this);
-    box->setVisible(true);
+    setUi1(new GUI_Server(this));
 }
 
 GIMPdocs::~GIMPdocs(){

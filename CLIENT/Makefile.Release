@@ -2023,8 +2023,6 @@ release/moc_gui_server.cpp: GUI/gui_server.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qicon.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		ui_gui_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
 		release/moc_predefs.h \
 		C:/Qt/5.12.3/mingw73_64/bin/moc.exe
 	C:\Qt\5.12.3\mingw73_64\bin\moc.exe $(DEFINES) --include D:/Mirko/Scuola/PDS/Project/Repository-GitKraken/GIMPteam/CLIENT/release/moc_predefs.h -IC:/Qt/5.12.3/mingw73_64/mkspecs/win32-g++ -ID:/Mirko/Scuola/PDS/Project/Repository-GitKraken/GIMPteam/CLIENT -IC:/Qt/5.12.3/mingw73_64/include -IC:/Qt/5.12.3/mingw73_64/include/QtPrintSupport -IC:/Qt/5.12.3/mingw73_64/include/QtWidgets -IC:/Qt/5.12.3/mingw73_64/include/QtGui -IC:/Qt/5.12.3/mingw73_64/include/QtANGLE -IC:/Qt/5.12.3/mingw73_64/include/QtSql -IC:/Qt/5.12.3/mingw73_64/include/QtNetwork -IC:/Qt/5.12.3/mingw73_64/include/QtCore -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++ -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++/backward -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include-fixed -IC:/Qt/Tools/mingw730_64/x86_64-w64-mingw32/include GUI\gui_server.h -o release\moc_gui_server.cpp
@@ -3065,8 +3063,6 @@ release/gimpdocs.o: GUI/gimpdocs.cpp GUI/gimpdocs.h \
 		ui_gui_login.h \
 		GUI/gui_server.h \
 		ui_gui_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
 		GUI/editorWindow/gui_editor.h \
 		ui_gui_editor.h \
 		GUI/editorWindow/gui_colorsmanager.h \
@@ -4440,10 +4436,11 @@ release/gui_server.o: GUI/gui_server.cpp GUI/gui_server.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qicon.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		ui_gui_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		GUI/gui_login.h \
+		ui_gui_login.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMessageBox \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmessagebox.h
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmessagebox.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\gui_server.o GUI\gui_server.cpp
 
 release/gui_uri.o: GUI/gui_uri.cpp GUI/gui_uri.h \
