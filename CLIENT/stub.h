@@ -12,7 +12,9 @@ class Stub : public QObject
 public:
     explicit Stub(QObject *parent = nullptr);
 
-    //tutti i long degli id sono da modificare in int
+    //tutti i long degli id sono da modificare in ... dobbiamo ancora decidere in cosa
+    static bool isConnectionWorking();
+
 
     //questa serve per fare il login. Restituisc l'id se username e password sono corretti, altrimenti 0 o -1, basta metterci d'accordo
     static long tryLogin(QString username, QString password);

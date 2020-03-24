@@ -12,6 +12,7 @@ release/gui_mytextedit.o
 release/gui_newdoc.o
 release/gui_opendoc.o
 release/gui_profile.o
+release/gui_reconnection.o
 release/gui_server.o
 release/gui_uri.o
 release/connection_to_server.o
@@ -31,6 +32,7 @@ release/moc_gui_mytextedit.o
 release/moc_gui_newdoc.o
 release/moc_gui_opendoc.o
 release/moc_gui_profile.o
+release/moc_gui_reconnection.o
 release/moc_gui_server.o
 release/moc_gui_uri.o
 release/moc_connection_to_server.o

@@ -2,6 +2,8 @@
 #include "gui_login.h"
 #include <QMessageBox>
 
+#include "gui_reconnection.h"
+
 GUI_Server::GUI_Server(QWidget *parent) : QWidget(parent){
 
     gimpParent = static_cast<GIMPdocs*>(parent);
@@ -22,7 +24,7 @@ GUI_Server::~GUI_Server(){
 
 
 void GUI_Server::on_confirmPushButton_clicked(){
-    if(ui->addressLineEdit->text().isEmpty()){
+    /*if(ui->addressLineEdit->text().isEmpty()){
         QMessageBox::information(this, "", "\"Address\" field is empty");
         return;
     }
@@ -44,7 +46,10 @@ void GUI_Server::on_confirmPushButton_clicked(){
     connection = new connection_to_server(ui->portLineEdit->text(), ui->addressLineEdit->text());
     gimpParent->setConnection(connection);
     GUI_Login *widget = new GUI_Login(gimpParent);
-    gimpParent->setCentralWidget(widget);
+    gimpParent->setCentralWidget(widget);*/
+
+    GUI_Reconnection *box = new GUI_Reconnection(this);
+    box->setVisible(true);
 
 }
 

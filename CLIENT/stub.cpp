@@ -7,6 +7,10 @@ Stub::Stub(QObject *parent) : QObject(parent)
 
 }
 
+bool Stub::isConnectionWorking(){
+    return true;
+}
+
 long Stub::tryLogin(QString username, QString password){
 
     //l'assegnazione serve solo a togliere i warning
