@@ -8,7 +8,7 @@ Stub::Stub(QObject *parent) : QObject(parent)
 }
 
 bool Stub::isConnectionWorking(){
-    return true;
+    return false;
 }
 
 long Stub::tryLogin(QString username, QString password){
@@ -125,6 +125,8 @@ long Stub::getDocumentId(QString name){
 
 QString Stub::getDocumentName(long docId){
     long n = docId;
+    docId = n;
+
     return "The Tales of Beedle the Bard";
 }
 

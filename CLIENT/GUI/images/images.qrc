@@ -35,4 +35,7 @@
         <file>widgets_parts/arrow-down.png</file>
         <file>widgets_parts/arrow-up.png</file>
     </qresource>
+    <qresource prefix="/other">
+        <file>connecting.gif</file>
+    </qresource>
 </RCC>

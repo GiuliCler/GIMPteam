@@ -107,10 +107,10 @@ void GUI_Profile::fillForm(){
     std::string nickname = gimpParent->getConnection()->requestGetNickname(gimpParent->userid);
     std::string username = gimpParent->getConnection()->requestGetUsername(gimpParent->userid);
     if(nickname != "errore" && username != "errore"){
-    ui->nicknameLineEdit->setText(QString::fromStdString(nickname));
-    ui->usernameLabelReadonly->setText(QString::fromStdString(username));
-    ui->passwordLineEdit->setText("");
-    ui->repeatLineEdit->setText("");
+        ui->nicknameLineEdit->setText(QString::fromStdString(nickname));
+        ui->usernameLabelReadonly->setText(QString::fromStdString(username));
+        ui->passwordLineEdit->setText("");
+        ui->repeatLineEdit->setText("");
     }else{
         QMessageBox::information(this, "", "Error in server communication");
         return;
