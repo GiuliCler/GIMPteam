@@ -27,6 +27,7 @@ CONFIG += c++11
 
 SOURCES += \
         GUI/connection/gui_connecting.cpp \
+        GUI/connection/gui_connectionToServerWrapper.cpp \
         GUI/connection/gui_reconnection.cpp \
         GUI/connection/gui_server.cpp \
         GUI/editorWindow/gui_colorsmanager.cpp \
@@ -50,6 +51,9 @@ SOURCES += \
 
 HEADERS += \
         GUI/connection/gui_connecting.h \
+        GUI/connection/gui_connectionException.h \
+        GUI/connection/gui_connectionToServerWrapper.h \
+        GUI/connection/gui_genericException.h \
         GUI/connection/gui_reconnection.h \
         GUI/connection/gui_server.h \
         GUI/editorWindow/gui_colorsmanager.h \

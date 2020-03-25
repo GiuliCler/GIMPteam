@@ -7,6 +7,11 @@
 #include "ui_gimpdocs.h"
 #include "ui_gui_editorwindow.h"
 #include "../connection_to_server.h"
+#include "connection/gui_connectionToServerWrapper.h"
+
+#include "connection/gui_connectionException.h"
+#include "connection/gui_genericException.h"
+
 #include <QMainWindow>
 #include <QDebug>
 

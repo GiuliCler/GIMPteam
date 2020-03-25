@@ -9,7 +9,7 @@ class GUI_Reconnection : public QDialog
 {
     Q_OBJECT
 public:
-    explicit GUI_Reconnection(QWidget *parent);
+    explicit GUI_Reconnection(GIMPdocs *parent);
     ~GUI_Reconnection();
 
 private slots:

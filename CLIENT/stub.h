@@ -6,6 +6,11 @@
 #include <QColor>
 #include <QTextDocument>
 
+#include "GUI/connection/gui_connectionException.h"
+#include "GUI/connection/gui_genericException.h"
+#include "connection_to_server.h"
+
+
 class Stub : public QObject
 {
     Q_OBJECT
@@ -17,7 +22,7 @@ public:
 
 
     //questa serve per fare il login. Restituisc l'id se username e password sono corretti, altrimenti 0 o -1, basta metterci d'accordo
-    static long tryLogin(QString username, QString password);
+    static int requestTryLoginTemporary(connection_to_server *connection, QString username, QString password);
     //anche qui mi srve che ritorni un id
     static long createUser(QString username, QString password, QString nickname, QString iconId);
     //a seconda del codice di errore stamperò un messaggio appropriato. Oppure può ritornare direttamente il messaggio

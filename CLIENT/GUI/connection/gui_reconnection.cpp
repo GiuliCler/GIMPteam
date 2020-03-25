@@ -1,7 +1,7 @@
 #include "gui_reconnection.h"
 #include "gui_connecting.h"
 
-GUI_Reconnection::GUI_Reconnection(QWidget *parent) : QDialog(parent){
+GUI_Reconnection::GUI_Reconnection(GIMPdocs *parent) : QDialog(parent){
     ui = new Ui::GUI_Reconnection;
     ui->setupUi(this);
 
@@ -22,8 +22,7 @@ void GUI_Reconnection::on_exitPushButton_clicked(){
 }
 
 void GUI_Reconnection::on_retryPushButton_clicked(){
-    GUI_Connecting *box = new GUI_Connecting(static_cast<QWidget*>(this->parent()));
-    box->setVisible(true);
+    GUI_Connecting::GUI_ConnectingWrapper(static_cast<GIMPdocs*>(parent()));
 
     this->close();
 }

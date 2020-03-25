@@ -53,12 +53,34 @@ void GUI_Login::on_loginButton_clicked()
         QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"Password\"");
         return;
     }
-    connection_to_server *connection = gimpParent->getConnection();
-    gimpParent->userid= connection->requestTryLogin(ui->usernameLineEdit->text(), ui->passwordLineEdit->text());
-    if(gimpParent->userid < 0){
-        QMessageBox::information(this, "", "Username or Password are incorrect");
+
+
+    //connection_to_server *connection = gimpParent->getConnection();
+    //gimpParent->userid= connection->requestTryLogin(ui->usernameLineEdit->text(), ui->passwordLineEdit->text());
+    //Tentativo colle exception
+    /*
+    try {
+        gimpParent->setCursor(Qt::WaitCursor);
+        gimpParent->userid = Stub::requestTryLoginTemporary(connection, ui->usernameLineEdit->text(), ui->passwordLineEdit->text());
+    } catch (GUI_ConnectionException &exception) {
+        gimpParent->setCursor(Qt::ArrowCursor);
+        //provo a ristabilire la connessione
+        GUI_Connecting::GUI_ConnectingWrapper(gimpParent);
         return;
-    }
+    } catch(GUI_GenericException &exception){
+        gimpParent->setCursor(Qt::ArrowCursor);
+        QMessageBox::information(this, "", exception.message);
+        return;
+    }*/
+    //Tentativo #2, stavolta colla classe wrapper
+    if(int result = GUI_ConnectionToServerWrapper::requestTryLoginWrapper(gimpParent, ui->usernameLineEdit->text(), ui->passwordLineEdit->text()) != -1)
+        gimpParent->userid = result;
+    else
+        return;
+
+
+    gimpParent->setCursor(Qt::ArrowCursor);
+
 
     GUI_Menu *widget = new GUI_Menu(gimpParent);
     gimpParent->setCentralWidget(widget);

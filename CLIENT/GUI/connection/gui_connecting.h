@@ -1,7 +1,7 @@
 #ifndef GUI_CONNECTING_H
 #define GUI_CONNECTING_H
 
-#include "../gimpdocs.h"
+//#include "../gimpdocs.h"
 #include "ui_gui_connecting.h"
 #include <QDialog>
 

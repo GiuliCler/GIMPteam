@@ -11,13 +11,14 @@ bool Stub::isConnectionWorking(){
     return false;
 }
 
-long Stub::tryLogin(QString username, QString password){
+int Stub::requestTryLoginTemporary(connection_to_server *connection, QString username, QString password){
+    int result = connection->requestTryLogin(username, password);
 
-    //l'assegnazione serve solo a togliere i warning
-    username = password;
-    password = username;
+    if(result < 0)
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
 
-    return 1;
+    return result;
 }
 
 QString Stub::getIconId(long userId){

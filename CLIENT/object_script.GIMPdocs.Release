@@ -1,4 +1,5 @@
 release/gui_connecting.o
+release/gui_connectionToServerWrapper.o
 release/gui_reconnection.o
 release/gui_server.o
 release/gui_colorsmanager.o

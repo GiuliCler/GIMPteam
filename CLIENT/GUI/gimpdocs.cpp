@@ -1,5 +1,4 @@
 #include "gimpdocs.h"
-#include "gui_login.h"
 #include "connection/gui_server.h"
 #include "editorWindow/gui_editor.h"
 

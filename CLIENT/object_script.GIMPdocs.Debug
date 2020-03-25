@@ -1,4 +1,5 @@
 debug/gui_connecting.o
+debug/gui_connectionToServerWrapper.o
 debug/gui_reconnection.o
 debug/gui_server.o
 debug/gui_colorsmanager.o

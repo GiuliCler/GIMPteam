@@ -48,6 +48,7 @@ OBJECTS_DIR   = release
 ####### Files
 
 SOURCES       = GUI\connection\gui_connecting.cpp \
+		GUI\connection\gui_connectionToServerWrapper.cpp \
 		GUI\connection\gui_reconnection.cpp \
 		GUI\connection\gui_server.cpp \
 		GUI\editorWindow\gui_colorsmanager.cpp \
@@ -88,6 +89,7 @@ SOURCES       = GUI\connection\gui_connecting.cpp \
 		release\moc_connection_to_server.cpp \
 		release\moc_stub.cpp
 OBJECTS       = release/gui_connecting.o \
+		release/gui_connectionToServerWrapper.o \
 		release/gui_reconnection.o \
 		release/gui_server.o \
 		release/gui_colorsmanager.o \
@@ -130,6 +132,9 @@ OBJECTS       = release/gui_connecting.o \
 		release/moc_stub.o
 
 DIST          =  GUI\connection\gui_connecting.h \
+		GUI\connection\gui_connectionException.h \
+		GUI\connection\gui_connectionToServerWrapper.h \
+		GUI\connection\gui_genericException.h \
 		GUI\connection\gui_reconnection.h \
 		GUI\connection\gui_server.h \
 		GUI\editorWindow\gui_colorsmanager.h \
@@ -149,6 +154,7 @@ DIST          =  GUI\connection\gui_connecting.h \
 		GUI\gui_uri.h \
 		connection_to_server.h \
 		stub.h GUI\connection\gui_connecting.cpp \
+		GUI\connection\gui_connectionToServerWrapper.cpp \
 		GUI\connection\gui_reconnection.cpp \
 		GUI\connection\gui_server.cpp \
 		GUI\editorWindow\gui_colorsmanager.cpp \
@@ -191,10 +197,10 @@ qmake: FORCE
 qmake_all: FORCE
 
 dist:
-	$(ZIP) GIMPdocs.zip $(SOURCES) $(DIST) GIMPdocs.pro C:\Qt\5.12.3\mingw73_64\mkspecs\features\spec_pre.prf C:\Qt\5.12.3\mingw73_64\mkspecs\qdevice.pri C:\Qt\5.12.3\mingw73_64\mkspecs\features\device_config.prf C:\Qt\5.12.3\mingw73_64\mkspecs\common\sanitize.conf C:\Qt\5.12.3\mingw73_64\mkspecs\common\gcc-base.conf C:\Qt\5.12.3\mingw73_64\mkspecs\common\g++-base.conf C:\Qt\5.12.3\mingw73_64\mkspecs\common\angle.conf C:\Qt\5.12.3\mingw73_64\mkspecs\common\windows-vulkan.conf C:\Qt\5.12.3\mingw73_64\mkspecs\common\g++-win32.conf C:\Qt\5.12.3\mingw73_64\mkspecs\qconfig.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3danimation.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3danimation_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dcore.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dcore_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dextras.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dextras_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dinput.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dinput_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dlogic.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dlogic_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dquick.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dquick_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dquickanimation.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dquickanimation_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dquickextras.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dquickextras_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dquickinput.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dquickinput_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dquickrender.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dquickrender_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dquickscene2d.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dquickscene2d_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3drender.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3drender_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_accessibility_support_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_axbase.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_axbase_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_axcontainer.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_axcontainer_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_axserver.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_axserver_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_bluetooth.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_bluetooth_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_bootstrap_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_charts.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_charts_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_concurrent.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_concurrent_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_core.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_core_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_datavisualization.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_datavisualization_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_dbus.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_dbus_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_designer.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_designer_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_designercomponents_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_devicediscovery_support_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_edid_support_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_egl_support_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_eventdispatcher_support_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_fb_support_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_fontdatabase_support_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_gamepad.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_gamepad_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_gui.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_gui_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_help.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_help_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_location.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_location_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_multimedia.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_multimedia_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_multimediawidgets.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_multimediawidgets_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_network.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_network_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_networkauth.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_networkauth_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_nfc.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_nfc_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_opengl.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_opengl_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_openglextensions.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_openglextensions_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_packetprotocol_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_platformcompositor_support_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_positioning.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_positioning_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_positioningquick.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_positioningquick_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_printsupport.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_printsupport_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_purchasing.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_purchasing_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_qml.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_qml_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_qmldebug_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_qmldevtools_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_qmltest.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_qmltest_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_qtmultimediaquicktools_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_quick.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_quick_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_quickcontrols2.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_quickcontrols2_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_quickparticles_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_quickshapes_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_quicktemplates2.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_quicktemplates2_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_quickwidgets.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_quickwidgets_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_remoteobjects.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_remoteobjects_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_repparser.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_repparser_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_script.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_script_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_scripttools.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_scripttools_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_scxml.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_scxml_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_sensors.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_sensors_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_serialbus.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_serialbus_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_serialport.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_serialport_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_sql.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_sql_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_svg.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_svg_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_testlib.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_testlib_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_texttospeech.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_texttospeech_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_theme_support_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_uiplugin.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_uitools.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_uitools_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_virtualkeyboard.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_virtualkeyboard_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_vulkan_support_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_webchannel.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_webchannel_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_websockets.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_websockets_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_widgets.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_widgets_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_windowsuiautomation_support_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_winextras.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_winextras_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_xml.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_xml_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_xmlpatterns.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_xmlpatterns_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\features\qt_functions.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\qt_config.prf C:\Qt\5.12.3\mingw73_64\mkspecs\win32-g++\qmake.conf C:\Qt\5.12.3\mingw73_64\mkspecs\features\spec_post.prf .qmake.stash C:\Qt\5.12.3\mingw73_64\mkspecs\features\exclusive_builds.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\toolchain.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\default_pre.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\win32\default_pre.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\resolve_config.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\exclusive_builds_post.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\default_post.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\build_pass.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\qml_debug.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\precompile_header.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\warn_on.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\qt.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\resources.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\moc.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\win32\opengl.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\uic.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\qmake_use.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\file_copies.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\win32\windows.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\testcase_targets.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\exceptions.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\yacc.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\lex.prf GIMPdocs.pro GUI\images\images.qrc C:\Qt\5.12.3\mingw73_64\lib\Qt5PrintSupport.prl C:\Qt\5.12.3\mingw73_64\lib\Qt5Widgets.prl C:\Qt\5.12.3\mingw73_64\lib\Qt5Gui.prl C:\Qt\5.12.3\mingw73_64\lib\Qt5Sql.prl C:\Qt\5.12.3\mingw73_64\lib\Qt5Network.prl C:\Qt\5.12.3\mingw73_64\lib\Qt5Core.prl C:\Qt\5.12.3\mingw73_64\lib\qtmain.prl   GUI\images\images.qrc C:\Qt\5.12.3\mingw73_64\mkspecs\features\data\dummy.cpp GUI\connection\gui_connecting.h GUI\connection\gui_reconnection.h GUI\connection\gui_server.h GUI\editorWindow\gui_colorsmanager.h GUI\editorWindow\gui_myscrollarea.h GUI\editorWindow\gui_toolsbar.h GUI\editorWindow\gui_usersbar.h GUI\gimpdocs.h GUI\editorWindow\gui_coloredcursor.h GUI\editorWindow\gui_editor.h GUI\gui_icons.h GUI\gui_login.h GUI\gui_menu.h GUI\editorWindow\gui_mytextedit.h GUI\gui_newdoc.h GUI\gui_opendoc.h GUI\gui_profile.h GUI\gui_uri.h connection_to_server.h stub.h  GUI\connection\gui_connecting.cpp GUI\connection\gui_reconnection.cpp GUI\connection\gui_server.cpp GUI\editorWindow\gui_colorsmanager.cpp GUI\editorWindow\gui_myscrollarea.cpp GUI\editorWindow\gui_toolsbar.cpp GUI\editorWindow\gui_usersbar.cpp GUI\gimpdocs.cpp GUI\editorWindow\gui_coloredcursor.cpp GUI\editorWindow\gui_editor.cpp GUI\gui_icons.cpp GUI\gui_login.cpp GUI\gui_menu.cpp GUI\editorWindow\gui_mytextedit.cpp GUI\gui_newdoc.cpp GUI\gui_opendoc.cpp GUI\gui_profile.cpp GUI\gui_uri.cpp connection_to_server.cpp main.cpp stub.cpp GUI\connection\ui\gui_connecting.ui GUI\connection\ui\gui_reconnection.ui GUI\connection\ui\gui_server.ui GUI\editorWindow\ui\gui_toolsbar.ui GUI\editorWindow\ui\gui_usersbar.ui GUI\ui\gimpdocs.ui GUI\editorWindow\ui\gui_editor.ui GUI\editorWindow\ui\gui_editorwindow.ui GUI\ui\gui_login.ui GUI\ui\gui_menu.ui GUI\ui\gui_newdoc.ui GUI\ui\gui_opendoc.ui GUI\ui\gui_profile.ui GUI\ui\gui_uri.ui    
+	$(ZIP) GIMPdocs.zip $(SOURCES) $(DIST) GIMPdocs.pro C:\Qt\5.12.3\mingw73_64\mkspecs\features\spec_pre.prf C:\Qt\5.12.3\mingw73_64\mkspecs\qdevice.pri C:\Qt\5.12.3\mingw73_64\mkspecs\features\device_config.prf C:\Qt\5.12.3\mingw73_64\mkspecs\common\sanitize.conf C:\Qt\5.12.3\mingw73_64\mkspecs\common\gcc-base.conf C:\Qt\5.12.3\mingw73_64\mkspecs\common\g++-base.conf C:\Qt\5.12.3\mingw73_64\mkspecs\common\angle.conf C:\Qt\5.12.3\mingw73_64\mkspecs\common\windows-vulkan.conf C:\Qt\5.12.3\mingw73_64\mkspecs\common\g++-win32.conf C:\Qt\5.12.3\mingw73_64\mkspecs\qconfig.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3danimation.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3danimation_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dcore.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dcore_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dextras.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dextras_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dinput.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dinput_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dlogic.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dlogic_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dquick.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dquick_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dquickanimation.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dquickanimation_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dquickextras.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dquickextras_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dquickinput.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dquickinput_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dquickrender.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dquickrender_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dquickscene2d.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3dquickscene2d_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3drender.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_3drender_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_accessibility_support_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_axbase.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_axbase_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_axcontainer.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_axcontainer_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_axserver.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_axserver_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_bluetooth.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_bluetooth_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_bootstrap_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_charts.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_charts_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_concurrent.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_concurrent_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_core.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_core_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_datavisualization.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_datavisualization_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_dbus.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_dbus_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_designer.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_designer_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_designercomponents_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_devicediscovery_support_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_edid_support_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_egl_support_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_eventdispatcher_support_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_fb_support_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_fontdatabase_support_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_gamepad.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_gamepad_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_gui.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_gui_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_help.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_help_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_location.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_location_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_multimedia.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_multimedia_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_multimediawidgets.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_multimediawidgets_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_network.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_network_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_networkauth.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_networkauth_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_nfc.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_nfc_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_opengl.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_opengl_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_openglextensions.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_openglextensions_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_packetprotocol_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_platformcompositor_support_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_positioning.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_positioning_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_positioningquick.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_positioningquick_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_printsupport.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_printsupport_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_purchasing.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_purchasing_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_qml.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_qml_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_qmldebug_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_qmldevtools_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_qmltest.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_qmltest_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_qtmultimediaquicktools_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_quick.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_quick_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_quickcontrols2.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_quickcontrols2_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_quickparticles_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_quickshapes_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_quicktemplates2.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_quicktemplates2_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_quickwidgets.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_quickwidgets_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_remoteobjects.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_remoteobjects_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_repparser.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_repparser_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_script.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_script_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_scripttools.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_scripttools_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_scxml.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_scxml_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_sensors.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_sensors_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_serialbus.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_serialbus_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_serialport.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_serialport_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_sql.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_sql_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_svg.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_svg_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_testlib.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_testlib_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_texttospeech.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_texttospeech_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_theme_support_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_uiplugin.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_uitools.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_uitools_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_virtualkeyboard.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_virtualkeyboard_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_vulkan_support_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_webchannel.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_webchannel_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_websockets.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_websockets_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_widgets.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_widgets_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_windowsuiautomation_support_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_winextras.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_winextras_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_xml.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_xml_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_xmlpatterns.pri C:\Qt\5.12.3\mingw73_64\mkspecs\modules\qt_lib_xmlpatterns_private.pri C:\Qt\5.12.3\mingw73_64\mkspecs\features\qt_functions.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\qt_config.prf C:\Qt\5.12.3\mingw73_64\mkspecs\win32-g++\qmake.conf C:\Qt\5.12.3\mingw73_64\mkspecs\features\spec_post.prf .qmake.stash C:\Qt\5.12.3\mingw73_64\mkspecs\features\exclusive_builds.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\toolchain.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\default_pre.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\win32\default_pre.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\resolve_config.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\exclusive_builds_post.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\default_post.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\build_pass.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\qml_debug.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\precompile_header.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\warn_on.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\qt.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\resources.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\moc.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\win32\opengl.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\uic.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\qmake_use.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\file_copies.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\win32\windows.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\testcase_targets.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\exceptions.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\yacc.prf C:\Qt\5.12.3\mingw73_64\mkspecs\features\lex.prf GIMPdocs.pro GUI\images\images.qrc C:\Qt\5.12.3\mingw73_64\lib\Qt5PrintSupport.prl C:\Qt\5.12.3\mingw73_64\lib\Qt5Widgets.prl C:\Qt\5.12.3\mingw73_64\lib\Qt5Gui.prl C:\Qt\5.12.3\mingw73_64\lib\Qt5Sql.prl C:\Qt\5.12.3\mingw73_64\lib\Qt5Network.prl C:\Qt\5.12.3\mingw73_64\lib\Qt5Core.prl C:\Qt\5.12.3\mingw73_64\lib\qtmain.prl   GUI\images\images.qrc C:\Qt\5.12.3\mingw73_64\mkspecs\features\data\dummy.cpp GUI\connection\gui_connecting.h GUI\connection\gui_connectionException.h GUI\connection\gui_connectionToServerWrapper.h GUI\connection\gui_genericException.h GUI\connection\gui_reconnection.h GUI\connection\gui_server.h GUI\editorWindow\gui_colorsmanager.h GUI\editorWindow\gui_myscrollarea.h GUI\editorWindow\gui_toolsbar.h GUI\editorWindow\gui_usersbar.h GUI\gimpdocs.h GUI\editorWindow\gui_coloredcursor.h GUI\editorWindow\gui_editor.h GUI\gui_icons.h GUI\gui_login.h GUI\gui_menu.h GUI\editorWindow\gui_mytextedit.h GUI\gui_newdoc.h GUI\gui_opendoc.h GUI\gui_profile.h GUI\gui_uri.h connection_to_server.h stub.h  GUI\connection\gui_connecting.cpp GUI\connection\gui_connectionToServerWrapper.cpp GUI\connection\gui_reconnection.cpp GUI\connection\gui_server.cpp GUI\editorWindow\gui_colorsmanager.cpp GUI\editorWindow\gui_myscrollarea.cpp GUI\editorWindow\gui_toolsbar.cpp GUI\editorWindow\gui_usersbar.cpp GUI\gimpdocs.cpp GUI\editorWindow\gui_coloredcursor.cpp GUI\editorWindow\gui_editor.cpp GUI\gui_icons.cpp GUI\gui_login.cpp GUI\gui_menu.cpp GUI\editorWindow\gui_mytextedit.cpp GUI\gui_newdoc.cpp GUI\gui_opendoc.cpp GUI\gui_profile.cpp GUI\gui_uri.cpp connection_to_server.cpp main.cpp stub.cpp GUI\connection\ui\gui_connecting.ui GUI\connection\ui\gui_reconnection.ui GUI\connection\ui\gui_server.ui GUI\editorWindow\ui\gui_toolsbar.ui GUI\editorWindow\ui\gui_usersbar.ui GUI\ui\gimpdocs.ui GUI\editorWindow\ui\gui_editor.ui GUI\editorWindow\ui\gui_editorwindow.ui GUI\ui\gui_login.ui GUI\ui\gui_menu.ui GUI\ui\gui_newdoc.ui GUI\ui\gui_opendoc.ui GUI\ui\gui_profile.ui GUI\ui\gui_uri.ui    
 
 clean: compiler_clean 
-	-$(DEL_FILE) release\gui_connecting.o release\gui_reconnection.o release\gui_server.o release\gui_colorsmanager.o release\gui_myscrollarea.o release\gui_toolsbar.o release\gui_usersbar.o release\gimpdocs.o release\gui_coloredcursor.o release\gui_editor.o release\gui_icons.o release\gui_login.o release\gui_menu.o release\gui_mytextedit.o release\gui_newdoc.o release\gui_opendoc.o release\gui_profile.o release\gui_uri.o release\connection_to_server.o release\main.o release\stub.o release\qrc_images.o release\moc_gui_connecting.o release\moc_gui_reconnection.o release\moc_gui_server.o release\moc_gui_colorsmanager.o release\moc_gui_myscrollarea.o release\moc_gui_toolsbar.o release\moc_gui_usersbar.o release\moc_gimpdocs.o release\moc_gui_coloredcursor.o release\moc_gui_editor.o release\moc_gui_login.o release\moc_gui_menu.o release\moc_gui_mytextedit.o release\moc_gui_newdoc.o release\moc_gui_opendoc.o release\moc_gui_profile.o release\moc_gui_uri.o release\moc_connection_to_server.o release\moc_stub.o
+	-$(DEL_FILE) release\gui_connecting.o release\gui_connectionToServerWrapper.o release\gui_reconnection.o release\gui_server.o release\gui_colorsmanager.o release\gui_myscrollarea.o release\gui_toolsbar.o release\gui_usersbar.o release\gimpdocs.o release\gui_coloredcursor.o release\gui_editor.o release\gui_icons.o release\gui_login.o release\gui_menu.o release\gui_mytextedit.o release\gui_newdoc.o release\gui_opendoc.o release\gui_profile.o release\gui_uri.o release\connection_to_server.o release\main.o release\stub.o release\qrc_images.o release\moc_gui_connecting.o release\moc_gui_reconnection.o release\moc_gui_server.o release\moc_gui_colorsmanager.o release\moc_gui_myscrollarea.o release\moc_gui_toolsbar.o release\moc_gui_usersbar.o release\moc_gimpdocs.o release\moc_gui_coloredcursor.o release\moc_gui_editor.o release\moc_gui_login.o release\moc_gui_menu.o release\moc_gui_mytextedit.o release\moc_gui_newdoc.o release\moc_gui_opendoc.o release\moc_gui_profile.o release\moc_gui_uri.o release\moc_connection_to_server.o release\moc_stub.o
 	-$(DEL_FILE) release\GIMPdocs_resource_res.o
 
 distclean: clean 
@@ -260,12 +266,10 @@ compiler_moc_header_make_all: release/moc_gui_connecting.cpp release/moc_gui_rec
 compiler_moc_header_clean:
 	-$(DEL_FILE) release\moc_gui_connecting.cpp release\moc_gui_reconnection.cpp release\moc_gui_server.cpp release\moc_gui_colorsmanager.cpp release\moc_gui_myscrollarea.cpp release\moc_gui_toolsbar.cpp release\moc_gui_usersbar.cpp release\moc_gimpdocs.cpp release\moc_gui_coloredcursor.cpp release\moc_gui_editor.cpp release\moc_gui_login.cpp release\moc_gui_menu.cpp release\moc_gui_mytextedit.cpp release\moc_gui_newdoc.cpp release\moc_gui_opendoc.cpp release\moc_gui_profile.cpp release\moc_gui_uri.cpp release\moc_connection_to_server.cpp release\moc_stub.cpp
 release/moc_gui_connecting.cpp: GUI/connection/gui_connecting.h \
-		GUI/gimpdocs.h \
-		stub.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QObject \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qobject.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qobjectdefs.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qnamespace.h \
+		ui_gui_connecting.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVariant \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qvariant.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qatomic.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qglobal.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qconfig-bootstrapped.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qconfig.h \
@@ -277,87 +281,77 @@ release/moc_gui_connecting.cpp: GUI/connection/gui_connecting.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qsysinfo.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qlogging.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qflags.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qatomic.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qglobalstatic.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qmutex.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qnumeric.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qversiontagging.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qbasicatomic.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qatomic_bootstrap.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qgenericatomic.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qatomic_cxx11.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qatomic_msvc.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qglobalstatic.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qmutex.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qnumeric.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qversiontagging.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qobjectdefs_impl.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qstring.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qchar.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qbytearray.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qrefcount.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qnamespace.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qarraydata.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qstringliteral.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qstringalgorithms.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qstringview.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qstringbuilder.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qlist.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qalgorithms.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qiterator.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qhashfunctions.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qstring.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qchar.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qstringliteral.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qstringalgorithms.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qstringview.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qstringbuilder.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qpair.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qbytearraylist.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qstringlist.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qregexp.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qstringmatcher.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qcoreevent.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qscopedpointer.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qmetatype.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qvarlengtharray.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qcontainerfwd.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qobject_impl.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtGui/QColor \
-		C:/Qt/5.12.3/mingw73_64/include/QtGui/qcolor.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtguiglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtgui-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtGui/qrgb.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtGui/qrgba64.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtGui/QTextDocument \
-		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextdocument.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qsize.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qrect.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qmargins.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qpoint.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qvariant.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qobjectdefs.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qobjectdefs_impl.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qmap.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qdebug.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qhash.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qtextstream.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qiodevice.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qobject.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qcoreevent.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qscopedpointer.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qobject_impl.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qlocale.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qshareddata.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qvector.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qpoint.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qset.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qcontiguouscache.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qsharedpointer.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qsharedpointer_impl.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtGui/qfont.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtGui/qwindowdefs.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtGui/qwindowdefs_win.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurl.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurlquery.h \
-		GUI/gui_icons.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
-		ui_gimpdocs.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVariant \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QApplication \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qapplication.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtwidgetsglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtguiglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtgui-config.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtwidgets-config.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qcoreapplication.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qeventloop.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qwindowdefs.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qwindowdefs_win.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qsize.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qcursor.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdesktopwidget.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qwidget.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qmargins.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpaintdevice.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qrect.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpalette.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qcolor.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qrgb.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qrgba64.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qbrush.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qmatrix.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpolygon.h \
@@ -369,45 +363,32 @@ release/moc_gui_connecting.cpp: GUI/connection/gui_connecting.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qimage.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpixelformat.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpixmap.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qfont.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qfontmetrics.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qfontinfo.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qsizepolicy.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qkeysequence.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qevent.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurl.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurlquery.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qfile.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qfiledevice.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qvector2d.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtouchdevice.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qguiapplication.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qinputmethod.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMainWindow \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmainwindow.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtabwidget.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtGui/qicon.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenuBar \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmenubar.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmenu.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qaction.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qactiongroup.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
-		ui_gui_editorwindow.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
-		ui_gui_connecting.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
 		release/moc_predefs.h \
 		C:/Qt/5.12.3/mingw73_64/bin/moc.exe
 	C:\Qt\5.12.3\mingw73_64\bin\moc.exe $(DEFINES) --include D:/Mirko/Scuola/PDS/Project/Repository-GitKraken/GIMPteam/CLIENT/release/moc_predefs.h -IC:/Qt/5.12.3/mingw73_64/mkspecs/win32-g++ -ID:/Mirko/Scuola/PDS/Project/Repository-GitKraken/GIMPteam/CLIENT -IC:/Qt/5.12.3/mingw73_64/include -IC:/Qt/5.12.3/mingw73_64/include/QtPrintSupport -IC:/Qt/5.12.3/mingw73_64/include/QtWidgets -IC:/Qt/5.12.3/mingw73_64/include/QtGui -IC:/Qt/5.12.3/mingw73_64/include/QtANGLE -IC:/Qt/5.12.3/mingw73_64/include/QtSql -IC:/Qt/5.12.3/mingw73_64/include/QtNetwork -IC:/Qt/5.12.3/mingw73_64/include/QtCore -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++ -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++/backward -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include-fixed -IC:/Qt/Tools/mingw730_64/x86_64-w64-mingw32/include GUI\connection\gui_connecting.h -o release\moc_gui_connecting.cpp
@@ -495,10 +476,9 @@ release/moc_gui_reconnection.cpp: GUI/connection/gui_reconnection.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qwindowdefs_win.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurl.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurlquery.h \
-		GUI/gui_icons.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
-		ui_gimpdocs.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVariant \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QApplication \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qapplication.h \
@@ -533,6 +513,32 @@ release/moc_gui_reconnection.cpp: GUI/connection/gui_reconnection.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtouchdevice.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qguiapplication.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qinputmethod.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
+		GUI/gui_icons.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
+		ui_gimpdocs.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMainWindow \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmainwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtabwidget.h \
@@ -542,33 +548,14 @@ release/moc_gui_reconnection.cpp: GUI/connection/gui_reconnection.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmenu.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qaction.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qactiongroup.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		ui_gui_reconnection.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QPushButton \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qpushbutton.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qabstractbutton.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QVBoxLayout \
 		release/moc_predefs.h \
 		C:/Qt/5.12.3/mingw73_64/bin/moc.exe
@@ -657,10 +644,9 @@ release/moc_gui_server.cpp: GUI/connection/gui_server.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qwindowdefs_win.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurl.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurlquery.h \
-		GUI/gui_icons.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
-		ui_gimpdocs.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVariant \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QApplication \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qapplication.h \
@@ -695,6 +681,32 @@ release/moc_gui_server.cpp: GUI/connection/gui_server.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtouchdevice.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qguiapplication.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qinputmethod.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
+		GUI/gui_icons.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
+		ui_gimpdocs.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMainWindow \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmainwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtabwidget.h \
@@ -704,27 +716,11 @@ release/moc_gui_server.cpp: GUI/connection/gui_server.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmenu.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qaction.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qactiongroup.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		ui_gui_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLineEdit \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlineedit.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextcursor.h \
@@ -734,7 +730,6 @@ release/moc_gui_server.cpp: GUI/connection/gui_server.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QPushButton \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qpushbutton.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qabstractbutton.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
 		release/moc_predefs.h \
 		C:/Qt/5.12.3/mingw73_64/bin/moc.exe
 	C:\Qt\5.12.3\mingw73_64\bin\moc.exe $(DEFINES) --include D:/Mirko/Scuola/PDS/Project/Repository-GitKraken/GIMPteam/CLIENT/release/moc_predefs.h -IC:/Qt/5.12.3/mingw73_64/mkspecs/win32-g++ -ID:/Mirko/Scuola/PDS/Project/Repository-GitKraken/GIMPteam/CLIENT -IC:/Qt/5.12.3/mingw73_64/include -IC:/Qt/5.12.3/mingw73_64/include/QtPrintSupport -IC:/Qt/5.12.3/mingw73_64/include/QtWidgets -IC:/Qt/5.12.3/mingw73_64/include/QtGui -IC:/Qt/5.12.3/mingw73_64/include/QtANGLE -IC:/Qt/5.12.3/mingw73_64/include/QtSql -IC:/Qt/5.12.3/mingw73_64/include/QtNetwork -IC:/Qt/5.12.3/mingw73_64/include/QtCore -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++ -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++/backward -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include-fixed -IC:/Qt/Tools/mingw730_64/x86_64-w64-mingw32/include GUI\connection\gui_server.h -o release\moc_gui_server.cpp
@@ -917,10 +912,9 @@ release/moc_gui_myscrollarea.cpp: GUI/editorWindow/gui_myscrollarea.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QColor \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QTextDocument \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextdocument.h \
-		GUI/gui_icons.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
-		ui_gimpdocs.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVariant \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QApplication \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qapplication.h \
@@ -929,6 +923,31 @@ release/moc_gui_myscrollarea.cpp: GUI/editorWindow/gui_myscrollarea.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdesktopwidget.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qguiapplication.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qinputmethod.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
+		GUI/gui_icons.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
+		ui_gimpdocs.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMainWindow \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmainwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtabwidget.h \
@@ -938,21 +957,9 @@ release/moc_gui_myscrollarea.cpp: GUI/editorWindow/gui_myscrollarea.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmenu.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qaction.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qactiongroup.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		release/moc_predefs.h \
 		C:/Qt/5.12.3/mingw73_64/bin/moc.exe
@@ -1111,6 +1118,20 @@ release/moc_gui_toolsbar.cpp: GUI/editorWindow/gui_toolsbar.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QColor \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QTextDocument \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextdocument.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		GUI/gui_icons.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
@@ -1125,12 +1146,6 @@ release/moc_gui_toolsbar.cpp: GUI/editorWindow/gui_toolsbar.h \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		GUI/editorWindow/gui_editor.h \
 		ui_gui_editor.h \
@@ -1278,6 +1293,20 @@ release/moc_gui_usersbar.cpp: GUI/editorWindow/gui_usersbar.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QColor \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QTextDocument \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextdocument.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		GUI/gui_icons.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
@@ -1293,12 +1322,6 @@ release/moc_gui_usersbar.cpp: GUI/editorWindow/gui_usersbar.h \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		GUI/editorWindow/gui_editor.h \
 		ui_gui_editor.h \
@@ -1391,10 +1414,9 @@ release/moc_gimpdocs.cpp: GUI/gimpdocs.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qwindowdefs_win.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurl.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurlquery.h \
-		GUI/gui_icons.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
-		ui_gimpdocs.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVariant \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QApplication \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qapplication.h \
@@ -1429,6 +1451,32 @@ release/moc_gimpdocs.cpp: GUI/gimpdocs.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtouchdevice.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qguiapplication.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qinputmethod.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
+		GUI/gui_icons.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
+		ui_gimpdocs.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMainWindow \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmainwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtabwidget.h \
@@ -1438,21 +1486,9 @@ release/moc_gimpdocs.cpp: GUI/gimpdocs.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmenu.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qaction.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qactiongroup.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		release/moc_predefs.h \
 		C:/Qt/5.12.3/mingw73_64/bin/moc.exe
@@ -1702,6 +1738,23 @@ release/moc_gui_editor.cpp: GUI/editorWindow/gui_editor.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QColor \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QTextDocument \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextdocument.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		GUI/gui_icons.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
@@ -1718,12 +1771,6 @@ release/moc_gui_editor.cpp: GUI/editorWindow/gui_editor.h \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		GUI/editorWindow/gui_colorsmanager.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QStack \
@@ -1872,6 +1919,20 @@ release/moc_gui_login.cpp: GUI/gui_login.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QColor \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QTextDocument \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextdocument.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		GUI/gui_icons.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
@@ -1887,12 +1948,6 @@ release/moc_gui_login.cpp: GUI/gui_login.h \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		release/moc_predefs.h \
 		C:/Qt/5.12.3/mingw73_64/bin/moc.exe
@@ -2036,6 +2091,20 @@ release/moc_gui_menu.cpp: GUI/gui_menu.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QColor \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QTextDocument \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextdocument.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		GUI/gui_icons.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
@@ -2050,12 +2119,6 @@ release/moc_gui_menu.cpp: GUI/gui_menu.h \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		release/moc_predefs.h \
 		C:/Qt/5.12.3/mingw73_64/bin/moc.exe
@@ -2144,10 +2207,9 @@ release/moc_gui_mytextedit.cpp: GUI/editorWindow/gui_mytextedit.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qwindowdefs_win.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurl.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurlquery.h \
-		GUI/gui_icons.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
-		ui_gimpdocs.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVariant \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QApplication \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qapplication.h \
@@ -2182,6 +2244,32 @@ release/moc_gui_mytextedit.cpp: GUI/editorWindow/gui_mytextedit.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtouchdevice.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qguiapplication.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qinputmethod.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
+		GUI/gui_icons.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
+		ui_gimpdocs.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMainWindow \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmainwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtabwidget.h \
@@ -2191,35 +2279,20 @@ release/moc_gui_mytextedit.cpp: GUI/editorWindow/gui_mytextedit.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmenu.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qaction.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qactiongroup.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		GUI/editorWindow/gui_coloredcursor.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QTextEdit \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtextedit.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qabstractscrollarea.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextoption.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextcursor.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextformat.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpen.h \
 		GUI/editorWindow/gui_editor.h \
 		ui_gui_editor.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QVBoxLayout \
 		GUI/editorWindow/gui_colorsmanager.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QStack \
@@ -2368,6 +2441,21 @@ release/moc_gui_newdoc.cpp: GUI/gui_newdoc.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QColor \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QTextDocument \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextdocument.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		GUI/gui_icons.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
@@ -2382,14 +2470,7 @@ release/moc_gui_newdoc.cpp: GUI/gui_newdoc.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qactiongroup.h \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		release/moc_predefs.h \
 		C:/Qt/5.12.3/mingw73_64/bin/moc.exe
@@ -2545,6 +2626,22 @@ release/moc_gui_opendoc.cpp: GUI/gui_opendoc.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QColor \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QTextDocument \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextdocument.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		GUI/gui_icons.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
@@ -2559,12 +2656,6 @@ release/moc_gui_opendoc.cpp: GUI/gui_opendoc.h \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		release/moc_predefs.h \
 		C:/Qt/5.12.3/mingw73_64/bin/moc.exe
@@ -2724,6 +2815,20 @@ release/moc_gui_profile.cpp: GUI/gui_profile.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QColor \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QTextDocument \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextdocument.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		GUI/gui_icons.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
@@ -2738,12 +2843,6 @@ release/moc_gui_profile.cpp: GUI/gui_profile.h \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		release/moc_predefs.h \
 		C:/Qt/5.12.3/mingw73_64/bin/moc.exe
@@ -2832,10 +2931,9 @@ release/moc_gui_uri.cpp: GUI/gui_uri.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qwindowdefs_win.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurl.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurlquery.h \
-		GUI/gui_icons.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
-		ui_gimpdocs.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVariant \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QApplication \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qapplication.h \
@@ -2870,6 +2968,32 @@ release/moc_gui_uri.cpp: GUI/gui_uri.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtouchdevice.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qguiapplication.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qinputmethod.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
+		GUI/gui_icons.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
+		ui_gimpdocs.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMainWindow \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmainwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtabwidget.h \
@@ -2879,33 +3003,14 @@ release/moc_gui_uri.cpp: GUI/gui_uri.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmenu.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qaction.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qactiongroup.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		ui_gui_uri.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QPushButton \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qpushbutton.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qabstractbutton.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QVBoxLayout \
 		release/moc_predefs.h \
 		C:/Qt/5.12.3/mingw73_64/bin/moc.exe
@@ -3105,6 +3210,65 @@ release/moc_stub.cpp: stub.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qwindowdefs_win.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurl.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurlquery.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVariant \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QApplication \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qapplication.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtwidgetsglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtwidgets-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qcoreapplication.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qeventloop.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qcursor.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdesktopwidget.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qwidget.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpaintdevice.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpalette.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qbrush.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qmatrix.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpolygon.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qregion.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qdatastream.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qline.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtransform.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpainterpath.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qimage.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpixelformat.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpixmap.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qfontmetrics.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qfontinfo.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qsizepolicy.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qkeysequence.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qevent.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qfile.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qfiledevice.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qvector2d.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtouchdevice.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qguiapplication.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qinputmethod.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		release/moc_predefs.h \
 		C:/Qt/5.12.3/mingw73_64/bin/moc.exe
 	C:\Qt\5.12.3\mingw73_64\bin\moc.exe $(DEFINES) --include D:/Mirko/Scuola/PDS/Project/Repository-GitKraken/GIMPteam/CLIENT/release/moc_predefs.h -IC:/Qt/5.12.3/mingw73_64/mkspecs/win32-g++ -ID:/Mirko/Scuola/PDS/Project/Repository-GitKraken/GIMPteam/CLIENT -IC:/Qt/5.12.3/mingw73_64/include -IC:/Qt/5.12.3/mingw73_64/include/QtPrintSupport -IC:/Qt/5.12.3/mingw73_64/include/QtWidgets -IC:/Qt/5.12.3/mingw73_64/include/QtGui -IC:/Qt/5.12.3/mingw73_64/include/QtANGLE -IC:/Qt/5.12.3/mingw73_64/include/QtSql -IC:/Qt/5.12.3/mingw73_64/include/QtNetwork -IC:/Qt/5.12.3/mingw73_64/include/QtCore -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++ -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++/backward -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include-fixed -IC:/Qt/Tools/mingw730_64/x86_64-w64-mingw32/include stub.h -o release\moc_stub.cpp
@@ -3184,8 +3348,7 @@ compiler_clean: compiler_rcc_clean compiler_moc_predefs_clean compiler_moc_heade
 
 ####### Compile
 
-release/gui_connecting.o: GUI/connection/gui_connecting.cpp GUI/connection/gui_connecting.h \
-		GUI/gimpdocs.h \
+release/gui_connecting.o: GUI/connection/gui_connecting.cpp GUI/gimpdocs.h \
 		stub.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QObject \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qobject.h \
@@ -3267,10 +3430,9 @@ release/gui_connecting.o: GUI/connection/gui_connecting.cpp GUI/connection/gui_c
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qwindowdefs_win.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurl.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurlquery.h \
-		GUI/gui_icons.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
-		ui_gimpdocs.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVariant \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QApplication \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qapplication.h \
@@ -3305,6 +3467,32 @@ release/gui_connecting.o: GUI/connection/gui_connecting.cpp GUI/connection/gui_c
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtouchdevice.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qguiapplication.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qinputmethod.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
+		GUI/gui_icons.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
+		ui_gimpdocs.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMainWindow \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmainwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtabwidget.h \
@@ -3314,26 +3502,151 @@ release/gui_connecting.o: GUI/connection/gui_connecting.cpp GUI/connection/gui_c
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmenu.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qaction.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qactiongroup.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
+		GUI/connection/gui_reconnection.h \
+		ui_gui_reconnection.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QPushButton \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qpushbutton.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qabstractbutton.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QVBoxLayout \
+		GUI/gui_login.h \
+		ui_gui_login.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLineEdit \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlineedit.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextcursor.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextformat.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpen.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextoption.h \
+		GUI/gui_menu.h \
+		ui_gui_menu.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGroupBox \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgroupbox.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QTabWidget \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/QMovie \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qmovie.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qimagereader.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qimageiohandler.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qplugin.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qpointer.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qjsonobject.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qjsonvalue.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qfactoryinterface.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\gui_connecting.o GUI\connection\gui_connecting.cpp
+
+release/gui_connectionToServerWrapper.o: GUI/connection/gui_connectionToServerWrapper.cpp GUI/connection/gui_connectionToServerWrapper.h \
 		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qwidget.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtwidgetsglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtguiglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qconfig-bootstrapped.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qconfig.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qtcore-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qsystemdetection.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qprocessordetection.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qcompilerdetection.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qtypeinfo.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qsysinfo.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qlogging.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qflags.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qatomic.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qbasicatomic.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qatomic_bootstrap.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qgenericatomic.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qatomic_cxx11.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qatomic_msvc.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qglobalstatic.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qmutex.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qnumeric.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qversiontagging.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtgui-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtwidgets-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qwindowdefs.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qobjectdefs.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qnamespace.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qobjectdefs_impl.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qwindowdefs_win.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qobject.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qstring.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qchar.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qbytearray.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qrefcount.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qarraydata.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qstringliteral.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qstringalgorithms.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qstringview.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qstringbuilder.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qlist.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qalgorithms.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qiterator.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qhashfunctions.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qpair.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qbytearraylist.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qstringlist.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qregexp.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qstringmatcher.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qcoreevent.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qscopedpointer.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qmetatype.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qvarlengtharray.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qcontainerfwd.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qobject_impl.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qmargins.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpaintdevice.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qrect.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qsize.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qpoint.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpalette.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qcolor.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qrgb.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qrgba64.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qbrush.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qvector.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qmatrix.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpolygon.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qregion.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qdatastream.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qiodevice.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qline.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtransform.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpainterpath.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qimage.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpixelformat.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpixmap.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qsharedpointer.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qshareddata.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qhash.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qsharedpointer_impl.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qfont.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qfontmetrics.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qfontinfo.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qsizepolicy.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qcursor.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qkeysequence.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qevent.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qvariant.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qmap.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qdebug.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qtextstream.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qlocale.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qset.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qcontiguouscache.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurl.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurlquery.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qfile.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qfiledevice.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qvector2d.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtouchdevice.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
 		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
-		ui_gui_connecting.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\gui_connecting.o GUI\connection\gui_connecting.cpp
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\gui_connectionToServerWrapper.o GUI\connection\gui_connectionToServerWrapper.cpp
 
 release/gui_reconnection.o: GUI/connection/gui_reconnection.cpp GUI/connection/gui_reconnection.h \
 		GUI/gimpdocs.h \
@@ -3418,10 +3731,9 @@ release/gui_reconnection.o: GUI/connection/gui_reconnection.cpp GUI/connection/g
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qwindowdefs_win.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurl.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurlquery.h \
-		GUI/gui_icons.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
-		ui_gimpdocs.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVariant \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QApplication \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qapplication.h \
@@ -3456,6 +3768,32 @@ release/gui_reconnection.o: GUI/connection/gui_reconnection.cpp GUI/connection/g
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtouchdevice.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qguiapplication.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qinputmethod.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
+		GUI/gui_icons.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
+		ui_gimpdocs.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMainWindow \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmainwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtabwidget.h \
@@ -3465,36 +3803,15 @@ release/gui_reconnection.o: GUI/connection/gui_reconnection.cpp GUI/connection/g
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmenu.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qaction.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qactiongroup.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		ui_gui_reconnection.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QPushButton \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qpushbutton.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qabstractbutton.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QVBoxLayout \
-		GUI/connection/gui_connecting.h \
-		ui_gui_connecting.h
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QVBoxLayout
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\gui_reconnection.o GUI\connection\gui_reconnection.cpp
 
 release/gui_server.o: GUI/connection/gui_server.cpp GUI/connection/gui_server.h \
@@ -3580,10 +3897,9 @@ release/gui_server.o: GUI/connection/gui_server.cpp GUI/connection/gui_server.h 
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qwindowdefs_win.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurl.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurlquery.h \
-		GUI/gui_icons.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
-		ui_gimpdocs.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVariant \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QApplication \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qapplication.h \
@@ -3618,6 +3934,32 @@ release/gui_server.o: GUI/connection/gui_server.cpp GUI/connection/gui_server.h 
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtouchdevice.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qguiapplication.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qinputmethod.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
+		GUI/gui_icons.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
+		ui_gimpdocs.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMainWindow \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmainwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtabwidget.h \
@@ -3627,27 +3969,11 @@ release/gui_server.o: GUI/connection/gui_server.cpp GUI/connection/gui_server.h 
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmenu.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qaction.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qactiongroup.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		ui_gui_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLineEdit \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlineedit.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextcursor.h \
@@ -3657,16 +3983,13 @@ release/gui_server.o: GUI/connection/gui_server.cpp GUI/connection/gui_server.h 
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QPushButton \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qpushbutton.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qabstractbutton.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
 		GUI/gui_login.h \
 		ui_gui_login.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QVBoxLayout \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMessageBox \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmessagebox.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
 		GUI/connection/gui_reconnection.h \
-		ui_gui_reconnection.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog
+		ui_gui_reconnection.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\gui_server.o GUI\connection\gui_server.cpp
 
 release/gui_colorsmanager.o: GUI/editorWindow/gui_colorsmanager.cpp GUI/editorWindow/gui_colorsmanager.h \
@@ -3858,10 +4181,9 @@ release/gui_myscrollarea.o: GUI/editorWindow/gui_myscrollarea.cpp GUI/editorWind
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QColor \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QTextDocument \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextdocument.h \
-		GUI/gui_icons.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
-		ui_gimpdocs.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVariant \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QApplication \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qapplication.h \
@@ -3870,6 +4192,31 @@ release/gui_myscrollarea.o: GUI/editorWindow/gui_myscrollarea.cpp GUI/editorWind
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdesktopwidget.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qguiapplication.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qinputmethod.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
+		GUI/gui_icons.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
+		ui_gimpdocs.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMainWindow \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmainwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtabwidget.h \
@@ -3879,33 +4226,17 @@ release/gui_myscrollarea.o: GUI/editorWindow/gui_myscrollarea.cpp GUI/editorWind
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmenu.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qaction.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qactiongroup.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		GUI/editorWindow/gui_usersbar.h \
 		ui_gui_usersbar.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QIcon \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QFrame \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QPushButton \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qpushbutton.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qabstractbutton.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QVBoxLayout \
 		GUI/editorWindow/gui_editor.h \
 		ui_gui_editor.h \
@@ -4071,6 +4402,20 @@ release/gui_toolsbar.o: GUI/editorWindow/gui_toolsbar.cpp GUI/editorWindow/gui_t
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QColor \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QTextDocument \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextdocument.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		GUI/gui_icons.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
@@ -4085,12 +4430,6 @@ release/gui_toolsbar.o: GUI/editorWindow/gui_toolsbar.cpp GUI/editorWindow/gui_t
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		GUI/editorWindow/gui_editor.h \
 		ui_gui_editor.h \
@@ -4099,8 +4438,7 @@ release/gui_toolsbar.o: GUI/editorWindow/gui_toolsbar.cpp GUI/editorWindow/gui_t
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QStack \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qstack.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QColorDialog \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qcolordialog.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qcolordialog.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\gui_toolsbar.o GUI\editorWindow\gui_toolsbar.cpp
 
 release/gui_usersbar.o: GUI/editorWindow/gui_usersbar.cpp GUI/editorWindow/gui_usersbar.h \
@@ -4239,6 +4577,20 @@ release/gui_usersbar.o: GUI/editorWindow/gui_usersbar.cpp GUI/editorWindow/gui_u
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QColor \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QTextDocument \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextdocument.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		GUI/gui_icons.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
@@ -4254,12 +4606,6 @@ release/gui_usersbar.o: GUI/editorWindow/gui_usersbar.cpp GUI/editorWindow/gui_u
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		GUI/editorWindow/gui_editor.h \
 		ui_gui_editor.h \
@@ -4363,10 +4709,9 @@ release/gimpdocs.o: GUI/gimpdocs.cpp GUI/gimpdocs.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qwindowdefs_win.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurl.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurlquery.h \
-		GUI/gui_icons.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
-		ui_gimpdocs.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVariant \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QApplication \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qapplication.h \
@@ -4401,6 +4746,32 @@ release/gimpdocs.o: GUI/gimpdocs.cpp GUI/gimpdocs.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtouchdevice.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qguiapplication.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qinputmethod.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
+		GUI/gui_icons.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
+		ui_gimpdocs.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMainWindow \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmainwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtabwidget.h \
@@ -4410,28 +4781,12 @@ release/gimpdocs.o: GUI/gimpdocs.cpp GUI/gimpdocs.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmenu.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qaction.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qactiongroup.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
-		GUI/gui_login.h \
-		ui_gui_login.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
+		GUI/connection/gui_server.h \
+		ui_gui_server.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLineEdit \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlineedit.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextcursor.h \
@@ -4441,12 +4796,9 @@ release/gimpdocs.o: GUI/gimpdocs.cpp GUI/gimpdocs.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QPushButton \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qpushbutton.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qabstractbutton.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QVBoxLayout \
-		GUI/connection/gui_server.h \
-		ui_gui_server.h \
 		GUI/editorWindow/gui_editor.h \
 		ui_gui_editor.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QVBoxLayout \
 		GUI/editorWindow/gui_colorsmanager.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QStack \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qstack.h
@@ -4570,10 +4922,9 @@ release/gui_coloredcursor.o: GUI/editorWindow/gui_coloredcursor.cpp GUI/editorWi
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QObject \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QColor \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QTextDocument \
-		GUI/gui_icons.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
-		ui_gimpdocs.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVariant \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QApplication \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qapplication.h \
@@ -4582,6 +4933,30 @@ release/gui_coloredcursor.o: GUI/editorWindow/gui_coloredcursor.cpp GUI/editorWi
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdesktopwidget.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qguiapplication.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qinputmethod.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
+		GUI/gui_icons.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
+		ui_gimpdocs.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMainWindow \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmainwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtabwidget.h \
@@ -4593,18 +4968,7 @@ release/gui_coloredcursor.o: GUI/editorWindow/gui_coloredcursor.cpp GUI/editorWi
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qactiongroup.h \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QPainter \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpainter.h \
@@ -4740,6 +5104,23 @@ release/gui_editor.o: GUI/editorWindow/gui_editor.cpp GUI/editorWindow/gui_edito
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QColor \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QTextDocument \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextdocument.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		GUI/gui_icons.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
@@ -4756,12 +5137,6 @@ release/gui_editor.o: GUI/editorWindow/gui_editor.cpp GUI/editorWindow/gui_edito
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		GUI/editorWindow/gui_colorsmanager.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QStack \
@@ -4770,17 +5145,12 @@ release/gui_editor.o: GUI/editorWindow/gui_editor.cpp GUI/editorWindow/gui_edito
 		ui_gui_menu.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGroupBox \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgroupbox.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QPushButton \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qpushbutton.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qabstractbutton.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QTabWidget \
 		GUI/gui_uri.h \
 		ui_gui_uri.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
 		GUI/editorWindow/gui_mytextedit.h \
 		GUI/editorWindow/gui_coloredcursor.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QTextEdit \
@@ -5048,6 +5418,20 @@ release/gui_login.o: GUI/gui_login.cpp GUI/gui_login.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QColor \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QTextDocument \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextdocument.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		GUI/gui_icons.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
@@ -5063,12 +5447,6 @@ release/gui_login.o: GUI/gui_login.cpp GUI/gui_login.h \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		GUI/gui_profile.h \
 		ui_gui_profile.h \
@@ -5091,8 +5469,7 @@ release/gui_login.o: GUI/gui_login.cpp GUI/gui_login.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgroupbox.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QTabWidget \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMessageBox \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmessagebox.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmessagebox.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\gui_login.o GUI\gui_login.cpp
 
 release/gui_menu.o: GUI/gui_menu.cpp GUI/gui_menu.h \
@@ -5233,6 +5610,20 @@ release/gui_menu.o: GUI/gui_menu.cpp GUI/gui_menu.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QColor \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QTextDocument \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextdocument.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		GUI/gui_icons.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
@@ -5247,12 +5638,6 @@ release/gui_menu.o: GUI/gui_menu.cpp GUI/gui_menu.h \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		GUI/gui_login.h \
 		ui_gui_login.h \
@@ -5376,10 +5761,9 @@ release/gui_mytextedit.o: GUI/editorWindow/gui_mytextedit.cpp GUI/editorWindow/g
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qwindowdefs_win.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurl.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurlquery.h \
-		GUI/gui_icons.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
-		ui_gimpdocs.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVariant \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QApplication \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qapplication.h \
@@ -5414,6 +5798,32 @@ release/gui_mytextedit.o: GUI/editorWindow/gui_mytextedit.cpp GUI/editorWindow/g
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtouchdevice.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qguiapplication.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qinputmethod.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
+		GUI/gui_icons.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
+		ui_gimpdocs.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMainWindow \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmainwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtabwidget.h \
@@ -5423,35 +5833,20 @@ release/gui_mytextedit.o: GUI/editorWindow/gui_mytextedit.cpp GUI/editorWindow/g
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmenu.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qaction.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qactiongroup.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		GUI/editorWindow/gui_coloredcursor.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QTextEdit \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtextedit.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qabstractscrollarea.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextoption.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextcursor.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextformat.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpen.h \
 		GUI/editorWindow/gui_editor.h \
 		ui_gui_editor.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QVBoxLayout \
 		GUI/editorWindow/gui_colorsmanager.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QStack \
@@ -5598,6 +5993,21 @@ release/gui_newdoc.o: GUI/gui_newdoc.cpp GUI/gui_newdoc.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QColor \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QTextDocument \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextdocument.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		GUI/gui_icons.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
@@ -5612,14 +6022,7 @@ release/gui_newdoc.o: GUI/gui_newdoc.cpp GUI/gui_newdoc.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qactiongroup.h \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		GUI/gui_menu.h \
 		ui_gui_menu.h \
@@ -5632,8 +6035,7 @@ release/gui_newdoc.o: GUI/gui_newdoc.cpp GUI/gui_newdoc.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QStack \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qstack.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMessageBox \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmessagebox.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmessagebox.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\gui_newdoc.o GUI\gui_newdoc.cpp
 
 release/gui_opendoc.o: GUI/gui_opendoc.cpp GUI/gui_opendoc.h \
@@ -5786,6 +6188,22 @@ release/gui_opendoc.o: GUI/gui_opendoc.cpp GUI/gui_opendoc.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QColor \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QTextDocument \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextdocument.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		GUI/gui_icons.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
@@ -5800,12 +6218,6 @@ release/gui_opendoc.o: GUI/gui_opendoc.cpp GUI/gui_opendoc.h \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		GUI/editorWindow/gui_editor.h \
 		ui_gui_editor.h \
@@ -5816,13 +6228,9 @@ release/gui_opendoc.o: GUI/gui_opendoc.cpp GUI/gui_opendoc.h \
 		ui_gui_menu.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGroupBox \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgroupbox.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QTabWidget \
 		GUI/gui_uri.h \
 		ui_gui_uri.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMessageBox \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmessagebox.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtPrintSupport/QPrinter \
@@ -5993,6 +6401,20 @@ release/gui_profile.o: GUI/gui_profile.cpp GUI/gui_profile.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QColor \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QTextDocument \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextdocument.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		GUI/gui_icons.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
@@ -6007,12 +6429,6 @@ release/gui_profile.o: GUI/gui_profile.cpp GUI/gui_profile.h \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		GUI/gui_menu.h \
 		ui_gui_menu.h \
@@ -6023,7 +6439,6 @@ release/gui_profile.o: GUI/gui_profile.cpp GUI/gui_profile.h \
 		ui_gui_login.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMessageBox \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmessagebox.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QIcon \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QFile \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDir \
@@ -6114,10 +6529,9 @@ release/gui_uri.o: GUI/gui_uri.cpp GUI/gui_uri.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qwindowdefs_win.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurl.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurlquery.h \
-		GUI/gui_icons.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
-		ui_gimpdocs.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVariant \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QApplication \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qapplication.h \
@@ -6152,6 +6566,32 @@ release/gui_uri.o: GUI/gui_uri.cpp GUI/gui_uri.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtouchdevice.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qguiapplication.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qinputmethod.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
+		GUI/gui_icons.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
+		ui_gimpdocs.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMainWindow \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmainwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtabwidget.h \
@@ -6161,33 +6601,14 @@ release/gui_uri.o: GUI/gui_uri.cpp GUI/gui_uri.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmenu.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qaction.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qactiongroup.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		ui_gui_uri.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QPushButton \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qpushbutton.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qabstractbutton.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QVBoxLayout \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QClipboard \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qclipboard.h
@@ -6780,11 +7201,36 @@ release/main.o: main.cpp C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QApplication 
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QColor \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QTextDocument \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtextdocument.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVariant \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		GUI/gui_icons.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QMap \
 		ui_gimpdocs.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVariant \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMainWindow \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmainwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtabwidget.h \
@@ -6794,21 +7240,9 @@ release/main.o: main.cpp C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QApplication 
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qmenu.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qaction.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qactiongroup.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
 		ui_gui_editorwindow.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QAction \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QMenu \
-		connection_to_server.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QDebug \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/QIcon
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\main.o main.cpp
@@ -6894,6 +7328,65 @@ release/stub.o: stub.cpp stub.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtGui/qwindowdefs_win.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurl.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qurlquery.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVariant \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QApplication \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qapplication.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtwidgetsglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qtwidgets-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qcoreapplication.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qeventloop.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qcursor.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdesktopwidget.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qwidget.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpaintdevice.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpalette.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qbrush.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qmatrix.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpolygon.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qregion.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qdatastream.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qline.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtransform.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpainterpath.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qimage.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpixelformat.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qpixmap.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qfontmetrics.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qfontinfo.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qsizepolicy.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qkeysequence.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qevent.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qfile.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qfiledevice.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qvector2d.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qtouchdevice.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qguiapplication.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtGui/qinputmethod.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QGridLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qgridlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlayoutitem.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qboxlayout.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QHBoxLayout \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QLabel \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qlabel.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qframe.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QSpacerItem \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
+		connection_to_server.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QWidget \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QVector \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QSet
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\stub.o stub.cpp
