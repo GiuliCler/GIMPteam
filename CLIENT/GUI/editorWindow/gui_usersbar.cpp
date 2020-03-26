@@ -35,7 +35,14 @@ GUI_UsersBar::~GUI_UsersBar(){
 
 QLabel *GUI_UsersBar::getUserIcon(long userId, QColor color){
     //carico l'icona e le metto uno sfondo
-    QString iconId = Stub::getIconId(userId);
+    QString iconId;
+    QString result = GUI_ConnectionToServerWrapper::requestIconIdWrapper(editorParent->gimpParent, userId);
+    if(result.compare("errore") == 0)
+        //non dovremmo mai entrare in questo if perchè in caso di errore di connessione si dovrebbe ricaricare il widget da capo
+        return new QLabel;
+    else
+        iconId = result;
+
     QPixmap *image = new QPixmap(GUI_Icons::getIconPath(iconId));
     QPixmap *background = new QPixmap(image->height(), image->width());
     background->fill(color);
@@ -50,7 +57,14 @@ QLabel *GUI_UsersBar::getUserIcon(long userId, QColor color){
     label->setScaledContents(true);
     label->setMaximumSize(GUI_Icons::iconSize,GUI_Icons::iconSize);
     label->setMinimumSize(GUI_Icons::iconSize,GUI_Icons::iconSize);
-    label->setToolTip(Stub::getNickname(userId));
+    QString tooltip;
+    result = GUI_ConnectionToServerWrapper::requestGetNicknameWrapper(editorParent->gimpParent, userId);
+    if(result.compare("errore") == 0)
+        //non dovremmo mai entrare in questo if perchè in caso di errore di connessione si dovrebbe ricaricare il widget da capo
+        return new QLabel;
+    else
+        iconId = result;
+    label->setToolTip(tooltip);
 
     return label;
 }

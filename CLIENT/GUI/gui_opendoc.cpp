@@ -82,7 +82,7 @@ void GUI_Opendoc::on_exportPDFPushButton_clicked(){
     printer.setPaperSize(QPrinter::A4);
     printer.setOutputFileName(fileName);
 
-    std::shared_ptr<QTextDocument> docp = Stub::getTextDocument();
+    std::shared_ptr<QTextDocument> docp = Stub::getDocumentText();
     docp->setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
     docp->print(&printer);
 }

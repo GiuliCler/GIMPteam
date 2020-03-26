@@ -71,15 +71,14 @@ void GUI_Login::on_loginButton_clicked()
         gimpParent->setCursor(Qt::ArrowCursor);
         QMessageBox::information(this, "", exception.message);
         return;
-    }*/
+    }
+
+    gimpParent->setCursor(Qt::ArrowCursor);*/
     //Tentativo #2, stavolta colla classe wrapper
-    if(int result = GUI_ConnectionToServerWrapper::requestTryLoginWrapper(gimpParent, ui->usernameLineEdit->text(), ui->passwordLineEdit->text()) != -1)
-        gimpParent->userid = result;
-    else
+    if(int result = GUI_ConnectionToServerWrapper::requestTryLoginWrapper(gimpParent, ui->usernameLineEdit->text(), ui->passwordLineEdit->text()) == -1)
         return;
-
-
-    gimpParent->setCursor(Qt::ArrowCursor);
+    else
+        gimpParent->userid = result;
 
 
     GUI_Menu *widget = new GUI_Menu(gimpParent);

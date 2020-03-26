@@ -23,15 +23,23 @@ GUI_Menu::~GUI_Menu(){
 
 void GUI_Menu::setProfileArea(){
     //carico nickname e icona dell'utente
-    ui->nicknameLabel->setText(QString::fromStdString(gimpParent->getConnection()->requestGetNickname(gimpParent->userid)));
-
-    QString iconId = QString::fromStdString(gimpParent->getConnection()->requestIconId(gimpParent->userid));
-    if(iconId != ""){
-        QPixmap image = QPixmap(GUI_Icons::getIconPath(iconId));
-        ui->iconLabel->setPixmap(image);
-    }else{
+    QString nickname;
+    QString result = GUI_ConnectionToServerWrapper::requestGetNicknameWrapper(gimpParent, gimpParent->userid);
+    if(result.compare("errore") == 0)
         return;
-    }
+    else
+        nickname = result;
+    ui->nicknameLabel->setText(nickname);
+
+    QString iconId;
+    result = GUI_ConnectionToServerWrapper::requestIconIdWrapper(gimpParent, gimpParent->userid);
+    if(result.compare("errore") == 0)
+        return;
+    else
+        iconId = result;
+
+    QPixmap image = QPixmap(GUI_Icons::getIconPath(iconId));
+    ui->iconLabel->setPixmap(image);
 }
 
 void GUI_Menu::setDocumentArea(){

@@ -62,23 +62,14 @@ void GUI_Profile::on_savePushButton_clicked()
     //creo un nuovo utente o aggiorno quello vecchio
     if(gimpParent->userid < 0){
         //creo un nuovo user
-        int n = gimpParent->getConnection()->requestNewAccount(ui->usernameLineEdit->text(), ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData()));
-        if(n > -1){
-            gimpParent->userid = n;
-        }else{
-            //TODO I don't know. Do something
-            QMessageBox::information(this, "", "Username already present.");
+        if(int result = GUI_ConnectionToServerWrapper::requestNewAccountWrapper(gimpParent, ui->usernameLineEdit->text(), ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData())) == -1)
             return;
-        }
-
+        else
+            gimpParent->userid = result;
     }else{
         //faccio l'update del vecchio user
-        //TODO: PROBLEMA CON USERID, deve essere associato allo username=>gestione lato database??
-        long n = gimpParent->getConnection()->requestUpdateAccount(gimpParent->userid, ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData()));
-        if(n != 0){
-            QMessageBox::information(this, "", "Generic error");
+        if(GUI_ConnectionToServerWrapper::requestUpdateAccountWrapper(gimpParent, gimpParent->userid, ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData())) == -1)
             return;
-        }
     }
 
     GUI_Menu *widget = new GUI_Menu(gimpParent);
@@ -104,17 +95,27 @@ void GUI_Profile::fillForm(){
     if(gimpParent->userid < 0)
         return;
 
-    std::string nickname = gimpParent->getConnection()->requestGetNickname(gimpParent->userid);
-    std::string username = gimpParent->getConnection()->requestGetUsername(gimpParent->userid);
-    if(nickname != "errore" && username != "errore"){
-        ui->nicknameLineEdit->setText(QString::fromStdString(nickname));
-        ui->usernameLabelReadonly->setText(QString::fromStdString(username));
-        ui->passwordLineEdit->setText("");
-        ui->repeatLineEdit->setText("");
-    }else{
-        QMessageBox::information(this, "", "Error in server communication");
+    QString nickname;
+    QString result = GUI_ConnectionToServerWrapper::requestGetNicknameWrapper(gimpParent, gimpParent->userid);
+    if(result.compare("errore") == 0)
         return;
-    }
+    else
+        nickname = result;
+    QString username;
+    result = GUI_ConnectionToServerWrapper::requestGetUsernameWrapper(gimpParent, gimpParent->userid);
+    if(result.compare("errore") == 0)
+        return;
+    else
+        username = result;
+
+    //std::string nickname = gimpParent->getConnection()->requestGetNickname(gimpParent->userid);
+    //std::string username = gimpParent->getConnection()->requestGetUsername(gimpParent->userid);
+
+    ui->nicknameLineEdit->setText(nickname);
+    ui->usernameLabelReadonly->setText(username);
+    ui->passwordLineEdit->setText("");
+    ui->repeatLineEdit->setText("");
+
 }
 
 void GUI_Profile::loadIcons(){

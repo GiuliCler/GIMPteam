@@ -11,8 +11,20 @@ bool Stub::isConnectionWorking(){
     return false;
 }
 
-int Stub::requestTryLoginTemporary(connection_to_server *connection, QString username, QString password){
-    int result = connection->requestTryLogin(username, password);
+/*USERS*/
+long Stub::requestTryLoginTemporary(connection_to_server *connection, QString username, QString password){
+    long result = connection->requestTryLogin(username, password);
+
+    if(result < 0)
+        //per ora ne tiro una a caso, ma la funzione requestTryLogin dovrà tirare quella appropriata
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
+
+    return result;
+}
+
+long Stub::requestNewAccountTemporary(connection_to_server *connection, QString username, QString password, QString nickname, QString iconId){
+    long result = connection->requestNewAccount(username,password, nickname, iconId);
 
     if(result < 0)
         //throw GUI_ConnectionException();
@@ -21,28 +33,44 @@ int Stub::requestTryLoginTemporary(connection_to_server *connection, QString use
     return result;
 }
 
-QString Stub::getIconId(long userId){
-    int n =userId;
-    userId = n;
+long Stub::requestUpdateAccountTemporary(connection_to_server *connection, int userId, QString password, QString nickname, QString icon){
+    long result = connection->requestUpdateAccount(userId, password, nickname, icon);
 
-    return "Mew.png";
+    if(result < 0)
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
+
+    return result;
 }
 
-QString Stub::getNickname(long userid){
-    if(userid < 0)
-        return "";
+std::string Stub::requestGetNicknameTemporary(connection_to_server *connection, int userId){
+    std::string result = connection->requestGetNickname(userId);
 
-    return "Mew";
+    if(result.compare("errore") == 0)
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
+
+    return result;
 }
 
-QString Stub::getUsername(long userid){
-    if(userid < 0)
-        return "";
+std::string Stub::requestGetUsernameTemporary(connection_to_server *connection, int userId){
+    std::string result = connection->requestGetUsername(userId);
 
-    if(userid == 1)
-        return "Ancient Mew";
+    if(result.compare("errore") == 0)
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
 
-    return "Boh";
+    return result;
+}
+
+std::string Stub::requestIconIdTemporary(connection_to_server *connection, int userId){
+    std::string result = connection->requestIconId(userId);
+
+    if(result.compare("errore") == 0)
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
+
+    return result;
 }
 
 QString Stub::getPassword(long userid){
@@ -55,27 +83,10 @@ QString Stub::getPassword(long userid){
     return "Boh";
 }
 
-long Stub::createUser(QString username, QString password, QString nickname, QString iconId){
-    //tutte 'ste assegnazioni sono solo per togliere i warning
-    username = password;
-    password = nickname;
-    password = iconId;
-    //qui comunico col server per creare un nuovo utente
 
-    return 1;
-}
 
-int Stub::updateUser(long id, QString password, QString nickname, QString iconId){
-    //tutte 'ste assegnazioni sono solo per togliere i warning
-    password = nickname;
-    password = iconId;
-    int n = id;
-    id = n;
-    //qui comunico col server per fare l'update di un nuovo utente
 
-    return 0;
-}
-
+/*DOCUMENT*/
 long Stub::createDocument(int userId, QString name){
     int n = userId;
     userId = n;
@@ -177,7 +188,7 @@ void Stub::setCurrentTextColor(QColor color){
     return;
 }
 
-std::shared_ptr<QTextDocument> Stub::getTextDocument(){
+std::shared_ptr<QTextDocument> Stub::getDocumentText(){
     std::shared_ptr<QTextDocument> docpointer(new QTextDocument());
     docpointer->setHtml("<h1>Hello, World!</h1>\n<p>Sopra la panca la capra studia. Sotto la panca la capra studia</p>");
 
