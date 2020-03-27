@@ -62,7 +62,8 @@ void GUI_Profile::on_savePushButton_clicked()
     //creo un nuovo utente o aggiorno quello vecchio
     if(gimpParent->userid < 0){
         //creo un nuovo user
-        if(int result = GUI_ConnectionToServerWrapper::requestNewAccountWrapper(gimpParent, ui->usernameLineEdit->text(), ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData())) == -1)
+        int result = GUI_ConnectionToServerWrapper::requestNewAccountWrapper(gimpParent, ui->usernameLineEdit->text(), ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData()));
+        if(result == -1)
             return;
         else
             gimpParent->userid = result;
@@ -107,9 +108,6 @@ void GUI_Profile::fillForm(){
         return;
     else
         username = result;
-
-    //std::string nickname = gimpParent->getConnection()->requestGetNickname(gimpParent->userid);
-    //std::string username = gimpParent->getConnection()->requestGetUsername(gimpParent->userid);
 
     ui->nicknameLineEdit->setText(nickname);
     ui->usernameLabelReadonly->setText(username);

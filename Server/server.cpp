@@ -136,7 +136,9 @@ void Server::runServer() {
         in >> userId;
         QMapIterator<std::string, int> i(this->users);
         while (i.hasNext()) {
+            //username = i.key();
             i.next();
+            int n = i.value();
             if(i.value()==userId){
                 username=i.key();
                 break;

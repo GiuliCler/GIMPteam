@@ -22,27 +22,25 @@ public:
 
     /*USERS*/
     //questa serve per fare il login. Restituisc l'id se username e password sono corretti, altrimenti lancia un'eccezione
-    static long requestTryLoginTemporary(connection_to_server *connection, QString username, QString password);
-    static long requestNewAccountTemporary(connection_to_server *connection, QString username, QString password, QString nickname, QString icon);
-    static long requestUpdateAccountTemporary(connection_to_server *connection, int userId, QString password, QString nickname, QString icon);
+    static int requestTryLoginTemporary(connection_to_server *connection, QString username, QString password);
+    static int requestNewAccountTemporary(connection_to_server *connection, QString username, QString password, QString nickname, QString icon);
+    static int requestUpdateAccountTemporary(connection_to_server *connection, int userId, QString password, QString nickname, QString icon);
 
-    //dato l'id restituiscono parametri
     static std::string requestGetNicknameTemporary(connection_to_server *connection, int userId);
     static std::string requestGetUsernameTemporary(connection_to_server *connection, int userId);
     static std::string requestIconIdTemporary(connection_to_server *connection, int userId);
     static QString getPassword(long userid);
 
+
     /*DOCUMENTS*/
-    //il valore di ritorno può essere usato o per l'id del document o per un codice di errore
-    static long createDocument(int userId, QString name);
+    static long requestCreateDocumentTemporary(connection_to_server *connection, int userId, QString name);
     static int forgetDocumentWithName(long userId, QString docname);
     static std::shared_ptr<QVector<QString>> getDocuments(long userId);
-    static long openWithURI(QString uri);
+    static std::string requestDocDatoUriTemporary(connection_to_server *connection, QString uri);
     static long openWithName(QString name);  
     static void closeDocument(long userId, long docId);
 
-
-    static QString getDocumentURI(long docId);
+    static std::string requestUriTemporary(connection_to_server *connection, long docId);
     static long getDocumentId(QString name);
     static QString getDocumentName(long docId);
     //mi serve per l'export PDF da parte del server perchè i document sono ancora tutti chiusi (quindi non è per te Paul)

@@ -41,14 +41,14 @@ void GUI_Newdoc::on_createPushButton_clicked()
         return;
     }
 
-    long id = gimpParent->getConnection()->requestCreateDocument(static_cast<GIMPdocs*>(gimpParent)->userid, ui->nameLineEdit->text());
-    if(id < 0){
-        QMessageBox::information(this, "", "Generic error creating document");
-        //TODO gestire più dettagliatamente
+    long documentId;
+    long result = GUI_ConnectionToServerWrapper::requestCreateDocumentWrapper(gimpParent, static_cast<GIMPdocs*>(gimpParent)->userid, ui->nameLineEdit->text());
+    if(result == -1)
         return;
-    }
+    else
+        documentId = result;
 
-    GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), id);
+    GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId);
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
 }
 
@@ -63,14 +63,12 @@ void GUI_Newdoc::on_openURIPushButton_clicked()
         return;
     }
 
-    QString file = QString::fromStdString(gimpParent->getConnection()->requestDocDatoUri(ui->URILineEdit->text()));
-    QString c = "errore";
-    if(file.contains(c.toUtf8())){
-        QMessageBox::information(this, "", "Generic error opening with URI");
-        //TODO gestire più dettagliatamente
+    long documentId;
+    if(long result = GUI_ConnectionToServerWrapper::requestDocDatoUriWrapper(gimpParent, ui->URILineEdit->text()) == -1)
         return;
-    }
+    else
+        documentId = result;
 
-    //GESTIRE GUI_Editor *widget = new GUI_Editor(gimpParent, id);
-    //static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
+    GUI_Editor *widget = new GUI_Editor(gimpParent, documentId);
+    static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
 }
