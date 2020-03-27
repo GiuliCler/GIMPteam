@@ -15,7 +15,7 @@ GIMPdocs::GIMPdocs(QWidget *parent) : QMainWindow(parent), userid(-1)
     regularWindowSize = this->size();
     alreadyMaximized = false;
     setUi1(new GUI_Login(this));
-    c = new connection_to_server("52814", "192.168.0.110");
+    c = new connection_to_server("58306", "192.168.1.14");
 }
 
 GIMPdocs::~GIMPdocs(){

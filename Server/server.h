@@ -34,8 +34,8 @@ private:
     CollegamentoDB *database;
     int socketDescriptor;
     QTcpSocket *socket;
-    QMap<std::string, int> users;//TODO: da gestire con mutex per la concorrenza!! per ora chiave userId, valore username
-    QMap<std::string, int> documents;
+    QMap<QString, int> users;    //TODO: da gestire con mutex per la concorrenza!! per ora chiave userId, valore username
+    QMap<QString, int> documents;
 };
 //! [0]
 

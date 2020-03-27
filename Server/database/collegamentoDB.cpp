@@ -1,6 +1,7 @@
 #include "collegamentoDB.h"
 #include "sha256.h"
 #include <vector>
+#include <QCryptographicHash>
 
 /*
  * Utilizzo: funzione che permette di collegarsi al database
@@ -44,10 +45,10 @@ void CollegamentoDB::disconnettiDB(){
  *      tutto ok -> vettore composto da due stringhe: nickname e icona
  *      errore -> vettore composto da una sola stringa "errore"
  */
-std::vector<std::string> CollegamentoDB::login(std::string username, std::string password){
-    std::vector<std::string> ritorno;
+std::vector<QString> CollegamentoDB::login(QString username, QString password){
+    std::vector<QString> ritorno;
 
-    if(username.empty() || password.empty()) {
+    if(username.isEmpty() || password.isEmpty()) {
         ritorno.emplace_back("errore");
         return ritorno;
     }
@@ -55,20 +56,21 @@ std::vector<std::string> CollegamentoDB::login(std::string username, std::string
     std::string query = "SELECT * FROM utenti WHERE username=:user";
     QSqlQuery ris;
     ris.prepare(QString::fromStdString(query));
-    ris.bindValue(":user", QString::fromStdString(username));
+    ris.bindValue(":user", username);
 
     if(ris.exec()){
         if(ris.size() == 1){
             while(ris.next()){
 
-                std::string pass_nel_DB = ris.value(1).toString().toUtf8().constData();
-                std::string sale = ris.value(2).toString().toUtf8().constData();
-                std::string pass_da_testare = sha256(password + sale);
+                QString pass_nel_DB = QString::fromStdString(ris.value(1).toByteArray().toStdString());
+                QString sale = QString::fromStdString(ris.value(2).toByteArray().toStdString());
+                QString pass_salata = password + sale;
+                QString pass_da_testare = QString(QCryptographicHash::hash((pass_salata.toUtf8()),QCryptographicHash::Sha256));
 
                 if(pass_nel_DB == pass_da_testare) {
                     /* password inserita corretta */
-                    std::string nickname = ris.value(3).toString().toUtf8().constData();
-                    std::string icona = ris.value(4).toString().toUtf8().constData();
+                    QString nickname = QString::fromStdString(ris.value(3).toByteArray().toStdString());
+                    QString icona = QString::fromStdString(ris.value(4).toByteArray().toStdString());
                     ritorno.push_back(nickname);
                     ritorno.push_back(icona);
                 } else {
@@ -98,28 +100,30 @@ std::vector<std::string> CollegamentoDB::login(std::string username, std::string
  *      1 -> username e password correttamente inseriti nel database
  *      0 -> errore
  */
-int CollegamentoDB::signup(std::string username, std::string password, std::string nickname, std::string icona){
+int CollegamentoDB::signup(QString username, QString password, QString nickname, QString icona){
 
-    if(username.empty() || password.empty() || nickname.empty())
+    if(username.isEmpty() || password.isEmpty() || nickname.isEmpty())
         return 0;
 
     char sale[10];
     gen_random(sale, 10);
-    std::string salt(sale);
-    std::string pass = sha256(password + sale);
+    std::string sale_std(sale);
+    QString sale_qt = QString::fromStdString(sale_std);
+    QString pass_salata = password + sale_qt;
+    QString pass_crypt = QString(QCryptographicHash::hash((pass_salata.toUtf8()),QCryptographicHash::Sha256));
 
     std::string query = "INSERT INTO utenti(username, password, sale, nickname, icona) VALUES(:user, :pssw, :salt, :nick, :icon)";
     QSqlQuery ris;
     ris.prepare(QString::fromStdString(query));
-    ris.bindValue(":user", QString::fromStdString(username));
-    ris.bindValue(":pssw", QString::fromStdString(pass));
-    ris.bindValue(":salt", QString::fromStdString(salt));
-    ris.bindValue(":nick", QString::fromStdString(nickname));
+    ris.bindValue(":user", username);
+    ris.bindValue(":pssw", pass_crypt);
+    ris.bindValue(":salt", sale_qt);
+    ris.bindValue(":nick", nickname);
 
-    if(!icona.empty())
-        ris.bindValue(":icon", QString::fromStdString(icona));
+    if(!icona.isEmpty())
+        ris.bindValue(":icon", icona);
     else
-        ris.bindValue(":icon", QString::fromStdString("NULL"));
+        ris.bindValue(":icon", "NULL");
 
     if(ris.exec())
         return 1;
@@ -157,18 +161,18 @@ void CollegamentoDB::gen_random(char *s, const int len) {
  *      1 -> tutto ok
  *      0 -> errore
  */
-int CollegamentoDB::creaDoc(std::string nomeDOC){
+int CollegamentoDB::creaDoc(QString nomeDOC){
 
-    if(nomeDOC.empty())
+    if(nomeDOC.isEmpty())
         return 0;
 
-    std::string uri = creaURI(nomeDOC);
+    QString uri = creaURI(nomeDOC);
 
     std::string query = "INSERT INTO doc(nome_doc, uri) VALUES(:doc, :ur)";
     QSqlQuery ris;
     ris.prepare(QString::fromStdString(query));
-    ris.bindValue(":doc", QString::fromStdString(nomeDOC));
-    ris.bindValue(":ur", QString::fromStdString(uri));
+    ris.bindValue(":doc", nomeDOC);
+    ris.bindValue(":ur", uri);
 
     if(!ris.exec())
         return 0;
@@ -183,11 +187,10 @@ int CollegamentoDB::creaDoc(std::string nomeDOC){
  * Ritorno:
  *      stringa corrispondente all'URI creata
  */
-std::string CollegamentoDB::creaURI(std::string nomeDOC){
-    QByteArray byteArray(nomeDOC.c_str(), nomeDOC.length());
-    QString blah = QString(QCryptographicHash::hash((byteArray),QCryptographicHash::Md5).toHex());
+QString CollegamentoDB::creaURI(QString nomeDOC){
+    QString blah = QString(QCryptographicHash::hash(nomeDOC.toUtf8(),QCryptographicHash::Md5).toHex());
     QString s = "://GIMPdocs/" + blah;
-    return s.toUtf8().constData();
+    return s;
 }
 
 /*
@@ -198,22 +201,22 @@ std::string CollegamentoDB::creaURI(std::string nomeDOC){
  *      tutto ok (URI presente nel DB) -> stringa corrispondente al nome del documento relativo all'URI passato
  *      errore (URI inesistente) -> "errore"
  */
-std::string CollegamentoDB::recuperaDocDatoURI(std::string uri){
+QString CollegamentoDB::recuperaDocDatoURI(QString uri){
 
-    if(uri.empty()) {
+    if(uri.isEmpty()) {
         return "errore";
     }
 
-    std::string doc_cercato;
+    QString doc_cercato;
     std::string query = "SELECT * FROM doc WHERE uri=:ur";
     QSqlQuery ris;
     ris.prepare(QString::fromStdString(query));
-    ris.bindValue(":ur", QString::fromStdString(uri));
+    ris.bindValue(":ur", uri);
 
     if(ris.exec()){
         if(ris.size() == 1){
             while(ris.next()){
-                doc_cercato = ris.value(0).toString().toUtf8().constData();
+                doc_cercato = QString::fromStdString(ris.value(0).toByteArray().toStdString());
             }
         } else {
             return "errore";
@@ -240,9 +243,9 @@ std::string CollegamentoDB::recuperaDocDatoURI(std::string uri){
  *      2 -> Il documento di cui è stato fornito il nome non esiste nella tabella DOC oppure è stata fornita
  *           una stringa vuota
  */
-int CollegamentoDB::aggiungiPartecipante(std::string nomeDOC, std::string username){
+int CollegamentoDB::aggiungiPartecipante(QString nomeDOC, QString username){
 
-    if(nomeDOC.empty())
+    if(nomeDOC.isEmpty())
         return 2;
 
     int esito = 1;
@@ -254,11 +257,11 @@ int CollegamentoDB::aggiungiPartecipante(std::string nomeDOC, std::string userna
     ris1.prepare(QString::fromStdString(query1));
     ris2.prepare(QString::fromStdString(query2));
     ris3.prepare(QString::fromStdString(query3));
-    ris1.bindValue(":user", QString::fromStdString(username));
-    ris1.bindValue(":doc", QString::fromStdString(nomeDOC));
-    ris2.bindValue(":user", QString::fromStdString(username));
-    ris2.bindValue(":doc", QString::fromStdString(nomeDOC));
-    ris3.bindValue(":doc", QString::fromStdString(nomeDOC));
+    ris1.bindValue(":user", username);
+    ris1.bindValue(":doc", nomeDOC);
+    ris2.bindValue(":user", username);
+    ris2.bindValue(":doc", nomeDOC);
+    ris3.bindValue(":doc", nomeDOC);
 
     if(QSqlDatabase::database().driver()->hasFeature(QSqlDriver::Transactions)){
 
@@ -299,22 +302,20 @@ int CollegamentoDB::aggiungiPartecipante(std::string nomeDOC, std::string userna
  *      >0 documenti modificabili -> vettore composto dai nomi dei documenti che l'utente è abilitato a modificare
  *      =0 documenti modificabili -> vettore contenentente il solo elemento "nessuno"
  */
-std::vector<std::string> CollegamentoDB::recuperaDocs(std::string username){
+std::vector<QString> CollegamentoDB::recuperaDocs(QString username){
 
-    std::vector<std::string> elenco;
+    std::vector<QString> elenco;
 
     std::string query = "SELECT nome_doc FROM utente_doc WHERE username=:user";
     QSqlQuery ris;
     ris.prepare(QString::fromStdString(query));
-    ris.bindValue(":user", QString::fromStdString(username));
+    ris.bindValue(":user", username);
 
     ris.exec();
 
     if(ris.size() > 0){
         while(ris.next()){
-            std::string doc;
-            doc = ris.value(0).toString().toUtf8().constData();
-
+            QString doc = QString::fromStdString(ris.value(0).toByteArray().toStdString());
             elenco.push_back(doc);
         }
     } else {
@@ -329,35 +330,42 @@ std::vector<std::string> CollegamentoDB::recuperaDocs(std::string username){
  * Se errore => stringa vuota
  *
  */
-std::string CollegamentoDB::getNickname(std::string username){
+QString CollegamentoDB::getNickname(QString username){
+
+    //std::cout<<"SONO DENTRO LA getNickname e USERNAME E': "<<username.toStdString()<<std::endl;            // DEBUG -----------
 
     std::string query = "SELECT nickname FROM utenti WHERE username=:user";
     QSqlQuery ris;
     ris.prepare(QString::fromStdString(query));
-    ris.bindValue(":user", QString::fromStdString(username));
+    ris.bindValue(":user", username);
 
     ris.exec();
 
+    //std::cout<<"HO ESEGUITO LA EXEC"<<std::endl;            // DEBUG -----------
+
     if(ris.size() > 0){
+        //std::cout<<"SONO NELL'IF... ris.size() vale "<<ris.size()<<std::endl;            // DEBUG -----------
         ris.next();
-        return ris.value(0).toString().toStdString();
+        //std::cout<<"STO PER MANDARE INDIETRO UNA COSA DI TIPO... "<<ris.value(0).typeName()<<std::endl;  // DEBUG -----------
+        return QString::fromStdString(ris.value(0).toByteArray().toStdString());
     } else {
+        //std::cout<<"SONO NELL'ELSE"<<std::endl;            // DEBUG -----------
         return "errore";
     }
 }
 
-std::string CollegamentoDB::getIconId(std::string username){
+QString CollegamentoDB::getIconId(QString username){
 
     std::string query = "SELECT icona FROM utenti WHERE username=:user";
     QSqlQuery ris;
     ris.prepare(QString::fromStdString(query));
-    ris.bindValue(":user", QString::fromStdString(username));
+    ris.bindValue(":user", username);
 
     ris.exec();
 
     if(ris.size() > 0){
         ris.next();
-        return ris.value(0).toString().toStdString();
+        return QString::fromStdString(ris.value(0).toByteArray().toStdString());
     } else {
         return "errore";
     }
@@ -373,11 +381,11 @@ std::string CollegamentoDB::getIconId(std::string username){
  *      =0 collaboratori, ovvero no righe trovate in utente_doc -> vettore contenentente un solo vettore con ("no")
  *      errere -> vettore contenentente un solo vettore con ("errore")
  */
-std::vector<std::vector<std::string>> CollegamentoDB::recuperaCollaboratori(std::string nomeDOC){
-    std::vector<std::vector<std::string>> ritorno;
+std::vector<std::vector<QString>> CollegamentoDB::recuperaCollaboratori(QString nomeDOC){
+    std::vector<std::vector<QString>> ritorno;
 
-    if(nomeDOC.empty()){
-        std::vector<std::string> error;
+    if(nomeDOC.isEmpty()){
+        std::vector<QString> error;
         error.emplace_back("errore");
         ritorno.push_back(error);
         return ritorno;
@@ -386,13 +394,13 @@ std::vector<std::vector<std::string>> CollegamentoDB::recuperaCollaboratori(std:
     std::string query = "SELECT utente_doc.username, nickname, icona FROM utenti, utente_doc WHERE utenti.username=utente_doc.username AND utente_doc.nome_doc=:doc";
     QSqlQuery ris;
     ris.prepare(QString::fromStdString(query));
-    ris.bindValue(":doc", QString::fromStdString(nomeDOC));
+    ris.bindValue(":doc", nomeDOC);
 
     if(ris.exec()){
         if(ris.size() == 0){
 
             /* No collaboratori per il doc nomeDoc */
-            std::vector<std::string> nocollab;
+            std::vector<QString> nocollab;
             nocollab.emplace_back("no");
             ritorno.push_back(nocollab);
 
@@ -400,20 +408,20 @@ std::vector<std::vector<std::string>> CollegamentoDB::recuperaCollaboratori(std:
 
             /* Si, ci sono collaboratori per il doc nomeDoc */
             while(ris.next()){
-                std::vector<std::string> collaboratore;
-                std::string s;
-                s = ris.value(0).toString().toUtf8().constData();   // username
+                std::vector<QString> collaboratore;
+                QString s;
+                s = QString::fromStdString(ris.value(0).toByteArray().toStdString());   // username
                 collaboratore.push_back(s);
-                s = ris.value(1).toString().toUtf8().constData();   // nickname
+                s = QString::fromStdString(ris.value(1).toByteArray().toStdString());   // nickname
                 collaboratore.push_back(s);
-                s = ris.value(2).toString().toUtf8().constData();   // icona
+                s = QString::fromStdString(ris.value(2).toByteArray().toStdString());   // icona
                 collaboratore.push_back(s);
                 ritorno.push_back(collaboratore);
             }
 
         }
     } else {
-        std::vector<std::string> error;
+        std::vector<QString> error;
         error.emplace_back("errore");
         ritorno.push_back(error);
     }
@@ -431,11 +439,11 @@ std::vector<std::vector<std::string>> CollegamentoDB::recuperaCollaboratori(std:
  *      ok -> vettore composto da [site_id, site_counter]
  *      errore -> vettore composto dal solo valore -1
  */
-std::vector<int> CollegamentoDB::recuperaInfoUtenteDoc(std::string nomeDOC, std::string username){
+std::vector<int> CollegamentoDB::recuperaInfoUtenteDoc(QString nomeDOC, QString username){
 
     std::vector<int> rit;
 
-    if(nomeDOC.empty() || username.empty()){
+    if(nomeDOC.isEmpty() || username.isEmpty()){
         rit.push_back(-1);
         return rit;
     }
@@ -443,8 +451,8 @@ std::vector<int> CollegamentoDB::recuperaInfoUtenteDoc(std::string nomeDOC, std:
     std::string query = "SELECT site_id, site_counter FROM utente_doc WHERE username=:user AND nome_doc=:doc";
     QSqlQuery ris;
     ris.prepare(QString::fromStdString(query));
-    ris.bindValue(":user", QString::fromStdString(username));
-    ris.bindValue(":doc", QString::fromStdString(nomeDOC));
+    ris.bindValue(":user", username);
+    ris.bindValue(":doc", nomeDOC);
 
     ris.exec();
 
@@ -473,9 +481,9 @@ std::vector<int> CollegamentoDB::recuperaInfoUtenteDoc(std::string nomeDOC, std:
  *      1 -> riga della tabella UTENTE_DOC eliminata correttamente
  *      0 -> errore, riga relativa a (username, nomeDOC) non presente nella tabella UTENTE_DOC
  */
-int CollegamentoDB::rimuoviPartecipante(std::string nomeDOC, std::string username){
+int CollegamentoDB::rimuoviPartecipante(QString nomeDOC, QString username){
 
-    if(nomeDOC.empty() || username.empty())
+    if(nomeDOC.isEmpty() || username.isEmpty())
         return 0;
 
     int esito = 1;
@@ -489,12 +497,12 @@ int CollegamentoDB::rimuoviPartecipante(std::string nomeDOC, std::string usernam
     ris2.prepare(QString::fromStdString(query2));
     ris3.prepare(QString::fromStdString(query3));
     ris4.prepare(QString::fromStdString(query4));
-    ris1.bindValue(":user", QString::fromStdString(username));
-    ris1.bindValue(":doc", QString::fromStdString(nomeDOC));
-    ris2.bindValue(":user", QString::fromStdString(username));
-    ris2.bindValue(":doc", QString::fromStdString(nomeDOC));
-    ris3.bindValue(":doc", QString::fromStdString(nomeDOC));
-    ris4.bindValue(":doc", QString::fromStdString(nomeDOC));
+    ris1.bindValue(":user", username);
+    ris1.bindValue(":doc", nomeDOC);
+    ris2.bindValue(":user", username);
+    ris2.bindValue(":doc", nomeDOC);
+    ris3.bindValue(":doc", nomeDOC);
+    ris4.bindValue(":doc", nomeDOC);
 
     if(QSqlDatabase::database().driver()->hasFeature(QSqlDriver::Transactions)){
 
@@ -536,15 +544,15 @@ int CollegamentoDB::rimuoviPartecipante(std::string nomeDOC, std::string usernam
  *      1 -> site_counter aggiornato correttamente
  *      0 -> errore
  */
-int CollegamentoDB::aggiornaSiteCounter(std::string nomeDOC, std::string username, int siteCount){
-    if(username.empty() || nomeDOC.empty())
+int CollegamentoDB::aggiornaSiteCounter(QString nomeDOC, QString username, int siteCount){
+    if(username.isEmpty() || nomeDOC.isEmpty())
         return 0;
 
     std::string query0 = "SELECT site_id FROM utente_doc WHERE username=:user AND nome_doc=:doc";
     QSqlQuery ris0;
     ris0.prepare(QString::fromStdString(query0));
-    ris0.bindValue(":user", QString::fromStdString(username));
-    ris0.bindValue(":doc", QString::fromStdString(nomeDOC));
+    ris0.bindValue(":user", username);
+    ris0.bindValue(":doc", nomeDOC);
 
     if(QSqlDatabase::database().driver()->hasFeature(QSqlDriver::Transactions)) {
 
@@ -557,15 +565,15 @@ int CollegamentoDB::aggiornaSiteCounter(std::string nomeDOC, std::string usernam
 
                 QSqlQuery risDEL;
                 risDEL.prepare("DELETE FROM utente_doc WHERE username=:user AND nome_doc=:doc");
-                risDEL.bindValue(":user", QString::fromStdString(username));
-                risDEL.bindValue(":doc", QString::fromStdString(nomeDOC));
+                risDEL.bindValue(":user", username);
+                risDEL.bindValue(":doc", nomeDOC);
                 risDEL.exec();
 
                 std::string query = "INSERT INTO utente_doc(username, nome_doc, site_id, site_counter) VALUES(:user, :doc, :siteid, :sitecounter)";
                 QSqlQuery ris;
                 ris.prepare(QString::fromStdString(query));
-                ris.bindValue(":user", QString::fromStdString(username));
-                ris.bindValue(":doc", QString::fromStdString(nomeDOC));
+                ris.bindValue(":user", username);
+                ris.bindValue(":doc", nomeDOC);
                 ris.bindValue(":siteid", QString::number(id));
                 ris.bindValue(":sitecounter", QString::number(siteCount));
 
@@ -598,22 +606,22 @@ int CollegamentoDB::aggiornaSiteCounter(std::string nomeDOC, std::string usernam
  *      tutto ok -> stringa corrispondente all'URI del documento di interesse
  *      errore -> "errore"
  */
-std::string CollegamentoDB::recuperaURI(std::string nomeDOC){
+QString CollegamentoDB::recuperaURI(QString nomeDOC){
 
-    if(nomeDOC.empty())
+    if(nomeDOC.isEmpty())
         return "errore";
 
-    std::string uri;
+    QString uri;
     std::string query = "SELECT uri FROM doc WHERE nome_doc=:doc";
     QSqlQuery ris;
     ris.prepare(QString::fromStdString(query));
-    ris.bindValue(":doc", QString::fromStdString(nomeDOC));
+    ris.bindValue(":doc", nomeDOC);
 
     ris.exec();
 
     if(ris.size() == 1){
         while(ris.next()){
-            uri = ris.value(0).toString().toUtf8().constData();
+            uri = QString::fromStdString(ris.value(0).toByteArray().toStdString());
         }
     } else {
         uri = "errore";
@@ -681,15 +689,15 @@ std::string CollegamentoDB::recuperaURI(std::string nomeDOC){
 */
 
 // -------- CON DELETE/INSERT --------
-int CollegamentoDB::aggiornaUser(std::string username, std::string nuova_password, std::string nuovo_nickname, std::string nuova_icona){
+int CollegamentoDB::aggiornaUser(QString username, QString nuova_password, QString nuovo_nickname, QString nuova_icona){
 
-    if(username.empty() || nuova_password.empty() || nuovo_nickname.empty())
+    if(username.isEmpty() || nuova_password.isEmpty() || nuovo_nickname.isEmpty())
         return 0;
 
     std::string query0 = "SELECT * FROM utenti WHERE username=:user0";
     QSqlQuery ris0;
     ris0.prepare(QString::fromStdString(query0));
-    ris0.bindValue(":user0", QString::fromStdString(username));
+    ris0.bindValue(":user0", username);
 
     if(QSqlDatabase::database().driver()->hasFeature(QSqlDriver::Transactions)) {
 
@@ -699,24 +707,26 @@ int CollegamentoDB::aggiornaUser(std::string username, std::string nuova_passwor
             if(ris0.size() == 1){
                 char sale[10];
                 gen_random(sale, 10);
-                std::string salt(sale);
-                std::string pass = sha256(nuova_password + sale);
+                std::string sale_std(sale);
+                QString sale_qt = QString::fromStdString(sale_std);
+                QString pass_salata = nuova_password + sale_qt;
+                QString pass_crypt = QString(QCryptographicHash::hash((pass_salata.toUtf8()),QCryptographicHash::Sha256));
 
                 QSqlQuery risDEL;
                 risDEL.prepare("DELETE FROM utenti WHERE username=:user");
-                risDEL.bindValue(":user", QString::fromStdString(username));
+                risDEL.bindValue(":user", username);
                 risDEL.exec();
 
                 std::string query = "INSERT INTO utenti(username, password, sale, nickname, icona) VALUES(:user, :pssw, :salt, :nick, :icon)";
                 QSqlQuery ris;
                 ris.prepare(QString::fromStdString(query));
-                ris.bindValue(":user", QString::fromStdString(username));
-                ris.bindValue(":pssw", QString::fromStdString(pass));
-                ris.bindValue(":salt", QString::fromStdString(salt));
-                ris.bindValue(":nick", QString::fromStdString(nuovo_nickname));
+                ris.bindValue(":user", username);
+                ris.bindValue(":pssw", pass_crypt);
+                ris.bindValue(":salt", sale_qt);
+                ris.bindValue(":nick", nuovo_nickname);
 
-                if(!nuova_icona.empty())
-                    ris.bindValue(":icon", QString::fromStdString(nuova_icona));
+                if(!nuova_icona.isEmpty())
+                    ris.bindValue(":icon", nuova_icona);
                 else
                     ris.bindValue(":icon", QString::fromStdString("NULL"));
 
