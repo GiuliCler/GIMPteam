@@ -97,7 +97,7 @@ QComboBox QAbstractItemView {
    </item>
    <item row="1" column="1">
     <widget class="QWidget" name="backgroundWidget" native="true">
-     <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,0,3,0,2,0,1">
+     <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,0,3,0,1,0,3">
       <item>
        <spacer name="verticalSpacer_3">
         <property name="orientation">

@@ -53,7 +53,8 @@ void GUI_Login::on_loginButton_clicked()
         QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"Password\"");
         return;
     }
-    gimpParent->userid= gimpParent->getConnection()->requestTryLogin(ui->usernameLineEdit->text(), ui->passwordLineEdit->text());
+    connection_to_server *connection = gimpParent->getConnection();
+    gimpParent->userid= connection->requestTryLogin(ui->usernameLineEdit->text(), ui->passwordLineEdit->text());
     if(gimpParent->userid < 0){
         QMessageBox::information(this, "", "Username or Password are incorrect");
         return;

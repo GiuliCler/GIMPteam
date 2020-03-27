@@ -37,6 +37,7 @@ public:
     static int forgetDocumentWithName(long userId, QString docname);
     static QString getDocumentURI(long docId);
     static long getDocumentId(QString name);
+    static QString getDocumentName(long docId);
 
     //ritorna un set con un vettore di vettori con <carciofo, nickname, id-icona/nome-icona/carciofo-icona>
     static std::shared_ptr<QSet<long>> getWorkingUsersOnDocument(long docId);

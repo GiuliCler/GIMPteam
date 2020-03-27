@@ -26,6 +26,9 @@ private slots:
 
 private:
     Ui::GUI_Profile *ui;
+
+    bool checkFieldValidity(QString value, QString name);
+    bool checkPasswordSecurity(QString password);
 };
 
 

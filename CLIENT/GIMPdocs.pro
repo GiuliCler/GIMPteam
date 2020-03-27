@@ -40,6 +40,7 @@ SOURCES += \
         GUI/gui_newdoc.cpp \
         GUI/gui_opendoc.cpp \
         GUI/gui_profile.cpp \
+        GUI/gui_server.cpp \
         GUI/gui_uri.cpp \
         connection_to_server.cpp \
         main.cpp \
@@ -60,6 +61,7 @@ HEADERS += \
         GUI/gui_newdoc.h \
         GUI/gui_opendoc.h \
         GUI/gui_profile.h \
+        GUI/gui_server.h \
         GUI/gui_uri.h \
         connection_to_server.h \
         stub.h
@@ -75,6 +77,7 @@ FORMS += \
     GUI/ui/gui_newdoc.ui \
     GUI/ui/gui_opendoc.ui \
         GUI/ui/gui_profile.ui \
+    GUI/ui/gui_server.ui \
     GUI/ui/gui_uri.ui
 
 RESOURCES += \

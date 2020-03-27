@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>982</width>
+    <width>983</width>
     <height>70</height>
    </rect>
   </property>
@@ -909,7 +909,11 @@ QSpinBox::down-button:pressed,QSpinBox::up-button:pressed {
             </widget>
            </item>
            <item>
-            <widget class="QSpinBox" name="spinBox"/>
+            <widget class="QSpinBox" name="spinBox">
+             <property name="toolTip">
+              <string>Font Size</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -942,6 +946,9 @@ QSpinBox::down-button:pressed,QSpinBox::up-button:pressed {
            </item>
            <item>
             <widget class="QPushButton" name="colorPushButton">
+             <property name="toolTip">
+              <string>Font Color</string>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -969,7 +976,7 @@ QSpinBox::down-button:pressed,QSpinBox::up-button:pressed {
          <item>
           <widget class="QPushButton" name="closePushButton">
            <property name="toolTip">
-            <string>Close button</string>
+            <string>Close document</string>
            </property>
            <property name="text">
             <string/>
