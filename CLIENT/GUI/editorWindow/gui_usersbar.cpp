@@ -33,7 +33,7 @@ GUI_UsersBar::~GUI_UsersBar(){
     delete ui;
 }
 
-QLabel *GUI_UsersBar::getUserIcon(long userId, QColor color){
+QLabel *GUI_UsersBar::getUserIcon(int userId, QColor color){
     //carico l'icona e le metto uno sfondo
     QString iconId;
     QString result = GUI_ConnectionToServerWrapper::requestIconIdWrapper(editorParent->gimpParent, userId);
@@ -69,7 +69,7 @@ QLabel *GUI_UsersBar::getUserIcon(long userId, QColor color){
     return label;
 }
 
-void GUI_UsersBar::addOnlineUserIcon(long userId, QColor color){
+void GUI_UsersBar::addOnlineUserIcon(int userId, QColor color){
     //questo non dovrebbe succedere, ma non si sa mai
     if(onlineUsersIconMap.find(userId) != onlineUsersIconMap.end())
         return;
@@ -86,7 +86,7 @@ void GUI_UsersBar::addOnlineUserIcon(long userId, QColor color){
         this->findChild<GUI_MyScrollArea*>(getOnlineAreaName())->updateSize(onlineUsersIconMap.size());
 }
 
-void GUI_UsersBar::removeOnlineUserIcon(long userId){
+void GUI_UsersBar::removeOnlineUserIcon(int userId){
     if(this->onlineUsersIconMap.find(userId) == onlineUsersIconMap.end())
         return;
 
@@ -100,7 +100,7 @@ void GUI_UsersBar::removeOnlineUserIcon(long userId){
         this->findChild<GUI_MyScrollArea*>(getOnlineAreaName())->updateSize(onlineUsersIconMap.size());
 }
 
-void GUI_UsersBar::addContributorUserIcon(long userId, QColor color){
+void GUI_UsersBar::addContributorUserIcon(int userId, QColor color){
     //questo non dovrebbe succedere, ma non si sa mai
     if(contributorUsersIconMap.find(userId) != contributorUsersIconMap.end())
         return;
@@ -114,7 +114,7 @@ void GUI_UsersBar::addContributorUserIcon(long userId, QColor color){
         this->findChild<GUI_MyScrollArea*>(getContributorsAreaName())->updateSize(contributorUsersIconMap.size());
 }
 
-void GUI_UsersBar::removeContributorUserIcon(long userId){
+void GUI_UsersBar::removeContributorUserIcon(int userId){
     if(this->contributorUsersIconMap.find(userId) == contributorUsersIconMap.end())
         return;
 
@@ -126,11 +126,11 @@ void GUI_UsersBar::removeContributorUserIcon(long userId){
         this->findChild<GUI_MyScrollArea*>(getContributorsAreaName())->updateSize(contributorUsersIconMap.size());
 }
 
-bool GUI_UsersBar::isOnline(long userId){
+bool GUI_UsersBar::isOnline(int userId){
     return onlineUsersIconMap.find(userId) != onlineUsersIconMap.end();
 }
 
-bool GUI_UsersBar::isContributor(long userId){
+bool GUI_UsersBar::isContributor(int userId){
     return contributorUsersIconMap.find(userId) != contributorUsersIconMap.end();
 }
 

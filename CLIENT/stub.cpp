@@ -73,7 +73,7 @@ std::string Stub::requestIconIdTemporary(connection_to_server *connection, int u
     return result;
 }
 
-QString Stub::getPassword(long userid){
+QString Stub::getPassword(int userid){
     if(userid < 0)
         return "";
 
@@ -87,8 +87,8 @@ QString Stub::getPassword(long userid){
 
 
 /*DOCUMENT*/
-long Stub::requestCreateDocumentTemporary(connection_to_server *connection, int userId, QString name){
-    long result = connection->requestCreateDocument(userId, name);
+int Stub::requestCreateDocumentTemporary(connection_to_server *connection, int userId, QString name){
+    int result = connection->requestCreateDocument(userId, name);
 
     if(result < 0)
         //throw GUI_ConnectionException();
@@ -97,7 +97,7 @@ long Stub::requestCreateDocumentTemporary(connection_to_server *connection, int 
     return result;
 }
 
-int Stub::forgetDocumentWithName(long userId, QString docname){
+int Stub::forgetDocumentWithName(int userId, QString docname){
     int docId = userId;;
     userId = docId;
     QString pippo = docname;
@@ -106,8 +106,8 @@ int Stub::forgetDocumentWithName(long userId, QString docname){
     return 0;
 }
 
-std::shared_ptr<QVector<QString>> Stub::getDocuments(long userId){
-    long n = userId;
+std::shared_ptr<QVector<QString>> Stub::getDocuments(int userId){
+    int n = userId;
     userId = n;
 
     std::shared_ptr<QVector<QString>> vpointer(new QVector<QString>());
@@ -129,13 +129,13 @@ std::string Stub::requestDocDatoUriTemporary(connection_to_server *connection, Q
     return result;
 }
 
-long Stub::openWithName(QString name){
+int Stub::openWithName(QString name){
     QString s = name;
 
     return 1;
 }
 
-void Stub::closeDocument(long userId, long docId){
+int Stub::closeDocument(int userId, int docId){
     userId = docId;
     docId = userId;
 
@@ -144,7 +144,7 @@ void Stub::closeDocument(long userId, long docId){
 
 
 
-std::string Stub::requestUriTemporary(connection_to_server *connection, long docId){
+std::string Stub::requestUriTemporary(connection_to_server *connection, int docId){
     std::string result = connection->requestUri(docId);
 
     if(result.compare("errore") == 0)
@@ -154,13 +154,13 @@ std::string Stub::requestUriTemporary(connection_to_server *connection, long doc
     return result;
 }
 
-long Stub::getDocumentId(QString name){
+int Stub::getDocumentId(QString name){
     QString pippo = name;
      return 1;
 }
 
-QString Stub::getDocumentName(long docId){
-    long n = docId;
+QString Stub::getDocumentName(int docId){
+    int n = docId;
     docId = n;
 
     return "The Tales of Beedle the Bard";
@@ -177,20 +177,20 @@ std::shared_ptr<QTextDocument> Stub::getDocumentText(){
 
 /*EDITOR*/
 //uso un set perchè mi scanso più avanti controlli sull'unicità dello userId, che dovrebbe essere già garanita, ma non si sa mai
-std::shared_ptr<QSet<long>> Stub::getWorkingUsersOnDocument(long docId){
-    long n = docId;
+std::shared_ptr<QSet<int>> Stub::getWorkingUsersOnDocument(int docId){
+    int n = docId;
     docId = n;
-    std::shared_ptr<QSet<long>> vpointer(new QSet<long>());
+    std::shared_ptr<QSet<int>> vpointer(new QSet<int>());
     for(int i = 0; i < 5; i++)
         vpointer->insert(i);
 
     return vpointer;
 }
 
-std::shared_ptr<QSet<long>> Stub::getContributorsUsersOnDocument(long docId){
-    long n = docId;
+std::shared_ptr<QSet<int>> Stub::getContributorsUsersOnDocument(int docId){
+    int n = docId;
     docId = n;
-    std::shared_ptr<QSet<long>> vpointer(new QSet<long>());
+    std::shared_ptr<QSet<int>> vpointer(new QSet<int>());
     for(int i = 3; i < 6; i++)
         vpointer->insert(i);
 

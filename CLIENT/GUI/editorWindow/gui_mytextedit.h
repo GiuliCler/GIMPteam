@@ -13,7 +13,7 @@ class GUI_MyTextEdit : public QTextEdit
 public:
     GUI_Editor *editorParent;
     //la mappa serve per i cursori degli altri users
-    QMap<long, GUI_ColoredCursor*> cursorsMap;
+    QMap<int, GUI_ColoredCursor*> cursorsMap;
 
     explicit GUI_MyTextEdit(QWidget *parent);
     static QString getObjectName() {return QString("GUI_MyTextEdit");}
@@ -23,8 +23,8 @@ protected:
 
 public slots:
     //DEBUG: il campo position è poi da togliere
-    void addUserCursor(long userId, QPoint position, QColor color);
-    void removeUserCursor(long userId);
+    void addUserCursor(int userId, QPoint position, QColor color);
+    void removeUserCursor(int userId);
 };
 
 #endif // GUI_MYTEXTEDIT_H

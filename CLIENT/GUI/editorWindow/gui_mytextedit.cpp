@@ -21,7 +21,7 @@ void GUI_MyTextEdit::paintEvent(QPaintEvent *event)
       pair.value()->paint();
 }
 
-void GUI_MyTextEdit::addUserCursor(long userId, QPoint position, QColor color){
+void GUI_MyTextEdit::addUserCursor(int userId, QPoint position, QColor color){
     if(cursorsMap.find(userId) != cursorsMap.end()){
         //TODO: gestione intelligente
         return;
@@ -32,7 +32,7 @@ void GUI_MyTextEdit::addUserCursor(long userId, QPoint position, QColor color){
     this->viewport()->update();
 }
 
-void GUI_MyTextEdit::removeUserCursor(long userId){
+void GUI_MyTextEdit::removeUserCursor(int userId){
     if(cursorsMap.find(userId) == cursorsMap.end()){
         //TODO:: gestione intelligente
         return;

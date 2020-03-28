@@ -41,7 +41,7 @@ void GUI_Opendoc::on_openDocsPushButton_clicked()
         return;
     }
 
-    long id = Stub::openWithName(ui->docsListWidget->currentItem()->text());
+    int id = Stub::openWithName(ui->docsListWidget->currentItem()->text());
     if(id < 0){
         QMessageBox::information(this, "", "PANIC! Il document non esiste");
         //TODO gestire più dettagliatamente
@@ -58,7 +58,7 @@ void GUI_Opendoc::on_getURIPushButton_clicked(){
         return;
     }
 
-    long documentId = Stub::getDocumentId(ui->docsListWidget->currentItem()->text());
+    int documentId = Stub::getDocumentId(ui->docsListWidget->currentItem()->text());
 
     QString uri;
     QString result = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
