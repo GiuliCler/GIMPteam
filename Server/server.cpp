@@ -161,6 +161,7 @@ void Server::runServer() {
         //std::cout << "L'UTENTE MI HA DATO COME userID... "<<userId<<std::endl;     // DEBUG -----------
         QMapIterator<QString, int> i(this->users);
         while (i.hasNext()) {
+            //username = i.key();
             i.next();
             //std::cout << "ITERO... key:"<<i.key().toStdString()<<" E value:"<<i.value() << std::endl;    // DEBUG -----------
             if(i.value()==userId){

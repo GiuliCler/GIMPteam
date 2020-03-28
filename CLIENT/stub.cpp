@@ -7,37 +7,70 @@ Stub::Stub(QObject *parent) : QObject(parent)
 
 }
 
-long Stub::tryLogin(QString username, QString password){
-
-    //l'assegnazione serve solo a togliere i warning
-    username = password;
-    password = username;
-
-    return 1;
+bool Stub::isConnectionWorking(){
+    return false;
 }
 
-QString Stub::getIconId(long userId){
-    int n =userId;
-    userId = n;
+/*USERS*/
+int Stub::requestTryLoginTemporary(connection_to_server *connection, QString username, QString password){
+    int result = connection->requestTryLogin(username, password);
 
-    return "Mew.png";
+    if(result < 0)
+        //per ora ne tiro una a caso, ma la funzione requestTryLogin dovrà tirare quella appropriata
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
+
+    return result;
 }
 
-QString Stub::getNickname(long userid){
-    if(userid < 0)
-        return "";
+int Stub::requestNewAccountTemporary(connection_to_server *connection, QString username, QString password, QString nickname, QString iconId){
+    int result = connection->requestNewAccount(username,password, nickname, iconId);
 
-    return "Mew";
+    if(result < 0)
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
+
+    return result;
 }
 
-QString Stub::getUsername(long userid){
-    if(userid < 0)
-        return "";
+int Stub::requestUpdateAccountTemporary(connection_to_server *connection, int userId, QString password, QString nickname, QString icon){
+    int result = connection->requestUpdateAccount(userId, password, nickname, icon);
 
-    if(userid == 1)
-        return "Ancient Mew";
+    if(result < 0)
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
 
-    return "Boh";
+    return result;
+}
+
+std::string Stub::requestGetNicknameTemporary(connection_to_server *connection, int userId){
+    std::string result = connection->requestGetNickname(userId);
+
+    if(result.compare("errore") == 0)
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
+
+    return result;
+}
+
+std::string Stub::requestGetUsernameTemporary(connection_to_server *connection, int userId){
+    std::string result = connection->requestGetUsername(userId);
+
+    if(result.compare("errore") == 0)
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
+
+    return result;
+}
+
+std::string Stub::requestIconIdTemporary(connection_to_server *connection, int userId){
+    std::string result = connection->requestIconId(userId);
+
+    if(result.compare("errore") == 0)
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
+
+    return result;
 }
 
 QString Stub::getPassword(long userid){
@@ -50,52 +83,18 @@ QString Stub::getPassword(long userid){
     return "Boh";
 }
 
-long Stub::createUser(QString username, QString password, QString nickname, QString iconId){
-    //tutte 'ste assegnazioni sono solo per togliere i warning
-    username = password;
-    password = nickname;
-    password = iconId;
-    //qui comunico col server per creare un nuovo utente
 
-    return 1;
-}
 
-int Stub::updateUser(long id, QString password, QString nickname, QString iconId){
-    //tutte 'ste assegnazioni sono solo per togliere i warning
-    password = nickname;
-    password = iconId;
-    int n = id;
-    id = n;
-    //qui comunico col server per fare l'update di un nuovo utente
 
-    return 0;
-}
+/*DOCUMENT*/
+long Stub::requestCreateDocumentTemporary(connection_to_server *connection, int userId, QString name){
+    long result = connection->requestCreateDocument(userId, name);
 
-long Stub::createDocument(int userId, QString name){
-    int n = userId;
-    userId = n;
-    QString s = name;
+    if(result < 0)
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
 
-    return 1;
-}
-
-long Stub::openWithURI(QString uri){
-    QString s = uri;
-
-    return 1;
-}
-
-long Stub::openWithName(QString name){
-    QString s = name;
-
-    return 1;
-}
-
-void Stub::closeDocument(long userId, long docId){
-    userId = docId;
-    docId = userId;
-
-    //I don't know. Do something
+    return result;
 }
 
 int Stub::forgetDocumentWithName(long userId, QString docname){
@@ -105,23 +104,6 @@ int Stub::forgetDocumentWithName(long userId, QString docname){
 
     //I don't know. Do something
     return 0;
-}
-
-QString Stub::getDocumentURI(long docId){
-    long n = docId;
-    docId= n;
-
-    return "httpippo";
-}
-
-long Stub::getDocumentId(QString name){
-    QString pippo = name;
-     return 1;
-}
-
-QString Stub::getDocumentName(long docId){
-    long n = docId;
-    return "The Tales of Beedle the Bard";
 }
 
 std::shared_ptr<QVector<QString>> Stub::getDocuments(long userId){
@@ -137,6 +119,63 @@ std::shared_ptr<QVector<QString>> Stub::getDocuments(long userId){
     return vpointer;
 }
 
+std::string Stub::requestDocDatoUriTemporary(connection_to_server *connection, QString uri){
+    std::string result = connection->requestDocDatoUri(uri);
+
+    if(result.compare("errore") == 0)
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
+
+    return result;
+}
+
+long Stub::openWithName(QString name){
+    QString s = name;
+
+    return 1;
+}
+
+void Stub::closeDocument(long userId, long docId){
+    userId = docId;
+    docId = userId;
+
+    //I don't know. Do something
+}
+
+
+
+std::string Stub::requestUriTemporary(connection_to_server *connection, long docId){
+    std::string result = connection->requestUri(docId);
+
+    if(result.compare("errore") == 0)
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
+
+    return result;
+}
+
+long Stub::getDocumentId(QString name){
+    QString pippo = name;
+     return 1;
+}
+
+QString Stub::getDocumentName(long docId){
+    long n = docId;
+    docId = n;
+
+    return "The Tales of Beedle the Bard";
+}
+
+std::shared_ptr<QTextDocument> Stub::getDocumentText(){
+    std::shared_ptr<QTextDocument> docpointer(new QTextDocument());
+    docpointer->setHtml("<h1>Hello, World!</h1>\n<p>Sopra la panca la capra studia. Sotto la panca la capra studia</p>");
+
+    return docpointer;
+}
+
+
+
+/*EDITOR*/
 //uso un set perchè mi scanso più avanti controlli sull'unicità dello userId, che dovrebbe essere già garanita, ma non si sa mai
 std::shared_ptr<QSet<long>> Stub::getWorkingUsersOnDocument(long docId){
     long n = docId;
@@ -170,9 +209,4 @@ void Stub::setCurrentTextColor(QColor color){
     return;
 }
 
-std::shared_ptr<QTextDocument> Stub::getTextDocument(){
-    std::shared_ptr<QTextDocument> docpointer(new QTextDocument());
-    docpointer->setHtml("<h1>Hello, World!</h1>\n<p>Sopra la panca la capra studia. Sotto la panca la capra studia</p>");
 
-    return docpointer;
-}

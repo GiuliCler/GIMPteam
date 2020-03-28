@@ -26,6 +26,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        GUI/connection/gui_connecting.cpp \
+        GUI/connection/gui_connectionToServerWrapper.cpp \
+        GUI/connection/gui_reconnection.cpp \
+        GUI/connection/gui_server.cpp \
         GUI/editorWindow/gui_colorsmanager.cpp \
         GUI/editorWindow/gui_myscrollarea.cpp \
         GUI/editorWindow/gui_toolsbar.cpp \
@@ -40,13 +44,18 @@ SOURCES += \
         GUI/gui_newdoc.cpp \
         GUI/gui_opendoc.cpp \
         GUI/gui_profile.cpp \
-        GUI/gui_server.cpp \
         GUI/gui_uri.cpp \
         connection_to_server.cpp \
         main.cpp \
         stub.cpp
 
 HEADERS += \
+        GUI/connection/gui_connecting.h \
+        GUI/connection/gui_connectionException.h \
+        GUI/connection/gui_connectionToServerWrapper.h \
+        GUI/connection/gui_genericException.h \
+        GUI/connection/gui_reconnection.h \
+        GUI/connection/gui_server.h \
         GUI/editorWindow/gui_colorsmanager.h \
         GUI/editorWindow/gui_myscrollarea.h \
         GUI/editorWindow/gui_toolsbar.h \
@@ -61,12 +70,14 @@ HEADERS += \
         GUI/gui_newdoc.h \
         GUI/gui_opendoc.h \
         GUI/gui_profile.h \
-        GUI/gui_server.h \
         GUI/gui_uri.h \
         connection_to_server.h \
         stub.h
 
 FORMS += \
+    GUI/connection/ui/gui_connecting.ui \
+    GUI/connection/ui/gui_reconnection.ui \
+    GUI/connection/ui/gui_server.ui \
     GUI/editorWindow/ui/gui_toolsbar.ui \
     GUI/editorWindow/ui/gui_usersbar.ui \
     GUI/ui/gimpdocs.ui \
@@ -77,7 +88,6 @@ FORMS += \
     GUI/ui/gui_newdoc.ui \
     GUI/ui/gui_opendoc.ui \
         GUI/ui/gui_profile.ui \
-    GUI/ui/gui_server.ui \
     GUI/ui/gui_uri.ui
 
 RESOURCES += \

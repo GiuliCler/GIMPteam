@@ -46,7 +46,13 @@ GUI_Editor::~GUI_Editor(){
 void GUI_Editor::connectMenuBarActions(){
     connect(this->gimpParent->ui2->closeDocumentAction, &QAction::triggered, this, &GUI_Editor::launchSetUi1);
     connect(gimpParent->ui2->getURIAction, &QAction::triggered, [this](){
-        GUI_URI *box = new GUI_URI(this, Stub::getDocumentURI(documentId));
+        QString uri;
+        QString result = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
+        if(result.compare("errore") == 0)
+            return;
+        else
+            uri = result;
+        GUI_URI *box = new GUI_URI(this, uri);
         box->setVisible(true);
     });
     connect(gimpParent->ui2->exportPDFAction, &QAction::triggered, [this](){
