@@ -9,6 +9,9 @@
 #include <QFileDialog>
 #include <QFileInfo>
 
+#define GUI_OPENDOC_WIDGETLIST_KEY 1
+#define GUI_OPENDOC_WIDGETLIST_VALUE 0
+
 GUI_Opendoc::GUI_Opendoc(QWidget *parent) : QWidget(parent)
 {
     this->setObjectName(GUI_Opendoc::getObjectName());
@@ -27,10 +30,15 @@ GUI_Opendoc::~GUI_Opendoc(){
 }
 
 void GUI_Opendoc::fillList(){
-    std::shared_ptr<QVector<QString>> vp = Stub::getDocuments(static_cast<GIMPdocs*>(gimpParent)->userid);
+    std::shared_ptr<QMap<int, QString>> vp = Stub::getKnownDocuments(static_cast<GIMPdocs*>(gimpParent)->userid);
 
-    for(QString *s = vp->begin(); s != vp->end(); s++){
-        ui->docsListWidget->addItem(*s);
+    for(auto pair = vp->begin(); pair != vp->end(); pair++){
+        //lo inizializzo per togliere il warning
+        QListWidgetItem* item = new QListWidgetItem;
+        item->setData(GUI_OPENDOC_WIDGETLIST_KEY, pair.key());
+        item->setData(GUI_OPENDOC_WIDGETLIST_VALUE, pair.value());
+
+        ui->docsListWidget->addItem(item);
     }
 }
 
@@ -41,14 +49,10 @@ void GUI_Opendoc::on_openDocsPushButton_clicked()
         return;
     }
 
-    int id = Stub::openWithName(ui->docsListWidget->currentItem()->text());
-    if(id < 0){
-        QMessageBox::information(this, "", "PANIC! Il document non esiste");
-        //TODO gestire più dettagliatamente
-        return;
-    }
+    int docId = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_KEY).toInt();
+    Stub::openKnownDocument(docId);
 
-    GUI_Editor *widget = new GUI_Editor(gimpParent, id);
+    GUI_Editor *widget = new GUI_Editor(gimpParent, docId);
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
 }
 
@@ -58,7 +62,7 @@ void GUI_Opendoc::on_getURIPushButton_clicked(){
         return;
     }
 
-    int documentId = Stub::getDocumentId(ui->docsListWidget->currentItem()->text());
+    int documentId = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_KEY).toInt();
 
     QString uri;
     QString result = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
@@ -69,7 +73,6 @@ void GUI_Opendoc::on_getURIPushButton_clicked(){
 
     GUI_URI *box = new GUI_URI(this, uri);
     box->setVisible(true);
-
 }
 
 void GUI_Opendoc::on_exportPDFPushButton_clicked(){
@@ -87,7 +90,9 @@ void GUI_Opendoc::on_exportPDFPushButton_clicked(){
     printer.setPaperSize(QPrinter::A4);
     printer.setOutputFileName(fileName);
 
-    std::shared_ptr<QTextDocument> docp = Stub::getDocumentText();
+
+    int docId = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_KEY).toInt();
+    std::shared_ptr<QTextDocument> docp = Stub::getDocumentText(docId);
     docp->setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
     docp->print(&printer);
 }
@@ -98,15 +103,17 @@ void GUI_Opendoc::on_forgetPushButton_clicked(){
         return;
     }
 
-    if(QMessageBox::question(this, "", "Do you really want to forget \"" + ui->docsListWidget->currentItem()->text() + "\" document?") == QMessageBox::No)
+    QString docName = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_VALUE).toString();
+    if(QMessageBox::question(this, "", "Do you really want to forget \"" + docName + "\" document?") == QMessageBox::No)
         return;
 
-    int id = Stub::forgetDocumentWithName(this->gimpParent->userid, ui->docsListWidget->currentItem()->text());
-    if(id < 0){
+    int docId = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_KEY).toInt();
+    Stub::forgetKnownDocument(gimpParent->userid, docId);
+    /*if(id < 0){
         QMessageBox::information(this, "", "PANIC! Qualcosa è andato storto");
         //TODO gestire più dettagliatamente
         return;
-    }
+    }*/
 
     ui->docsListWidget->takeItem(ui->docsListWidget->currentRow());
 }

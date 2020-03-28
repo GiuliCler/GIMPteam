@@ -73,15 +73,6 @@ std::string Stub::requestIconIdTemporary(connection_to_server *connection, int u
     return result;
 }
 
-QString Stub::getPassword(int userid){
-    if(userid < 0)
-        return "";
-
-    if(userid == 1)
-        return "Montruschio";
-
-    return "Boh";
-}
 
 
 
@@ -97,20 +88,18 @@ int Stub::requestCreateDocumentTemporary(connection_to_server *connection, int u
     return result;
 }
 
-int Stub::forgetDocumentWithName(int userId, QString docname){
-    int docId = userId;;
-    userId = docId;
-    QString pippo = docname;
+void Stub::forgetKnownDocument(int userId, int documentId){
+    userId = documentId;
+    documentId = userId;
 
     //I don't know. Do something
-    return 0;
 }
 
-std::shared_ptr<QVector<QString>> Stub::getDocuments(int userId){
+std::shared_ptr<QMap<int, QString>> Stub::getKnownDocuments(int userId){
     int n = userId;
     userId = n;
 
-    std::shared_ptr<QVector<QString>> vpointer(new QVector<QString>());
+    std::shared_ptr<QMap<int, QString>> vpointer(new QMap<int, QString>());
     vpointer->insert(0, "United States Declaration of independence");
     vpointer->insert(1, "Magna Carta Libertatum");
     vpointer->insert(2, "Hammurabi's Code");
@@ -129,13 +118,13 @@ std::string Stub::requestDocDatoUriTemporary(connection_to_server *connection, Q
     return result;
 }
 
-int Stub::openWithName(QString name){
-    QString s = name;
+void Stub::openKnownDocument(int documentId){
+    int n =documentId;
+    documentId = n;
 
-    return 1;
 }
 
-int Stub::closeDocument(int userId, int docId){
+void Stub::closeDocument(int userId, int docId){
     userId = docId;
     docId = userId;
 
@@ -154,11 +143,6 @@ std::string Stub::requestUriTemporary(connection_to_server *connection, int docI
     return result;
 }
 
-int Stub::getDocumentId(QString name){
-    QString pippo = name;
-     return 1;
-}
-
 QString Stub::getDocumentName(int docId){
     int n = docId;
     docId = n;
@@ -166,7 +150,10 @@ QString Stub::getDocumentName(int docId){
     return "The Tales of Beedle the Bard";
 }
 
-std::shared_ptr<QTextDocument> Stub::getDocumentText(){
+std::shared_ptr<QTextDocument> Stub::getDocumentText(int docId){
+    int n = docId;
+    docId = n;
+
     std::shared_ptr<QTextDocument> docpointer(new QTextDocument());
     docpointer->setHtml("<h1>Hello, World!</h1>\n<p>Sopra la panca la capra studia. Sotto la panca la capra studia</p>");
 

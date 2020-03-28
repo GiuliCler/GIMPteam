@@ -12,11 +12,12 @@ class GIMPdocs;
 class GUI_ConnectionToServerWrapper
 {
 public:
+
+    //ci vuole sempre un valore di ritorno, anche per funzioni potenzialmente void, per notificare se ci sono state eccezioni o se è andato tutto bene (ed in questo caso, il valore di ritorno può essere il dato richiesto)
     /*USER*/
     static int requestTryLoginWrapper(GIMPdocs *gimpdocs, QString username, QString password);
     static int requestNewAccountWrapper(GIMPdocs *gimpdocs, QString username, QString password, QString nickname, QString icon);
     static int requestUpdateAccountWrapper(GIMPdocs *gimpdocs, int userId, QString password, QString nickname, QString icon);
-    static QString getPasswordWrapper(GIMPdocs *gimpdocs, int userid);
 
     static QString requestGetNicknameWrapper(GIMPdocs *gimpdocs, int userId);
     static QString requestGetUsernameWrapper(GIMPdocs *gimpdocs, int userId);
@@ -24,10 +25,10 @@ public:
 
     /*DOCUMENT*/
     static int requestCreateDocumentWrapper(GIMPdocs *gimpdocs, int userId, QString name);
-    //static int forgetDocumentWithNameWrapper(GIMPdocs *gimpdocs, int userId, QString docname);
-    //static std::shared_ptr<QVector<QString>> getDocuments(int userId);
+    static int openKnownDocumentWrapper(GIMPdocs *gimpdocs, int documentId);
+    static int forgetKnownDocumentWrapper(GIMPdocs *gimpdocs, int userId, int documentId);
     static int requestDocDatoUriWrapper(GIMPdocs *gimpdocs, QString uri);
-    //static int openWithNameWrapper(GIMPdocs *gimpdocs, QString name);
+    static std::shared_ptr<QMap<int, QString>> getKnownDocumentsWrapper(GIMPdocs *gimpdocs, int userId);
     static int closeDocumentWrapper(GIMPdocs *gimpdocs, int userId, int docId);
 
     static QString requestUriWrapper(GIMPdocs *gimpdocs, int docId);
