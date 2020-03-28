@@ -12,7 +12,7 @@
 #include <QFileDialog>
 #include <QFileInfo>
 
-GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), documentId(documentId)
+GUI_Editor::GUI_Editor(QWidget *parent, int documentId) : QWidget(parent), documentId(documentId)
 {
     this->setObjectName(GUI_Editor::getObjectName());
     gimpParent = static_cast<GIMPdocs*>(parent);
@@ -27,13 +27,13 @@ GUI_Editor::GUI_Editor(QWidget *parent, long documentId) : QWidget(parent), docu
     ui->toolsBarWidget->layout()->addWidget(childToolsBar);
 
     //ottengo l'elenco degli utenti che al momento stanno guardando il mio stesso document e ne creo icona e cursore
-    std::shared_ptr<QSet<long>> users = Stub::getWorkingUsersOnDocument(documentId);
-    for (QSet<long>::iterator userId = users->begin(); userId != users->end(); userId++)
+    std::shared_ptr<QSet<int>> users = Stub::getWorkingUsersOnDocument(documentId);
+    for (QSet<int>::iterator userId = users->begin(); userId != users->end(); userId++)
         addUserToEditorGUI(*userId);
 
     //creo l'icona per gli user che hanno contribuito al document
-    std::shared_ptr<QSet<long>> contributors = Stub::getContributorsUsersOnDocument(documentId);
-    for (QSet<long>::iterator userId = contributors->begin(); userId != contributors->end(); userId++)
+    std::shared_ptr<QSet<int>> contributors = Stub::getContributorsUsersOnDocument(documentId);
+    for (QSet<int>::iterator userId = contributors->begin(); userId != contributors->end(); userId++)
         addContributorToCurrentDocument(*userId);
 }
 
@@ -94,7 +94,9 @@ void GUI_Editor::changeWindowName(){
 }
 
 void GUI_Editor::launchSetUi1(){
-    Stub::closeDocument(this->gimpParent->userid, documentId);
+    int result = GUI_ConnectionToServerWrapper::closeDocumentWrapper(gimpParent, gimpParent->userid, documentId);
+    if(result == -1)
+        return;
 
     GUI_Menu *widget = new GUI_Menu(this->gimpParent);
     static_cast<GIMPdocs*>(this->gimpParent)->setUi1(widget);
@@ -245,7 +247,7 @@ void GUI_Editor::setMenuToolStatus(menuTools code){
 }
 
 
-void GUI_Editor::addUserToEditorGUI(long userid){
+void GUI_Editor::addUserToEditorGUI(int userid){
     //ottengo un colore per cursore e icona
     QColor *color = getUserColor(userid);
 
@@ -258,7 +260,7 @@ void GUI_Editor::addUserToEditorGUI(long userid){
     findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->addUserCursor(userid, p, *color);
 }
 
-void GUI_Editor::removeUserFromEditorGUI(long userid){
+void GUI_Editor::removeUserFromEditorGUI(int userid){
     findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->removeUserCursor(userid);
     findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->removeOnlineUserIcon(userid);
     //se l'utente non è un contributor e non è più online gli tolgo il colore associato per poterlo assegnare a qualcun altro
@@ -266,18 +268,18 @@ void GUI_Editor::removeUserFromEditorGUI(long userid){
         forgetUserColor(userid);
 }
 
-void GUI_Editor::addContributorToCurrentDocument(long userid){
+void GUI_Editor::addContributorToCurrentDocument(int userid){
     QColor *color = getUserColor(userid);
     findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->addContributorUserIcon(userid, *color);
 }
 
-void GUI_Editor::removeContributorFromCurrentDocument(long userid){
+void GUI_Editor::removeContributorFromCurrentDocument(int userid){
     findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->removeContributorUserIcon(userid);
     if(!findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->isOnline(userid))
         forgetUserColor(userid);
 }
 
-QColor *GUI_Editor::getUserColor(long userId){
+QColor *GUI_Editor::getUserColor(int userId){
     QColor *color;
     //controllo che l'user non abbia già un colore assegnato, o perchè si è disconnesso e riconnesso o perchè è già presente fra i contributors
     if(userColorMap.find(userId) == userColorMap.end() ){
@@ -290,7 +292,7 @@ QColor *GUI_Editor::getUserColor(long userId){
     return color;
 }
 
-void GUI_Editor::forgetUserColor(long userId){
+void GUI_Editor::forgetUserColor(int userId){
     if(userColorMap.find(userId) == userColorMap.end())
         return;
 
