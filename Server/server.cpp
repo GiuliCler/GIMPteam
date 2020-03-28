@@ -171,9 +171,9 @@ void Server::runServer() {
         }
         if(!username.isEmpty()){
             //std::cout<<"YESS"<<std::endl;                       // DEBUG -----------
-            QString prova = this->database->getNickname(username);       // DEBUG -----------
+            QString nick = this->database->getNickname(username);       // DEBUG -----------
             //std::cout<<"VALORE DI RITORNO DELLA getNickname: "<<prova.toStdString()<<std::endl;   // DEBUG -----------
-            out << prova.toLocal8Bit();
+            out << nick.toLocal8Bit();
             socket->write(blocko);
         }else{
             //std::cout<<"ZIOFA"<<std::endl;                      // DEBUG -----------
@@ -207,26 +207,29 @@ void Server::runServer() {
 
     c = "NEW_DOC";
     if(text.contains(c.toUtf8())){
-        QByteArray name;
+        QByteArray docName;
         int userId;
-        in >> name;
+        in >> docName;
         in >> userId;
-        //associo allo userId il docId
-        if(this->database->creaDoc(QString::fromStdString(name.toStdString()))){
+        if(this->database->creaDoc(QString::fromStdString(docName.toStdString()))){
+            // Documento creato e correttamente inserito nel DB
+            // Associazione nome_doc - docId nella QMap
             int id = this->documents.size();
             id++;
-            this->users.insert(QString::fromStdString(name.toStdString()),id);
-            //correttamente inseriti nel db
-            //creo il file
-            QString filename=QString::fromStdString(name.toStdString());
-            QFile file( ":/Files/"+filename );
+            this->users.insert(QString::fromStdString(docName.toStdString()),id);
+            // Creazione del file
+            QString filename = QString::fromStdString(docName.toStdString());
+            QFile file( ":/Files/"+filename);
             if (file.open(QIODevice::ReadWrite)){
-                QTextStream stream( &file );
+                QTextStream stream(&file);
                 stream << "something" << endl;
-                //TODO: gestione CRDT
+                // *******************************************************
+                // PAOLO TODO: gestione CRDT
+                // *******************************************************
             }
+            // Associazione username - nome_doc nella tabella utente_doc del DB
             QString username;
-            QMapIterator<QString, int> i(this->users);
+            QMapIterator<QString,int> i(this->users);
             while (i.hasNext()) {
                 i.next();
                 if(i.value()==userId){
@@ -235,7 +238,7 @@ void Server::runServer() {
                 }
             }
             if(!username.isEmpty()){
-                if(this->database->aggiungiPartecipante(QString::fromStdString(name.toStdString()),username) != 2){
+                if(this->database->aggiungiPartecipante(QString::fromStdString(docName.toStdString()),username) != 2){
                     out << "ok";
                     out << id;
                     socket->write(blocko);
@@ -244,8 +247,11 @@ void Server::runServer() {
                     socket->write(blocko);
                 }
             }
-            //TODO: gestire meglio il "ritorno" e le modifiche su file -> crdt
+            // ********************************************************************************
+            // GIULIA TODO: gestire meglio il "ritorno" e le modifiche su file -> crdt
+            // ********************************************************************************
         } else {
+            // Errore nella creazione della entry relativa al documento nel DB
             out << "errore";
             socket->write(blocko);
         }
@@ -257,9 +263,13 @@ void Server::runServer() {
         in >> uri;
         QString doc = this->database->recuperaDocDatoURI(QString::fromStdString(uri.toStdString()));
         if(doc != "errore"){
-            //correttamente ottenuto il nome del doc con quell'uri
-            //TODO: CERCARE DOCUMENTO NEL FILE SYSTEM CON NOME uguale a quello della variable doc e inviarlo
-            out << doc;
+            // Nome del documento relativo all'URI ottenuto dal DB correttamente
+    // ***************************************************************************************************
+    // GIULIA TODO:
+    // CERCARE DOCUMENTO NEL FILE SYSTEM CON NOME UGUALE A QUELLO CONTENUTO NELLA VARIABILE
+    // doc ED INVIARLO INDIETRO AL CLIENTE
+    // ***************************************************************************************************
+            out << doc.toLocal8Bit();
             socket->write(blocko);
         }else{
             out << "errore";
@@ -270,18 +280,18 @@ void Server::runServer() {
     c = "GET_URI";
     if(text.contains(c.toUtf8())){
         int docId;
-        QString name;
+        QString docName;
         in >> docId;
         QMapIterator<QString, int> i(this->documents);
         while (i.hasNext()) {
             i.next();
             if(i.value()==docId){
-                name=i.key();
+                docName=i.key();
                 break;
             }
         }
-        if(!name.isEmpty()){
-            out << this->database->recuperaURI(name);
+        if(!docName.isEmpty()){
+            out << this->database->recuperaURI(docName).toLocal8Bit();;
             socket->write(blocko);
         }else{
             out << "errore";
