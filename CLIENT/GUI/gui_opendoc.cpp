@@ -64,12 +64,9 @@ void GUI_Opendoc::on_getURIPushButton_clicked(){
 
     int documentId = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_KEY).toInt();
 
-    QString uri;
-    QString result = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
-    if(result.compare("errore") == 0)
+    QString uri = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
+    if(uri.compare("errore") == 0)
         return;
-    else
-        uri = result;
 
     GUI_URI *box = new GUI_URI(this, uri);
     box->setVisible(true);
@@ -92,7 +89,10 @@ void GUI_Opendoc::on_exportPDFPushButton_clicked(){
 
 
     int docId = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_KEY).toInt();
-    std::shared_ptr<QTextDocument> docp = Stub::getDocumentText(docId);
+    std::shared_ptr<QTextDocument> docp = GUI_ConnectionToServerWrapper::getDocumentTextWrapper(gimpParent, docId);
+    if( docp == nullptr)
+        return;
+
     docp->setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
     docp->print(&printer);
 }

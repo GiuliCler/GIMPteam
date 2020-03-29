@@ -1,6 +1,6 @@
 #include <windows.h>
 
-IDI_ICON1	ICON	DISCARDABLE	"C:\\Users\\ilari\\Google Drive\\Politecnico\\Programmazione di sistema\\Malnati\\Progetto\\GIMPteam\\CLIENT\\GUI\\images\\logo\\gimpLogo.ico"
+IDI_ICON1	ICON	DISCARDABLE	"D:\\Mirko\\Scuola\\PDS\\Project\\Repository-GitKraken\\GIMPteam\\CLIENT\\GUI\\images\\logo\\gimpLogo.ico"
 
 VS_VERSION_INFO VERSIONINFO
 	FILEVERSION 0,0,0,0

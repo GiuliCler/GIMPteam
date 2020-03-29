@@ -113,6 +113,8 @@ Makefile: GIMPdocs.pro C:/Qt/5.12.3/mingw73_64/mkspecs/win32-g++/qmake.conf C:/Q
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_concurrent_private.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_core.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_core_private.pri \
+		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_datavisualization.pri \
+		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_datavisualization_private.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_dbus.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_dbus_private.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_designer.pri \
@@ -138,6 +140,8 @@ Makefile: GIMPdocs.pro C:/Qt/5.12.3/mingw73_64/mkspecs/win32-g++/qmake.conf C:/Q
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_multimediawidgets_private.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_network.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_network_private.pri \
+		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_networkauth.pri \
+		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_networkauth_private.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_nfc.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_nfc_private.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_opengl.pri \
@@ -152,6 +156,8 @@ Makefile: GIMPdocs.pro C:/Qt/5.12.3/mingw73_64/mkspecs/win32-g++/qmake.conf C:/Q
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_positioningquick_private.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_printsupport.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_printsupport_private.pri \
+		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_purchasing.pri \
+		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_purchasing_private.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_qml.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_qml_private.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_qmldebug_private.pri \
@@ -173,6 +179,10 @@ Makefile: GIMPdocs.pro C:/Qt/5.12.3/mingw73_64/mkspecs/win32-g++/qmake.conf C:/Q
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_remoteobjects_private.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_repparser.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_repparser_private.pri \
+		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_script.pri \
+		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_script_private.pri \
+		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_scripttools.pri \
+		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_scripttools_private.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_scxml.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_scxml_private.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_sensors.pri \
@@ -193,6 +203,8 @@ Makefile: GIMPdocs.pro C:/Qt/5.12.3/mingw73_64/mkspecs/win32-g++/qmake.conf C:/Q
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_uiplugin.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_uitools.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_uitools_private.pri \
+		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_virtualkeyboard.pri \
+		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_virtualkeyboard_private.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_vulkan_support_private.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_webchannel.pri \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_webchannel_private.pri \
@@ -211,7 +223,6 @@ Makefile: GIMPdocs.pro C:/Qt/5.12.3/mingw73_64/mkspecs/win32-g++/qmake.conf C:/Q
 		C:/Qt/5.12.3/mingw73_64/mkspecs/features/qt_config.prf \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/win32-g++/qmake.conf \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/features/spec_post.prf \
-		.qmake.stash \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/features/exclusive_builds.prf \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/features/toolchain.prf \
 		C:/Qt/5.12.3/mingw73_64/mkspecs/features/default_pre.prf \
@@ -293,6 +304,8 @@ C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_concurrent.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_concurrent_private.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_core.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_core_private.pri:
+C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_datavisualization.pri:
+C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_datavisualization_private.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_dbus.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_dbus_private.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_designer.pri:
@@ -318,6 +331,8 @@ C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_multimediawidgets.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_multimediawidgets_private.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_network.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_network_private.pri:
+C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_networkauth.pri:
+C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_networkauth_private.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_nfc.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_nfc_private.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_opengl.pri:
@@ -332,6 +347,8 @@ C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_positioningquick.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_positioningquick_private.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_printsupport.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_printsupport_private.pri:
+C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_purchasing.pri:
+C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_purchasing_private.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_qml.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_qml_private.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_qmldebug_private.pri:
@@ -353,6 +370,10 @@ C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_remoteobjects.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_remoteobjects_private.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_repparser.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_repparser_private.pri:
+C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_script.pri:
+C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_script_private.pri:
+C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_scripttools.pri:
+C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_scripttools_private.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_scxml.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_scxml_private.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_sensors.pri:
@@ -373,6 +394,8 @@ C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_theme_support_private.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_uiplugin.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_uitools.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_uitools_private.pri:
+C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_virtualkeyboard.pri:
+C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_virtualkeyboard_private.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_vulkan_support_private.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_webchannel.pri:
 C:/Qt/5.12.3/mingw73_64/mkspecs/modules/qt_lib_webchannel_private.pri:
@@ -391,7 +414,6 @@ C:/Qt/5.12.3/mingw73_64/mkspecs/features/qt_functions.prf:
 C:/Qt/5.12.3/mingw73_64/mkspecs/features/qt_config.prf:
 C:/Qt/5.12.3/mingw73_64/mkspecs/win32-g++/qmake.conf:
 C:/Qt/5.12.3/mingw73_64/mkspecs/features/spec_post.prf:
-.qmake.stash:
 C:/Qt/5.12.3/mingw73_64/mkspecs/features/exclusive_builds.prf:
 C:/Qt/5.12.3/mingw73_64/mkspecs/features/toolchain.prf:
 C:/Qt/5.12.3/mingw73_64/mkspecs/features/default_pre.prf:

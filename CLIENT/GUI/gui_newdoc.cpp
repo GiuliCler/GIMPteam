@@ -41,12 +41,9 @@ void GUI_Newdoc::on_createPushButton_clicked()
         return;
     }
 
-    int documentId;
-    int result = GUI_ConnectionToServerWrapper::requestCreateDocumentWrapper(gimpParent, static_cast<GIMPdocs*>(gimpParent)->userid, ui->nameLineEdit->text());
-    if(result == -1)
+    int documentId = GUI_ConnectionToServerWrapper::requestCreateDocumentWrapper(gimpParent, static_cast<GIMPdocs*>(gimpParent)->userid, ui->nameLineEdit->text());
+    if(documentId == -1)
         return;
-    else
-        documentId = result;
 
     GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId);
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
@@ -63,11 +60,9 @@ void GUI_Newdoc::on_openURIPushButton_clicked()
         return;
     }
 
-    int documentId;
-    if(int result = GUI_ConnectionToServerWrapper::requestDocDatoUriWrapper(gimpParent, ui->URILineEdit->text()) == -1)
+    int documentId = GUI_ConnectionToServerWrapper::requestDocDatoUriWrapper(gimpParent, ui->URILineEdit->text());
+    if(documentId  == -1)
         return;
-    else
-        documentId = result;
 
     GUI_Editor *widget = new GUI_Editor(gimpParent, documentId);
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);

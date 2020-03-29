@@ -96,18 +96,12 @@ void GUI_Profile::fillForm(){
     if(gimpParent->userid < 0)
         return;
 
-    QString nickname;
-    QString result = GUI_ConnectionToServerWrapper::requestGetNicknameWrapper(gimpParent, gimpParent->userid);
-    if(result.compare("errore") == 0)
+    QString nickname = GUI_ConnectionToServerWrapper::requestGetNicknameWrapper(gimpParent, gimpParent->userid);
+    if(nickname.compare("errore") == 0)
         return;
-    else
-        nickname = result;
-    QString username;
-    result = GUI_ConnectionToServerWrapper::requestGetUsernameWrapper(gimpParent, gimpParent->userid);
-    if(result.compare("errore") == 0)
+    QString username = GUI_ConnectionToServerWrapper::requestGetUsernameWrapper(gimpParent, gimpParent->userid);
+    if(username.compare("errore") == 0)
         return;
-    else
-        username = result;
 
     ui->nicknameLineEdit->setText(nickname);
     ui->usernameLabelReadonly->setText(username);

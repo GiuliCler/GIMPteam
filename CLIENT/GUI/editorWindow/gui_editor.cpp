@@ -27,12 +27,16 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId) : QWidget(parent), docum
     ui->toolsBarWidget->layout()->addWidget(childToolsBar);
 
     //ottengo l'elenco degli utenti che al momento stanno guardando il mio stesso document e ne creo icona e cursore
-    std::shared_ptr<QSet<int>> users = Stub::getWorkingUsersOnDocument(documentId);
+    std::shared_ptr<QSet<int>> users = GUI_ConnectionToServerWrapper::getWorkingUsersOnDocumentWrapper(gimpParent, documentId);
+    if( users == nullptr)
+        return;
     for (QSet<int>::iterator userId = users->begin(); userId != users->end(); userId++)
         addUserToEditorGUI(*userId);
 
     //creo l'icona per gli user che hanno contribuito al document
-    std::shared_ptr<QSet<int>> contributors = Stub::getContributorsUsersOnDocument(documentId);
+    std::shared_ptr<QSet<int>> contributors = GUI_ConnectionToServerWrapper::getWorkingUsersOnDocumentWrapper(gimpParent, documentId);
+    if( contributors == nullptr)
+        return;
     for (QSet<int>::iterator userId = contributors->begin(); userId != contributors->end(); userId++)
         addContributorToCurrentDocument(*userId);
 }
@@ -46,12 +50,9 @@ GUI_Editor::~GUI_Editor(){
 void GUI_Editor::connectMenuBarActions(){
     connect(this->gimpParent->ui2->closeDocumentAction, &QAction::triggered, this, &GUI_Editor::launchSetUi1);
     connect(gimpParent->ui2->getURIAction, &QAction::triggered, [this](){
-        QString uri;
-        QString result = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
-        if(result.compare("errore") == 0)
+        QString uri = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
+        if(uri.compare("errore") == 0)
             return;
-        else
-            uri = result;
         GUI_URI *box = new GUI_URI(this, uri);
         box->setVisible(true);
     });
@@ -89,7 +90,9 @@ void GUI_Editor::connectMenuBarActions(){
 void GUI_Editor::changeWindowName(){
 
     //modifico il nome della finestra
-    QString documentName = Stub::getDocumentName(documentId);
+    QString documentName = GUI_ConnectionToServerWrapper::getDocumentNameWrapper(gimpParent, documentId);
+    if(documentName.compare("errore") == 0)
+        return;
     gimpParent->setWindowTitle("GIMPdocs - " + documentName);
 }
 

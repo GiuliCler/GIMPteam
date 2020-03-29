@@ -4,6 +4,7 @@
 #include "../../connection_to_server.h"
 //serve per gli shared pointers
 #include <memory>
+#include <QTextDocument>
 
 class GIMPdocs;
 
@@ -31,7 +32,14 @@ public:
     static std::shared_ptr<QMap<int, QString>> getKnownDocumentsWrapper(GIMPdocs *gimpdocs, int userId);
     static int closeDocumentWrapper(GIMPdocs *gimpdocs, int userId, int docId);
 
+    static QString getDocumentNameWrapper(GIMPdocs *gimpdocs, int docId);
     static QString requestUriWrapper(GIMPdocs *gimpdocs, int docId);
+    static std::shared_ptr<QTextDocument> getDocumentTextWrapper(GIMPdocs *gimpdocs, int docId);
+
+
+    /*EDITOR*/
+    static std::shared_ptr<QSet<int>> getWorkingUsersOnDocumentWrapper(GIMPdocs *gimpdocs, int docId);
+    static std::shared_ptr<QSet<int>> getContributorsUsersOnDocumentWrapper(GIMPdocs *gimpdocs, int docId);
 };
 
 #endif // GUI_CONNECTIONTOSERVERWRAPPER_H
