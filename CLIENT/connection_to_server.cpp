@@ -304,6 +304,51 @@ void connection_to_server::showFile(const QString &next)
 
 }
 
+std::shared_ptr<QVector<QString>> connection_to_server::getDocuments(int userId){
+    this->tcpSocket->abort();
+    this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+
+    if (!tcpSocket->waitForConnected(Timeout)) {
+        emit error(tcpSocket->error(), tcpSocket->errorString());
+        return "errore";
+    }
+    QByteArray buffer;
+    QDataStream out(&buffer, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_10);
+
+    out << "GET_DOCS";
+    out << userId;
+
+    this->tcpSocket->write(buffer);
+
+    if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        return "errore";
+    }
+
+    int num;
+    QByteArray doc;
+    QVector<QString> ritorno;
+    QDataStream in;
+    in.setDevice(this->tcpSocket);
+    in.setVersion(QDataStream::Qt_4_0);
+    in >> num;
+    for(int i=0; i<num; i++){
+        do {
+            if (!this->tcpSocket->waitForReadyRead(Timeout)) {
+                emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+                return "errore";
+            }
+
+            in.startTransaction();
+            in >> doc;
+            ritorno.push_back(QString::fromStdString(doc.toStdString()));
+        } while (!in.commitTransaction());
+    }
+
+    return std::make_shared<QVector<QString>>(ritorno);
+}
+
 std::string connection_to_server::requestGetNickname(int userId){
     this->tcpSocket->abort();
     this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());

@@ -205,6 +205,40 @@ void Server::runServer() {
         }
     }
 
+    c = "GET_DOCS";
+    if(text.contains(c.toUtf8())){
+        int userId;
+        QString username;
+        in >> userId;
+        QMapIterator<QString, int> i(this->users);
+        while (i.hasNext()) {
+            i.next();
+            if(i.value()==userId){
+                username = i.key();
+                break;
+            }
+        }
+        if(!username.isEmpty()){
+            std::vector<QString> documenti = this->database->recuperaDocs(username);
+            // Trasformo il std::vector in QVector
+            QVector<QString> documenti_qt = QVector<QString>::fromStdVector(documenti);
+
+            // Mando al client il numero di elementi/documenti che verranno inviati
+            int num_doc = documenti_qt.size();
+            out << num_doc;
+
+            // Mando al client i nomi dei documenti a cui l'utente può accedere singolarmente
+            for(auto it = documenti_qt.begin(); it<documenti_qt.end(); it++){
+                QString doc = (*it);
+                out << doc.toLocal8Bit();
+            }
+            socket->write(blocko);
+        }else{
+            out << "errore";
+            socket->write(blocko);
+        }
+    }
+
     c = "NEW_DOC";
     if(text.contains(c.toUtf8())){
         QByteArray docName;
