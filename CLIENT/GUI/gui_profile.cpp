@@ -19,6 +19,8 @@ GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
     font.setPixelSize(font.pixelSize() + 10);
     ui->titleLabel->setFont(font);
 
+    loadIcons();
+
     //qui controllo se sto creando un nuovo utente o se ne sto modificando uno già loggato
     if(gimpParent->userid > -1){
         //ui->backPushButton->hide();
@@ -28,7 +30,7 @@ GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
     else
         ui->usernameLabelReadonly->hide();
 
-    loadIcons();
+
 
     //faccio le connect così premendo Enter prova a salvare
     connect(ui->nicknameLineEdit, &QLineEdit::returnPressed, this, &GUI_Profile::on_savePushButton_clicked);
@@ -96,6 +98,12 @@ void GUI_Profile::fillForm(){
     if(gimpParent->userid < 0)
         return;
 
+    QString iconId = GUI_ConnectionToServerWrapper::requestIconIdWrapper(gimpParent, gimpParent->userid);
+    if(iconId.compare("errore") == 0)
+        return;
+    int boxIndex = ui->iconComboBox->findData(iconId);
+    ui->iconComboBox->setCurrentIndex(boxIndex);
+
     QString nickname = GUI_ConnectionToServerWrapper::requestGetNicknameWrapper(gimpParent, gimpParent->userid);
     if(nickname.compare("errore") == 0)
         return;
@@ -105,9 +113,8 @@ void GUI_Profile::fillForm(){
 
     ui->nicknameLineEdit->setText(nickname);
     ui->usernameLabelReadonly->setText(username);
-    ui->passwordLineEdit->setText("");
-    ui->repeatLineEdit->setText("");
-
+    //ui->passwordLineEdit->setText("");
+    //ui->repeatLineEdit->setText("");
 }
 
 void GUI_Profile::loadIcons(){
