@@ -207,6 +207,7 @@ void Server::runServer() {
 
     c = "GET_DOCS";
     if(text.contains(c.toUtf8())){
+        std::cout << "SONO DENTRO LA GET_DOCS" << std::endl;             // DEBUG -----------
         int userId;
         QString username;
         in >> userId;
@@ -219,13 +220,24 @@ void Server::runServer() {
             }
         }
         if(!username.isEmpty()){
+            std::cout << "GET_DOCS - username: "<<username.toStdString()<< std::endl;             // DEBUG -----------
             std::vector<QString> documenti = this->database->recuperaDocs(username);
+
+            // DEBUG --------------------------------------------------------------
+            std::cout << "GET_DOCS - documenti: "<<std::endl;
+            for(auto it = documenti.begin(); it<documenti.end(); it++){
+                std::cout << "GET_DOCS - doc: "<<(*it).toStdString()<< std::endl;
+            }
+            // DEBUG -------------------------------------------------------------
+
             // Trasformo il std::vector in QVector
             QVector<QString> documenti_qt = QVector<QString>::fromStdVector(documenti);
 
             // Mando al client il numero di elementi/documenti che verranno inviati
             int num_doc = documenti_qt.size();
             out << num_doc;
+
+            std::cout << "GET_DOCS - num_doc MANDATO AL CLIENT: "<<num_doc<< std::endl;             // DEBUG -----------
 
             // Mando al client i nomi dei documenti a cui l'utente può accedere singolarmente
             for(auto it = documenti_qt.begin(); it<documenti_qt.end(); it++){

@@ -1,4 +1,0 @@
-C:/Users/ilari/Google Drive/Politecnico/Programmazione di sistema/Malnati/Progetto/GIMPteam/Server/database/cmake-build-debug/CMakeFiles/gimpdocs.dir
-C:/Users/ilari/Google Drive/Politecnico/Programmazione di sistema/Malnati/Progetto/GIMPteam/Server/database/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/ilari/Google Drive/Politecnico/Programmazione di sistema/Malnati/Progetto/GIMPteam/Server/database/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-C:/Users/ilari/Google Drive/Politecnico/Programmazione di sistema/Malnati/Progetto/GIMPteam/Server/database/cmake-build-debug/CMakeFiles/gimpdocs_autogen.dir

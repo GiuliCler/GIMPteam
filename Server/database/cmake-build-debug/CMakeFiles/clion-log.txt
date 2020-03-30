@@ -1,4 +1,0 @@
-"C:\Program Files\CMake\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" "C:\Users\ilari\Google Drive\Politecnico\Programmazione di sistema\Malnati\Progetto\GIMPteam\Server\database"
--- Configuring done
--- Generating done
--- Build files have been written to: C:/Users/ilari/Google Drive/Politecnico/Programmazione di sistema/Malnati/Progetto/GIMPteam/Server/database/cmake-build-debug
