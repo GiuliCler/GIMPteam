@@ -52,3 +52,9 @@ compile_commands.json
 *creator.user*
 
 *_qmlcache.qrc
+
+# AGGIUNTI DA ILA
+Server/debug/server.exe
+CLIENT/debug/GIMPdocs.exe
+CLIENT/Makefile.*
+Server/Makefile.*
