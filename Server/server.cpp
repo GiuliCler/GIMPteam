@@ -229,7 +229,19 @@ void Server::runServer() {
 
             // Mando al client i nomi dei documenti a cui l'utente può accedere singolarmente
             for(auto it = documenti_qt.begin(); it<documenti_qt.end(); it++){
-                QString doc = (*it);
+                // Salvo il nome documento corrente
+                QString doc_name = (*it);
+                int docId;
+
+                // Cerco il docId del documento corrente
+                if(documents.contains(doc_name)){
+                    docId = documents.value(doc_name);
+                }
+
+                // Concateno in una stringa unica da mandare al client
+                QString doc = doc_name + QString::number(docId);
+
+                // Mando la QString così generata al client
                 out << doc.toLocal8Bit();
             }
             socket->write(blocko);

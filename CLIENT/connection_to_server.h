@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QtNetwork/QTcpSocket>
 #include <memory>
+#include "GUI/connection/gui_connectionException.h"
+#include "GUI/connection/gui_genericException.h"
 
 QT_BEGIN_NAMESPACE
 class QDialogButtonBox;
@@ -28,8 +30,7 @@ public:
     std::string requestIconId(int userId);
     std::string requestUri(long docId);
     std::string requestDocDatoUri(QString uri);
-    std::shared_ptr<QVector<QString>> getDocuments(int userId);
-
+    std::shared_ptr<QMap<QString, int>> getKnownDocuments(int userId);
 private slots:
     void showFile(const QString &file);
     void displayError(int socketError, const QString &message);

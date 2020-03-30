@@ -304,13 +304,13 @@ void connection_to_server::showFile(const QString &next)
 
 }
 
-std::shared_ptr<QVector<QString>> connection_to_server::getDocuments(int userId){
+std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int userId){
     this->tcpSocket->abort();
     this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
     if (!tcpSocket->waitForConnected(Timeout)) {
         emit error(tcpSocket->error(), tcpSocket->errorString());
-        return "errore";
+        throw GUI_ConnectionException();
     }
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
@@ -323,12 +323,12 @@ std::shared_ptr<QVector<QString>> connection_to_server::getDocuments(int userId)
 
     if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-        return "errore";
+        throw GUI_ConnectionException();
     }
 
     int num;
     QByteArray doc;
-    QVector<QString> ritorno;
+    QVector<QString> vet;
     QDataStream in;
     in.setDevice(this->tcpSocket);
     in.setVersion(QDataStream::Qt_4_0);
@@ -337,16 +337,31 @@ std::shared_ptr<QVector<QString>> connection_to_server::getDocuments(int userId)
         do {
             if (!this->tcpSocket->waitForReadyRead(Timeout)) {
                 emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-                return "errore";
+                throw GUI_ConnectionException();
             }
 
             in.startTransaction();
             in >> doc;
-            ritorno.push_back(QString::fromStdString(doc.toStdString()));
+            vet.push_back(QString::fromStdString(doc.toStdString()));
         } while (!in.commitTransaction());
     }
 
-    return std::make_shared<QVector<QString>>(ritorno);
+    // Conversione del QVector<QString> in <QMap<QString, int>>
+    QMap<QString, int> ritorno;
+    for(auto it=vet.begin(); it<vet.end(); it++){
+        QString stringa = (*it);
+        QStringList list = stringa.split('_');
+        QString doc_name;
+        int docId;
+        for(int j=0; j<list.size(); j++){
+            doc_name = list.at(0);
+            docId = list.at(1).toInt();
+            ritorno.insert(doc_name, docId);
+        }
+
+    }
+
+    return std::make_shared<QMap<QString, int>>(ritorno);
 }
 
 std::string connection_to_server::requestGetNickname(int userId){
