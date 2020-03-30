@@ -28,6 +28,8 @@ public:
     int rimuoviPartecipante(QString nomeDOC, QString username);
     int aggiornaSiteCounter(QString nomeDOC, QString username, int siteCount);
     int aggiornaUser(QString username, QString nuova_password, QString nuovo_nickname, QString nuova_icona);
+    std::vector<QString> recuperaDocsNelDB();
+    std::vector<QString> recuperaUtentiNelDB();
 };
 
 #endif //GIMPDOCS_COLLEGAMENTODB_H

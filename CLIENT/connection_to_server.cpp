@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <sstream>
 #include <QtWidgets>
+#include <iostream>
 
 connection_to_server::connection_to_server(QString port, QString ipAddress){
     this->tcpSocket=new QTcpSocket(this);
@@ -332,7 +333,10 @@ std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int 
     QDataStream in;
     in.setDevice(this->tcpSocket);
     in.setVersion(QDataStream::Qt_4_0);
+
     in >> num;
+    std::cout<<"CONNECTION_TO_SERVER - num_doc RICEVUTO: "<<num<<std::endl;     // DEBUG ----------------
+
     for(int i=0; i<num; i++){
         do {
             if (!this->tcpSocket->waitForReadyRead(Timeout)) {

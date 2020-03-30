@@ -6,11 +6,35 @@
 
 Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDescriptor) {
 
+    // std::cout << "SONO NEL COSTRUTTORE Server" << std::endl;             // DEBUG -----------
+
     // Connessione al DB
     this->database = new CollegamentoDB();
     this->database->connettiDB("gimpdocs_db");
 
-    //std::cout << "SONO NEL COSTRUTTORE Server" << std::endl;             // DEBUG -----------
+    // Riempimento della QMap degli utenti con gli elementi presenti sul DB
+    int cont = 0;
+    std::vector<QString> utenti = this->database->recuperaUtentiNelDB();
+    for(auto i=utenti.begin(); i<utenti.end(); i++){
+        if((*i) == "nessuno"){
+            break;
+        }
+        this->users.insert(QString::fromStdString((*i).toStdString()), cont++);
+    }
+
+    // Riempimento della QMap dei documenti con gli elementi presenti sul DB
+    cont = 0;
+    std::vector<QString> documenti = this->database->recuperaDocsNelDB();
+    for(auto i=documenti.begin(); i<documenti.end(); i++){
+        if((*i) == "nessuno"){
+            break;
+        }
+        this->documents.insert(QString::fromStdString((*i).toStdString()), cont++);
+    }
+
+    // std::cout << "FINE COSTRUTTORE Server" << std::endl;             // DEBUG -----------
+
+
 
     // ILA: loop infinito........................................?
 }
@@ -207,10 +231,10 @@ void Server::runServer() {
 
     c = "GET_DOCS";
     if(text.contains(c.toUtf8())){
-        std::cout << "SONO DENTRO LA GET_DOCS" << std::endl;             // DEBUG -----------
         int userId;
         QString username;
         in >> userId;
+
         QMapIterator<QString, int> i(this->users);
         while (i.hasNext()) {
             i.next();
@@ -220,15 +244,8 @@ void Server::runServer() {
             }
         }
         if(!username.isEmpty()){
-            std::cout << "GET_DOCS - username: "<<username.toStdString()<< std::endl;             // DEBUG -----------
+            // Recupero i documenti per cui l'utente e' abilitato ad accedere
             std::vector<QString> documenti = this->database->recuperaDocs(username);
-
-            // DEBUG --------------------------------------------------------------
-            std::cout << "GET_DOCS - documenti: "<<std::endl;
-            for(auto it = documenti.begin(); it<documenti.end(); it++){
-                std::cout << "GET_DOCS - doc: "<<(*it).toStdString()<< std::endl;
-            }
-            // DEBUG -------------------------------------------------------------
 
             // Trasformo il std::vector in QVector
             QVector<QString> documenti_qt = QVector<QString>::fromStdVector(documenti);
@@ -243,15 +260,13 @@ void Server::runServer() {
             for(auto it = documenti_qt.begin(); it<documenti_qt.end(); it++){
                 // Salvo il nome documento corrente
                 QString doc_name = (*it);
-                int docId;
 
                 // Cerco il docId del documento corrente
-                if(documents.contains(doc_name)){
-                    docId = documents.value(doc_name);
-                }
+                int docId = documents.value(doc_name);
 
                 // Concateno in una stringa unica da mandare al client
-                QString doc = doc_name + QString::number(docId);
+                QString doc = doc_name + "_" + QString::number(docId);
+                std::cout << "GET_DOCS - MANDATA AL CLIENT LA COPPIA: "<<doc.toStdString()<< std::endl;             // DEBUG -----------
 
                 // Mando la QString così generata al client
                 out << doc.toLocal8Bit();

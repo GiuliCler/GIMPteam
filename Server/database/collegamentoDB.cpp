@@ -630,6 +630,64 @@ QString CollegamentoDB::recuperaURI(QString nomeDOC){
     return uri;
 }
 
+/*
+ * Utilizzo: funzione che permette di recuperare dalla tabella DOC tutti i documenti presenti
+ * Parametri:
+ *      //
+ * Ritorno:
+ *      >0 documenti -> vettore composto dai nomi dei documenti presenti nel DB
+ *      =0 documenti -> vettore contenentente il solo elemento "nessuno"
+ */
+std::vector<QString> CollegamentoDB::recuperaDocsNelDB(){
+    std::vector<QString> elenco;
+
+    std::string query = "SELECT nome_doc FROM doc";
+    QSqlQuery ris;
+    ris.prepare(QString::fromStdString(query));
+
+    ris.exec();
+
+    if(ris.size() > 0){
+        while(ris.next()){
+            QString doc = QString::fromStdString(ris.value(0).toByteArray().toStdString());
+            elenco.push_back(doc);
+        }
+    } else {
+        elenco.emplace_back("nessuno");
+    }
+
+    return elenco;
+}
+
+
+/*
+ * Utilizzo: funzione che permette di recuperare dalla tabella UTENTI tutti gli utenti presenti
+ * Parametri:
+ *      //
+ * Ritorno:
+ *      >0 utenti -> vettore composto dagli username degli utenti presenti nel DB
+ *      =0 utenti -> vettore contenentente il solo elemento "nessuno"
+ */
+std::vector<QString> CollegamentoDB::recuperaUtentiNelDB(){
+    std::vector<QString> elenco;
+
+    std::string query = "SELECT username FROM utenti";
+    QSqlQuery ris;
+    ris.prepare(QString::fromStdString(query));
+
+    ris.exec();
+
+    if(ris.size() > 0){
+        while(ris.next()){
+            QString user = QString::fromStdString(ris.value(0).toByteArray().toStdString());
+            elenco.push_back(user);
+        }
+    } else {
+        elenco.emplace_back("nessuno");
+    }
+
+    return elenco;
+}
 
 /*
  * Utilizzo: funzione che permette di aggiornare le informazioni relative ad un utente già presente nel DB
