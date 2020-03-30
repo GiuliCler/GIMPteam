@@ -29,7 +29,7 @@ public:
     static int openKnownDocumentWrapper(GIMPdocs *gimpdocs, int documentId);
     static int forgetKnownDocumentWrapper(GIMPdocs *gimpdocs, int userId, int documentId);
     static int requestDocDatoUriWrapper(GIMPdocs *gimpdocs, QString uri);
-    static std::shared_ptr<QMap<int, QString>> getKnownDocumentsWrapper(GIMPdocs *gimpdocs, int userId);
+    static std::shared_ptr<QMap<QString, int>> getKnownDocumentsWrapper(GIMPdocs *gimpdocs, int userId);
     static int closeDocumentWrapper(GIMPdocs *gimpdocs, int userId, int docId);
 
     static QString getDocumentNameWrapper(GIMPdocs *gimpdocs, int docId);

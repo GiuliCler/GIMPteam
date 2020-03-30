@@ -2653,6 +2653,14 @@ debug/moc_connection_to_server.cpp: connection_to_server.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
 		debug/moc_predefs.h \
 		C:/Qt/5.12.3/mingw73_64/bin/moc.exe
 	C:\Qt\5.12.3\mingw73_64\bin\moc.exe $(DEFINES) --include D:/Mirko/Scuola/PDS/Project/Repository-GitKraken/GIMPteam/CLIENT/debug/moc_predefs.h -IC:/Qt/5.12.3/mingw73_64/mkspecs/win32-g++ -ID:/Mirko/Scuola/PDS/Project/Repository-GitKraken/GIMPteam/CLIENT -IC:/Qt/5.12.3/mingw73_64/include -IC:/Qt/5.12.3/mingw73_64/include/QtPrintSupport -IC:/Qt/5.12.3/mingw73_64/include/QtWidgets -IC:/Qt/5.12.3/mingw73_64/include/QtGui -IC:/Qt/5.12.3/mingw73_64/include/QtANGLE -IC:/Qt/5.12.3/mingw73_64/include/QtSql -IC:/Qt/5.12.3/mingw73_64/include/QtNetwork -IC:/Qt/5.12.3/mingw73_64/include/QtCore -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++ -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include/c++/backward -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include -IC:/Qt/Tools/mingw730_64/lib/gcc/x86_64-w64-mingw32/7.3.0/include-fixed -IC:/Qt/Tools/mingw730_64/x86_64-w64-mingw32/include connection_to_server.h -o debug\moc_connection_to_server.cpp
@@ -5662,6 +5670,14 @@ debug/connection_to_server.o: connection_to_server.cpp connection_to_server.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetworkglobal.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qtnetwork-config.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtNetwork/qabstractsocket.h \
+		GUI/connection/gui_connectionException.h \
+		GUI/connection/gui_connecting.h \
+		ui_gui_connecting.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QDialog \
+		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/QException \
+		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
+		GUI/connection/gui_genericException.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QtWidgets \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/QtWidgetsDepends \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QtCore \
@@ -5704,7 +5720,6 @@ debug/connection_to_server.o: connection_to_server.cpp connection_to_server.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qeasingcurve.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qendian.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qeventtransition.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtCore/qexception.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qfactoryinterface.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/qfileselector.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtCore/QObject \
@@ -5917,7 +5932,6 @@ debug/connection_to_server.o: connection_to_server.cpp connection_to_server.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qcalendarwidget.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qcheckbox.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qcolordialog.h \
-		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qdialog.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qcolormap.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qcolumnview.h \
 		C:/Qt/5.12.3/mingw73_64/include/QtWidgets/qcombobox.h \

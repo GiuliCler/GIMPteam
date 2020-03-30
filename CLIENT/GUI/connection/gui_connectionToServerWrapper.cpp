@@ -196,12 +196,12 @@ int GUI_ConnectionToServerWrapper::forgetKnownDocumentWrapper(GIMPdocs *gimpdocs
     return 1;
 }
 
-std::shared_ptr<QMap<int, QString>> GUI_ConnectionToServerWrapper::getKnownDocumentsWrapper(GIMPdocs *gimpdocs, int userId){
-    std::shared_ptr<QMap<int, QString>> mpointer = nullptr;
+std::shared_ptr<QMap<QString, int>> GUI_ConnectionToServerWrapper::getKnownDocumentsWrapper(GIMPdocs *gimpdocs, int userId){
+    std::shared_ptr<QMap<QString, int>> mpointer = nullptr;
 
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
-        mpointer = Stub::getKnownDocuments(userId);
+        mpointer = gimpdocs->getConnection()->getKnownDocuments(userId);
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);

@@ -30,7 +30,9 @@ GUI_Opendoc::~GUI_Opendoc(){
 }
 
 void GUI_Opendoc::fillList(){
-    std::shared_ptr<QMap<int, QString>> vp = Stub::getKnownDocuments(static_cast<GIMPdocs*>(gimpParent)->userid);
+    std::shared_ptr<QMap<QString, int>> vp = GUI_ConnectionToServerWrapper::getKnownDocumentsWrapper(gimpParent, gimpParent->userid);
+    if(vp == nullptr)
+        return;
 
     for(auto pair = vp->begin(); pair != vp->end(); pair++){
         //lo inizializzo per togliere il warning
