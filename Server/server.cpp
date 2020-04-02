@@ -1,8 +1,22 @@
 #include "server.h"
+#include "thread_management.h"
 #include <stdlib.h>
 #include <QThreadPool>
 #include <QRunnable>
+#include <QMutex>
+#include <QWaitCondition>
 
+//Std::Atomic end;
+Thread_management* thread_mgm;
+QVector<int> jobs;
+QWaitCondition cv_jobs;
+QMutex mutex_users;
+QMutex mutex_docs;
+
+CollegamentoDB *database;
+QMap<QString, int> users;
+QMap<QString, int> documents;
+QMap<int, std::vector<int>> online;  // QMap formata da coppie (docId, [userId1, userId2, userId3, ...])
 
 Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDescriptor) {
 
@@ -32,14 +46,43 @@ Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDesc
         this->documents.insert(QString::fromStdString((*i).toStdString()), cont++);
     }
 
-    // std::cout << "FINE COSTRUTTORE Server" << std::endl;             // DEBUG -----------
+    // creo vettore con i lavori da fare (thread pool) da cui thread_management prende man mano i lavori
+    // creo std::atomic<bool> chiudiApp da cui thread_management vede quando finire
 
+    // creo thread_management
+    thread_mgm = new Thread_management();
+    connect(thread_mgm, SIGNAL(finished()), thread_mgm, SLOT(deleteLater()));
 
-
-    // ILA: loop infinito........................................?
+    // faccio partire thread_management (detach) --> .start()
+    thread_mgm->start();
 }
 
+Server::~Server(){
+    // distruggo thread_management
+    if (thread_mgm != nullptr && thread_mgm->isRunning()) {
+        thread_mgm->requestInterruption();
+        thread_mgm->wait();
+    }
+}
+
+
+
 // ILA: classi che implementanto QRunnable ............................?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void Server::incomingConnection(qintptr socketDescriptor) {
     /*
@@ -381,3 +424,4 @@ void Server::runServer() {
     socket->disconnectFromHost();
     socket->waitForDisconnected();
 }*/
+

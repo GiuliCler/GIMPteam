@@ -18,6 +18,7 @@ class Server : public QTcpServer
 
 public:
     Server(QObject *parent = nullptr);
+    ~Server() override;
 
 protected:
     void incomingConnection(qintptr socketDescriptor) override;
@@ -31,12 +32,8 @@ public slots:
 
 private:
     QStringList fortunes;
-    CollegamentoDB *database;
     int socketDescriptor;
     QTcpSocket *socket;
-    QMap<QString, int> users;
-    QMap<QString, int> documents;
-    QMap<int, std::vector<int>> online;    // QMap formata da coppie (docId, [userId1, userId2, userId3, ...])
 };
 //! [0]
 

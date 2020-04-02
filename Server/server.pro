@@ -4,12 +4,14 @@ QT += core
 HEADERS       = server.h \
     database/collegamentoDB.h \
     database/sha256.h \
-    dialog.h
+    dialog.h \
+    thread_management.h
 SOURCES       = server.cpp \
                 database/collegamentoDB.cpp \
                 database/sha256.cpp \
                 dialog.cpp \
-                main.cpp
+                main.cpp \
+                thread_management.cpp
 
 # install
 target.path = $$[QT_INSTALL_EXAMPLES]/network/fortuneserver
