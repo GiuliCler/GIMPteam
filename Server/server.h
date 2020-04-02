@@ -34,8 +34,9 @@ private:
     CollegamentoDB *database;
     int socketDescriptor;
     QTcpSocket *socket;
-    QMap<QString, int> users;    //TODO: da gestire con mutex per la concorrenza!! per ora chiave userId, valore username
+    QMap<QString, int> users;
     QMap<QString, int> documents;
+    QMap<int, std::vector<int>> online;    // QMap formata da coppie (docId, [userId1, userId2, userId3, ...])
 };
 //! [0]
 
