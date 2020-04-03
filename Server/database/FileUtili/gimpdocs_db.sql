@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Ott 10, 2019 alle 23:07
+-- Creato il: Apr 03, 2020 alle 17:49
 -- Versione del server: 10.1.40-MariaDB
 -- Versione PHP: 7.3.5
 
@@ -21,6 +21,8 @@ SET time_zone = "+00:00";
 --
 -- Database: `gimpdocs_db`
 --
+CREATE DATABASE IF NOT EXISTS `gimpdocs_db` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `gimpdocs_db`;
 
 -- --------------------------------------------------------
 
@@ -28,10 +30,19 @@ SET time_zone = "+00:00";
 -- Struttura della tabella `doc`
 --
 
+DROP TABLE IF EXISTS `doc`;
 CREATE TABLE `doc` (
   `nome_doc` varchar(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `uri` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dump dei dati per la tabella `doc`
+--
+
+INSERT INTO `doc` (`nome_doc`, `uri`) VALUES
+('\0D\0i\0v\0i\0n\0a\0C\0o\0m\0m\0e\0d\0i\0a', '://GIMPdocs/a1ac9487a81d3a55c041475f8ea86ec1'),
+('\0O\0i\0b\0a\0b\0o\0i', '://GIMPdocs/57e105aad9489fd71efb852778fdcaf7');
 
 -- --------------------------------------------------------
 
@@ -39,12 +50,19 @@ CREATE TABLE `doc` (
 -- Struttura della tabella `utente_doc`
 --
 
+DROP TABLE IF EXISTS `utente_doc`;
 CREATE TABLE `utente_doc` (
   `username` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  `nome_doc` varchar(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  `site_id` int(1) NOT NULL DEFAULT '0',
-  `site_counter` int(1) NOT NULL DEFAULT '0'
+  `nome_doc` varchar(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dump dei dati per la tabella `utente_doc`
+--
+
+INSERT INTO `utente_doc` (`username`, `nome_doc`) VALUES
+('\0i\0l\0a\0g\0i\0o\0d\0a\0@\0g\0i\0m\0p\0t\0e\0a\0m\0.\0i\0t', '\0D\0i\0v\0i\0n\0a\0C\0o\0m\0m\0e\0d\0i\0a'),
+('\0i\0l\0a\0g\0i\0o\0d\0a\0@\0g\0i\0m\0p\0t\0e\0a\0m\0.\0i\0t', '\0O\0i\0b\0a\0b\0o\0i');
 
 -- --------------------------------------------------------
 
@@ -52,6 +70,7 @@ CREATE TABLE `utente_doc` (
 -- Struttura della tabella `utenti`
 --
 
+DROP TABLE IF EXISTS `utenti`;
 CREATE TABLE `utenti` (
   `username` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `password` varchar(260) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
@@ -59,6 +78,13 @@ CREATE TABLE `utenti` (
   `nickname` varchar(20) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `icona` varchar(40) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dump dei dati per la tabella `utenti`
+--
+
+INSERT INTO `utenti` (`username`, `password`, `sale`, `nickname`, `icona`) VALUES
+('\0i\0l\0a\0g\0i\0o\0d\0a\0@\0g\0i\0m\0p\0t\0e\0a\0m\0.\0i\0t', '�7rX�����\'y�O�u0�=�', 'frAQBc8Wsa', '\0i\0l\0a\0g\0i\0o', '\0J\0i\0r\0a\0c\0h\0i\0.\0p\0n\0g');
 
 --
 -- Indici per le tabelle scaricate
