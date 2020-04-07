@@ -6,10 +6,12 @@
 #include <QMutex>
 #include <QWaitCondition>
 
-//Std::Atomic end;
 Thread_management* thread_mgm;
-QVector<int> jobs;
-QWaitCondition cv_jobs;
+
+QVector<int> jobs(100, 1);      // per ora è <int>... per ora...
+QWaitCondition* cv_jobs = new QWaitCondition();
+QMutex* mutex_jobs = new QMutex();
+
 QMutex mutex_users;
 QMutex mutex_docs;
 
@@ -20,7 +22,7 @@ QMap<int, std::vector<int>> online;  // QMap formata da coppie (docId, [userId1,
 
 Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDescriptor) {
 
-    // std::cout << "SONO NEL COSTRUTTORE Server" << std::endl;             // DEBUG -----------
+//    std::cout << "Dentro al costruttore di Server" << std::endl;             // DEBUG -----------
 
     // Connessione al DB
     database = new CollegamentoDB();
@@ -46,25 +48,48 @@ Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDesc
         documents.insert(QString::fromStdString((*i).toStdString()), cont++);
     }
 
-    // creo vettore con i lavori da fare (thread pool) da cui thread_management prende man mano i lavori
-    // creo std::atomic<bool> chiudiApp da cui thread_management vede quando finire
+    // ---------- INIZIO SPERIMENTAZIONE CONCORRENZA ----------
 
-    // creo thread_management
+    // TODO -- creo vettore con i lavori da fare (thread pool) da cui thread_management prende man mano i lavori
+
+    // Creo thread_management
     thread_mgm = new Thread_management();
     connect(thread_mgm, SIGNAL(finished()), thread_mgm, SLOT(deleteLater()));
 
-    // faccio partire thread_management (detach) --> .start()
+    // Faccio partire thread_management (mod. detach)
     thread_mgm->start();
+
+//    CODICE DI PROVA - PRODUTTORE
+//    mutex_jobs->lock();
+//    std::cout<<"SERVER - Prima della prepend: "<<jobs.first()<<std::endl;
+//    jobs.prepend(2);
+//    std::cout<<"SERVER - Dopo la prepend: "<<jobs.first()<<std::endl;
+//    mutex_jobs->unlock();
+//    std::this_thread::sleep_for(std::chrono::seconds(3));
+//    cv_jobs->wakeAll();     // non fa un tubo
+
+
+
+
+
+//    std::cout<<"Fine costruttore di Server"<<std::endl;
+
 }
 
 Server::~Server(){
-    // distruggo thread_management
+
+    // Sveglio il thread_management addormentato nella wait
+     cv_jobs->wakeAll();
+
+    // Distruggo thread_management
     if (thread_mgm != nullptr && thread_mgm->isRunning()) {
         thread_mgm->requestInterruption();
         thread_mgm->wait();
     }
-}
 
+//    std::cout<<"Dopo la distruzione del thread"<<std::endl;
+
+}
 
 
 // ILA: classi che implementanto QRunnable ............................?
@@ -82,7 +107,7 @@ Server::~Server(){
 
 
 
-
+// ---------- FINE SPERIMENTAZIONE CONCORRENZA ----------
 
 void Server::incomingConnection(qintptr socketDescriptor) {
     /*

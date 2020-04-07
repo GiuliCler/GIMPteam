@@ -6,8 +6,10 @@
 #include <QMutex>
 #include <QWaitCondition>
 
-extern QWaitCondition cv_jobs;
-extern QVector<int> jobs;
+extern QVector<int> jobs;       // da cambiare
+extern QWaitCondition* cv_jobs;
+extern QMutex* mutex_jobs;
+
 extern QMutex mutex_users;
 extern QMutex mutex_docs;
 
