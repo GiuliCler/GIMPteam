@@ -2,11 +2,22 @@
 #include <stdlib.h>
 #include <QThreadPool>
 #include <QRunnable>
+#include <QFileSystemModel>
+#include <QTreeView>
 
 
 Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDescriptor) {
 
     // std::cout << "SONO NEL COSTRUTTORE Server" << std::endl;             // DEBUG -----------
+
+    //Gestisco il file system inizializzando il QFileSystemModel
+    // Creates our new model and populate
+    QString mPath = ":/Files";
+    model = new QFileSystemModel(this);
+    // Set filter
+    model->setFilter(QDir::NoDotAndDotDot |QDir::AllDirs);
+    // QFileSystemModel requires root path
+    model->setRootPath(mPath);
 
     // Connessione al DB
     this->database = new CollegamentoDB();
@@ -88,9 +99,17 @@ void Server::runServer() {
             id++;
             //std::cout<<"STO SCRIVENDO NELLA MAPPA LA COPPIA key:"<<username.toStdString()<<" E value: "<<id<<std::endl;   // DEBUG -----------
             this->users.insert(QString::fromStdString(username.toStdString()), id);
-            out << "ok";
-            out << id;
-            socket->write(blocko);
+
+            //creo la cartella sul file system per l'utente
+            QTreeView *viewTreeForModel = new QTreeView();
+            viewTreeForModel->setModel(model);
+            QModelIndex index=viewTreeForModel->currentIndex();
+            //TODO: AGGIUNGERE CONTROLLO SE FA LA DIRECTORY
+            model->mkdir(viewTreeForModel->currentIndex(), QString::fromStdString(username.toStdString()));
+                out << "ok";
+                out << id;
+                socket->write(blocko);
+
         } else {
             //std::cout << "BLEAH "<<ret<< std::endl;             // DEBUG -----------
             out << "errore";
@@ -292,6 +311,7 @@ void Server::runServer() {
             this->users.insert(QString::fromStdString(docName.toStdString()),id);
             // Creazione del file
             QString filename = QString::fromStdString(docName.toStdString());
+            //Gestione file system:
             QFile file( ":/Files/"+filename);
             if (file.open(QIODevice::ReadWrite)){
                 QTextStream stream(&file);

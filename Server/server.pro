@@ -18,3 +18,6 @@ INSTALLS += target
 DISTFILES += \
     database/CMakeLists.txt \
     database/README.md
+
+RESOURCES += \
+    Files/Files.qrc

@@ -7,6 +7,7 @@
 #include "database/collegamentoDB.h"
 
 QT_BEGIN_NAMESPACE
+#include <QFileSystemModel>
 #include <QMap>
 #include <QTcpServer>
 #include <QTcpSocket>
@@ -36,6 +37,7 @@ private:
     QTcpSocket *socket;
     QMap<QString, int> users;    //TODO: da gestire con mutex per la concorrenza!! per ora chiave userId, valore username
     QMap<QString, int> documents;
+    QFileSystemModel *model; //File system
 };
 //! [0]
 
