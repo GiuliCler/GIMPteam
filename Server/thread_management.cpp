@@ -3,23 +3,12 @@
 
 Thread_management::Thread_management(int socketDescriptor, QObject *parent): QThread(parent), socketDescriptor(socketDescriptor){
     std::cout << "THREAD - Costruttore del thread con descrittore "<<socketDescriptor<< std::endl;      // DEBUG
+
     std::cout << "---- THREAD Costruttore id: " << std::this_thread::get_id() << " ---- " << std::endl;      // DEBUG
-
-//    socket = new QTcpSocket();
-//    if (!socket->setSocketDescriptor(socketDescriptor)) {
-//        emit error(socket->error());
-//        return;
-//    }
-
-//    connect(socket, SIGNAL(readyRead()), this, SLOT(executeJob()));
-//    connect(socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
-
-//    bool connected = (socket->state() == QTcpSocket::ConnectedState);
-//    bool NOTconnected = (socket->state() == QTcpSocket::UnconnectedState);
-//    std::cout << "THREAD - Costruttore: connected:"<<connected<<" & NOTconnected:"<<NOTconnected<< std::endl;      // DEBUG
 
     std::cout << "THREAD - Fine costruttore del thread con descrittore "<<socketDescriptor<< std::endl;       // DEBUG
 }
+
 
 void Thread_management::run(){
 
@@ -63,7 +52,6 @@ void Thread_management::run(){
 
     std::cout << "THREAD - Run - Prima della verifica del comando... il comando e': "<< text.toStdString() << std::endl;      // DEBUG
 
-    // Chiamata alla funzione corrispondente in base al COMANDO
     QString c = "CREATE";
     if(text.contains(c.toUtf8())){
         //std::cout << "SONO DENTRO LA CREATE" << std::endl;             // DEBUG
@@ -72,55 +60,18 @@ void Thread_management::run(){
         in >> password;
         in >> nickname;
         in >> icon;
-        //std::cout << "PRIMA DELLA signup, USERNAME:"<<username.toStdString() << std::endl;             // DEBUG
-        mutex_db->lock();
-        int ret = database->signup(QString::fromStdString(username.toStdString()), QString::fromStdString(password.toStdString()), QString::fromStdString(nickname.toStdString()), QString::fromStdString(icon.toStdString()));
-        mutex_db->unlock();
-        if(ret == 1){
-            //std::cout << "OK" << std::endl;             // DEBUG
-            // Dati correttamente inseriti nel DB
-            mutex_users->lock();
-            int id = users.size();
-            id++;
-            //std::cout<<"STO SCRIVENDO NELLA MAPPA LA COPPIA key:"<<username.toStdString()<<" E value: "<<id<<std::endl;   // DEBUG
-            users.insert(QString::fromStdString(username.toStdString()), id);
-            mutex_users->unlock();
-            out << "ok";
-            out << id;
-            socket->write(blocko);
-        } else {
-            //std::cout << "BLEAH "<<ret<< std::endl;             // DEBUG
-            out << "errore";
-            socket->write(blocko);
-        }
+
+        create(username, password, nickname, icon);
     }
 
     c = "LOGIN";
     if(text.contains(c.toUtf8())){
-        std::cout << "THREAD - Sono nella LOGIN" << std::endl;      // DEBUG
+        //std::cout << "THREAD - Sono nella LOGIN" << std::endl;      // DEBUG
         QByteArray username, password;
         in >> username;
         in >> password;
-        mutex_db->lock();
-        std::vector<QString> v = database->login(QString::fromStdString(username.toStdString()), QString::fromStdString(password.toStdString()));
-        mutex_db->unlock();
-        if(v.size()==2){
-            //GESTIRE
-            mutex_users->lock();
-            int id = users[QString::fromStdString(username.toStdString())];
-            if(id == 0){
-                id = users.size();
-                id++;
-                users.insert(QString::fromStdString(username.toStdString()), id);
-            }
-            mutex_users->unlock();
-            out << "ok";
-            out << id;
-            socket->write(blocko);
-        }else{
-            out << "errore";
-            socket->write(blocko);
-        }
+
+        login(username, password);
     }
 
     c = "UPDATE";
@@ -128,124 +79,38 @@ void Thread_management::run(){
         std::cout<<"SONO DENTRO LA UPDATE"<<std::endl;       // DEBUG
         QByteArray password, nickname, icon;
         int userId;
-        QString username;
         in >> userId;
         in >> password;
         in >> nickname;
         in >> icon;
-        mutex_users->lock();
-        QMapIterator<QString, int> i(users);
-        while (i.hasNext()) {
-            i.next();
-            if(i.value()==userId){
-                username = i.key();
-                break;
-            }
-        }
-        mutex_users->unlock();
-        if(!username.isEmpty()){
-            mutex_db->lock();
-            if(database->aggiornaUser(username, QString::fromStdString(password.toStdString()), QString::fromStdString(nickname.toStdString()), QString::fromStdString(icon.toStdString()))){
-                mutex_db->unlock();
-                //correttamente aggiornato nel db
-                out << "ok";
-                socket->write(blocko);
-            }else{
-                mutex_db->unlock();
-                std::cout<<"ERRORE QUI 0"<<std::endl;       // DEBUG
-                out << "errore";
-                socket->write(blocko);
-            }
-        }else{
-            std::cout<<"ERRORE QUI 4"<<std::endl;       // DEBUG
-            out << "errore";
-            socket->write(blocko);
-        }
+
+        update(userId, password, nickname, icon);
     }
 
     c = "GET_USERNAME";
     if(text.contains(c.toUtf8())){
         int userId;
-        QString username;
         in >> userId;
-        mutex_users->lock();
-        QMapIterator<QString, int> i(users);
-        while (i.hasNext()) {
-            i.next();
-            if(i.value()==userId){
-                username = i.key();
-                break;
-            }
-        }
-        mutex_users->unlock();
-        if(!username.isEmpty()){
-            out << username;
-            socket->write(blocko);
-        }else{
-            out << "errore";
-            socket->write(blocko);
-        }
+
+        getUsername(userId);
     }
 
     c = "GET_NICKNAME";
     if(text.contains(c.toUtf8())){
         //std::cout << "SONO DENTRO LA GET_NICKNAME" << std::endl;             // DEBUG
         int userId;
-        QString username;
         in >> userId;
-        //std::cout << "L'UTENTE MI HA DATO COME userID... "<<userId<<std::endl;     // DEBUG
-        mutex_users->lock();
-        QMapIterator<QString, int> i(users);
-        while (i.hasNext()) {
-            //username = i.key();
-            i.next();
-            //std::cout << "ITERO... key:"<<i.key().toStdString()<<" E value:"<<i.value() << std::endl;    // DEBUG
-            if(i.value()==userId){
-                username=i.key();
-                break;
-            }
-        }
-        mutex_users->unlock();
-        if(!username.isEmpty()){
-            //std::cout<<"YESS"<<std::endl;                       // DEBUG
-            mutex_db->lock();
-            QString nick = database->getNickname(username);       // DEBUG
-            mutex_db->unlock();
-            //std::cout<<"VALORE DI RITORNO DELLA getNickname: "<<prova.toStdString()<<std::endl;   // DEBUG
-            out << nick.toLocal8Bit();
-            socket->write(blocko);
-        }else{
-            //std::cout<<"ZIOFA"<<std::endl;                      // DEBUG
-            out << "errore";
-            socket->write(blocko);
-        }
+
+        getNickname(userId);
     }
 
     c = "GET_ICON";
     if(text.contains(c.toUtf8())){
         //std::cout << "SONO DENTRO LA GET_ICON" << std::endl;             // DEBUG
         int userId;
-        QString username;
         in >> userId;
-        mutex_users->lock();
-        QMapIterator<QString, int> i(users);
-        while (i.hasNext()) {
-            i.next();
-            if(i.value()==userId){
-                username = i.key();
-                break;
-            }
-        }
-        mutex_users->unlock();
-        if(!username.isEmpty()){
-            mutex_db->lock();
-            out << database->getIconId(username).toLocal8Bit();
-            mutex_db->unlock();
-            socket->write(blocko);
-        }else{
-            out << "errore";
-            socket->write(blocko);
-        }
+
+        getIcon(userId);
     }
 
     c = "GET_DOCS";
@@ -389,27 +254,9 @@ void Thread_management::run(){
     c = "GET_URI";
     if(text.contains(c.toUtf8())){
         int docId;
-        QString docName;
         in >> docId;
-        mutex_docs->lock();
-        QMapIterator<QString, int> i(documents);
-        while (i.hasNext()) {
-            i.next();
-            if(i.value()==docId){
-                docName=i.key();
-                break;
-            }
-        }
-        mutex_docs->unlock();
-        if(!docName.isEmpty()){
-            mutex_db->lock();
-            out << database->recuperaURI(docName).toLocal8Bit();
-            mutex_db->unlock();
-            socket->write(blocko);
-        }else{
-            out << "errore";
-            socket->write(blocko);
-        }
+
+        getUri(docId);
     }
 
 //    std::cout << "THREAD - prima di disconnectFromHost(): "<<socket->state()<< std::endl;      // DEBUG
@@ -420,6 +267,226 @@ void Thread_management::run(){
 
     std::cout << "THREAD - run finita"<<std::endl;      // DEBUG
 }
+
+
+void Thread_management::create(QByteArray username, QByteArray password, QByteArray nickname, QByteArray icon){
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
+    mutex_db->lock();
+    int ret = database->signup(QString::fromStdString(username.toStdString()), QString::fromStdString(password.toStdString()), QString::fromStdString(nickname.toStdString()), QString::fromStdString(icon.toStdString()));
+    mutex_db->unlock();
+    if(ret == 1){
+        //std::cout << "OK" << std::endl;             // DEBUG
+        // Dati correttamente inseriti nel DB
+        mutex_users->lock();
+        int id = users.size();
+        id++;
+        //std::cout<<"STO SCRIVENDO NELLA MAPPA LA COPPIA key:"<<username.toStdString()<<" E value: "<<id<<std::endl;   // DEBUG
+        users.insert(QString::fromStdString(username.toStdString()), id);
+        mutex_users->unlock();
+        out << "ok";
+        out << id;
+        socket->write(blocko);
+    } else {
+        //std::cout << "BLEAH "<<ret<< std::endl;             // DEBUG
+        out << "errore";
+        socket->write(blocko);
+    }
+}
+
+
+void Thread_management::login(QByteArray username, QByteArray password){
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
+    mutex_db->lock();
+    std::vector<QString> v = database->login(QString::fromStdString(username.toStdString()), QString::fromStdString(password.toStdString()));
+    mutex_db->unlock();
+    if(v.size()==2){
+        //GESTIRE
+        mutex_users->lock();
+        int id = users[QString::fromStdString(username.toStdString())];
+        if(id == 0){
+            id = users.size();
+            id++;
+            users.insert(QString::fromStdString(username.toStdString()), id);
+        }
+        mutex_users->unlock();
+        out << "ok";
+        out << id;
+        socket->write(blocko);
+    }else{
+        out << "errore";
+        socket->write(blocko);
+    }
+}
+
+
+void Thread_management::update(int userId, QByteArray password, QByteArray nickname, QByteArray icon){
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
+    QString username;
+    mutex_users->lock();
+    QMapIterator<QString, int> i(users);
+    while (i.hasNext()) {
+        i.next();
+        if(i.value()==userId){
+            username = i.key();
+            break;
+        }
+    }
+    mutex_users->unlock();
+    if(!username.isEmpty()){
+        mutex_db->lock();
+        if(database->aggiornaUser(username, QString::fromStdString(password.toStdString()), QString::fromStdString(nickname.toStdString()), QString::fromStdString(icon.toStdString()))){
+            mutex_db->unlock();
+            //correttamente aggiornato nel db
+            out << "ok";
+            socket->write(blocko);
+        }else{
+            mutex_db->unlock();
+//                std::cout<<"ERRORE QUI 0"<<std::endl;       // DEBUG
+            out << "errore";
+            socket->write(blocko);
+        }
+    }else{
+//            std::cout<<"ERRORE QUI 4"<<std::endl;       // DEBUG
+        out << "errore";
+        socket->write(blocko);
+    }
+}
+
+
+void Thread_management::getUsername(int userId){
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
+    QString username;
+    mutex_users->lock();
+    QMapIterator<QString, int> i(users);
+    while (i.hasNext()) {
+        i.next();
+        if(i.value()==userId){
+            username = i.key();
+            break;
+        }
+    }
+    mutex_users->unlock();
+    if(!username.isEmpty()){
+        out << username;
+        socket->write(blocko);
+    }else{
+        out << "errore";
+        socket->write(blocko);
+    }
+}
+
+
+void Thread_management::getNickname(int userId){
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
+    QString username;
+    //std::cout << "L'UTENTE MI HA DATO COME userID... "<<userId<<std::endl;     // DEBUG
+    mutex_users->lock();
+    QMapIterator<QString, int> i(users);
+    while (i.hasNext()) {
+        //username = i.key();
+        i.next();
+        //std::cout << "ITERO... key:"<<i.key().toStdString()<<" E value:"<<i.value() << std::endl;    // DEBUG
+        if(i.value()==userId){
+            username=i.key();
+            break;
+        }
+    }
+    mutex_users->unlock();
+    if(!username.isEmpty()){
+        //std::cout<<"YESS"<<std::endl;                       // DEBUG
+        mutex_db->lock();
+        QString nick = database->getNickname(username);       // DEBUG
+        mutex_db->unlock();
+        //std::cout<<"VALORE DI RITORNO DELLA getNickname: "<<prova.toStdString()<<std::endl;   // DEBUG
+        out << nick.toLocal8Bit();
+        socket->write(blocko);
+    }else{
+        //std::cout<<"ZIOFA"<<std::endl;                      // DEBUG
+        out << "errore";
+        socket->write(blocko);
+    }
+}
+
+
+void Thread_management::getIcon(int userId){
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
+    QString username;
+    mutex_users->lock();
+    QMapIterator<QString, int> i(users);
+    while (i.hasNext()) {
+        i.next();
+        if(i.value()==userId){
+            username = i.key();
+            break;
+        }
+    }
+    mutex_users->unlock();
+    if(!username.isEmpty()){
+        mutex_db->lock();
+        out << database->getIconId(username).toLocal8Bit();
+        mutex_db->unlock();
+        socket->write(blocko);
+    }else{
+        out << "errore";
+        socket->write(blocko);
+    }
+}
+
+// DA RIEMPIRE
+void getDocs(){}
+void newDoc(){}
+void getDocumentDatoUri(){}
+
+
+void Thread_management::getUri(int docId){
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
+    QString docName;
+    mutex_docs->lock();
+    QMapIterator<QString, int> i(documents);
+    while (i.hasNext()) {
+        i.next();
+        if(i.value()==docId){
+            docName=i.key();
+            break;
+        }
+    }
+    mutex_docs->unlock();
+    if(!docName.isEmpty()){
+        mutex_db->lock();
+        out << database->recuperaURI(docName).toLocal8Bit();
+        mutex_db->unlock();
+        socket->write(blocko);
+    }else{
+        out << "errore";
+        socket->write(blocko);
+    }
+}
+
+
+
+
+
 
 //void Thread_management::disconnected(){
 //    qDebug() << socketDescriptor << " Disconnected";

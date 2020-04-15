@@ -30,6 +30,16 @@ public:
 private:
     CollegamentoDB *database;
     int socketDescriptor;
+    void create(QByteArray username, QByteArray password, QByteArray nickname, QByteArray icon);
+    void login(QByteArray username, QByteArray password);
+    void update(int userId, QByteArray password, QByteArray nickname, QByteArray icon);
+    void getUsername(int userId);
+    void getNickname(int userId);
+    void getIcon(int userId);
+    void getDocs();                 // DA RIEMPIRE
+    void newDoc();                  // DA RIEMPIRE
+    void getDocumentDatoUri();      // DA RIEMPIRE
+    void getUri(int docId);
 
 signals:
     void error(QTcpSocket::SocketError socketError);
