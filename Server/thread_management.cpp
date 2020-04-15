@@ -1,5 +1,6 @@
 #include "thread_management.h"
 #include <iostream>
+#include <sstream>
 
 Thread_management::Thread_management(int socketDescriptor, QObject *parent): QThread(parent), socketDescriptor(socketDescriptor){
     std::cout << "THREAD - Costruttore del thread con descrittore "<<socketDescriptor<< std::endl;      // DEBUG
@@ -13,7 +14,13 @@ Thread_management::Thread_management(int socketDescriptor, QObject *parent): QTh
 void Thread_management::run(){
 
     std::cout << "THREAD - run iniziata"<<std::endl;      // DEBUG
-    std::cout << "---- THREAD run id: "<<std::this_thread::get_id()<<" ---- "<< std::endl;      // DEBUG
+
+    auto thread_id = std::this_thread::get_id();
+    std::stringstream ss;
+    ss << thread_id;
+    std::string thread_id_string = ss.str();
+
+    std::cout << "---- THREAD run id: "<<thread_id<<" ---- "<< std::endl;      // DEBUG
 
     socket = new QTcpSocket();
     if (!socket->setSocketDescriptor(socketDescriptor)) {
@@ -35,7 +42,7 @@ void Thread_management::run(){
 
     // Creo nel thread un collegamento al DB, mettendo come nome univoco di connessione "connSOCKETDESCRIPTOR"
     database = new CollegamentoDB();
-    database->connettiDB("gimpdocs_db", "conn" + QString::number(socketDescriptor));
+    database->connettiDB("gimpdocs_db", "conn" + QString::fromStdString(thread_id_string));
 
     // Ridefinisco in e out relativi alla connessione corrente
     QByteArray text;
