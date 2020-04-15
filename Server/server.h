@@ -10,12 +10,10 @@ QT_BEGIN_NAMESPACE
 #include <QMap>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QtNetwork>
 
-//! [0]
-class Server : public QTcpServer
-{
+class Server : public QTcpServer {
     Q_OBJECT
-
 public:
     Server(QObject *parent = nullptr);
     ~Server() override;
@@ -27,14 +25,12 @@ signals:
     void error(QTcpSocket::SocketError socketError);
 
 public slots:
-    //void disconnectFromClient();
     void runServer();
 
 private:
-    QStringList fortunes;
+    CollegamentoDB *database;
     int socketDescriptor;
-    QTcpSocket *socket;
+//    QTcpSocket *socket;
 };
-//! [0]
 
 #endif

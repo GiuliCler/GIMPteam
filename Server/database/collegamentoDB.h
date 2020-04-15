@@ -7,12 +7,15 @@
 #include <iostream>
 #include <QVariant>
 
-class CollegamentoDB{
+class CollegamentoDB {
+
 private:
     QString creaURI(QString nomeDOC);
     void gen_random(char *s, const int len);
+    QString connectionName;
+
 public:
-    void connettiDB(const QString& dbname, const QString& hostname="localhost", const QString& username="root", const QString& pssw="");
+    void connettiDB(const QString& dbname, const QString& connectionName, const QString& hostname="localhost", const QString& username="root", const QString& pssw="");
     void disconnettiDB();
     std::vector<QString> login(QString username, QString password);
     int signup(QString username, QString password, QString nickname, QString icona);

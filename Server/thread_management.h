@@ -5,28 +5,38 @@
 #include <QThread>
 #include <QMutex>
 #include <QWaitCondition>
+#include <QTcpSocket>
+#include <QPair>
 
-extern QVector<int> jobs;       // da cambiare
-extern QWaitCondition* cv_jobs;
-extern QMutex* mutex_jobs;
+//extern QVector<QPair<QString, int>> jobs;
+//extern QWaitCondition* cv_jobs;
+//extern QMutex* mutex_jobs;
 
-extern QMutex mutex_users;
-extern QMutex mutex_docs;
+extern QMutex* mutex_users;
+extern QMutex* mutex_docs;
+extern QMutex* mutex_db;
 
-extern CollegamentoDB *database;
 extern QMap<QString, int> users;
 extern QMap<QString, int> documents;
 extern QMap<int, std::vector<int>> online;
 
 class Thread_management : public QThread {
     Q_OBJECT
-private:
-
-protected:
-    void run();
-
 public:
-    Thread_management();
+    Thread_management(int socketDescriptor, QObject *parent);
+    void run() override;
+    QTcpSocket* socket;
+
+private:
+    CollegamentoDB *database;
+    int socketDescriptor;
+
+signals:
+    void error(QTcpSocket::SocketError socketError);
+
+public slots:
+//    void executeJob();          // DA TOGLIERE POI
+//    void disconnected();        // DA TOGLIERE POI
 };
 
 #endif // THREAD_MANAGEMENT_H
