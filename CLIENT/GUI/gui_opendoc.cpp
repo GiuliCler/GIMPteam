@@ -9,8 +9,8 @@
 #include <QFileDialog>
 #include <QFileInfo>
 
-#define GUI_OPENDOC_WIDGETLIST_KEY 1
-#define GUI_OPENDOC_WIDGETLIST_VALUE 0
+#define GUI_OPENDOC_WIDGETLIST_KEY 0
+#define GUI_OPENDOC_WIDGETLIST_VALUE 1
 
 GUI_Opendoc::GUI_Opendoc(QWidget *parent) : QWidget(parent)
 {
