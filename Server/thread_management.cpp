@@ -62,11 +62,13 @@ void Thread_management::run(){
     QString c = "CREATE";
     if(text.contains(c.toUtf8())){
         //std::cout << "SONO DENTRO LA CREATE" << std::endl;             // DEBUG
-        QByteArray username, password, nickname, icon;
+        QString username, password, nickname, icon;
         in >> username;
         in >> password;
         in >> nickname;
         in >> icon;
+
+        qDebug()<<"PRIMA DELLA CHIAMATA ALLA CREATEEEEEEEE  "<<nickname;
 
         create(username, password, nickname, icon);
     }
@@ -74,7 +76,7 @@ void Thread_management::run(){
     c = "LOGIN";
     if(text.contains(c.toUtf8())){
         //std::cout << "THREAD - Sono nella LOGIN" << std::endl;      // DEBUG
-        QByteArray username, password;
+        QString username, password;
         in >> username;
         in >> password;
 
@@ -84,7 +86,7 @@ void Thread_management::run(){
     c = "UPDATE";
     if(text.contains(c.toUtf8())){
         std::cout<<"SONO DENTRO LA UPDATE"<<std::endl;       // DEBUG
-        QByteArray password, nickname, icon;
+        QString password, nickname, icon;
         int userId;
         in >> userId;
         in >> password;
@@ -122,76 +124,32 @@ void Thread_management::run(){
 
     c = "GET_DOCS";
     if(text.contains(c.toUtf8())){
+        std::cout << "******************* GET_DOCS (INIZIO) *******************" << std::endl;             // DEBUG
         int userId;
-        QString username;
         in >> userId;
-        mutex_users->lock();
-        QMapIterator<QString, int> i(users);
-        while (i.hasNext()) {
-            i.next();
-            if(i.value()==userId){
-                username = i.key();
-                break;
-            }
-        }
-        mutex_users->unlock();
-        if(!username.isEmpty()){
-            // Recupero i documenti per cui l'utente e' abilitato ad accedere
-            mutex_db->lock();
-            std::vector<QString> documenti = database->recuperaDocs(username);
-            mutex_db->unlock();
 
-            // Trasformo il std::vector in QVector
-            QVector<QString> documenti_qt = QVector<QString>::fromStdVector(documenti);
-
-            // Mando al client il numero di elementi/documenti che verranno inviati
-            int num_doc = documenti_qt.size();
-            out << num_doc;
-
-            std::cout << "GET_DOCS - num_doc MANDATO AL CLIENT: "<<num_doc<< std::endl;             // DEBUG
-
-            // Mando al client i nomi dei documenti a cui l'utente può accedere singolarmente
-            for(auto it = documenti_qt.begin(); it<documenti_qt.end(); it++){
-                // Salvo il nome documento corrente
-                QString doc_name = (*it);
-
-                // Cerco il docId del documento corrente
-                mutex_docs->lock();
-                int docId = documents.value(doc_name);
-                mutex_docs->unlock();
-
-                // Concateno in una stringa unica da mandare al client
-                QString doc = doc_name + "_" + QString::number(docId);
-                std::cout << "GET_DOCS - MANDATA AL CLIENT LA COPPIA: "<<doc.toStdString()<< std::endl;             // DEBUG
-
-                // Mando la QString così generata al client
-                out << doc.toLocal8Bit();
-            }
-            socket->write(blocko);
-        }else{
-            out << "errore";
-            socket->write(blocko);
-        }
+        getDocs(userId);
+        std::cout << "******************* GET_DOCS (FINE) *******************" << std::endl;             // DEBUG
     }
 
     c = "NEW_DOC";
     if(text.contains(c.toUtf8())){
-        QByteArray docName;
+        QString docName;
         int userId;
         in >> docName;
         in >> userId;
         mutex_db->lock();
-        if(database->creaDoc(QString::fromStdString(docName.toStdString()))){
+        if(database->creaDoc(docName)){
             mutex_db->unlock();
             // Documento creato e correttamente inserito nel DB
             // Associazione nome_doc - docId nella QMap
             mutex_docs->lock();
             int id = documents.size();
             id++;
-            documents.insert(QString::fromStdString(docName.toStdString()),id);
+            documents.insert(docName,id);
             mutex_docs->unlock();
             // Creazione del file
-            QString filename = QString::fromStdString(docName.toStdString());
+            QString filename = docName;
             QFile file( ":/Files/"+filename);
             if (file.open(QIODevice::ReadWrite)){
                 QTextStream stream(&file);
@@ -214,7 +172,7 @@ void Thread_management::run(){
             mutex_users->unlock();
             if(!username.isEmpty()){
                 mutex_db->lock();
-                if(database->aggiungiPartecipante(QString::fromStdString(docName.toStdString()),username) != 2){
+                if(database->aggiungiPartecipante(docName,username) != 2){
                     mutex_db->unlock();
                     out << "ok";
                     out << id;
@@ -238,10 +196,10 @@ void Thread_management::run(){
 
     c = "GET_DOCUMENT_DATO_URI";
     if(text.contains(c.toUtf8())){
-        QByteArray uri;
+        QString uri;
         in >> uri;
         mutex_db->lock();
-        QString doc = database->recuperaDocDatoURI(QString::fromStdString(uri.toStdString()));
+        QString doc = database->recuperaDocDatoURI(uri);
         mutex_db->unlock();
         if(doc != "errore"){
             // Nome del documento relativo all'URI ottenuto dal DB correttamente
@@ -276,13 +234,15 @@ void Thread_management::run(){
 }
 
 
-void Thread_management::create(QByteArray username, QByteArray password, QByteArray nickname, QByteArray icon){
+void Thread_management::create(QString username, QString password, QString nickname, QString icon){
     QByteArray blocko;
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
+    qDebug()<<"CREATE PRIMA DELLA SIGNUPPPPPPPPP "<<nickname;
+
     mutex_db->lock();
-    int ret = database->signup(QString::fromStdString(username.toStdString()), QString::fromStdString(password.toStdString()), QString::fromStdString(nickname.toStdString()), QString::fromStdString(icon.toStdString()));
+    int ret = database->signup(username, password, nickname, icon);
     mutex_db->unlock();
     if(ret == 1){
         //std::cout << "OK" << std::endl;             // DEBUG
@@ -291,7 +251,7 @@ void Thread_management::create(QByteArray username, QByteArray password, QByteAr
         int id = users.size();
         id++;
         //std::cout<<"STO SCRIVENDO NELLA MAPPA LA COPPIA key:"<<username.toStdString()<<" E value: "<<id<<std::endl;   // DEBUG
-        users.insert(QString::fromStdString(username.toStdString()), id);
+        users.insert(username, id);
         mutex_users->unlock();
         out << "ok";
         out << id;
@@ -304,22 +264,22 @@ void Thread_management::create(QByteArray username, QByteArray password, QByteAr
 }
 
 
-void Thread_management::login(QByteArray username, QByteArray password){
+void Thread_management::login(QString username, QString password){
     QByteArray blocko;
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
     mutex_db->lock();
-    std::vector<QString> v = database->login(QString::fromStdString(username.toStdString()), QString::fromStdString(password.toStdString()));
+    std::vector<QString> v = database->login(username, password);
     mutex_db->unlock();
     if(v.size()==2){
         //GESTIRE
         mutex_users->lock();
-        int id = users[QString::fromStdString(username.toStdString())];
+        int id = users[username];
         if(id == 0){
             id = users.size();
             id++;
-            users.insert(QString::fromStdString(username.toStdString()), id);
+            users.insert(username, id);
         }
         mutex_users->unlock();
         out << "ok";
@@ -332,7 +292,7 @@ void Thread_management::login(QByteArray username, QByteArray password){
 }
 
 
-void Thread_management::update(int userId, QByteArray password, QByteArray nickname, QByteArray icon){
+void Thread_management::update(int userId, QString password, QString nickname, QString icon){
     QByteArray blocko;
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
@@ -350,7 +310,7 @@ void Thread_management::update(int userId, QByteArray password, QByteArray nickn
     mutex_users->unlock();
     if(!username.isEmpty()){
         mutex_db->lock();
-        if(database->aggiornaUser(username, QString::fromStdString(password.toStdString()), QString::fromStdString(nickname.toStdString()), QString::fromStdString(icon.toStdString()))){
+        if(database->aggiornaUser(username, password, nickname, icon)){
             mutex_db->unlock();
             //correttamente aggiornato nel db
             out << "ok";
@@ -457,8 +417,68 @@ void Thread_management::getIcon(int userId){
     }
 }
 
+void Thread_management::getDocs(int userId){
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
+    mutex_users->lock();
+    QString username;
+    QMapIterator<QString, int> i(users);
+    while (i.hasNext()) {
+        i.next();
+        if(i.value()==userId){
+            username = i.key();
+            break;
+        }
+    }
+    mutex_users->unlock();
+
+    // ****************** DA TOGLIEREEEEE *********************                         // DEBUG
+//    database->creaDoc("DivinaCommedia");
+//    database->creaDoc("Oibaboi");
+//    database->aggiungiPartecipante("DivinaCommedia", "ilagioda@gimpteam.it");
+//    database->aggiungiPartecipante("Oibaboi", "ilagioda@gimpteam.it");
+    // ****************** DA TOGLIEREEEEE *********************
+
+    if(!username.isEmpty()){
+        // Recupero i documenti per cui l'utente e' abilitato ad accedere
+        mutex_db->lock();
+        std::vector<QString> documenti = database->recuperaDocs(username);
+        mutex_db->unlock();
+
+        // Mando al client il numero di elementi/documenti che verranno inviati
+        int num_doc = documenti.size();
+        std::cout << "GET_DOCS - STO MANDANDO AL CLIENT num_doc: "<<num_doc<< std::endl;             // DEBUG
+        out << num_doc;
+
+        // Mando al client i nomi dei documenti a cui l'utente può accedere singolarmente
+        for(auto it = documenti.begin(); it<documenti.end(); it++){
+            // Salvo il nome documento corrente
+//            qDebug()<< "GET_DOCS - (*it): "<<(*it);             // DEBUG
+            QString doc_name = (*it);
+//            qDebug()<< "GET_DOCS - docname: "<<doc_name;             // DEBUG
+
+            // Cerco il docId del documento corrente
+            mutex_docs->lock();
+            int docId = documents.value(doc_name);
+            mutex_docs->unlock();
+
+            // Concateno in una stringa unica da mandare al client
+            QString doc = doc_name + "_" + QString::number(docId);
+            qDebug()<< "GET_DOCS - coppia: "<<doc;             // DEBUG
+
+            // Mando la QString così generata al client
+            out << doc.toUtf8();
+         }
+         socket->write(blocko);
+    }else{
+        out << "errore";
+        socket->write(blocko);
+    }
+}
+
 // DA RIEMPIRE
-void getDocs(){}
 void newDoc(){}
 void getDocumentDatoUri(){}
 

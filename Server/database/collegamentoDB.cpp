@@ -268,7 +268,7 @@ int CollegamentoDB::aggiungiPartecipante(QString nomeDOC, QString username){
     ris2.bindValue(":doc", nomeDOC);
     ris3.bindValue(":doc", nomeDOC);
 
-    if(QSqlDatabase::database().driver()->hasFeature(QSqlDriver::Transactions)){
+//    if(QSqlDatabase::database().driver()->hasFeature(QSqlDriver::Transactions)){
 
         QSqlDatabase::database().transaction();
 
@@ -293,7 +293,7 @@ int CollegamentoDB::aggiungiPartecipante(QString nomeDOC, QString username){
                 QSqlDatabase::database().commit();
             }
         }
-    }
+//    }
 
     return esito;
 }
