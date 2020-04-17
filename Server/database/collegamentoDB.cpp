@@ -509,7 +509,7 @@ int CollegamentoDB::rimuoviPartecipante(QString nomeDOC, QString username){
     ris3.bindValue(":doc", nomeDOC);
     ris4.bindValue(":doc", nomeDOC);
 
-    if(QSqlDatabase::database().driver()->hasFeature(QSqlDriver::Transactions)){
+//    if(QSqlDatabase::database().driver()->hasFeature(QSqlDriver::Transactions)){
 
         QSqlDatabase::database().transaction();
 
@@ -534,7 +534,7 @@ int CollegamentoDB::rimuoviPartecipante(QString nomeDOC, QString username){
             QSqlDatabase::database().commit();
 
         }
-    }
+//    }
 
     return esito;
 }
@@ -559,7 +559,7 @@ int CollegamentoDB::aggiornaSiteCounter(QString nomeDOC, QString username, int s
     ris0.bindValue(":user", username);
     ris0.bindValue(":doc", nomeDOC);
 
-    if(QSqlDatabase::database().driver()->hasFeature(QSqlDriver::Transactions)) {
+//    if(QSqlDatabase::database().driver()->hasFeature(QSqlDriver::Transactions)) {
 
         QSqlDatabase::database().transaction();
 
@@ -598,9 +598,9 @@ int CollegamentoDB::aggiornaSiteCounter(QString nomeDOC, QString username, int s
             return 0;
         }
 
-    } else {
-        return 0;
-    }
+//    } else {
+//        return 0;
+//    }
 }
 
 /*
