@@ -249,7 +249,7 @@ std::string connection_to_server::requestDocDatoUri(QString uri){
     return std::string(file);
 }
 
-std::string connection_to_server::requestUri(long docId){
+std::string connection_to_server::requestUri(int docId){
     this->tcpSocket->abort();
     this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
@@ -257,12 +257,15 @@ std::string connection_to_server::requestUri(long docId){
         emit error(tcpSocket->error(), tcpSocket->errorString());
         return "errore";
     }
+
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_10);
 
     out << "GET_URI";
-    out << QString::number(docId);
+    out << docId;
+
+    qDebug()<<"GET_URI ****** docId inviato: "<<docId;       // DEBUG
 
     this->tcpSocket->write(buffer);
 
@@ -272,7 +275,7 @@ std::string connection_to_server::requestUri(long docId){
     }
 
     //ora attendo una risposta dal server, sul login al db
-    QByteArray uri;
+    QString uri;
     QDataStream in;
     in.setDevice(this->tcpSocket);
     in.setVersion(QDataStream::Qt_4_0);
@@ -286,8 +289,8 @@ std::string connection_to_server::requestUri(long docId){
         in.startTransaction();
         in >> uri;
     } while (!in.commitTransaction());
-    uri.replace('\0',"");
-    return uri.toStdString();
+//    uri.replace('\0',"");
+    return uri.toLocal8Bit().constData();
 }
 
 //per mostrare i file (nomi)<--------TODO
@@ -317,8 +320,6 @@ std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int 
     QDataStream out(&buffer, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_10);
 
-    std::cout << "******************* GET_DOCS (INIZIO) *******************" << std::endl;             // DEBUG
-
     out << "GET_DOCS";
     out << userId;
 
@@ -345,17 +346,17 @@ std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int 
         in.startTransaction();
         in >> num;
 
-        qDebug()<<"CONNECTION_TO_SERVER - num_doc RICEVUTO: "<<num;     // DEBUG
+//        qDebug()<<"CONNECTION_TO_SERVER - num_doc RICEVUTO: "<<num;     // DEBUG
 
         for(int i=0; i<num; i++){
             in >> doc;
-            qDebug()<<"CONNECTION_TO_SERVER - Arrivato dal server... "<<QString::fromStdString(doc.toStdString());       // DEBUG
+//            qDebug()<<"CONNECTION_TO_SERVER - Arrivato dal server... "<<QString::fromStdString(doc.toStdString());       // DEBUG
             vet.push_back(QString::fromStdString(doc.toStdString()));
         }
 
     } while (!in.commitTransaction());
 
-    qDebug()<<"CONNECTION_TO_SERVER - vet.size(): "<<vet.size();     // DEBUG
+//    qDebug()<<"CONNECTION_TO_SERVER - vet.size(): "<<vet.size();     // DEBUG
 
     // Conversione del QVector<QString> in <QMap<QString, int>>
     QMap<QString, int> ritorno;
@@ -365,10 +366,8 @@ std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int 
         QString doc_name = list.at(0);
         int docId = list.at(1).toInt();
         ritorno.insert(doc_name, docId);
-        qDebug()<<"CONNECTION_TO_SERVER - Salvo la coppia (doc_name, docId): ("<<doc_name<<","<<docId<<")";       // DEBUG
+//        qDebug()<<"CONNECTION_TO_SERVER - Salvo la coppia (doc_name, docId): ("<<doc_name<<","<<docId<<")";       // DEBUG
     }
-
-    std::cout << "******************* GET_DOCS (FINE) *******************" << std::endl;             // DEBUG
 
     return std::make_shared<QMap<QString, int>>(ritorno);
 }

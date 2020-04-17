@@ -22,9 +22,9 @@ void CollegamentoDB::connettiDB(const QString& dbname, const QString& connection
     conn.setDatabaseName(dbname);
 
     if(conn.open()){
-        std::cout << "Connessione con il DB effettuata correttamente" << std::endl;
+        qDebug() << "Connessione con il DB effettuata correttamente";
     } else {
-        std::cout << "Errore durante la connessione con il DB" << std::endl;
+        qDebug() << "Errore durante la connessione con il DB";
         qDebug() << conn.lastError();
     }
 
@@ -337,7 +337,7 @@ std::vector<QString> CollegamentoDB::recuperaDocs(QString username){
  */
 QString CollegamentoDB::getNickname(QString username){
 
-    //std::cout<<"SONO DENTRO LA getNickname e USERNAME E': "<<username.toStdString()<<std::endl;            // DEBUG
+    //qDebug()<<"SONO DENTRO LA getNickname e USERNAME E': "<<username;            // DEBUG
 
     std::string query = "SELECT nickname FROM utenti WHERE username=:user";
     QSqlQuery ris(QSqlDatabase::database(connectionName));
@@ -346,15 +346,15 @@ QString CollegamentoDB::getNickname(QString username){
 
     ris.exec();
 
-    //std::cout<<"HO ESEGUITO LA EXEC"<<std::endl;            // DEBUG
+    //qDebug()<<"HO ESEGUITO LA EXEC";            // DEBUG
 
     if(ris.size() > 0){
-        //std::cout<<"SONO NELL'IF... ris.size() vale "<<ris.size()<<std::endl;            // DEBUG
+        //qDebug()<<"SONO NELL'IF... ris.size() vale "<<ris.size();            // DEBUG
         ris.next();
-        //std::cout<<"STO PER MANDARE INDIETRO UNA COSA DI TIPO... "<<ris.value(0).typeName()<<std::endl;  // DEBUG
+        //qDebug()<<"STO PER MANDARE INDIETRO UNA COSA DI TIPO... "<<ris.value(0).typeName();  // DEBUG
         return QString::fromStdString(ris.value(0).toByteArray().toStdString());
     } else {
-        //std::cout<<"SONO NELL'ELSE"<<std::endl;            // DEBUG
+        //qDebug()<<"SONO NELL'ELSE";            // DEBUG
         return "errore";
     }
 }

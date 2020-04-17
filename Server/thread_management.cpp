@@ -3,17 +3,17 @@
 #include <sstream>
 
 Thread_management::Thread_management(int socketDescriptor, QObject *parent): QThread(parent), socketDescriptor(socketDescriptor){
-    std::cout << "THREAD - Costruttore del thread con descrittore "<<socketDescriptor<< std::endl;      // DEBUG
+    qDebug()<< "THREAD - Costruttore del thread con descrittore "<<socketDescriptor;          // DEBUG
 
     std::cout << "---- THREAD Costruttore id: " << std::this_thread::get_id() << " ---- " << std::endl;      // DEBUG
 
-    std::cout << "THREAD - Fine costruttore del thread con descrittore "<<socketDescriptor<< std::endl;       // DEBUG
+    qDebug()<< "THREAD - Fine costruttore del thread con descrittore "<<socketDescriptor;       // DEBUG
 }
 
 
 void Thread_management::run(){
 
-    std::cout << "THREAD - run iniziata"<<std::endl;      // DEBUG
+    qDebug() << "THREAD - run iniziata";           // DEBUG
 
     auto thread_id = std::this_thread::get_id();
     std::stringstream ss;
@@ -33,7 +33,7 @@ void Thread_management::run(){
 
     bool connected = (socket->state() == QTcpSocket::ConnectedState);
     bool NOTconnected = (socket->state() == QTcpSocket::UnconnectedState);
-    std::cout << "THREAD - Run - connected:"<<connected<<" & NOTconnected:"<<NOTconnected<< std::endl;      // DEBUG
+    qDebug() << "THREAD - Run - connected:"<<connected<<" & NOTconnected:"<<NOTconnected;      // DEBUG
 
     if (!socket->waitForReadyRead(5000)) {
         emit error(socket->error());
@@ -57,25 +57,23 @@ void Thread_management::run(){
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
-    std::cout << "THREAD - Run - Prima della verifica del comando... il comando e': "<< text.toStdString() << std::endl;      // DEBUG
+    qDebug() << "THREAD - Run - Prima della verifica del comando... il comando e': "<< QString::fromStdString(text.toStdString());      // DEBUG
 
     QString c = "CREATE";
     if(text.contains(c.toUtf8())){
-        //std::cout << "SONO DENTRO LA CREATE" << std::endl;             // DEBUG
+//        qDebug() << "SONO DENTRO LA CREATE";             // DEBUG
         QString username, password, nickname, icon;
         in >> username;
         in >> password;
         in >> nickname;
         in >> icon;
 
-        qDebug()<<"PRIMA DELLA CHIAMATA ALLA CREATEEEEEEEE  "<<nickname;
-
         create(username, password, nickname, icon);
     }
 
     c = "LOGIN";
     if(text.contains(c.toUtf8())){
-        //std::cout << "THREAD - Sono nella LOGIN" << std::endl;      // DEBUG
+        //qDebug()<< "THREAD - Sono nella LOGIN";        // DEBUG
         QString username, password;
         in >> username;
         in >> password;
@@ -85,7 +83,7 @@ void Thread_management::run(){
 
     c = "UPDATE";
     if(text.contains(c.toUtf8())){
-        std::cout<<"SONO DENTRO LA UPDATE"<<std::endl;       // DEBUG
+//        qDebug()<<"SONO DENTRO LA UPDATE";          // DEBUG
         QString password, nickname, icon;
         int userId;
         in >> userId;
@@ -106,7 +104,7 @@ void Thread_management::run(){
 
     c = "GET_NICKNAME";
     if(text.contains(c.toUtf8())){
-        //std::cout << "SONO DENTRO LA GET_NICKNAME" << std::endl;             // DEBUG
+        //qDebug()<< "SONO DENTRO LA GET_NICKNAME";             // DEBUG
         int userId;
         in >> userId;
 
@@ -115,7 +113,7 @@ void Thread_management::run(){
 
     c = "GET_ICON";
     if(text.contains(c.toUtf8())){
-        //std::cout << "SONO DENTRO LA GET_ICON" << std::endl;             // DEBUG
+        //qDebug()<< "SONO DENTRO LA GET_ICON";             // DEBUG
         int userId;
         in >> userId;
 
@@ -124,12 +122,10 @@ void Thread_management::run(){
 
     c = "GET_DOCS";
     if(text.contains(c.toUtf8())){
-        std::cout << "******************* GET_DOCS (INIZIO) *******************" << std::endl;             // DEBUG
         int userId;
         in >> userId;
 
         getDocs(userId);
-        std::cout << "******************* GET_DOCS (FINE) *******************" << std::endl;             // DEBUG
     }
 
     c = "NEW_DOC";
@@ -224,13 +220,13 @@ void Thread_management::run(){
         getUri(docId);
     }
 
-//    std::cout << "THREAD - prima di disconnectFromHost(): "<<socket->state()<< std::endl;      // DEBUG
+//    qDebug() << "THREAD - prima di disconnectFromHost(): "<<socket->state();        // DEBUG
     socket->disconnectFromHost();
-//    std::cout << "THREAD - prima di waitForDisconnected(): "<<socket->state()<< std::endl;      // DEBUG
+//    qDebug() << "THREAD - prima di waitForDisconnected(): "<<socket->state();        // DEBUG
     socket->waitForDisconnected(3000);
-//    std::cout << "THREAD - dopo di waitForDisconnected:: "<<socket->state()<< std::endl;      // DEBUG
+//    qDebug() << "THREAD - dopo di waitForDisconnected:: "<<socket->state();        // DEBUG
 
-    std::cout << "THREAD - run finita"<<std::endl;      // DEBUG
+    qDebug() << "THREAD - run finita";      // DEBUG
 }
 
 
@@ -239,25 +235,23 @@ void Thread_management::create(QString username, QString password, QString nickn
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
-    qDebug()<<"CREATE PRIMA DELLA SIGNUPPPPPPPPP "<<nickname;
-
     mutex_db->lock();
     int ret = database->signup(username, password, nickname, icon);
     mutex_db->unlock();
     if(ret == 1){
-        //std::cout << "OK" << std::endl;             // DEBUG
+        //qDebug() << "OK";                    // DEBUG
         // Dati correttamente inseriti nel DB
         mutex_users->lock();
         int id = users.size();
         id++;
-        //std::cout<<"STO SCRIVENDO NELLA MAPPA LA COPPIA key:"<<username.toStdString()<<" E value: "<<id<<std::endl;   // DEBUG
+        //qDebug()<<"STO SCRIVENDO NELLA MAPPA LA COPPIA key:"<<username<<" E value: "<<id;        // DEBUG
         users.insert(username, id);
         mutex_users->unlock();
         out << "ok";
         out << id;
         socket->write(blocko);
     } else {
-        //std::cout << "BLEAH "<<ret<< std::endl;             // DEBUG
+        //qDebug() << "BLEAH "<<ret;             // DEBUG
         out << "errore";
         socket->write(blocko);
     }
@@ -273,7 +267,7 @@ void Thread_management::login(QString username, QString password){
     std::vector<QString> v = database->login(username, password);
     mutex_db->unlock();
     if(v.size()==2){
-        //GESTIRE
+        //GESTIRE                           <---------- GIULIA?!?!?
         mutex_users->lock();
         int id = users[username];
         if(id == 0){
@@ -317,12 +311,12 @@ void Thread_management::update(int userId, QString password, QString nickname, Q
             socket->write(blocko);
         }else{
             mutex_db->unlock();
-//                std::cout<<"ERRORE QUI 0"<<std::endl;       // DEBUG
+//                qDebug()<<"ERRORE QUI 0";          // DEBUG
             out << "errore";
             socket->write(blocko);
         }
     }else{
-//            std::cout<<"ERRORE QUI 4"<<std::endl;       // DEBUG
+//            qDebug()<<"ERRORE QUI 4";           // DEBUG
         out << "errore";
         socket->write(blocko);
     }
@@ -361,13 +355,12 @@ void Thread_management::getNickname(int userId){
     out.setVersion(QDataStream::Qt_5_12);
 
     QString username;
-    //std::cout << "L'UTENTE MI HA DATO COME userID... "<<userId<<std::endl;     // DEBUG
+    //qDebug() << "L'UTENTE MI HA DATO COME userID... "<<userId;       // DEBUG
     mutex_users->lock();
     QMapIterator<QString, int> i(users);
     while (i.hasNext()) {
-        //username = i.key();
         i.next();
-        //std::cout << "ITERO... key:"<<i.key().toStdString()<<" E value:"<<i.value() << std::endl;    // DEBUG
+        //qDebug() << "ITERO... key:"<<i.key()<<" E value:"<<i.value();       // DEBUG
         if(i.value()==userId){
             username=i.key();
             break;
@@ -375,15 +368,14 @@ void Thread_management::getNickname(int userId){
     }
     mutex_users->unlock();
     if(!username.isEmpty()){
-        //std::cout<<"YESS"<<std::endl;                       // DEBUG
+        //qDebug()<<"YESS";                       // DEBUG
         mutex_db->lock();
         QString nick = database->getNickname(username);       // DEBUG
         mutex_db->unlock();
-        //std::cout<<"VALORE DI RITORNO DELLA getNickname: "<<prova.toStdString()<<std::endl;   // DEBUG
         out << nick.toLocal8Bit();
         socket->write(blocko);
     }else{
-        //std::cout<<"ZIOFA"<<std::endl;                      // DEBUG
+        //qDebug()<<"ZIOFA";                      // DEBUG
         out << "errore";
         socket->write(blocko);
     }
@@ -449,7 +441,7 @@ void Thread_management::getDocs(int userId){
 
         // Mando al client il numero di elementi/documenti che verranno inviati
         int num_doc = documenti.size();
-        std::cout << "GET_DOCS - STO MANDANDO AL CLIENT num_doc: "<<num_doc<< std::endl;             // DEBUG
+//        qDebug() << "GET_DOCS - STO MANDANDO AL CLIENT num_doc: "<<num_doc;             // DEBUG
         out << num_doc;
 
         // Mando al client i nomi dei documenti a cui l'utente può accedere singolarmente
@@ -466,7 +458,7 @@ void Thread_management::getDocs(int userId){
 
             // Concateno in una stringa unica da mandare al client
             QString doc = doc_name + "_" + QString::number(docId);
-            qDebug()<< "GET_DOCS - coppia: "<<doc;             // DEBUG
+//            qDebug()<< "GET_DOCS - coppia: "<<doc;             // DEBUG
 
             // Mando la QString così generata al client
             out << doc.toUtf8();
@@ -488,6 +480,8 @@ void Thread_management::getUri(int docId){
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
+    qDebug()<<"GET_URI ****** docId ricevuto: "<<docId;      // DEBUG
+
     QString docName;
     mutex_docs->lock();
     QMapIterator<QString, int> i(documents);
@@ -501,7 +495,9 @@ void Thread_management::getUri(int docId){
     mutex_docs->unlock();
     if(!docName.isEmpty()){
         mutex_db->lock();
-        out << database->recuperaURI(docName).toLocal8Bit();
+        qDebug()<<"GET_URI ----- docName: "<<docName;      // DEBUG
+        qDebug()<<"GET_URI ----- URI recuperato: "<<database->recuperaURI(docName);     // DEBUG
+        out << database->recuperaURI(docName);
         mutex_db->unlock();
         socket->write(blocko);
     }else{

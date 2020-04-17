@@ -13,9 +13,9 @@
 //QWaitCondition* cv_jobs = new QWaitCondition();
 //QMutex* mutex_jobs = new QMutex();
 
-QMutex* mutex_users = new QMutex();;
-QMutex* mutex_docs = new QMutex();;
-QMutex* mutex_db = new QMutex();;
+QMutex* mutex_users = new QMutex();
+QMutex* mutex_docs = new QMutex();
+QMutex* mutex_db = new QMutex();
 
 QMap<QString, int> users;
 QMap<QString, int> documents;
@@ -23,7 +23,7 @@ QMap<int, std::vector<int>> online;  // QMap formata da coppie (docId, [userId1,
 
 Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDescriptor) {
 
-    std::cout << "Dentro al costruttore di Server" << std::endl;     // DEBUG
+    qDebug()<< "Dentro al costruttore di Server";           // DEBUG
 
     // Connessione al DB
     database = new CollegamentoDB();
@@ -68,20 +68,20 @@ Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDesc
 
 //    CODICE DI PROVA - PRODUTTORE
 //    mutex_jobs->lock();
-//    std::cout<<"SERVER - Prima della prepend: "<<jobs.first()<<std::endl;
+//    qDebug()<<"SERVER - Prima della prepend: "<<jobs.first();
 //    jobs.prepend(2);
-//    std::cout<<"SERVER - Dopo la prepend: "<<jobs.first()<<std::endl;
+//    qDebug()<<"SERVER - Dopo la prepend: "<<jobs.first();
 //    mutex_jobs->unlock();
 //    std::this_thread::sleep_for(std::chrono::seconds(3));
 //    cv_jobs->wakeAll();     // non fa un tubo
 
-    std::cout<<"Fine costruttore di Server"<<std::endl;     // DEBUG
+    qDebug()<<"Fine costruttore di Server";          // DEBUG
 
 }
 
 Server::~Server(){
 
-    std::cout<<"Dentro al distruttore di Server"<<std::endl;      // DEBUG
+    qDebug()<<"Dentro al distruttore di Server";         // DEBUG
 
     // Sveglio il thread_management addormentato nella wait
 //     cv_jobs->wakeAll();
@@ -93,7 +93,7 @@ Server::~Server(){
 //        thread_mgm->wait();
 //    }
 
-    std::cout<<"Fine distruttore di Server"<<std::endl;      // DEBUG
+    qDebug()<<"Fine distruttore di Server";         // DEBUG
 
 }
 
@@ -104,8 +104,8 @@ void Server::incomingConnection(qintptr socketDescriptor) {
      * We create an object that will take care of the communication with this client
     */
 
-    std::cout << "SERVER - Sono nella incomingConnection" << std::endl;    // DEBUG
-    std::cout << "---- SERVER incomingConnection id: " << std::this_thread::get_id() << " ---- " << std::endl;      // DEBUG
+    qDebug()<< "SERVER - Sono nella incomingConnection";       // DEBUG
+    std::cout << "---- SERVER incomingConnection id: " << std::this_thread::get_id() << " ---- " << std::endl;       // DEBUG
 
     // Creo thread_management
     Thread_management* thread_mgm = new Thread_management(socketDescriptor, this);
@@ -123,7 +123,5 @@ void Server::incomingConnection(qintptr socketDescriptor) {
 }
 
 void Server::runServer() {
-
-    std::cout << "SERVER - Sono nella runServer" << std::endl;    // DEBUG
-
+    qDebug()<< "SERVER - Sono nella runServer";      // DEBUG
 }
