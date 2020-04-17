@@ -365,6 +365,10 @@ std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int 
         QStringList list = stringa.split('_');
         QString doc_name = list.at(0);
         int docId = list.at(1).toInt();
+
+        if(doc_name == "nessuno")
+            break;
+
         ritorno.insert(doc_name, docId);
 //        qDebug()<<"CONNECTION_TO_SERVER - Salvo la coppia (doc_name, docId): ("<<doc_name<<","<<docId<<")";       // DEBUG
     }

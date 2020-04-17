@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Ott 10, 2019 alle 23:07
+-- Creato il: Apr 17, 2020 alle 12:25
 -- Versione del server: 10.1.40-MariaDB
 -- Versione PHP: 7.3.5
 
@@ -21,6 +21,8 @@ SET time_zone = "+00:00";
 --
 -- Database: `gimpdocs_db`
 --
+CREATE DATABASE IF NOT EXISTS `gimpdocs_db` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `gimpdocs_db`;
 
 -- --------------------------------------------------------
 
@@ -28,10 +30,19 @@ SET time_zone = "+00:00";
 -- Struttura della tabella `doc`
 --
 
+DROP TABLE IF EXISTS `doc`;
 CREATE TABLE `doc` (
   `nome_doc` varchar(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `uri` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dump dei dati per la tabella `doc`
+--
+
+INSERT INTO `doc` (`nome_doc`, `uri`) VALUES
+('DivinaCommedia', '://GIMPdocs/80423b4c7a9c3e047148ececb88d1d41'),
+('Oibaboi', '://GIMPdocs/3b32d34c78a03e759aa185702748c408');
 
 -- --------------------------------------------------------
 
@@ -39,6 +50,7 @@ CREATE TABLE `doc` (
 -- Struttura della tabella `utente_doc`
 --
 
+DROP TABLE IF EXISTS `utente_doc`;
 CREATE TABLE `utente_doc` (
   `username` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `nome_doc` varchar(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
@@ -46,12 +58,21 @@ CREATE TABLE `utente_doc` (
   `site_counter` int(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dump dei dati per la tabella `utente_doc`
+--
+
+INSERT INTO `utente_doc` (`username`, `nome_doc`, `site_id`, `site_counter`) VALUES
+('ilagioda@gimpteam.it', 'DivinaCommedia', 0, 0),
+('ilagioda@gimpteam.it', 'Oibaboi', 0, 0);
+
 -- --------------------------------------------------------
 
 --
 -- Struttura della tabella `utenti`
 --
 
+DROP TABLE IF EXISTS `utenti`;
 CREATE TABLE `utenti` (
   `username` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `password` varchar(260) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
@@ -59,6 +80,13 @@ CREATE TABLE `utenti` (
   `nickname` varchar(20) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `icona` varchar(40) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dump dei dati per la tabella `utenti`
+--
+
+INSERT INTO `utenti` (`username`, `password`, `sale`, `nickname`, `icona`) VALUES
+('ilagioda@gimpteam.it', 'mZ�����41�{��>���o�����~����', 'frAQBc8Wsa', 'ilagio', 'Manaphy.png');
 
 --
 -- Indici per le tabelle scaricate
