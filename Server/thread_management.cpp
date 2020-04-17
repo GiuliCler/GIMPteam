@@ -228,6 +228,14 @@ void Thread_management::run(){
         getDocName(docId);
     }
 
+    c = "GET_WORKINGUSERS_ONADOC";
+    if(text.contains(c.toUtf8())){
+        int docId;
+        in >> docId;
+
+        getWorkingUsersGivenDoc(docId);
+    }
+
 //    qDebug() << "THREAD - prima di disconnectFromHost(): "<<socket->state();        // DEBUG
     socket->disconnectFromHost();
 //    qDebug() << "THREAD - prima di waitForDisconnected(): "<<socket->state();        // DEBUG
@@ -488,8 +496,6 @@ void Thread_management::getUri(int docId){
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
-    qDebug()<<"GET_URI ****** docId ricevuto: "<<docId;      // DEBUG
-
     QString docName;
     mutex_docs->lock();
     QMapIterator<QString, int> i(documents);
@@ -503,8 +509,8 @@ void Thread_management::getUri(int docId){
     mutex_docs->unlock();
     if(!docName.isEmpty()){
         mutex_db->lock();
-        qDebug()<<"GET_URI ----- docName: "<<docName;      // DEBUG
-        qDebug()<<"GET_URI ----- URI recuperato: "<<database->recuperaURI(docName);     // DEBUG
+//        qDebug()<<"GET_URI ----- docName: "<<docName;      // DEBUG
+//        qDebug()<<"GET_URI ----- URI recuperato: "<<database->recuperaURI(docName);     // DEBUG
         out << database->recuperaURI(docName);
         mutex_db->unlock();
         socket->write(blocko);
@@ -541,6 +547,45 @@ void Thread_management::getDocName(int docId){
 }
 
 
+void Thread_management::getWorkingUsersGivenDoc(int docId){
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
+    mutex_workingUsers->lock();
+
+    // Recupero gli utenti online che stanno lavorando sul documento al momento
+    // Controllo che nella mappa workingUsers sia presente il documento docId
+    if(workingUsers.contains(docId)){
+
+        // Dato il docId, recupero nella mappa il valore corrispondente a tale chiave, cioè il vettore di working users
+        QVector<int> utenti_online = workingUsers.value(docId);
+
+        // Mando al client il numero di elementi/id che verranno inviati
+        int num_working_users = utenti_online.size();
+//        qDebug() << "GET_WORKINGUSERS_ONADOC - STO MANDANDO AL CLIENT num_working_users: "<<num_working_users;             // DEBUG
+        out << num_working_users;
+
+        // Mando al client gli id degli utenti online che stanno lavorando sul documento al momento
+        for(auto it = utenti_online.begin(); it<utenti_online.end(); it++){
+            int id = (*it);
+//            qDebug()<<"GET_WORKINGUSERS_ONADOC - Sto mandando al client ID: "<<id;
+            // Mando la QString così generata al client
+            out << id;
+         }
+
+        socket->write(blocko);
+
+    } else {
+        // Documento non presente nella mappa workingUsers
+        int no_doc = -1;
+        out << no_doc;
+        socket->write(blocko);
+    }
+
+    mutex_workingUsers->unlock();
+
+}
 
 
 //void Thread_management::disconnected(){

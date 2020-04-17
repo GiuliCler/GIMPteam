@@ -14,11 +14,12 @@
 
 extern QMutex* mutex_users;
 extern QMutex* mutex_docs;
+extern QMutex* mutex_workingUsers;
 extern QMutex* mutex_db;
 
 extern QMap<QString, int> users;
 extern QMap<QString, int> documents;
-extern QMap<int, std::vector<int>> online;
+extern QMap<int, QVector<int>> workingUsers;
 
 class Thread_management : public QThread {
     Q_OBJECT
@@ -41,6 +42,7 @@ private:
     void getDocumentDatoUri();      // DA RIEMPIRE
     void getUri(int docId);
     void getDocName(int docId);
+    void getWorkingUsersGivenDoc(int docId);
 
 signals:
     void error(QTcpSocket::SocketError socketError);

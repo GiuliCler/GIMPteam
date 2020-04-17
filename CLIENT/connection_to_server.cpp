@@ -3,6 +3,7 @@
 #include <sstream>
 #include <QtWidgets>
 #include <iostream>
+#include <QSet>
 
 connection_to_server::connection_to_server(QString port, QString ipAddress){
     this->tcpSocket=new QTcpSocket(this);
@@ -265,8 +266,6 @@ std::string connection_to_server::requestUri(int docId){
     out << "GET_URI";
     out << docId;
 
-    qDebug()<<"GET_URI ****** docId inviato: "<<docId;       // DEBUG
-
     this->tcpSocket->write(buffer);
 
     if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
@@ -289,7 +288,7 @@ std::string connection_to_server::requestUri(int docId){
         in.startTransaction();
         in >> uri;
     } while (!in.commitTransaction());
-//    uri.replace('\0',"");
+
     return uri.toLocal8Bit().constData();
 }
 
@@ -546,12 +545,64 @@ QString connection_to_server::getDocumentName(int docId){
 std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int docId){
     std::shared_ptr<QSet<int>> ritorno;
 
-    int n = docId;
-    docId = n;
+    this->tcpSocket->abort();
+    this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
-    // TODO -------------------------------------------------------------------------------------------------------------------
+    if (!tcpSocket->waitForConnected(Timeout)) {
+        emit error(tcpSocket->error(), tcpSocket->errorString());
+        throw GUI_ConnectionException();
+    }
 
-    return ritorno;
+    QByteArray buffer;
+    QDataStream out(&buffer, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_10);
+
+    out << "GET_WORKINGUSERS_ONADOC";
+    out << docId;
+
+    this->tcpSocket->write(buffer);
+
+    if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        throw GUI_ConnectionException();
+    }
+
+    QDataStream in;
+    in.setDevice(this->tcpSocket);
+    in.setVersion(QDataStream::Qt_4_0);
+
+    int num, id;
+    QSet<int> vet;
+
+    do {
+        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
+            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+            throw GUI_ConnectionException();
+        }
+
+        in.startTransaction();
+        in >> num;
+
+//        qDebug()<<"GET_WORKINGUSERS_ONADOC - Ricevuto num_working_users: "<<num;     // DEBUG
+
+        // Controllo il caso di documento non risulta presente nella mappa del server workingUsers
+        // NOTA PER ILA: controllare che "continue" funzioni... Eventualmente mettere "break" -------------------
+        if(num == -1)
+            continue;
+
+        for(int i=0; i<num; i++){
+            in >> id;
+//            qDebug()<<"GET_WORKINGUSERS_ONADOC - Arrivato dal server... ID:"<<id;       // DEBUG
+            if(id == -1)
+                break;
+            vet.insert(id);
+        }
+
+    } while (!in.commitTransaction());
+
+//    qDebug()<<"GET_WORKINGUSERS_ONADOC - vet.size(): "<<vet.size();     // DEBUG
+
+    return std::make_shared<QSet<int>>(vet);
 }
 
 void connection_to_server::displayError(int socketError, const QString &message)

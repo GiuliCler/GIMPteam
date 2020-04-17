@@ -15,11 +15,17 @@
 
 QMutex* mutex_users = new QMutex();
 QMutex* mutex_docs = new QMutex();
+QMutex* mutex_workingUsers = new QMutex();
 QMutex* mutex_db = new QMutex();
 
 QMap<QString, int> users;
 QMap<QString, int> documents;
-QMap<int, std::vector<int>> online;  // QMap formata da coppie (docId, [userId1, userId2, userId3, ...])
+
+// QMap formata da coppie (docId, [userId1, userId2, userId3, ...])
+// NOTA: workingUsers può contenere righe di documenti CON ALMENO UNO USER ONLINE E ATTIVO
+//       --> se la riga contiente solo più un utente e tale utente si discollega/non lavora più a tale documento, la riga viene cancellata
+//       --> tale riga verrà ricreata non appena un altro utente (o anche lo stesso) si ricollegherà/aprirà di nuovo tale documento
+QMap<int, QVector<int>> workingUsers;
 
 Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDescriptor) {
 
