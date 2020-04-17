@@ -220,6 +220,14 @@ void Thread_management::run(){
         getUri(docId);
     }
 
+    c = "GET_DOCNAME";
+    if(text.contains(c.toUtf8())){
+        int docId;
+        in >> docId;
+
+        getDocName(docId);
+    }
+
 //    qDebug() << "THREAD - prima di disconnectFromHost(): "<<socket->state();        // DEBUG
     socket->disconnectFromHost();
 //    qDebug() << "THREAD - prima di waitForDisconnected(): "<<socket->state();        // DEBUG
@@ -507,6 +515,30 @@ void Thread_management::getUri(int docId){
 }
 
 
+void Thread_management::getDocName(int docId){
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
+    QString docName;
+    mutex_docs->lock();
+    QMapIterator<QString, int> i(documents);
+    while (i.hasNext()) {
+        i.next();
+        if(i.value()==docId){
+            docName=i.key();
+            break;
+        }
+    }
+    mutex_docs->unlock();
+    if(!docName.isEmpty()){
+        out << docName;
+        socket->write(blocko);
+    }else{
+        out << "errore";
+        socket->write(blocko);
+    }
+}
 
 
 

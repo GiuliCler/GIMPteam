@@ -32,17 +32,16 @@ public:
 
     /*DOCUMENTS*/
     static int requestCreateDocumentTemporary(connection_to_server *connection, int userId, QString name);
-    static void openKnownDocument(int documentId);
-    static void forgetKnownDocument(int userId, int documentId);
-    //ritona l'elenco di coppie (docId, docName) conosciuti dall'utente
+    static void openKnownDocument(int documentId);                                  // FILE
+    static void forgetKnownDocument(int userId, int documentId);                    // DA DECIDERE COSA FARE
     static std::shared_ptr<QMap<int, QString>> getKnownDocuments(int userId);
-    static std::string requestDocDatoUriTemporary(connection_to_server *connection, QString uri);
-    static void closeDocument(int userId, int docId);
+    static std::string requestDocDatoUriTemporary(connection_to_server *connection, QString uri);       // FILE
+    static void closeDocument(int userId, int docId);                               // FILE
 
     static std::string requestUriTemporary(connection_to_server *connection, int docId);
     static QString getDocumentName(int docId);
     //mi serve per l'export PDF da parte del server perchè i document sono ancora tutti chiusi (quindi non è per te Paul, credo)
-    static std::shared_ptr<QTextDocument> getDocumentText(int docId);
+    static std::shared_ptr<QTextDocument> getDocumentText(int docId);               // ?????
 
     /*EDITOR*/
     //ritorna un set con un vettore di userId

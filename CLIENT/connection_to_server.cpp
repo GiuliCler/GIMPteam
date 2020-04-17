@@ -498,8 +498,60 @@ std::string connection_to_server::requestGetUsername(int userId){
     return username.toStdString();
 }
 
-void connection_to_server::responseAtRequest(){
+//void connection_to_server::responseAtRequest(){
 
+//}
+
+QString connection_to_server::getDocumentName(int docId){
+    this->tcpSocket->abort();
+    this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+
+    if (!tcpSocket->waitForConnected(Timeout)) {
+        emit error(tcpSocket->error(), tcpSocket->errorString());
+        return "errore";
+    }
+
+    QByteArray buffer;
+    QDataStream out(&buffer, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_10);
+
+    out << "GET_DOCNAME";
+    out << docId;
+
+    this->tcpSocket->write(buffer);
+
+    if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        return "errore";
+    }
+
+    QString doc_name;
+    QDataStream in;
+    in.setDevice(this->tcpSocket);
+    in.setVersion(QDataStream::Qt_4_0);
+
+    do {
+        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
+            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+            return "errore";
+        }
+
+        in.startTransaction();
+        in >> doc_name;
+    } while (!in.commitTransaction());
+
+    return doc_name;
+}
+
+std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int docId){
+    std::shared_ptr<QSet<int>> ritorno;
+
+    int n = docId;
+    docId = n;
+
+    // TODO -------------------------------------------------------------------------------------------------------------------
+
+    return ritorno;
 }
 
 void connection_to_server::displayError(int socketError, const QString &message)

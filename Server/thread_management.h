@@ -40,6 +40,7 @@ private:
     void newDoc();                  // DA RIEMPIRE
     void getDocumentDatoUri();      // DA RIEMPIRE
     void getUri(int docId);
+    void getDocName(int docId);
 
 signals:
     void error(QTcpSocket::SocketError socketError);
