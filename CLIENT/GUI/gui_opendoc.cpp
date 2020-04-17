@@ -9,8 +9,8 @@
 #include <QFileDialog>
 #include <QFileInfo>
 
-#define GUI_OPENDOC_WIDGETLIST_KEY 0
-#define GUI_OPENDOC_WIDGETLIST_VALUE 1
+#define GUI_OPENDOC_WIDGETLIST_DOCNAME 0
+#define GUI_OPENDOC_WIDGETLIST_DOCID 1
 
 GUI_Opendoc::GUI_Opendoc(QWidget *parent) : QWidget(parent)
 {
@@ -37,8 +37,8 @@ void GUI_Opendoc::fillList(){
     for(auto pair = vp->begin(); pair != vp->end(); pair++){
         //lo inizializzo per togliere il warning
         QListWidgetItem* item = new QListWidgetItem;
-        item->setData(GUI_OPENDOC_WIDGETLIST_KEY, pair.key());
-        item->setData(GUI_OPENDOC_WIDGETLIST_VALUE, pair.value());
+        item->setData(GUI_OPENDOC_WIDGETLIST_DOCNAME, pair.key());
+        item->setData(GUI_OPENDOC_WIDGETLIST_DOCID, pair.value());
 
         ui->docsListWidget->addItem(item);
     }
@@ -51,7 +51,7 @@ void GUI_Opendoc::on_openDocsPushButton_clicked()
         return;
     }
 
-    int docId = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_KEY).toInt();
+    int docId = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
     Stub::openKnownDocument(docId);
 
     GUI_Editor *widget = new GUI_Editor(gimpParent, docId);
@@ -64,7 +64,7 @@ void GUI_Opendoc::on_getURIPushButton_clicked(){
         return;
     }
 
-    int documentId = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_KEY).toInt();
+    int documentId = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
 
     QString uri = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
     if(uri.compare("errore") == 0)
@@ -90,7 +90,7 @@ void GUI_Opendoc::on_exportPDFPushButton_clicked(){
     printer.setOutputFileName(fileName);
 
 
-    int docId = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_KEY).toInt();
+    int docId = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
     std::shared_ptr<QTextDocument> docp = GUI_ConnectionToServerWrapper::getDocumentTextWrapper(gimpParent, docId);
     if( docp == nullptr)
         return;
@@ -105,11 +105,11 @@ void GUI_Opendoc::on_forgetPushButton_clicked(){
         return;
     }
 
-    QString docName = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_VALUE).toString();
+    QString docName = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_DOCNAME).toString();
     if(QMessageBox::question(this, "", "Do you really want to forget \"" + docName + "\" document?") == QMessageBox::No)
         return;
 
-    int docId = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_KEY).toInt();
+    int docId = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
     Stub::forgetKnownDocument(gimpParent->userid, docId);
     /*if(id < 0){
         QMessageBox::information(this, "", "PANIC! Qualcosa è andato storto");
