@@ -37,7 +37,6 @@ private:
     QTcpSocket *socket;
     QMap<QString, int> users;    //TODO: da gestire con mutex per la concorrenza!! per ora chiave userId, valore username
     QMap<QString, int> documents;
-    QFileSystemModel *model; //File system
 };
 //! [0]
 

@@ -10,15 +10,6 @@ Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDesc
 
     // std::cout << "SONO NEL COSTRUTTORE Server" << std::endl;             // DEBUG -----------
 
-    //Gestisco il file system inizializzando il QFileSystemModel
-    // Creates our new model and populate
-    QString mPath = ":/Files";
-    model = new QFileSystemModel(this);
-    // Set filter
-    model->setFilter(QDir::NoDotAndDotDot |QDir::AllDirs);
-    // QFileSystemModel requires root path
-    model->setRootPath(mPath);
-
     // Connessione al DB
     this->database = new CollegamentoDB();
     this->database->connettiDB("gimpdocs_db");
@@ -72,6 +63,8 @@ void Server::incomingConnection(qintptr socketDescriptor) {
 }
 
 void Server::runServer() {
+    //TODO: valutare il path, al momento quello di Giulia
+    QString path = "C:/Users/giuli/Desktop/PROGETTO MALNATI/Server/Files/";
     QByteArray text;
     QDataStream in(socket);
     in.setVersion(QDataStream::Qt_5_12);
@@ -85,7 +78,7 @@ void Server::runServer() {
     QString c = "CREATE";
     if(text.contains(c.toUtf8())){
         //std::cout << "SONO DENTRO LA CREATE" << std::endl;             // DEBUG -----------
-        QByteArray username, password, nickname, icon;
+        QString username, password, nickname, icon;
         in >> username;
         in >> password;
         in >> nickname;
@@ -101,15 +94,14 @@ void Server::runServer() {
             this->users.insert(QString::fromStdString(username.toStdString()), id);
 
             //creo la cartella sul file system per l'utente
-            QTreeView *viewTreeForModel = new QTreeView();
-            viewTreeForModel->setModel(model);
-            QModelIndex index=viewTreeForModel->currentIndex();
-            //TODO: AGGIUNGERE CONTROLLO SE FA LA DIRECTORY
-            model->mkdir(viewTreeForModel->currentIndex(), QString::fromStdString(username.toStdString()));
+            QDir dir = QDir::root();
+            dir.mkpath(path+username);
+            //verifico sia stata correttamente creata
+            if(QDir(path+username).exists()){
                 out << "ok";
                 out << id;
                 socket->write(blocko);
-
+            }
         } else {
             //std::cout << "BLEAH "<<ret<< std::endl;             // DEBUG -----------
             out << "errore";
@@ -119,12 +111,11 @@ void Server::runServer() {
 
     c = "LOGIN";
     if(text.contains(c.toUtf8())){
-        QByteArray username, password;
+        QString username, password;
         in >> username;
         in >> password;
         std::vector<QString> v = this->database->login(QString::fromStdString(username.toStdString()), QString::fromStdString(password.toStdString()));
         if(v.size()==2){
-            //GESTIRE
             int id = this->users[QString::fromStdString(username.toStdString())];
             if(id == 0){
                 id = this->users.size();
@@ -142,7 +133,7 @@ void Server::runServer() {
 
     c = "UPDATE";
     if(text.contains(c.toUtf8())){
-        QByteArray password, nickname, icon;
+        QString password, nickname, icon;
         int userId;
         QString username;
         in >> userId;
@@ -299,38 +290,44 @@ void Server::runServer() {
 
     c = "NEW_DOC";
     if(text.contains(c.toUtf8())){
-        QByteArray docName;
+        QString docName;
         int userId;
         in >> docName;
         in >> userId;
-        if(this->database->creaDoc(QString::fromStdString(docName.toStdString()))){
-            // Documento creato e correttamente inserito nel DB
-            // Associazione nome_doc - docId nella QMap
-            int id = this->documents.size();
-            id++;
-            this->users.insert(QString::fromStdString(docName.toStdString()),id);
-            // Creazione del file
-            QString filename = QString::fromStdString(docName.toStdString());
-            //Gestione file system:
-            QFile file( ":/Files/"+filename);
-            if (file.open(QIODevice::ReadWrite)){
-                QTextStream stream(&file);
-                stream << "something" << endl;
-                // *******************************************************
-                // PAOLO TODO: gestione CRDT
-                // *******************************************************
+        QString username;
+        //controllo che ci sia la cartella del dato utente
+        QMapIterator<QString, int> i(this->users);
+        while (i.hasNext()) {
+            i.next();
+            if(i.value()==userId){
+                username=i.key();
+                break;
             }
-            // Associazione username - nome_doc nella tabella utente_doc del DB
-            QString username;
-            QMapIterator<QString,int> i(this->users);
-            while (i.hasNext()) {
-                i.next();
-                if(i.value()==userId){
-                    username = i.key();
-                    break;
+        }
+
+        if(!username.isEmpty() && QDir(path+username).exists()){
+            if(this->database->creaDoc(QString::fromStdString(docName.toStdString()))){
+                // Documento creato e correttamente inserito nel DB
+                // Associazione nome_doc - docId nella QMap
+                int id = this->documents.size();
+                id++;
+                this->documents.insert(QString::fromStdString(docName.toStdString()),id);
+                // Creazione del file
+                QString filename = QString::fromStdString(docName.toStdString());
+
+                //DUBBIO SULL'ESTENSIONE DEL FILE!! Al momento li faccio txt
+                QFile file(path+username+"/"+filename+".txt");
+                if (file.open(QIODevice::WriteOnly | QIODevice::Text)){
+                    QTextStream out(&file);
+                    //ATTENZIONE: per scrivere sul file:
+                    // out << "The magic number is: " << 49 << "\n";  // DEBUG -----------
+
+
+                    // *******************************************************
+                    // PAOLO TODO: gestione CRDT
+                    // *******************************************************
                 }
-            }
-            if(!username.isEmpty()){
+                // Associazione username - nome_doc nella tabella utente_doc del DB
                 if(this->database->aggiungiPartecipante(QString::fromStdString(docName.toStdString()),username) != 2){
                     out << "ok";
                     out << id;
@@ -384,7 +381,7 @@ void Server::runServer() {
             }
         }
         if(!docName.isEmpty()){
-            out << this->database->recuperaURI(docName).toLocal8Bit();;
+            out << this->database->recuperaURI(docName).toLocal8Bit();
             socket->write(blocko);
         }else{
             out << "errore";

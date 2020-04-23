@@ -90,7 +90,7 @@ long connection_to_server::requestCreateDocument(int userId, QString name)
     }
 
     //ora attendo una risposta dal server, sul login al db
-    QByteArray file;
+    QString file;
     QDataStream in;
     in.setDevice(this->tcpSocket);
     in.setVersion(QDataStream::Qt_4_0);
@@ -105,6 +105,7 @@ long connection_to_server::requestCreateDocument(int userId, QString name)
     } while (!in.commitTransaction());
     QString c = "ok";
     if(file.contains(c.toUtf8())){
+        //TODO: settare il nome del documento nella barra in alto.
         return 0;
     }else{
         return -1;
