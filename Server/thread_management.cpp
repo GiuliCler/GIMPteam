@@ -142,22 +142,8 @@ void Thread_management::run(){
     if(text.contains(c.toUtf8())){
         QString uri;
         in >> uri;
-        mutex_db->lock();
-        QString doc = database->recuperaDocDatoURI(uri);
-        mutex_db->unlock();
-        if(doc != "errore"){
-            // Nome del documento relativo all'URI ottenuto dal DB correttamente
-    // ***************************************************************************************************
-    // GIULIA TODO:
-    // CERCARE DOCUMENTO NEL FILE SYSTEM CON NOME UGUALE A QUELLO CONTENUTO NELLA VARIABILE
-    // doc ED INVIARLO INDIETRO AL CLIENTE
-    // ***************************************************************************************************
-            out << doc.toLocal8Bit();
-            socket->write(blocko);
-        }else{
-            out << "errore";
-            socket->write(blocko);
-        }
+
+        getDocumentDatoUri(uri);
     }
 
     c = "GET_URI";
@@ -461,7 +447,7 @@ void Thread_management::newDoc(QString docName, int userId){
 
     if(!username.isEmpty() && QDir(path+username).exists()){
         mutex_db->lock();
-        if(database->creaDoc(docName)){
+        if(database->creaDoc(username+"_"+docName)){
             mutex_db->unlock();
 
             // Documento creato e correttamente inserito nel DB
@@ -478,18 +464,21 @@ void Thread_management::newDoc(QString docName, int userId){
             // DUBBIO SULL'ESTENSIONE DEL FILE!! Al momento li faccio txt
             QFile file(path+username+"/"+filename+".txt");
             if (file.open(QIODevice::WriteOnly | QIODevice::Text)){
-                QTextStream out(&file);
+                //riesce ad aprire il file creato
+                QTextStream out_file(&file);
                 // ATTENZIONE: per scrivere sul file:
-                // out << "The magic number is: " << 49 << "\n";       // DEBUG
+                // out_file << "The magic number is: " << 49 << "\n";       // DEBUG
 
                 // *******************************************************
                 // PAOLO TODO: gestione CRDT
                 // *******************************************************
+
+
             }
 
             // Associazione username - nome_doc nella tabella utente_doc del DB
             mutex_db->lock();
-            if(database->aggiungiPartecipante(docName, username) != 2){
+            if(database->aggiungiPartecipante(username+"_"+docName, username) != 2){
                 mutex_db->unlock();
                 out << "ok";
                 out << id;
@@ -499,25 +488,41 @@ void Thread_management::newDoc(QString docName, int userId){
                 out << "errore";
                 socket->write(blocko);
             }
+        }else{
+           mutex_db->unlock();
+           out << "errore";
+           socket->write(blocko);
         }
+
 
         // ********************************************************************************
         // GIULIA TODO: gestire meglio il "ritorno" e le modifiche su file -> crdt
         // ********************************************************************************
 
     } else {
-        mutex_db->unlock();
-
-        // Errore nella creazione della entry relativa al documento nel DB
+        // se username non esiste o non c'è la cartella relativa
         out << "errore";
         socket->write(blocko);
     }
 }
 
+void Thread_management::getDocumentDatoUri(QString uri){
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
 
-// DA RIEMPIRE
-void Thread_management::getDocumentDatoUri(){}
-
+    mutex_db->lock();
+    QString doc = database->recuperaDocDatoURI(uri);
+    mutex_db->unlock();
+    if(doc != "errore"){
+        // Nome del documento relativo all'URI ottenuto dal DB correttamente
+        out << doc.toLocal8Bit();
+        socket->write(blocko);
+    }else{
+        out << "errore";
+        socket->write(blocko);
+    }
+}
 
 void Thread_management::getUri(int docId){
     QByteArray blocko;

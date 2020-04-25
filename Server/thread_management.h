@@ -40,7 +40,7 @@ private:
     void getIcon(int userId);
     void getDocs(int userId);
     void newDoc(QString docName, int userId);
-    void getDocumentDatoUri();                  // DA RIEMPIRE
+    void getDocumentDatoUri(QString uri);
     void getUri(int docId);
     void getDocName(int docId);
     void getWorkingUsersGivenDoc(int docId);
