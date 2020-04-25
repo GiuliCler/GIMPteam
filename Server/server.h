@@ -11,14 +11,13 @@ QT_BEGIN_NAMESPACE
 #include <QMap>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QtNetwork>
 
-//! [0]
-class Server : public QTcpServer
-{
+class Server : public QTcpServer {
     Q_OBJECT
-
 public:
     Server(QObject *parent = nullptr);
+    ~Server() override;
 
 protected:
     void incomingConnection(qintptr socketDescriptor) override;
@@ -27,17 +26,12 @@ signals:
     void error(QTcpSocket::SocketError socketError);
 
 public slots:
-    //void disconnectFromClient();
     void runServer();
 
 private:
-    QStringList fortunes;
     CollegamentoDB *database;
     int socketDescriptor;
-    QTcpSocket *socket;
-    QMap<QString, int> users;    //TODO: da gestire con mutex per la concorrenza!! per ora chiave userId, valore username
-    QMap<QString, int> documents;
+//    QTcpSocket *socket;
 };
-//! [0]
 
 #endif

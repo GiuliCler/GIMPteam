@@ -1,47 +1,109 @@
 #include "server.h"
+#include "thread_management.h"
 #include <stdlib.h>
 #include <QThreadPool>
 #include <QRunnable>
 #include <QFileSystemModel>
 #include <QTreeView>
+#include <QMutex>
+#include <QWaitCondition>
+#include <QPair>
 
+//Thread_management* thread_mgm;
+
+//QVector<QPair<QString, int>> jobs;
+//QWaitCondition* cv_jobs = new QWaitCondition();
+//QMutex* mutex_jobs = new QMutex();
+
+QMutex* mutex_users = new QMutex();
+QMutex* mutex_docs = new QMutex();
+QMutex* mutex_workingUsers = new QMutex();
+QMutex* mutex_db = new QMutex();
+
+QMap<QString, int> users;
+QMap<QString, int> documents;
+
+// QMap formata da coppie (docId, [userId1, userId2, userId3, ...])
+// NOTA: workingUsers può contenere righe di documenti CON ALMENO UNO USER ONLINE E ATTIVO
+//       --> se la riga contiente solo più un utente e tale utente si discollega/non lavora più a tale documento, la riga viene cancellata
+//       --> tale riga verrà ricreata non appena un altro utente (o anche lo stesso) si ricollegherà/aprirà di nuovo tale documento
+QMap<int, QVector<int>> workingUsers;
 
 Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDescriptor) {
 
-    // std::cout << "SONO NEL COSTRUTTORE Server" << std::endl;             // DEBUG -----------
+    qDebug()<< "Dentro al costruttore di Server";           // DEBUG
 
     // Connessione al DB
-    this->database = new CollegamentoDB();
-    this->database->connettiDB("gimpdocs_db");
+    database = new CollegamentoDB();
+    mutex_db->lock();
+    database->connettiDB("gimpdocs_db", "connServer");
+    mutex_db->unlock();
 
     // Riempimento della QMap degli utenti con gli elementi presenti sul DB
     int cont = 0;
-    std::vector<QString> utenti = this->database->recuperaUtentiNelDB();
+    mutex_db->lock();
+    std::vector<QString> utenti = database->recuperaUtentiNelDB();
+    mutex_db->unlock();
+    mutex_users->lock();
     for(auto i=utenti.begin(); i<utenti.end(); i++){
         if((*i) == "nessuno"){
             break;
         }
-        this->users.insert(QString::fromStdString((*i).toStdString()), cont++);
+        users.insert(QString::fromStdString((*i).toStdString()), cont++);
     }
+    mutex_users->unlock();
 
     // Riempimento della QMap dei documenti con gli elementi presenti sul DB
     cont = 0;
-    std::vector<QString> documenti = this->database->recuperaDocsNelDB();
+    mutex_db->lock();
+    std::vector<QString> documenti = database->recuperaDocsNelDB();
+    mutex_db->unlock();
+    mutex_docs->lock();
     for(auto i=documenti.begin(); i<documenti.end(); i++){
         if((*i) == "nessuno"){
             break;
         }
-        this->documents.insert(QString::fromStdString((*i).toStdString()), cont++);
+        documents.insert(QString::fromStdString((*i).toStdString()), cont++);
     }
+    mutex_docs->unlock();
 
-    // std::cout << "FINE COSTRUTTORE Server" << std::endl;             // DEBUG -----------
+//    // Creo thread_management
+//    thread_mgm = new Thread_management();
+//    connect(thread_mgm, SIGNAL(finished()), thread_mgm, SLOT(deleteLater()));
 
+//    // Faccio partire thread_management (mod. detach)
+//    thread_mgm->start();
 
+//    CODICE DI PROVA - PRODUTTORE
+//    mutex_jobs->lock();
+//    qDebug()<<"SERVER - Prima della prepend: "<<jobs.first();
+//    jobs.prepend(2);
+//    qDebug()<<"SERVER - Dopo la prepend: "<<jobs.first();
+//    mutex_jobs->unlock();
+//    std::this_thread::sleep_for(std::chrono::seconds(3));
+//    cv_jobs->wakeAll();     // non fa un tubo
 
-    // ILA: loop infinito........................................?
+    qDebug()<<"Fine costruttore di Server";          // DEBUG
+
 }
 
-// ILA: classi che implementanto QRunnable ............................?
+Server::~Server(){
+
+    qDebug()<<"Dentro al distruttore di Server";         // DEBUG
+
+    // Sveglio il thread_management addormentato nella wait
+//     cv_jobs->wakeAll();
+
+    // Distruggo thread_management
+//    NOTA: faccio magari un vettore in cui mantengo tutti i puntatori ai thread
+//    if (thread_mgm != nullptr && thread_mgm->isRunning()) {
+//        thread_mgm->requestInterruption();
+//        thread_mgm->wait();
+//    }
+
+    qDebug()<<"Fine distruttore di Server";         // DEBUG
+
+}
 
 void Server::incomingConnection(qintptr socketDescriptor) {
     /*
@@ -50,19 +112,30 @@ void Server::incomingConnection(qintptr socketDescriptor) {
      * We create an object that will take care of the communication with this client
     */
 
-    socket = new QTcpSocket(this);
-    if (!socket->setSocketDescriptor(socketDescriptor)) {
-        emit error(socket->error());
-        return;
-    }
+    qDebug()<< "SERVER - Sono nella incomingConnection";       // DEBUG
+    std::cout << "---- SERVER incomingConnection id: " << std::this_thread::get_id() << " ---- " << std::endl;       // DEBUG
 
-    //std::cout << "SONO NELLA incomingConnection" << std::endl;             // DEBUG -----------
+    // Creo thread_management
+    Thread_management* thread_mgm = new Thread_management(socketDescriptor, this);
+    connect(thread_mgm, SIGNAL(finished()), thread_mgm, SLOT(deleteLater()));
 
-    //connect(socket, &QTcpSocket::disconnected, this, &Server::disconnectFromClient);
-    connect(socket, &QTcpSocket::readyRead, this, &Server::runServer);
+    // Faccio partire thread_management (mod. detach)
+    thread_mgm->start();
+
+//    socket = new QTcpSocket(this);
+//    if (!socket->setSocketDescriptor(socketDescriptor)) {
+//        emit error(socket->error());
+//        return;
+//    }
+
 }
 
 void Server::runServer() {
+
+    qDebug()<< "SERVER - Sono nella runServer";      // DEBUG
+
+/*
+
     //TODO: valutare il path, al momento quello di Giulia
     QString path = "C:/Users/giuli/Desktop/PROGETTO MALNATI/Server/Files/";
     QByteArray text;
@@ -391,10 +464,6 @@ void Server::runServer() {
 
     socket->disconnectFromHost();
     socket->waitForDisconnected();
+    
+    */
 }
-
-/*void Server::disconnectFromClient()
-{
-    socket->disconnectFromHost();
-    socket->waitForDisconnected();
-}*/

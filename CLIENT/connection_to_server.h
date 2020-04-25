@@ -28,13 +28,15 @@ public:
     std::string requestGetNickname(int userId);
     std::string requestGetUsername(int userId);
     std::string requestIconId(int userId);
-    std::string requestUri(long docId);
+    std::string requestUri(int docId);
     std::string requestDocDatoUri(QString uri);
     std::shared_ptr<QMap<QString, int>> getKnownDocuments(int userId);
+    QString getDocumentName(int docId);
+    std::shared_ptr<QSet<int>> getWorkingUsersOnDocument(int docId);
 private slots:
     void showFile(const QString &file);
     void displayError(int socketError, const QString &message);
-    void responseAtRequest();
+//    void responseAtRequest();
 
 signals:
     void error(int socketError, const QString &message);

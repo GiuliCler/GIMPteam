@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Apr 03, 2020 alle 17:49
+-- Creato il: Apr 17, 2020 alle 12:25
 -- Versione del server: 10.1.40-MariaDB
 -- Versione PHP: 7.3.5
 
@@ -41,8 +41,8 @@ CREATE TABLE `doc` (
 --
 
 INSERT INTO `doc` (`nome_doc`, `uri`) VALUES
-('\0D\0i\0v\0i\0n\0a\0C\0o\0m\0m\0e\0d\0i\0a', '://GIMPdocs/a1ac9487a81d3a55c041475f8ea86ec1'),
-('\0O\0i\0b\0a\0b\0o\0i', '://GIMPdocs/57e105aad9489fd71efb852778fdcaf7');
+('DivinaCommedia', '://GIMPdocs/80423b4c7a9c3e047148ececb88d1d41'),
+('Oibaboi', '://GIMPdocs/3b32d34c78a03e759aa185702748c408');
 
 -- --------------------------------------------------------
 
@@ -60,9 +60,9 @@ CREATE TABLE `utente_doc` (
 -- Dump dei dati per la tabella `utente_doc`
 --
 
-INSERT INTO `utente_doc` (`username`, `nome_doc`) VALUES
-('\0i\0l\0a\0g\0i\0o\0d\0a\0@\0g\0i\0m\0p\0t\0e\0a\0m\0.\0i\0t', '\0D\0i\0v\0i\0n\0a\0C\0o\0m\0m\0e\0d\0i\0a'),
-('\0i\0l\0a\0g\0i\0o\0d\0a\0@\0g\0i\0m\0p\0t\0e\0a\0m\0.\0i\0t', '\0O\0i\0b\0a\0b\0o\0i');
+INSERT INTO `utente_doc` (`username`, `nome_doc`, `site_id`, `site_counter`) VALUES
+('ilagioda@gimpteam.it', 'DivinaCommedia', 0, 0),
+('ilagioda@gimpteam.it', 'Oibaboi', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -84,7 +84,7 @@ CREATE TABLE `utenti` (
 --
 
 INSERT INTO `utenti` (`username`, `password`, `sale`, `nickname`, `icona`) VALUES
-('\0i\0l\0a\0g\0i\0o\0d\0a\0@\0g\0i\0m\0p\0t\0e\0a\0m\0.\0i\0t', '�7rX�����\'y�O�u0�=�', 'frAQBc8Wsa', '\0i\0l\0a\0g\0i\0o', '\0J\0i\0r\0a\0c\0h\0i\0.\0p\0n\0g');
+('ilagioda@gimpteam.it', 'mZ�����41�{��>���o�����~����', 'frAQBc8Wsa', 'ilagio', 'Manaphy.png');
 
 --
 -- Indici per le tabelle scaricate
