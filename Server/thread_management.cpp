@@ -263,9 +263,15 @@ void Thread_management::create(QString username, QString password, QString nickn
         //qDebug()<<"STO SCRIVENDO NELLA MAPPA LA COPPIA key:"<<username<<" E value: "<<id;        // DEBUG
         users.insert(username, id);
         mutex_users->unlock();
-        out << "ok";
-        out << id;
-        socket->write(blocko);
+        //creo la cartella sul file system per l'utente
+        QDir dir = QDir::root();
+        dir.mkpath(path+username);
+        //verifico sia stata correttamente creata
+        if(QDir(path+username).exists()){
+            out << "ok";
+            out << id;
+            socket->write(blocko);
+        }
     } else {
         //qDebug() << "BLEAH "<<ret;             // DEBUG
         out << "errore";
@@ -487,7 +493,70 @@ void Thread_management::getDocs(int userId){
 }
 
 // DA RIEMPIRE
-void newDoc(){}
+void newDoc(){
+    /*
+        c = "NEW_DOC";
+        if(text.contains(c.toUtf8())){
+            QString docName;
+            int userId;
+            in >> docName;
+            in >> userId;
+            QString username;
+            //controllo che ci sia la cartella del dato utente
+            QMapIterator<QString, int> i(this->users);
+            while (i.hasNext()) {
+                i.next();
+                if(i.value()==userId){
+                    username=i.key();
+                    break;
+                }
+            }
+
+            if(!username.isEmpty() && QDir(path+username).exists()){
+                if(this->database->creaDoc(QString::fromStdString(docName.toStdString()))){
+                    // Documento creato e correttamente inserito nel DB
+                    // Associazione nome_doc - docId nella QMap
+                    int id = this->documents.size();
+                    id++;
+                    this->documents.insert(QString::fromStdString(username.toStdString()+"_"+docName.toStdString()),id);
+                    // Creazione del file
+                    QString filename = QString::fromStdString(docName.toStdString());
+
+                    //DUBBIO SULL'ESTENSIONE DEL FILE!! Al momento li faccio txt
+                    QFile file(path+username+"/"+filename+".txt");
+                    if (file.open(QIODevice::WriteOnly | QIODevice::Text)){
+                        QTextStream out(&file);
+                        //ATTENZIONE: per scrivere sul file:
+                        // out << "The magic number is: " << 49 << "\n";  // DEBUG -----------
+
+
+                        // *******************************************************
+                        // PAOLO TODO: gestione CRDT
+                        // *******************************************************
+                    }
+                    // Associazione username - nome_doc nella tabella utente_doc del DB
+                    if(this->database->aggiungiPartecipante(QString::fromStdString(docName.toStdString()),username) != 2){
+                        out << "ok";
+                        out << id;
+                        socket->write(blocko);
+                    }else{
+                        out << "errore";
+                        socket->write(blocko);
+                    }
+                }
+                // ********************************************************************************
+                // GIULIA TODO: gestire meglio il "ritorno" e le modifiche su file -> crdt
+                // ********************************************************************************
+            } else {
+                // Errore nella creazione della entry relativa al documento nel DB
+                out << "errore";
+                socket->write(blocko);
+            }
+        }
+
+
+        */
+}
 void getDocumentDatoUri(){}
 
 

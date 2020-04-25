@@ -20,6 +20,7 @@ extern QMutex* mutex_db;
 extern QMap<QString, int> users;
 extern QMap<QString, int> documents;
 extern QMap<int, QVector<int>> workingUsers;
+extern QString path;
 
 class Thread_management : public QThread {
     Q_OBJECT
