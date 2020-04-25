@@ -134,60 +134,8 @@ void Thread_management::run(){
         int userId;
         in >> docName;
         in >> userId;
-        mutex_db->lock();
-        if(database->creaDoc(docName)){
-            mutex_db->unlock();
-            // Documento creato e correttamente inserito nel DB
-            // Associazione nome_doc - docId nella QMap
-            mutex_docs->lock();
-            int id = documents.size();
-            id++;
-            documents.insert(docName,id);
-            mutex_docs->unlock();
-            // Creazione del file
-            QString filename = docName;
-            QFile file( ":/Files/"+filename);
-            if (file.open(QIODevice::ReadWrite)){
-                QTextStream stream(&file);
-                stream << "something" << endl;
-                // *******************************************************
-                // PAOLO TODO: gestione CRDT
-                // *******************************************************
-            }
-            // Associazione username - nome_doc nella tabella utente_doc del DB
-            QString username;
-            mutex_users->lock();
-            QMapIterator<QString,int> i(users);
-            while (i.hasNext()) {
-                i.next();
-                if(i.value()==userId){
-                    username = i.key();
-                    break;
-                }
-            }
-            mutex_users->unlock();
-            if(!username.isEmpty()){
-                mutex_db->lock();
-                if(database->aggiungiPartecipante(docName,username) != 2){
-                    mutex_db->unlock();
-                    out << "ok";
-                    out << id;
-                    socket->write(blocko);
-                }else{
-                    mutex_db->unlock();
-                    out << "errore";
-                    socket->write(blocko);
-                }
-            }
-            // ********************************************************************************
-            // GIULIA TODO: gestire meglio il "ritorno" e le modifiche su file -> crdt
-            // ********************************************************************************
-        } else {
-            mutex_db->unlock();
-            // Errore nella creazione della entry relativa al documento nel DB
-            out << "errore";
-            socket->write(blocko);
-        }
+
+        newDoc(docName, userId);
     }
 
     c = "GET_DOCUMENT_DATO_URI";
@@ -492,72 +440,83 @@ void Thread_management::getDocs(int userId){
     }
 }
 
-// DA RIEMPIRE
-void newDoc(){
-    /*
-        c = "NEW_DOC";
-        if(text.contains(c.toUtf8())){
-            QString docName;
-            int userId;
-            in >> docName;
-            in >> userId;
-            QString username;
-            //controllo che ci sia la cartella del dato utente
-            QMapIterator<QString, int> i(this->users);
-            while (i.hasNext()) {
-                i.next();
-                if(i.value()==userId){
-                    username=i.key();
-                    break;
-                }
+
+void Thread_management::newDoc(QString docName, int userId){
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
+    mutex_users->lock();
+    QString username;
+    //controllo che ci sia la cartella del dato utente
+    QMapIterator<QString, int> i(users);
+    while (i.hasNext()) {
+        i.next();
+        if(i.value()==userId){
+            username=i.key();
+            break;
+        }
+    }
+    mutex_users->unlock();
+
+    if(!username.isEmpty() && QDir(path+username).exists()){
+        mutex_db->lock();
+        if(database->creaDoc(docName)){
+            mutex_db->unlock();
+
+            // Documento creato e correttamente inserito nel DB
+            // Associazione nome_doc - docId nella QMap
+            mutex_docs->lock();
+            int id = documents.size();
+            id++;
+            documents.insert(username + "_" + docName,id);
+            mutex_docs->unlock();
+
+            // Creazione del file
+            QString filename = docName;
+
+            // DUBBIO SULL'ESTENSIONE DEL FILE!! Al momento li faccio txt
+            QFile file(path+username+"/"+filename+".txt");
+            if (file.open(QIODevice::WriteOnly | QIODevice::Text)){
+                QTextStream out(&file);
+                // ATTENZIONE: per scrivere sul file:
+                // out << "The magic number is: " << 49 << "\n";       // DEBUG
+
+                // *******************************************************
+                // PAOLO TODO: gestione CRDT
+                // *******************************************************
             }
 
-            if(!username.isEmpty() && QDir(path+username).exists()){
-                if(this->database->creaDoc(QString::fromStdString(docName.toStdString()))){
-                    // Documento creato e correttamente inserito nel DB
-                    // Associazione nome_doc - docId nella QMap
-                    int id = this->documents.size();
-                    id++;
-                    this->documents.insert(QString::fromStdString(username.toStdString()+"_"+docName.toStdString()),id);
-                    // Creazione del file
-                    QString filename = QString::fromStdString(docName.toStdString());
-
-                    //DUBBIO SULL'ESTENSIONE DEL FILE!! Al momento li faccio txt
-                    QFile file(path+username+"/"+filename+".txt");
-                    if (file.open(QIODevice::WriteOnly | QIODevice::Text)){
-                        QTextStream out(&file);
-                        //ATTENZIONE: per scrivere sul file:
-                        // out << "The magic number is: " << 49 << "\n";  // DEBUG -----------
-
-
-                        // *******************************************************
-                        // PAOLO TODO: gestione CRDT
-                        // *******************************************************
-                    }
-                    // Associazione username - nome_doc nella tabella utente_doc del DB
-                    if(this->database->aggiungiPartecipante(QString::fromStdString(docName.toStdString()),username) != 2){
-                        out << "ok";
-                        out << id;
-                        socket->write(blocko);
-                    }else{
-                        out << "errore";
-                        socket->write(blocko);
-                    }
-                }
-                // ********************************************************************************
-                // GIULIA TODO: gestire meglio il "ritorno" e le modifiche su file -> crdt
-                // ********************************************************************************
-            } else {
-                // Errore nella creazione della entry relativa al documento nel DB
+            // Associazione username - nome_doc nella tabella utente_doc del DB
+            mutex_db->lock();
+            if(database->aggiungiPartecipante(docName, username) != 2){
+                mutex_db->unlock();
+                out << "ok";
+                out << id;
+                socket->write(blocko);
+            }else{
+                mutex_db->unlock();
                 out << "errore";
                 socket->write(blocko);
             }
         }
 
+        // ********************************************************************************
+        // GIULIA TODO: gestire meglio il "ritorno" e le modifiche su file -> crdt
+        // ********************************************************************************
 
-        */
+    } else {
+        mutex_db->unlock();
+
+        // Errore nella creazione della entry relativa al documento nel DB
+        out << "errore";
+        socket->write(blocko);
+    }
 }
-void getDocumentDatoUri(){}
+
+
+// DA RIEMPIRE
+void Thread_management::getDocumentDatoUri(){}
 
 
 void Thread_management::getUri(int docId){
