@@ -207,8 +207,13 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     if(processingMessage)
         return;
 
+    if(pos + del - 1 > crdt.getLength() - 1){
+        del--;
+        add--;
+    }
+
     //    DEBUG: get some info on what has been modified
-        std::cout << "pos: " << pos << "; add: " << add << "; del: " << del << std::endl;
+    std::cout << "pos: " << pos << "; add: " << add << "; del: " << del << std::endl;
 
     if(del > 0){
         for(int i = pos + del - 1; i >= pos; --i)

@@ -31,6 +31,7 @@ public:
     void localInsert(int index, QChar value, QTextCharFormat fmt, Qt::Alignment align);
     void localErase(int index);
     void process(const CRDT_Message& m);
+    int getLength();
 //    std::string to_string();
 };
 

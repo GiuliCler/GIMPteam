@@ -201,6 +201,10 @@ int CRDT_SharedEditor::confrontaPos(QVector<int> pos, QVector<int> currentPos){
     return 0;
 }
 
+int  CRDT_SharedEditor::getLength(){
+    return _symbols.size();
+}
+
 //std::string CRDT_SharedEditor::to_string() {
 //    std::string documento;
 //    for(auto i=_symbols.begin(); i<_symbols.end(); i++)
