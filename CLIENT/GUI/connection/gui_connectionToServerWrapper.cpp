@@ -180,7 +180,7 @@ int GUI_ConnectionToServerWrapper::forgetKnownDocumentWrapper(GIMPdocs *gimpdocs
 
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
-        Stub::forgetKnownDocument(userId, documentId);
+        Stub::forgetKnownDocument(gimpdocs->getConnection(), userId, documentId);
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -269,8 +269,8 @@ QString GUI_ConnectionToServerWrapper::getDocumentNameWrapper(GIMPdocs *gimpdocs
 
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
-        returnValue = Stub::getDocumentName(docId);
-        //returnValue = QString::fromStdString(stringa);
+        std::string stringa = Stub::getDocumentName(gimpdocs->getConnection(), docId);
+        returnValue = QString::fromStdString(stringa);
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);

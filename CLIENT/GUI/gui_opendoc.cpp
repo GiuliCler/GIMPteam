@@ -99,6 +99,9 @@ void GUI_Opendoc::on_exportPDFPushButton_clicked(){
     docp->print(&printer);
 }
 
+//TODO: l'eliminazione di un documento deve avvertire il possessore del documento che anche tutti i collaboratori
+//non potranno più accedervi (messaggio ulteriore di notifica). L'eliminazione del documento da parte dei collaboratori elimina
+//solamente la corrispondenza con quel documento nel db.
 void GUI_Opendoc::on_forgetPushButton_clicked(){
     if(ui->docsListWidget->currentItem() == nullptr){
         QMessageBox::information(this, "", "Please, select a document");
@@ -110,7 +113,7 @@ void GUI_Opendoc::on_forgetPushButton_clicked(){
         return;
 
     int docId = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
-    Stub::forgetKnownDocument(gimpParent->userid, docId);
+    Stub::forgetKnownDocument(gimpParent->getConnection(),gimpParent->userid, docId);
     /*if(id < 0){
         QMessageBox::information(this, "", "PANIC! Qualcosa è andato storto");
         //TODO gestire più dettagliatamente

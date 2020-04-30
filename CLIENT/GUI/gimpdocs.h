@@ -38,7 +38,7 @@ public:
     void setConnection(connection_to_server *connection);
 
 private:
-    connection_to_server *c;
+    connection_to_server *c = nullptr;
 
 };
 

@@ -81,6 +81,15 @@ void Thread_management::run(){
         login(username, password);
     }
 
+    c = "DELETE_DOC";
+    if(text.contains(c.toUtf8())){
+        int docId, userId;
+        in >> userId;
+        in >> docId;
+
+        deleteDoc(userId, docId);
+    }
+
     c = "UPDATE";
     if(text.contains(c.toUtf8())){
 //        qDebug()<<"SONO DENTRO LA UPDATE";          // DEBUG
@@ -109,6 +118,14 @@ void Thread_management::run(){
         in >> userId;
 
         getNickname(userId);
+    }
+
+    c = "GET_DOC_NAME";
+    if(text.contains(c.toUtf8())){
+        int docId;
+        in >> docId;
+
+        getDocName(docId);
     }
 
     c = "GET_ICON";
@@ -152,14 +169,6 @@ void Thread_management::run(){
         in >> docId;
 
         getUri(docId);
-    }
-
-    c = "GET_DOCNAME";
-    if(text.contains(c.toUtf8())){
-        int docId;
-        in >> docId;
-
-        getDocName(docId);
     }
 
     c = "GET_WORKINGUSERS_ONADOC";
@@ -356,8 +365,9 @@ void Thread_management::getIcon(int userId){
     mutex_users->unlock();
     if(!username.isEmpty()){
         mutex_db->lock();
-        out << database->getIconId(username).toLocal8Bit();
+        QString icon = database->getIconId(username).toLocal8Bit();
         mutex_db->unlock();
+        out << icon.toLocal8Bit();
         socket->write(blocko);
     }else{
         out << "errore";
@@ -413,7 +423,7 @@ void Thread_management::getDocs(int userId){
             mutex_docs->unlock();
 
             // Concateno in una stringa unica da mandare al client
-            QString doc = doc_name + "_" + QString::number(docId);
+            QString doc = doc_name.split("_").at(1) + "_" + QString::number(docId);
 //            qDebug()<< "GET_DOCS - coppia: "<<doc;             // DEBUG
 
             // Mando la QString così generata al client
@@ -553,6 +563,12 @@ void Thread_management::getUri(int docId){
     }
 }
 
+//TODO: l'eliminazione di un documento deve avvertire il possessore del documento che anche tutti i collaboratori
+//non potranno più accedervi (messaggio di notifica). L'eliminazione del documento da parte dei collaboratori elimina
+//solamente la corrispondenza con quel documento nel db.
+void Thread_management::deleteDoc(int userId, int docId){
+
+}
 
 void Thread_management::getDocName(int docId){
     QByteArray blocko;
@@ -571,7 +587,7 @@ void Thread_management::getDocName(int docId){
     }
     mutex_docs->unlock();
     if(!docName.isEmpty()){
-        out << docName;
+        out << docName.split("_").at(1);
         socket->write(blocko);
     }else{
         out << "errore";

@@ -43,6 +43,7 @@ private:
     void getDocumentDatoUri(QString uri);
     void getUri(int docId);
     void getDocName(int docId);
+    void deleteDoc(int userId, int docId);
     void getWorkingUsersGivenDoc(int docId);
 
 signals:

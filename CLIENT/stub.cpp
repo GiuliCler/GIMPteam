@@ -88,11 +88,16 @@ int Stub::requestCreateDocumentTemporary(connection_to_server *connection, int u
     return result;
 }
 
-void Stub::forgetKnownDocument(int userId, int documentId){
+void Stub::forgetKnownDocument(connection_to_server *connection, int userId, int documentId){
     userId = documentId;
     documentId = userId;
 
-    //I don't know. Do something
+    std::string result = connection->requestDeleteDoc(userId, documentId);
+
+    //lancia un errore solo se non riesce ad eliminare il documento
+    if(result.compare("errore") == 0)
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
 }
 
 std::shared_ptr<QMap<int, QString>> Stub::getKnownDocuments(int userId){
@@ -143,11 +148,16 @@ std::string Stub::requestUriTemporary(connection_to_server *connection, int docI
     return result;
 }
 
-QString Stub::getDocumentName(int docId){
+std::string Stub::getDocumentName(connection_to_server *connection,int docId){
     int n = docId;
     docId = n;
+    std::string name = connection->requestDocName(docId);
 
-    return "The Tales of Beedle the Bard";
+    if(name.compare("errore") == 0)
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
+
+    return name;
 }
 
 std::shared_ptr<QTextDocument> Stub::getDocumentText(int docId){

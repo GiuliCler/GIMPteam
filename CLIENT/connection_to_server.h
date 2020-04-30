@@ -32,7 +32,9 @@ public:
     std::string requestDocDatoUri(QString uri);
     std::shared_ptr<QMap<QString, int>> getKnownDocuments(int userId);
     QString getDocumentName(int docId);
+    std::string requestDocName(int docId);
     std::shared_ptr<QSet<int>> getWorkingUsersOnDocument(int docId);
+    std::string requestDeleteDoc(int userId,int documentId);
 private slots:
     void showFile(const QString &file);
     void displayError(int socketError, const QString &message);

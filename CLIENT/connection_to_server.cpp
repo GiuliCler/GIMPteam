@@ -114,6 +114,47 @@ long connection_to_server::requestCreateDocument(int userId, QString name)
     //TODO: il documento viene ritornato e aperto => gestione con CRDT
 }
 
+std::string connection_to_server::requestDocName(int docId){
+    this->tcpSocket->abort();
+    this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+
+    if (!tcpSocket->waitForConnected(Timeout)) {
+        emit error(tcpSocket->error(), tcpSocket->errorString());
+        return "errore";
+    }
+    QByteArray buffer;
+    QDataStream out(&buffer, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_10);
+
+    out << "GET_DOC_NAME";
+    out << docId;
+
+    this->tcpSocket->write(buffer);
+
+    if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        return "errore";
+    }
+
+    //ora attendo una risposta dal server, sul login al db
+    QByteArray docName;
+    QDataStream in;
+    in.setDevice(this->tcpSocket);
+    in.setVersion(QDataStream::Qt_4_0);
+
+    do {
+        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
+            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+            return "errore";
+        }
+
+        in.startTransaction();
+        in >> docName;
+    } while (!in.commitTransaction());
+    docName.replace('\0',"");
+    return docName.toStdString();
+}
+
 int connection_to_server::requestNewAccount(QString username, QString password, QString nickname, QString icon)
 {
     this->tcpSocket->abort();
@@ -498,9 +539,50 @@ std::string connection_to_server::requestGetUsername(int userId){
     return username.toStdString();
 }
 
-//void connection_to_server::responseAtRequest(){
+std::string connection_to_server::requestDeleteDoc(int userId,int documentId){
+    this->tcpSocket->abort();
+    this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
-//}
+    if (!tcpSocket->waitForConnected(Timeout)) {
+        emit error(tcpSocket->error(), tcpSocket->errorString());
+        return "errore";
+    }
+    QByteArray buffer;
+    QDataStream out(&buffer, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_10);
+
+    out << "DELETE_DOC";
+    out << userId;
+    out << documentId;
+
+    this->tcpSocket->write(buffer);
+
+    if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        return "errore";
+    }
+
+    //ora attendo una risposta dal server, sul login al db
+    QByteArray file;
+    QDataStream in;
+    in.setDevice(this->tcpSocket);
+    in.setVersion(QDataStream::Qt_4_0);
+    do {
+        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
+            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+            return "errore";
+        }
+
+        in.startTransaction();
+        in >> file;
+    } while (!in.commitTransaction());
+    QString c = "errore";
+    if(file.contains(c.toUtf8())){
+        return "errore";
+    }else{
+        return "ok";
+    }
+}
 
 QString connection_to_server::getDocumentName(int docId){
     this->tcpSocket->abort();
