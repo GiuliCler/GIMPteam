@@ -696,6 +696,50 @@ std::vector<QString> CollegamentoDB::recuperaUtentiNelDB(){
 
 
 /*
+ * Utilizzo: funzione che permette di rimuovere un documento dalla tabella doc del DB
+ * Parametri:
+ *      docName --> nome del documento che si vuole rimuovere dal DB
+ *
+ * Ritorno:
+ *      1 -> documento rimosso correttamente
+ *      0 -> errore
+ */
+int CollegamentoDB::rimuoviDocumento(QString nomeDOC){
+    if(nomeDOC.isEmpty())
+        return 0;
+
+    int esito = 1;
+
+    std::string query1 = "SELECT * FROM doc WHERE nome_doc=:doc";
+    std::string query2 = "DELETE FROM doc WHERE nome_doc=:doc";
+    QSqlQuery ris1(QSqlDatabase::database(connectionName)), ris2(QSqlDatabase::database(connectionName));
+    ris1.prepare(QString::fromStdString(query1));
+    ris2.prepare(QString::fromStdString(query2));
+    ris1.bindValue(":doc", nomeDOC);
+    ris2.bindValue(":doc", nomeDOC);
+
+    QSqlDatabase::database().transaction();
+
+    ris1.exec();
+    if(ris1.size() != 1){
+
+        /* Non esiste alcuna riga all'interno della tabella DOC con i parametri specificati */
+        esito = 0;
+
+    } else {
+
+        /* Riga relativa a nomeDOC esistente nella tabella DOC => posso eliminare tale riga */
+        ris2.exec();
+
+        QSqlDatabase::database().commit();
+
+    }
+
+    return esito;
+}
+
+
+/*
  * Utilizzo: funzione che permette di aggiornare le informazioni relative ad un utente già presente nel DB
  * Parametri:
  *      username, nuova_password  e nuovo_nickname dell'utente da modificare

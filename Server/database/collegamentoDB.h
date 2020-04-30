@@ -33,6 +33,7 @@ public:
     int aggiornaUser(QString username, QString nuova_password, QString nuovo_nickname, QString nuova_icona);
     std::vector<QString> recuperaDocsNelDB();
     std::vector<QString> recuperaUtentiNelDB();
+    int rimuoviDocumento(QString nomeDOC);
 };
 
 #endif //GIMPDOCS_COLLEGAMENTODB_H
