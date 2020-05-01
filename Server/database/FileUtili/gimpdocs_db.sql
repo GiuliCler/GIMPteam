@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: May 01, 2020 alle 11:55
+-- Creato il: Mag 01, 2020 alle 12:54
 -- Versione del server: 10.1.40-MariaDB
 -- Versione PHP: 7.3.5
 
@@ -41,8 +41,8 @@ CREATE TABLE `doc` (
 --
 
 INSERT INTO `doc` (`nome_doc`, `uri`) VALUES
-('DivinaCommedia', '://GIMPdocs/80423b4c7a9c3e047148ececb88d1d41'),
-('Oibaboi', '://GIMPdocs/3b32d34c78a03e759aa185702748c408');
+('ilagioda@gimpteam.it_DivinaCommedia', '://GIMPdocs/80423b4c7a9c3e047148ececb88d1d41'),
+('ilagioda@gimpteam.it_Oibaboi', '://GIMPdocs/3b32d34c78a03e759aa185702748c408');
 
 -- --------------------------------------------------------
 
@@ -63,8 +63,8 @@ CREATE TABLE `utente_doc` (
 --
 
 INSERT INTO `utente_doc` (`username`, `nome_doc`, `site_id`, `site_counter`) VALUES
-('ilagioda@gimpteam.it', 'DivinaCommedia', 0, 0),
-('ilagioda@gimpteam.it', 'Oibaboi', 0, 0);
+('ilagioda@gimpteam.it', 'ilagioda@gimpteam.it_DivinaCommedia', 0, 0),
+('ilagioda@gimpteam.it', 'ilagioda@gimpteam.it_Oibaboi', 0, 0);
 
 -- --------------------------------------------------------
 
