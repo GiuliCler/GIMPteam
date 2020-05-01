@@ -618,7 +618,7 @@ void Thread_management::deleteDoc(int userId, int docId){
     QMapIterator<QString, int> k(users);
     while (k.hasNext()) {
         k.next();
-        if(k.value()==userId-1){
+        if(k.value()==userId){
             username = k.key();
             break;
         }
