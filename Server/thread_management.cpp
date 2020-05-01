@@ -435,7 +435,15 @@ void Thread_management::getDocs(int userId){
             mutex_docs->unlock();
 
             // Concateno in una stringa unica da mandare al client
-            QString doc = doc_name.split("_").at(1) + "_" + QString::number(docId);
+
+            QString doc;
+            if(doc_name != "nessuno"){
+                 //se non ho documenti, questa cosa genera sigsev perchè giustamente non riesce a ottenere at(1)
+                //ecco perchè aggiunto il controllo
+                doc = doc_name.split("_").at(1) + "_" + QString::number(docId);
+            }else{
+                doc = doc_name+"_"+QString::number(docId);
+            }
 //            qDebug()<< "GET_DOCS - coppia: "<<doc;             // DEBUG
 
             // Mando la QString così generata al client
