@@ -563,11 +563,109 @@ void Thread_management::getUri(int docId){
     }
 }
 
-//TODO: l'eliminazione di un documento deve avvertire il possessore del documento che anche tutti i collaboratori
+//l'eliminazione di un documento deve avvertire il possessore del documento che anche tutti i collaboratori
 //non potranno più accedervi (messaggio di notifica). L'eliminazione del documento da parte dei collaboratori elimina
 //solamente la corrispondenza con quel documento nel db.
+//eliminare anche dal file system
 void Thread_management::deleteDoc(int userId, int docId){
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
 
+    //cerco il nome del documento da eliminare
+    QString docName;
+    mutex_docs->lock();
+    QMapIterator<QString, int> i(documents);
+    while (i.hasNext()) {
+        i.next();
+        if(i.value()==docId){
+            docName=i.key();
+            break;
+        }
+    }
+    mutex_docs->unlock();
+
+    if(docName.isEmpty()){
+        out << "errore";
+        socket->write(blocko);
+        return;
+    }
+
+    //cerco lo username dell'utente che ha chiesto l'eliminazione (per fare
+    //la verifica sul fatto che sia l'owner o meno
+    QString username;
+    mutex_users->lock();
+    QMapIterator<QString, int> j(users);
+    while (j.hasNext()) {
+        j.next();
+        if(j.value()==userId){
+            username=j.key();
+            break;
+        }
+    }
+    mutex_users->unlock();
+    if(username.isEmpty()){
+        out << "errore";
+        socket->write(blocko);
+        return;
+    }
+
+    //controllo il creatore del documento con username
+    if(QString::compare(username, docName.split("_").at(1))==0){
+        mutex_db->lock();
+        //è il creatore del documento: tutti i partecipanti, non vi hanno più accesso
+        std::vector<std::vector<QString>> collaboratori = database->recuperaCollaboratori(docName);
+        mutex_db->unlock();
+        if(collaboratori.size()==0){
+            out << "errore";
+            socket->write(blocko);
+            return;
+        }
+        if(collaboratori.size()==1 && (collaboratori.at(0).at(0)=="errore")) {
+            out << "errore";
+            socket->write(blocko);
+            return;
+        }
+
+        //itero sui collaboratori ed elimino il loro documento
+        for(auto i:collaboratori){
+            mutex_db->lock();
+            if(database->rimuoviPartecipante(i.at(0),docName)==0){
+                mutex_db->unlock();
+                out << "errore";
+                socket->write(blocko);
+                return;
+            }
+            mutex_db->unlock();
+        }
+
+        //elimino il documento in doc
+        mutex_db->lock();
+        if(database->rimuoviDocumento(docName)==0){
+            mutex_db->unlock();
+            out << "errore";
+            socket->write(blocko);
+        }else{
+            mutex_db->unlock();
+            //elimino il documento nel file system
+            QFile file (path+"/"+docName+".txt");
+            file.remove();
+            out << "ok";
+            socket->write(blocko);
+        }
+    }else{
+        //il documento rimane e viene rimosso solo il partecipante
+        mutex_db->lock();
+        if(database->rimuoviPartecipante(docName, username)==0){
+            mutex_db->unlock();
+            out << "errore";
+            socket->write(blocko);
+        }else{
+            mutex_db->unlock();
+            out << "ok";
+            socket->write(blocko);
+        }
+    }
 }
 
 void Thread_management::getDocName(int docId){
@@ -612,16 +710,16 @@ void Thread_management::getWorkingUsersGivenDoc(int docId){
 
         // Mando al client il numero di elementi/id che verranno inviati
         int num_working_users = utenti_online.size();
-//        qDebug() << "GET_WORKINGUSERS_ONADOC - STO MANDANDO AL CLIENT num_working_users: "<<num_working_users;             // DEBUG
+        //        qDebug() << "GET_WORKINGUSERS_ONADOC - STO MANDANDO AL CLIENT num_working_users: "<<num_working_users;             // DEBUG
         out << num_working_users;
 
         // Mando al client gli id degli utenti online che stanno lavorando sul documento al momento
         for(auto it = utenti_online.begin(); it<utenti_online.end(); it++){
             int id = (*it);
-//            qDebug()<<"GET_WORKINGUSERS_ONADOC - Sto mandando al client ID: "<<id;
+            //            qDebug()<<"GET_WORKINGUSERS_ONADOC - Sto mandando al client ID: "<<id;
             // Mando la QString così generata al client
             out << id;
-         }
+        }
 
         socket->write(blocko);
 

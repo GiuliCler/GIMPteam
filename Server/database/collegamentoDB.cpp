@@ -384,7 +384,7 @@ QString CollegamentoDB::getIconId(QString username){
  * Ritorno:
  *      >0 collaboratori -> vettore composto da vettori con (username, nickname, icona) degli utenti collaboratori
  *      =0 collaboratori, ovvero no righe trovate in utente_doc -> vettore contenentente un solo vettore con ("no")
- *      errere -> vettore contenentente un solo vettore con ("errore")
+ *      errore -> vettore contenentente un solo vettore con ("errore")
  */
 std::vector<std::vector<QString>> CollegamentoDB::recuperaCollaboratori(QString nomeDOC){
     std::vector<std::vector<QString>> ritorno;
@@ -496,18 +496,18 @@ int CollegamentoDB::rimuoviPartecipante(QString nomeDOC, QString username){
     std::string query1 = "SELECT * FROM utente_doc WHERE username=:user AND nome_doc=:doc";
     std::string query2 = "DELETE FROM utente_doc WHERE username=:user AND nome_doc=:doc";
     std::string query3 = "SELECT * FROM utente_doc WHERE nome_doc=:doc";
-    std::string query4 = "DELETE FROM doc WHERE nome_doc=:doc";
+//    std::string query4 = "DELETE FROM doc WHERE nome_doc=:doc";
     QSqlQuery ris1(QSqlDatabase::database(connectionName)), ris2(QSqlDatabase::database(connectionName)), ris3(QSqlDatabase::database(connectionName)), ris4(QSqlDatabase::database(connectionName));
     ris1.prepare(QString::fromStdString(query1));
     ris2.prepare(QString::fromStdString(query2));
     ris3.prepare(QString::fromStdString(query3));
-    ris4.prepare(QString::fromStdString(query4));
+//    ris4.prepare(QString::fromStdString(query4));
     ris1.bindValue(":user", username);
     ris1.bindValue(":doc", nomeDOC);
     ris2.bindValue(":user", username);
     ris2.bindValue(":doc", nomeDOC);
     ris3.bindValue(":doc", nomeDOC);
-    ris4.bindValue(":doc", nomeDOC);
+//    ris4.bindValue(":doc", nomeDOC);
 
 //    if(QSqlDatabase::database().driver()->hasFeature(QSqlDriver::Transactions)){
 
@@ -524,12 +524,13 @@ int CollegamentoDB::rimuoviPartecipante(QString nomeDOC, QString username){
             /* Riga (username, nomeDOC) esistente nella tabella UTENTE_DOC --> elimino tale riga dalla tabella UTENTE_DOC */
             ris2.exec();
 
+            //rimuovere?
             /* Verifico se esistono altre righe nella tabella UTENTE_DOC relative al documento nomeDOC e, se non esistono,
              * cancello il documento dalla tabella DOC */
-            ris3.exec();
+            /*ris3.exec();
             if(ris3.size() == 0){
                 ris4.exec();
-            }
+            }*/
 
             QSqlDatabase::database().commit();
 
