@@ -174,12 +174,11 @@ std::shared_ptr<QTextDocument> Stub::getDocumentText(int docId){
 
 /*EDITOR*/
 //uso un set perchè mi scanso più avanti controlli sull'unicità dello userId, che dovrebbe essere già garanita, ma non si sa mai
-std::shared_ptr<QSet<int>> Stub::getWorkingUsersOnDocument(int docId){
+std::shared_ptr<QSet<int>> Stub::getWorkingUsersOnDocument(connection_to_server *connection, int docId){
     int n = docId;
     docId = n;
-    std::shared_ptr<QSet<int>> vpointer(new QSet<int>());
-    for(int i = 0; i < 5; i++)
-        vpointer->insert(i);
+
+    std::shared_ptr<QSet<int>> vpointer = connection->getWorkingUsersOnDocument(docId);
 
     return vpointer;
 }

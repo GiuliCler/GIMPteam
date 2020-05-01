@@ -39,6 +39,7 @@ void GUI_Menu::setDocumentArea(){
     //so che il parent verrà modificato nel momento in cui lo aggiungo al layout, ma viene salvato come GimpParent
     ui->newdocTab->layout()->addWidget(new GUI_Newdoc(this));
     ui->opendocTab->layout()->addWidget(new GUI_Opendoc(this));
+
 }
 
 void GUI_Menu::on_editPushButton_clicked(){
