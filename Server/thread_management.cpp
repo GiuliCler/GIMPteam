@@ -365,7 +365,7 @@ void Thread_management::getIcon(int userId){
     mutex_users->unlock();
     if(!username.isEmpty()){
         mutex_db->lock();
-        QString icon = database->getIconId(username).toLocal8Bit();
+        QString icon = database->getIconId(username);
         mutex_db->unlock();
         out << icon.toLocal8Bit();
         socket->write(blocko);
