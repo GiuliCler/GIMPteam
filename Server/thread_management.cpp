@@ -615,11 +615,11 @@ void Thread_management::deleteDoc(int userId, int docId){
     //la verifica sul fatto che sia l'owner o meno
     QString username;
     mutex_users->lock();
-    QMapIterator<QString, int> j(users);
-    while (j.hasNext()) {
-        j.next();
-        if(j.value()==userId){
-            username=j.key();
+    QMapIterator<QString, int> k(users);
+    while (k.hasNext()) {
+        k.next();
+        if(k.value()==userId-1){
+            username = k.key();
             break;
         }
     }
@@ -650,7 +650,7 @@ void Thread_management::deleteDoc(int userId, int docId){
         //itero sui collaboratori ed elimino il loro documento
         for(auto i:collaboratori){
             mutex_db->lock();
-            if(database->rimuoviPartecipante(i.at(0),docName)==0){
+            if(database->rimuoviPartecipante(docName, i.at(0))==0){
                 mutex_db->unlock();
                 out << "errore";
                 socket->write(blocko);
@@ -668,7 +668,7 @@ void Thread_management::deleteDoc(int userId, int docId){
         }else{
             mutex_db->unlock();
             //elimino il documento nel file system
-            QFile file (path+"/"+docName+".txt");
+            QFile file (path+"/"+username+"/"+docName+".txt");
             file.remove();
             out << "ok";
             socket->write(blocko);
