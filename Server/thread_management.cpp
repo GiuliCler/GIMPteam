@@ -179,6 +179,18 @@ void Thread_management::run(){
         getWorkingUsersGivenDoc(docId);
     }
 
+    // todo ila
+    //c = "EDITOR";
+    //if(text.contains(c.toUtf8())){
+      //  while(1){
+            // cv -> wakeAll quando è ora di fare la process
+            //    ->
+            // in >> qualcosa;
+            // if(timeout 5 min || clicco sulla X)
+            //     return;
+       // }
+    //}
+
 //    qDebug() << "THREAD - prima di disconnectFromHost(): "<<socket->state();        // DEBUG
     socket->disconnectFromHost();
 //    qDebug() << "THREAD - prima di waitForDisconnected(): "<<socket->state();        // DEBUG
