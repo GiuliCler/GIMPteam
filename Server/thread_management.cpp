@@ -668,7 +668,7 @@ void Thread_management::deleteDoc(int userId, int docId){
         }else{
             mutex_db->unlock();
             //elimino il documento nel file system
-            QFile file (path+"/"+username+"/"+docName+".txt");
+            QFile file (path+username+"/"+docName+".txt");
             file.remove();
             out << "ok";
             socket->write(blocko);
