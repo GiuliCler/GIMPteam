@@ -24,7 +24,7 @@ QMap<QString, int> users;
 QMap<QString, int> documents;
 
 //TODO: valutare il path, al momento quello di Giulia
-QString path = "C:/Users/giuli/Desktop/PROGETTO MALNATI/GIMPteam/Server/Files";
+QString path = "C:/Users/giuli/Desktop/PROGETTO MALNATI/GIMPteam/Server/Files/";
 
 // QMap formata da coppie (docId, [userId1, userId2, userId3, ...])
 // NOTA: workingUsers può contenere righe di documenti CON ALMENO UNO USER ONLINE E ATTIVO
