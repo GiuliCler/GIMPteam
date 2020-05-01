@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Apr 17, 2020 alle 12:25
+-- Creato il: May 01, 2020 alle 11:55
 -- Versione del server: 10.1.40-MariaDB
 -- Versione PHP: 7.3.5
 
@@ -53,7 +53,9 @@ INSERT INTO `doc` (`nome_doc`, `uri`) VALUES
 DROP TABLE IF EXISTS `utente_doc`;
 CREATE TABLE `utente_doc` (
   `username` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  `nome_doc` varchar(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL
+  `nome_doc` varchar(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `site_id` int(1) NOT NULL,
+  `site_counter` int(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
