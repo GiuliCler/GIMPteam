@@ -611,7 +611,7 @@ void Thread_management::deleteDoc(int userId, int docId){
     }
 
     //controllo il creatore del documento con username
-    if(QString::compare(username, docName.split("_").at(1))==0){
+    if(QString::compare(username, docName.split("_").at(0))==0){
         mutex_db->lock();
         //è il creatore del documento: tutti i partecipanti, non vi hanno più accesso
         std::vector<std::vector<QString>> collaboratori = database->recuperaCollaboratori(docName);
