@@ -256,7 +256,7 @@ int CollegamentoDB::aggiungiPartecipante(QString nomeDOC, QString username){
     int esito = 1;
 
     std::string query1 = "SELECT * FROM utente_doc WHERE username=:user AND nome_doc=:doc";
-    std::string query2 = "INSERT INTO utente_doc(username, nome_doc) VALUES(:user, :doc)";
+    std::string query2 = "INSERT INTO utente_doc(username, nome_doc) VALUES(:user, :doc)";      // todo ila
     std::string query3 = "SELECT * FROM doc WHERE nome_doc=:doc";
     QSqlQuery ris1(QSqlDatabase::database(connectionName)), ris2(QSqlDatabase::database(connectionName)), ris3(QSqlDatabase::database(connectionName));
     ris1.prepare(QString::fromStdString(query1));

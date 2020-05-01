@@ -179,6 +179,18 @@ void Thread_management::run(){
         getWorkingUsersGivenDoc(docId);
     }
 
+    // todo ila
+    //c = "EDITOR";
+    //if(text.contains(c.toUtf8())){
+      //  while(1){
+            // cv -> wakeAll quando è ora di fare la process
+            //    ->
+            // in >> qualcosa;
+            // if(timeout 5 min || clicco sulla X)
+            //     return;
+       // }
+    //}
+
 //    qDebug() << "THREAD - prima di disconnectFromHost(): "<<socket->state();        // DEBUG
     socket->disconnectFromHost();
 //    qDebug() << "THREAD - prima di waitForDisconnected(): "<<socket->state();        // DEBUG
@@ -423,7 +435,15 @@ void Thread_management::getDocs(int userId){
             mutex_docs->unlock();
 
             // Concateno in una stringa unica da mandare al client
-            QString doc = doc_name.split("_").at(1) + "_" + QString::number(docId);
+
+            QString doc;
+            if(doc_name != "nessuno"){
+                 //se non ho documenti, questa cosa genera sigsev perchè giustamente non riesce a ottenere at(1)
+                //ecco perchè aggiunto il controllo
+                doc = doc_name.split("_").at(1) + "_" + QString::number(docId);
+            }else{
+                doc = doc_name+"_"+QString::number(docId);
+            }
 //            qDebug()<< "GET_DOCS - coppia: "<<doc;             // DEBUG
 
             // Mando la QString così generata al client
@@ -595,11 +615,11 @@ void Thread_management::deleteDoc(int userId, int docId){
     //la verifica sul fatto che sia l'owner o meno
     QString username;
     mutex_users->lock();
-    QMapIterator<QString, int> j(users);
-    while (j.hasNext()) {
-        j.next();
-        if(j.value()==userId){
-            username=j.key();
+    QMapIterator<QString, int> k(users);
+    while (k.hasNext()) {
+        k.next();
+        if(k.value()==userId-1){
+            username = k.key();
             break;
         }
     }
@@ -630,7 +650,7 @@ void Thread_management::deleteDoc(int userId, int docId){
         //itero sui collaboratori ed elimino il loro documento
         for(auto i:collaboratori){
             mutex_db->lock();
-            if(database->rimuoviPartecipante(i.at(0),docName)==0){
+            if(database->rimuoviPartecipante(docName, i.at(0))==0){
                 mutex_db->unlock();
                 out << "errore";
                 socket->write(blocko);
@@ -648,7 +668,7 @@ void Thread_management::deleteDoc(int userId, int docId){
         }else{
             mutex_db->unlock();
             //elimino il documento nel file system
-            QFile file (path+"/"+docName+".txt");
+            QFile file (path+"/"+username+"/"+docName+".txt");
             file.remove();
             out << "ok";
             socket->write(blocko);
