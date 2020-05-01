@@ -8,11 +8,12 @@
 #include <QMap>
 #include <QColor>
 
+class CRDT_controller;
 class GUI_ToolsBar;
 class GUI_UsersBar;
 class GUI_MyTextEdit;
 
-enum menuTools {A_LEFT, A_CENTER, A_RIGHT, A_JUSTIFIED, BOLD_ON, BOLD_OFF, ITALIC_ON, ITALIC_OFF, UNDERLINED_ON, UNDERLINED_OFF, STRIKETHROUGH_ON, STRIKETHROUGH_OFF};
+enum menuTools {UNDO_ON, UNDO_OFF, REDO_ON, REDO_OFF, CUT_ON, CUT_OFF, COPY_ON, COPY_OFF, PASTE_ON, PASTE_OFF, A_LEFT, A_CENTER, A_RIGHT, A_JUSTIFIED, BOLD_ON, BOLD_OFF, ITALIC_ON, ITALIC_OFF, UNDERLINED_ON, UNDERLINED_OFF, STRIKETHROUGH_ON, STRIKETHROUGH_OFF};
 
 class GUI_Editor : public QWidget
 {
@@ -24,6 +25,7 @@ public:
     GUI_UsersBar *childUsersBar;
     GUI_MyTextEdit *childMyTextEdit;
     QMap<int, QColor*> userColorMap;
+    CRDT_controller *crdtController;
     //indica se il testo è colorato coi colori degli utenti per identificarli
     bool usersColors;
 
@@ -47,6 +49,11 @@ public slots:
     void on_actionApplyUsersColors();
     void on_actionApplyTextColors();
 
+    void on_actionUndo();
+    void on_actionRedo();
+    void on_actionCut();
+    void on_actionCopy();
+    void on_actionPaste();
     void on_actionBold();
     void on_actionItalic();
     void on_actionUnderlined();

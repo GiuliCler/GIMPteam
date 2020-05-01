@@ -5,6 +5,7 @@
 #include "gui_usersbar.h"
 #include "gui_toolsbar.h"
 #include "gui_myscrollarea.h"
+#include "../../CRDT/crdt_controller.h"
 #include <QMessageBox>
 #include <QScrollBar>
 
@@ -25,6 +26,7 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId) : QWidget(parent), docum
     ui->usersBarWidget->layout()->addWidget(childUsersBar);
     childToolsBar = new GUI_ToolsBar(this);
     ui->toolsBarWidget->layout()->addWidget(childToolsBar);
+    crdtController = new CRDT_controller(this, *childMyTextEdit);
 
     //ottengo l'elenco degli utenti che al momento stanno guardando il mio stesso document e ne creo icona e cursore
     std::shared_ptr<QSet<int>> users = GUI_ConnectionToServerWrapper::getWorkingUsersOnDocumentWrapper(gimpParent, documentId);
@@ -77,6 +79,11 @@ void GUI_Editor::connectMenuBarActions(){
     connect(gimpParent->ui2->actionApplyTextColors, &QAction::triggered, this, &GUI_Editor::on_actionApplyTextColors);
     connect(gimpParent->ui2->actionApplyTextColors, &QAction::triggered, findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName()), &GUI_UsersBar::on_hideColorsPushButton_clicked);
 
+    connect(gimpParent->ui2->actionUndo, &QAction::triggered, this, &GUI_Editor::on_actionUndo);
+    connect(gimpParent->ui2->actionRedo, &QAction::triggered, this, &GUI_Editor::on_actionRedo);
+    connect(gimpParent->ui2->actionCut, &QAction::triggered, this, &GUI_Editor::on_actionCut);
+    connect(gimpParent->ui2->actionCopy, &QAction::triggered, this, &GUI_Editor::on_actionCopy);
+    connect(gimpParent->ui2->actionPaste, &QAction::triggered, this, &GUI_Editor::on_actionPaste);
     connect(gimpParent->ui2->actionBold, &QAction::triggered, this, &GUI_Editor::on_actionBold);
     connect(gimpParent->ui2->actionItalic, &QAction::triggered, this, &GUI_Editor::on_actionItalic);
     connect(gimpParent->ui2->actionUnderlined, &QAction::triggered, this, &GUI_Editor::on_actionUnderlined);
@@ -85,6 +92,7 @@ void GUI_Editor::connectMenuBarActions(){
     connect(gimpParent->ui2->actionCenter, &QAction::triggered, this, &GUI_Editor::on_actionCenter);
     connect(gimpParent->ui2->actionRight, &QAction::triggered, this, &GUI_Editor::on_actionRight);
     connect(gimpParent->ui2->actionJustified, &QAction::triggered, this, &GUI_Editor::on_actionJustified);
+
 }
 
 void GUI_Editor::changeWindowName(){
@@ -115,34 +123,38 @@ void GUI_Editor::on_actionApplyTextColors(){
     this->gimpParent->ui2->actionApplyTextColors->setEnabled(false);
 }
 
+
+void GUI_Editor::on_actionUndo(){
+    menuTools_event(UNDO_ON);
+}
+
+void GUI_Editor::on_actionRedo(){
+    menuTools_event(REDO_ON);
+}
+
+void GUI_Editor::on_actionCut(){
+    menuTools_event(CUT_ON);
+}
+
+void GUI_Editor::on_actionCopy(){
+    menuTools_event(COPY_ON);
+}
+
+void GUI_Editor::on_actionPaste(){
+    menuTools_event(PASTE_ON);
+}
+
 void GUI_Editor::on_actionBold(){
-
     menuTools_event(BOLD_ON);
-
-    //debug purpose
-    //setMenuToolStatus(BOLD_ON);
 }
 
 void GUI_Editor::on_actionItalic(){
-
     menuTools_event(ITALIC_ON);
-
-    //childToolsBar->ui->italicPushButton->setDown(!childToolsBar->ui->italicPushButton->isDown());
-    //childToolsBar->ui->strikethroughPushButton->setDown(true);
-    //debug purpose
-    //setMenuToolStatus(BOLD_OFF);
 }
 
 void GUI_Editor::on_actionUnderlined(){
 
     menuTools_event(UNDERLINED_ON);
-
-    //questo serve a counterare il fatto che in caso di click il button cambia automaticamente stato da chechek ad unchechek e viceversa, ma voglio essere io a decidere quando cambiare stato
-    //childToolsBar->ui->underlinedPushButton->setChecked(!childToolsBar->ui->boldPushButton->isChecked());
-
-    //non so se devo cambiare lo stato di checked o no, quindi lo chiedo al text editor
-    //childToolsBar->ui->underlinedPushButton->setChecked(Stub::isGenericFontAttributeActivated(childToolsBar->ui->boldPushButton->isChecked()));
-    //setMenuToolStatus(UNDERLINED_ON);
 }
 
 void GUI_Editor::on_actionStrikethrough(){
@@ -159,18 +171,22 @@ void GUI_Editor::on_actionStrikethrough(){
 
 void GUI_Editor::on_actionLeft(){
     menuTools_event(A_LEFT);
+    this->childMyTextEdit->setFocus();
 }
 
 void GUI_Editor::on_actionCenter(){
     menuTools_event(A_CENTER);
+    this->childMyTextEdit->setFocus();
 }
 
 void GUI_Editor::on_actionRight(){
     menuTools_event(A_RIGHT);
+    this->childMyTextEdit->setFocus();
 }
 
 void GUI_Editor::on_actionJustified(){
     menuTools_event(A_JUSTIFIED);
+    this->childMyTextEdit->setFocus();
 }
 
 void GUI_Editor::setMenuToolStatus(menuTools code){
@@ -187,6 +203,56 @@ void GUI_Editor::setMenuToolStatus(menuTools code){
     }
 
     switch(code){
+    case UNDO_ON:
+        childToolsBar->ui->undoPushButton->setEnabled(true);
+        gimpParent->ui2->actionUndo->setEnabled(true);
+        break;
+
+    case UNDO_OFF:
+        childToolsBar->ui->undoPushButton->setEnabled(false);
+        gimpParent->ui2->actionUndo->setEnabled(false);
+        break;
+
+    case REDO_ON:
+        childToolsBar->ui->redoPushButton->setEnabled(true);
+        gimpParent->ui2->actionRedo->setEnabled(true);
+        break;
+
+    case REDO_OFF:
+        childToolsBar->ui->redoPushButton->setEnabled(false);
+        gimpParent->ui2->actionRedo->setEnabled(false);
+        break;
+
+    case CUT_ON:
+        childToolsBar->ui->cutPushButton->setEnabled(true);
+        gimpParent->ui2->actionCut->setEnabled(true);
+        break;
+
+    case CUT_OFF:
+        childToolsBar->ui->cutPushButton->setEnabled(false);
+        gimpParent->ui2->actionCut->setEnabled(false);
+        break;
+
+    case COPY_ON:
+        childToolsBar->ui->copyPushButton->setEnabled(true);
+        gimpParent->ui2->actionCopy->setEnabled(true);
+        break;
+
+    case COPY_OFF:
+        childToolsBar->ui->copyPushButton->setEnabled(false);
+        gimpParent->ui2->actionCopy->setEnabled(false);
+        break;
+
+    case PASTE_ON:
+        childToolsBar->ui->pastePushButton->setEnabled(true);
+        gimpParent->ui2->actionPaste->setEnabled(true);
+        break;
+
+    case PASTE_OFF:
+        childToolsBar->ui->pastePushButton->setEnabled(false);
+        gimpParent->ui2->actionPaste->setEnabled(false);
+        break;
+
     case BOLD_ON:
         childToolsBar->ui->boldPushButton->setChecked(true);
         gimpParent->ui2->actionBold->setChecked(true);

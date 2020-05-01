@@ -1,14 +1,31 @@
 #include "gui_mytextedit.h"
 #include "gui_editor.h"
 #include <QColor>
+#include <QFont>
+#include <QPalette>
 
 GUI_MyTextEdit::GUI_MyTextEdit(QWidget *parent) : QTextEdit(parent) {
     this->setObjectName(GUI_MyTextEdit::getObjectName());
     editorParent = static_cast<GUI_Editor*>(parent);
 
+    QPalette palette = this->palette();
+    palette.setColor(QPalette::Inactive, QPalette::Highlight, palette.color(QPalette::Active, QPalette::Highlight));
+    this->setPalette(palette);
+
+//    this->setText("I pulsanti funzionano un po' a caso per ragioni di debug");
+}
+
+void GUI_MyTextEdit::setupTextEdit(){
+    //devo mettere il setFocus in una funzione chiamata successivamente al costruttore perchè sì, altrimenti mi cancella il focus
+    this->setFocus();
     this->setCursorWidth(2);
-    this->setFontPointSize(12);
-    //this->setText("I pulsanti funzionano un po' a caso per ragioni di debug");
+
+    QFont font = this->font();
+    font.setPointSize(12);
+    this->setFont(font);
+
+    currentCharFormatChanged(this->currentCharFormat());
+    cursorPositionChanged();
 }
 
 void GUI_MyTextEdit::paintEvent(QPaintEvent *event)

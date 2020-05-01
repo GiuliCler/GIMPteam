@@ -17,6 +17,7 @@ public:
 
     explicit GUI_MyTextEdit(QWidget *parent);
     static QString getObjectName() {return QString("GUI_MyTextEdit");}
+    void setupTextEdit();
 
 protected:
     virtual void paintEvent(QPaintEvent *pEvent) override;

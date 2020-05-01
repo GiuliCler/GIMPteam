@@ -1,4 +1,5 @@
 #include "gui_toolsbar.h"
+#include "../../CRDT/crdt_controller.h"
 #include <QColorDialog>
 
 GUI_ToolsBar::GUI_ToolsBar(QWidget *parent) : QWidget(parent){
@@ -6,8 +7,13 @@ GUI_ToolsBar::GUI_ToolsBar(QWidget *parent) : QWidget(parent){
     ui = new Ui::GUI_ToolsBar();
     ui->setupUi(this);
 
-    setTextColorIconColor(Stub::getCurrentTextColor());
+    //setTextColorIconColor(QColor(0,0,0)); //TODO: check whether this is needed or not
 
+    connect(ui->undoPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionUndo);
+    connect(ui->redoPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionRedo);
+    connect(ui->cutPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionCut);
+    connect(ui->copyPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionCopy);
+    connect(ui->pastePushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionPaste);
     connect(ui->boldPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionBold);
     connect(ui->italicPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionItalic);
     connect(ui->underlinedPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionUnderlined);
@@ -26,9 +32,22 @@ GUI_ToolsBar::~GUI_ToolsBar(){
 
 void GUI_ToolsBar::on_colorPushButton_clicked(){
     QColor chosenColor = QColorDialog::getColor(); //return the color chosen by user
-    setTextColorIconColor(chosenColor);
+    editorParent->crdtController->setCurrentTextColor(chosenColor);
+}
 
-    Stub::setCurrentTextColor(chosenColor);
+void GUI_ToolsBar::setFontComboBoxText(QFont font){
+    //questa block sygnalserve ad evitare un loop infinito
+    ui->fontComboBox->blockSignals(true);
+    ui->fontComboBox->setCurrentFont(font);
+    ui->fontComboBox->blockSignals(false);
+}
+
+void GUI_ToolsBar::setSpinBoxValue(int size){
+
+    //questa block sygnalserve ad evitare un loop infinito
+    ui->spinBox->blockSignals(true);
+    ui->spinBox->setValue(size);
+    ui->spinBox->blockSignals(false);
 }
 
 void GUI_ToolsBar::setTextColorIconColor(const QColor color){
