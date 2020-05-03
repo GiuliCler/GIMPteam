@@ -564,9 +564,11 @@ void Thread_management::newDoc(QString docName, int userId){
 
             }
 
+            // todo ila: sistemare la aggiungiPartecipante (site_id e site_counter) ------------------------------------------------------------------
+
             // Associazione username - nome_doc nella tabella utente_doc del DB
             mutex_db->lock();
-            if(database->aggiungiPartecipante(username+"_"+docName, username) != 2){
+            if(database->aggiungiPartecipante(username+"_"+docName, username, 0, 0) != 2){
                 mutex_db->unlock();
                 out << "ok";
                 out << id;
