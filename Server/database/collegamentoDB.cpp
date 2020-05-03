@@ -240,6 +240,8 @@ QString CollegamentoDB::recuperaDocDatoURI(QString uri){
  * Parametri:
  *      nomeDOC: nome del documento a cui l'utente può accedere per la prima volta
  *      username: nuovo partecipante alla modifica del documento in questione
+ *      siteID: Sdel nuovo partecipante
+ *      siteCOUNTER: del nuovo partecipante
  * Ritorno:
  *      1 -> L'utente non è ancora stato abilitato alla modifica del documento, quindi la riga
  *           (username,nomeDOC) è stata aggiunta alla tabella UTENTE_DOC
@@ -248,7 +250,7 @@ QString CollegamentoDB::recuperaDocDatoURI(QString uri){
  *      2 -> Il documento di cui è stato fornito il nome non esiste nella tabella DOC oppure è stata fornita
  *           una stringa vuota
  */
-int CollegamentoDB::aggiungiPartecipante(QString nomeDOC, QString username){
+int CollegamentoDB::aggiungiPartecipante(QString nomeDOC, QString username, int siteID, int siteCOUNTER){
 
     if(nomeDOC.isEmpty())
         return 2;
@@ -256,7 +258,7 @@ int CollegamentoDB::aggiungiPartecipante(QString nomeDOC, QString username){
     int esito = 1;
 
     std::string query1 = "SELECT * FROM utente_doc WHERE username=:user AND nome_doc=:doc";
-    std::string query2 = "INSERT INTO utente_doc(username, nome_doc) VALUES(:user, :doc)";      // todo ila
+    std::string query2 = "INSERT INTO utente_doc(username, nome_doc, site_id, site_counter) VALUES(:user, :doc, :siteid, :sitecounter)";
     std::string query3 = "SELECT * FROM doc WHERE nome_doc=:doc";
     QSqlQuery ris1(QSqlDatabase::database(connectionName)), ris2(QSqlDatabase::database(connectionName)), ris3(QSqlDatabase::database(connectionName));
     ris1.prepare(QString::fromStdString(query1));
@@ -266,6 +268,8 @@ int CollegamentoDB::aggiungiPartecipante(QString nomeDOC, QString username){
     ris1.bindValue(":doc", nomeDOC);
     ris2.bindValue(":user", username);
     ris2.bindValue(":doc", nomeDOC);
+    ris2.bindValue(":siteid", siteID);
+    ris2.bindValue(":sitecounter", siteCOUNTER);
     ris3.bindValue(":doc", nomeDOC);
 
 //    if(QSqlDatabase::database().driver()->hasFeature(QSqlDriver::Transactions)){
@@ -727,6 +731,8 @@ int CollegamentoDB::rimuoviDocumento(QString nomeDOC){
         /* Non esiste alcuna riga all'interno della tabella DOC con i parametri specificati */
         esito = 0;
 
+        QSqlDatabase::database().commit();
+
     } else {
 
         /* Riga relativa a nomeDOC esistente nella tabella DOC => posso eliminare tale riga */
@@ -752,7 +758,7 @@ int CollegamentoDB::rimuoviDocumento(QString nomeDOC){
  */
 int CollegamentoDB::aggiornaUser(QString username, QString nuova_password, QString nuovo_nickname, QString nuova_icona){
 
-    std::cout<<"SONO NELLA aggiornaUser"<<std::endl;        // DEBUG
+//    std::cout<<"SONO NELLA aggiornaUser"<<std::endl;        // DEBUG
 
     if(username.isEmpty() || nuova_password.isEmpty() || nuovo_nickname.isEmpty())
         return 0;

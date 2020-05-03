@@ -22,7 +22,7 @@ public:
     int creaDoc(QString nomeDOC);
     QString recuperaURI(QString nomeDOC);
     QString recuperaDocDatoURI(QString uri);
-    int aggiungiPartecipante(QString nomeDOC, QString username);
+    int aggiungiPartecipante(QString nomeDOC, QString username, int siteID, int siteCOUNTER);
     std::vector<QString> recuperaDocs(QString username);
     QString getNickname(QString username);
     QString getIconId(QString username);

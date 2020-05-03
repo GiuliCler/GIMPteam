@@ -4,7 +4,6 @@
 #include <QDialog>
 #include <QString>
 #include <QVector>
-#include "database/collegamentoDB.h"
 
 QT_BEGIN_NAMESPACE
 #include <QFileSystemModel>

@@ -1,13 +1,16 @@
 #include "server.h"
 #include "thread_management.h"
+#include "database/collegamentoDB.h"
+#include "crdt/crdt_message.h"
 #include <stdlib.h>
 #include <QThreadPool>
 #include <QRunnable>
 #include <QFileSystemModel>
 #include <QTreeView>
 #include <QMutex>
-#include <QWaitCondition>
 #include <QPair>
+#include <QWaitCondition>
+#include <queue>
 
 //Thread_management* thread_mgm;
 
@@ -31,6 +34,9 @@ QString path = "C:/Users/giuli/Desktop/PROGETTO MALNATI/GIMPteam/Server/Files/";
 //       --> se la riga contiente solo più un utente e tale utente si discollega/non lavora più a tale documento, la riga viene cancellata
 //       --> tale riga verrà ricreata non appena un altro utente (o anche lo stesso) si ricollegherà/aprirà di nuovo tale documento
 QMap<int, QVector<int>> workingUsers;
+
+// Coda formata da coppie (messaggio, contatore)
+std::queue<QPair<CRDT_Message, int>> codaMessaggi;
 
 Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDescriptor) {
 
@@ -131,6 +137,7 @@ void Server::incomingConnection(qintptr socketDescriptor) {
 //        return;
 //    }
 
+    qDebug()<< "SERVER - Fine incomingConnection";      // DEBUG
 }
 
 void Server::runServer() {

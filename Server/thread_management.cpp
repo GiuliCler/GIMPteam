@@ -15,6 +15,10 @@ void Thread_management::run(){
 
     qDebug() << "THREAD - run iniziata";           // DEBUG
 
+    // todo ila ------------------------------------------------------------------------------------------------------------------------------------
+    int timeoutReadRead = 5000;                     // todo ila : scegliere il timeout della ready read
+                                                    // todo ila : scegliere funzione che mi fa la break dal while(1)
+                                                    // todo ila : distruzione dei thread nel server
     auto thread_id = std::this_thread::get_id();
     std::stringstream ss;
     ss << thread_id;
@@ -28,177 +32,231 @@ void Thread_management::run(){
         return;
     }
 
-//    connect(socket, SIGNAL(readyRead()), this, SLOT(executeJob()));
-//    connect(socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
-
     bool connected = (socket->state() == QTcpSocket::ConnectedState);
     bool NOTconnected = (socket->state() == QTcpSocket::UnconnectedState);
     qDebug() << "THREAD - Run - connected:"<<connected<<" & NOTconnected:"<<NOTconnected;      // DEBUG
 
-    if (!socket->waitForReadyRead(5000)) {
-        emit error(socket->error());
-        return;
+    //    connect(socket, SIGNAL(readyRead()), this, SLOT(executeJob()));
+    //    connect(socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
+
+    while(1){
+        if (!socket->waitForReadyRead(timeoutReadRead)) {
+            emit error(socket->error());
+            return;
+        }
+
+        // Creo nel thread un collegamento al DB, mettendo come nome univoco di connessione "connSOCKETDESCRIPTOR"
+        database = new CollegamentoDB();
+        database->connettiDB("gimpdocs_db", "conn" + QString::fromStdString(thread_id_string));
+
+        // Ridefinisco in e out relativi alla connessione corrente
+        QByteArray text;
+        QDataStream in(socket);
+        in.setVersion(QDataStream::Qt_5_12);
+        in.startTransaction();
+
+        // Prendo la stringa di comando
+        in >> text;
+
+        QByteArray blocko;
+        QDataStream out(&blocko, QIODevice::WriteOnly);
+        out.setVersion(QDataStream::Qt_5_12);
+
+        qDebug() << "THREAD - Run - Prima della verifica del comando... il comando e': "<< QString::fromStdString(text.toStdString());      // DEBUG
+
+        QString c = "CREATE";
+        if(text.contains(c.toUtf8())){
+    //        qDebug() << "SONO DENTRO LA CREATE";             // DEBUG
+            QString username, password, nickname, icon;
+            in >> username;
+            in >> password;
+            in >> nickname;
+            in >> icon;
+
+            create(username, password, nickname, icon);
+        }
+
+        c = "LOGIN";
+        if(text.contains(c.toUtf8())){
+            //qDebug()<< "THREAD - Sono nella LOGIN";        // DEBUG
+            QString username, password;
+            in >> username;
+            in >> password;
+
+            login(username, password);
+        }
+
+        c = "DELETE_DOC";
+        if(text.contains(c.toUtf8())){
+            int docId, userId;
+            in >> userId;
+            in >> docId;
+
+            deleteDoc(userId, docId);
+        }
+
+        c = "UPDATE";
+        if(text.contains(c.toUtf8())){
+    //        qDebug()<<"SONO DENTRO LA UPDATE";          // DEBUG
+            QString password, nickname, icon;
+            int userId;
+            in >> userId;
+            in >> password;
+            in >> nickname;
+            in >> icon;
+
+            update(userId, password, nickname, icon);
+        }
+
+        c = "GET_USERNAME";
+        if(text.contains(c.toUtf8())){
+            int userId;
+            in >> userId;
+
+            getUsername(userId);
+        }
+
+        c = "GET_NICKNAME";
+        if(text.contains(c.toUtf8())){
+            //qDebug()<< "SONO DENTRO LA GET_NICKNAME";             // DEBUG
+            int userId;
+            in >> userId;
+
+            getNickname(userId);
+        }
+
+        c = "GET_DOC_NAME";
+        if(text.contains(c.toUtf8())){
+            int docId;
+            in >> docId;
+
+            getDocName(docId);
+        }
+
+        c = "GET_ICON";
+        if(text.contains(c.toUtf8())){
+            //qDebug()<< "SONO DENTRO LA GET_ICON";             // DEBUG
+            int userId;
+            in >> userId;
+
+            getIcon(userId);
+        }
+
+        c = "GET_DOCS";
+        if(text.contains(c.toUtf8())){
+            int userId;
+            in >> userId;
+
+            getDocs(userId);
+        }
+
+        c = "GET_DOCUMENT_DATO_URI";
+        if(text.contains(c.toUtf8())){
+            QString uri;
+            in >> uri;
+
+            getDocumentDatoUri(uri);
+        }
+
+        c = "GET_URI";
+        if(text.contains(c.toUtf8())){
+            int docId;
+            in >> docId;
+
+            getUri(docId);
+        }
+
+        c = "GET_WORKINGUSERS_ONADOC";
+        if(text.contains(c.toUtf8())){
+            int docId;
+            in >> docId;
+
+            getWorkingUsersGivenDoc(docId);
+        }
+
+        c = "NEW_DOC";
+        if(text.contains(c.toUtf8())){
+            QString docName;
+            int userId;
+            in >> docName;
+            in >> userId;
+
+            // todo ila&paolo ------------------------------------------------------------------------------------------------------------------------------
+
+            // connect: inserisco riga all'interno di workingUsers
+            // Codice tipo della connect...
+            // void connect(){
+            //      lock
+            //      workingUsers.push(doc, user)
+            //      unlock
+            // }
+
+            newDoc(docName, userId);        // todo ila&paolo: controllare funzione di Giulia ----------------------------------------------------------
+
+            // while(1) {
+            //      cv.wait()???
+            //      process()???
+            // }
+        }
+
+        c = "OPEN_DOC";
+        if(text.contains(c.toUtf8())){
+
+            // todo ila&paolo ------------------------------------------------------------------------------------------------------------------------------
+
+            // connect: inserisco riga all'interno di workingUsers
+
+            // cose extra (che per ora ancora non so) da fare quando si apre il doc
+
+            // while(1) {
+            //      cv.wait()???
+            //      process()???
+            // }
+        }
+
+        c = "SEND";
+        if(text.contains(c.toUtf8())){
+
+            // todo ila&paolo -------------------------------------------------------------------------------------------------------------------------------
+
+            // in >> messaggio
+
+            // lock
+            // codaMessaggi.push(messaggio, contatore);
+            // unlock
+
+            // notifica gli altri utenti ... dispatchMessages con cv.wakeAll???
+        }
+
+        c = "DISCONNECT_FROM_DOC";
+        if(text.contains(c.toUtf8())){
+
+            // todo ila&paolo ------------------------------------------------------------------------------------------------------------------------------
+
+            // disconnect: rimuovo riga all'interno di workingUsers
+
+            // break;
+        }
+
+        break;      // todo ila : da rimuovere -------------------------------------------------------------------------------------------------------
     }
 
-    // Creo nel thread un collegamento al DB, mettendo come nome univoco di connessione "connSOCKETDESCRIPTOR"
-    database = new CollegamentoDB();
-    database->connettiDB("gimpdocs_db", "conn" + QString::fromStdString(thread_id_string));
-
-    // Ridefinisco in e out relativi alla connessione corrente
-    QByteArray text;
-    QDataStream in(socket);
-    in.setVersion(QDataStream::Qt_5_12);
-    in.startTransaction();
-
-    // Prendo la stringa di comando
-    in >> text;
-
-    QByteArray blocko;
-    QDataStream out(&blocko, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_12);
-
-    qDebug() << "THREAD - Run - Prima della verifica del comando... il comando e': "<< QString::fromStdString(text.toStdString());      // DEBUG
-
-    QString c = "CREATE";
-    if(text.contains(c.toUtf8())){
-//        qDebug() << "SONO DENTRO LA CREATE";             // DEBUG
-        QString username, password, nickname, icon;
-        in >> username;
-        in >> password;
-        in >> nickname;
-        in >> icon;
-
-        create(username, password, nickname, icon);
-    }
-
-    c = "LOGIN";
-    if(text.contains(c.toUtf8())){
-        //qDebug()<< "THREAD - Sono nella LOGIN";        // DEBUG
-        QString username, password;
-        in >> username;
-        in >> password;
-
-        login(username, password);
-    }
-
-    c = "DELETE_DOC";
-    if(text.contains(c.toUtf8())){
-        int docId, userId;
-        in >> userId;
-        in >> docId;
-
-        deleteDoc(userId, docId);
-    }
-
-    c = "UPDATE";
-    if(text.contains(c.toUtf8())){
-//        qDebug()<<"SONO DENTRO LA UPDATE";          // DEBUG
-        QString password, nickname, icon;
-        int userId;
-        in >> userId;
-        in >> password;
-        in >> nickname;
-        in >> icon;
-
-        update(userId, password, nickname, icon);
-    }
-
-    c = "GET_USERNAME";
-    if(text.contains(c.toUtf8())){
-        int userId;
-        in >> userId;
-
-        getUsername(userId);
-    }
-
-    c = "GET_NICKNAME";
-    if(text.contains(c.toUtf8())){
-        //qDebug()<< "SONO DENTRO LA GET_NICKNAME";             // DEBUG
-        int userId;
-        in >> userId;
-
-        getNickname(userId);
-    }
-
-    c = "GET_DOC_NAME";
-    if(text.contains(c.toUtf8())){
-        int docId;
-        in >> docId;
-
-        getDocName(docId);
-    }
-
-    c = "GET_ICON";
-    if(text.contains(c.toUtf8())){
-        //qDebug()<< "SONO DENTRO LA GET_ICON";             // DEBUG
-        int userId;
-        in >> userId;
-
-        getIcon(userId);
-    }
-
-    c = "GET_DOCS";
-    if(text.contains(c.toUtf8())){
-        int userId;
-        in >> userId;
-
-        getDocs(userId);
-    }
-
-    c = "NEW_DOC";
-    if(text.contains(c.toUtf8())){
-        QString docName;
-        int userId;
-        in >> docName;
-        in >> userId;
-
-        newDoc(docName, userId);
-    }
-
-    c = "GET_DOCUMENT_DATO_URI";
-    if(text.contains(c.toUtf8())){
-        QString uri;
-        in >> uri;
-
-        getDocumentDatoUri(uri);
-    }
-
-    c = "GET_URI";
-    if(text.contains(c.toUtf8())){
-        int docId;
-        in >> docId;
-
-        getUri(docId);
-    }
-
-    c = "GET_WORKINGUSERS_ONADOC";
-    if(text.contains(c.toUtf8())){
-        int docId;
-        in >> docId;
-
-        getWorkingUsersGivenDoc(docId);
-    }
-
-    // todo ila
-    //c = "EDITOR";
-    //if(text.contains(c.toUtf8())){
-      //  while(1){
-            // cv -> wakeAll quando è ora di fare la process
-            //    ->
-            // in >> qualcosa;
-            // if(timeout 5 min || clicco sulla X)
-            //     return;
-       // }
-    //}
-
-//    qDebug() << "THREAD - prima di disconnectFromHost(): "<<socket->state();        // DEBUG
     socket->disconnectFromHost();
-//    qDebug() << "THREAD - prima di waitForDisconnected(): "<<socket->state();        // DEBUG
     socket->waitForDisconnected(3000);
-//    qDebug() << "THREAD - dopo di waitForDisconnected:: "<<socket->state();        // DEBUG
 
     qDebug() << "THREAD - run finita";      // DEBUG
 }
+
+
+//void Thread_management::loopEditor(){
+//        while(1){
+//             cv -> wakeAll quando è ora di fare la process
+//                ->
+//             in >> qualcosa;
+//             if(timeout 5 min || clicco sulla X)
+//                 return;
+//        }
+//}
 
 
 void Thread_management::create(QString username, QString password, QString nickname, QString icon){
@@ -500,7 +558,7 @@ void Thread_management::newDoc(QString docName, int userId){
                 // out_file << "The magic number is: " << 49 << "\n";       // DEBUG
 
                 // *******************************************************
-                // PAOLO TODO: gestione CRDT
+                // todo ila&paolo: gestione CRDT -----------------------------------------------------------------------------------------------------
                 // *******************************************************
 
 
