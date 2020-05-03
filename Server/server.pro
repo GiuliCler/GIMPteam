@@ -3,12 +3,14 @@ QT += sql
 QT += core
 HEADERS       = server.h \
     crdt/crdt_message.h \
+    crdt/crdt_symbol.h \
     database/collegamentoDB.h \
     database/sha256.h \
     dialog.h \
     thread_management.h
 SOURCES       = server.cpp \
                 crdt/crdt_message.cpp \
+                crdt/crdt_symbol.cpp \
                 database/collegamentoDB.cpp \
                 database/sha256.cpp \
                 dialog.cpp \
