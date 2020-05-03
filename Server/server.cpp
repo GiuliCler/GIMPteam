@@ -1,6 +1,5 @@
 #include "server.h"
 #include "thread_management.h"
-#include "database/collegamentoDB.h"
 #include "crdt/crdt_message.h"
 #include <stdlib.h>
 #include <QThreadPool>
