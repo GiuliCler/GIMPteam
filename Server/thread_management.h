@@ -51,10 +51,10 @@ private:
 
 signals:
     void error(QTcpSocket::SocketError socketError);
-    void notifica_gli_altri();       // da implementare e da usare
+//    void notifica_gli_altri();       // da implementare e da usare
 
 public slots:
-    void sono_stato_notificato();        // da implementare e da usare
+//    void sono_stato_notificato();        // da implementare e da usare
     //    void executeJob();          // DA TOGLIERE POI
     //    void disconnected();        // DA TOGLIERE POI
 };
