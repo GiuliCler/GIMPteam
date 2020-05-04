@@ -1,4 +1,5 @@
 #include "thread_management.h"
+#include "server.h"
 #include <iostream>
 #include <sstream>
 
@@ -12,8 +13,16 @@ Thread_management::Thread_management(int socketDescriptor, QObject *parent): QTh
 
 
 void Thread_management::run(){
+    this->mex = new CRDT_Message("c", *(new CRDT_Symbol()), 8);   // todo ila : da togliere
 
-    qDebug() << "THREAD - run iniziata";           // DEBUG
+    // Faccio la connect per:
+    // thread --- notifica ---> Server
+    // Server --- notifica ---> tutti i threads
+    Server* babbo = qobject_cast<Server*>(this->parent());
+    QObject::connect(this, &Thread_management::notifica_gli_altri, babbo, &Server::notifica_tutti_i_threads);
+    QObject::connect(babbo, &Server::notifica_tutti_i_threads, this->mex, &CRDT_Message::sono_stato_notificato);
+
+    qDebug() << "THREAD - run iniziata - PARENT: "<<this->parent();           // DEBUG
 
     // todo ila&paolo ------------------------------------------------------------------------------------------------------------------------------------
     int timeoutReadRead = 5000;                     // todo ila : scegliere il timeout della ready read
@@ -164,6 +173,11 @@ void Thread_management::run(){
             in >> docId;
 
             getUri(docId);
+
+            CRDT_Message* messaggio = new CRDT_Message("c", *(new CRDT_Symbol()), 8);   // todo ila : da togliere
+
+            // notifica gli altri utenti che il mio client ha cambiato qualcosa
+            emit notifica_gli_altri(1);
         }
 
         c = "GET_WORKINGUSERS_ONADOC";
@@ -200,11 +214,11 @@ void Thread_management::run(){
 
             // in >> messaggio
 
-            // lock
-            // codaMessaggi.push(messaggio, contatore);
-            // unlock
 
-            // notifica gli altri utenti ... dispatchMessages ... emit signal???
+            CRDT_Message* messaggio = new CRDT_Message("c", *(new CRDT_Symbol()), 8);   // todo ila : da togliere
+
+            // notifica gli altri utenti che il mio client ha cambiato qualcosa
+//            emit notifica_gli_altri(*messaggio);
         }
 
         c = "DISCONNECT_FROM_DOC";
@@ -226,6 +240,13 @@ void Thread_management::run(){
     qDebug() << "THREAD - run finita";      // DEBUG
 }
 
+void Thread_management::sono_stato_notificato(int messaggio){
+    auto thread_id = std::this_thread::get_id();
+    std::cout << "---- THREAD sono_stato_notificato id: "<<thread_id<<" ---- "<< std::endl;      // DEBUG
+//    qDebug()<<"sono_stato_notificato - AZIONE: "<<QString::fromStdString(messaggio.getAzione())<<", ID CREATORE: "<<messaggio.getCreatore();
+    qDebug()<<"sono_stato_notificato - AZIONE: "<<messaggio;
+}
+
 
 // NOTA: open_new è un flag che indica da dove è stata chiamata la connect
 //       0 --> NEW_DOC
@@ -233,7 +254,7 @@ void Thread_management::run(){
 // RETURN:
 //       1 --> tutto ok
 //       0 --> errore
-int Thread_management::connect(int docId, int userId, int open_new){
+int Thread_management::addToWorkingUsers(int docId, int userId, int open_new){
 
     int esito = 1;
     mutex_workingUsers->lock();
@@ -267,7 +288,7 @@ int Thread_management::connect(int docId, int userId, int open_new){
 }
 
 
-int Thread_management::disconnect(int docId, int userId){
+int Thread_management::removeFromWorkingUsers(int docId, int userId){
     int i = docId;      // schifo per togliermi i warning
     docId = i;
     i = userId;
@@ -310,15 +331,12 @@ void Thread_management::newDoc(QString docName, int userId){
             // todo ila&paolo ------------------------------------------------------------------------------------------------------------------------------
 
             // Aggiungo la riga (docId, [userId]) alla mappa degli workingUsers
-            int esito = connect(id, userId, 0);
+            int esito = addToWorkingUsers(id, userId, 0);
             if(esito == 0){
                 out << "errore";
                 socket->write(blocko);
                 return;
             }
-
-            // Faccio la connect per venire notificato da un altro thread in caso di nuovo carattere da processare
-            // connect(Thread_management, SIGNAL(notifica_gli_altri()), this, SLOT(sono_stato_notificato()));
 
             // ?????????????????????????????????????????????????????????????????????????????
             // Creazione del file
@@ -380,17 +398,14 @@ void Thread_management::openDoc(int docId, int userId){
     // todo ila&paolo ------------------------------------------------------------------------------------------------------------------------------
 
     // Aggiorno la riga (docId, [userId, ...]) nella mappa degli workingUsers
-    int esito = connect(docId, userId, 1);
+    int esito = addToWorkingUsers(docId, userId, 1);
     if(esito == 0){
         out << "errore";
         socket->write(blocko);
         return;
     }
 
-    // Faccio la connect per venire notificato da un altro thread in caso di nuovo carattere da processare
-    //    connect(Thread_management, SIGNAL(notifica_gli_altri()), this, SLOT(sono_stato_notificato()));
-
-    // cose extra (che per ora ancora non so) da fare quando si apre il doc
+    // cose extra (che per ora ancora non so) da fare quando si apre il doc ---------------------------------------
 }
 
 

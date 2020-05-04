@@ -1,6 +1,5 @@
 #include "server.h"
 #include "thread_management.h"
-#include "crdt/crdt_message.h"
 #include <stdlib.h>
 #include <QThreadPool>
 #include <QRunnable>
@@ -35,7 +34,7 @@ QString path = "C:/Users/giuli/Desktop/PROGETTO MALNATI/GIMPteam/Server/Files/";
 QMap<int, QVector<int>> workingUsers;
 
 // Coda formata da coppie (messaggio, contatore)
-std::queue<QPair<CRDT_Message, int>> codaMessaggi;
+//std::queue<QPair<CRDT_Message, int>> codaMessaggi;
 
 Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDescriptor) {
 
@@ -126,6 +125,12 @@ void Server::incomingConnection(qintptr socketDescriptor) {
     // Creo thread_management
     Thread_management* thread_mgm = new Thread_management(socketDescriptor, this);
     connect(thread_mgm, SIGNAL(finished()), thread_mgm, SLOT(deleteLater()));
+
+    // Faccio la connect per:
+    // thread --- notifica ---> Server
+    // Server --- notifica ---> tutti i threads
+//    QObject::connect(thread_mgm, &Thread_management::notifica_gli_altri, this, &Server::notifica_tutti_i_threads, Qt::QueuedConnection);
+//    QObject::connect(this, &Server::notifica_tutti_i_threads, thread_mgm, &Thread_management::sono_stato_notificato, Qt::QueuedConnection);
 
     // Faccio partire thread_management (mod. detach)
     thread_mgm->start();

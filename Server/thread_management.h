@@ -2,6 +2,7 @@
 #define THREAD_MANAGEMENT_H
 
 #include "database/collegamentoDB.h"
+#include "crdt/crdt_message.h"
 #include <QThread>
 #include <QMutex>
 #include <QWaitCondition>
@@ -45,16 +46,19 @@ private:
     void getDocName(int docId);
     void deleteDoc(int userId, int docId);
     void getWorkingUsersGivenDoc(int docId);
-    int connect(int docId, int userId, int open_new);
-    int disconnect(int docId, int userId);      // da implementare e da usare
+    int addToWorkingUsers(int docId, int userId, int open_new);
+    int removeFromWorkingUsers(int docId, int userId);      // da implementare e da usare
     void openDoc(int docId, int userId);
+    CRDT_Message *mex;   // togliere
 
 signals:
     void error(QTcpSocket::SocketError socketError);
-//    void notifica_gli_altri();       // da implementare e da usare
+//    void notifica_gli_altri(CRDT_Message messaggio);
+    void notifica_gli_altri(int messaggio);
 
 public slots:
-//    void sono_stato_notificato();        // da implementare e da usare
+//    void sono_stato_notificato(CRDT_Message messaggio);
+    void sono_stato_notificato(int messaggio);
     //    void executeJob();          // DA TOGLIERE POI
     //    void disconnected();        // DA TOGLIERE POI
 };
