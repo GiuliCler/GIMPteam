@@ -45,13 +45,18 @@ private:
     void getDocName(int docId);
     void deleteDoc(int userId, int docId);
     void getWorkingUsersGivenDoc(int docId);
+    int connect(int docId, int userId, int open_new);
+    int disconnect(int docId, int userId);      // da implementare e da usare
+    void openDoc(int docId, int userId);
 
 signals:
     void error(QTcpSocket::SocketError socketError);
+    void notifica_gli_altri();       // da implementare e da usare
 
 public slots:
-//    void executeJob();          // DA TOGLIERE POI
-//    void disconnected();        // DA TOGLIERE POI
+    void sono_stato_notificato();        // da implementare e da usare
+    //    void executeJob();          // DA TOGLIERE POI
+    //    void disconnected();        // DA TOGLIERE POI
 };
 
 #endif // THREAD_MANAGEMENT_H

@@ -15,7 +15,7 @@ void Thread_management::run(){
 
     qDebug() << "THREAD - run iniziata";           // DEBUG
 
-    // todo ila ------------------------------------------------------------------------------------------------------------------------------------
+    // todo ila&paolo ------------------------------------------------------------------------------------------------------------------------------------
     int timeoutReadRead = 5000;                     // todo ila : scegliere il timeout della ready read
                                                     // todo ila : scegliere funzione che mi fa la break dal while(1)
                                                     // todo ila : distruzione dei thread nel server
@@ -36,6 +36,20 @@ void Thread_management::run(){
     bool NOTconnected = (socket->state() == QTcpSocket::UnconnectedState);
     qDebug() << "THREAD - Run - connected:"<<connected<<" & NOTconnected:"<<NOTconnected;      // DEBUG
 
+    // Creo nel thread un collegamento al DB, mettendo come nome univoco di connessione "connSOCKETDESCRIPTOR"
+    database = new CollegamentoDB();
+    database->connettiDB("gimpdocs_db", "conn" + QString::fromStdString(thread_id_string));
+
+    // Ridefinisco in e out relativi alla connessione corrente
+    QByteArray text;
+    QDataStream in(socket);
+    in.setVersion(QDataStream::Qt_5_12);
+    in.startTransaction();
+
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
     //    connect(socket, SIGNAL(readyRead()), this, SLOT(executeJob()));
     //    connect(socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
 
@@ -45,22 +59,8 @@ void Thread_management::run(){
             return;
         }
 
-        // Creo nel thread un collegamento al DB, mettendo come nome univoco di connessione "connSOCKETDESCRIPTOR"
-        database = new CollegamentoDB();
-        database->connettiDB("gimpdocs_db", "conn" + QString::fromStdString(thread_id_string));
-
-        // Ridefinisco in e out relativi alla connessione corrente
-        QByteArray text;
-        QDataStream in(socket);
-        in.setVersion(QDataStream::Qt_5_12);
-        in.startTransaction();
-
         // Prendo la stringa di comando
         in >> text;
-
-        QByteArray blocko;
-        QDataStream out(&blocko, QIODevice::WriteOnly);
-        out.setVersion(QDataStream::Qt_5_12);
 
         qDebug() << "THREAD - Run - Prima della verifica del comando... il comando e': "<< QString::fromStdString(text.toStdString());      // DEBUG
 
@@ -181,37 +181,16 @@ void Thread_management::run(){
             in >> docName;
             in >> userId;
 
-            // todo ila&paolo ------------------------------------------------------------------------------------------------------------------------------
-
-            // connect: inserisco riga all'interno di workingUsers
-            // Codice tipo della connect...
-            // void connect(){
-            //      lock
-            //      workingUsers.push(doc, user)
-            //      unlock
-            // }
-
-            newDoc(docName, userId);        // todo ila&paolo: controllare funzione di Giulia ----------------------------------------------------------
-
-            // while(1) {
-            //      cv.wait()???
-            //      process()???
-            // }
+            newDoc(docName, userId);
         }
 
         c = "OPEN_DOC";
         if(text.contains(c.toUtf8())){
+            int docId, userId;
+            in >> docId;
+            in >> userId;
 
-            // todo ila&paolo ------------------------------------------------------------------------------------------------------------------------------
-
-            // connect: inserisco riga all'interno di workingUsers
-
-            // cose extra (che per ora ancora non so) da fare quando si apre il doc
-
-            // while(1) {
-            //      cv.wait()???
-            //      process()???
-            // }
+            openDoc(docId, userId);
         }
 
         c = "SEND";
@@ -225,7 +204,7 @@ void Thread_management::run(){
             // codaMessaggi.push(messaggio, contatore);
             // unlock
 
-            // notifica gli altri utenti ... dispatchMessages con cv.wakeAll???
+            // notifica gli altri utenti ... dispatchMessages ... emit signal???
         }
 
         c = "DISCONNECT_FROM_DOC";
@@ -238,7 +217,7 @@ void Thread_management::run(){
             // break;
         }
 
-        break;      // todo ila : da rimuovere -------------------------------------------------------------------------------------------------------
+//        break;      // todo ila : da rimuovere -------------------------------------------------------------------------------------------------------
     }
 
     socket->disconnectFromHost();
@@ -248,15 +227,171 @@ void Thread_management::run(){
 }
 
 
-//void Thread_management::loopEditor(){
-//        while(1){
-//             cv -> wakeAll quando è ora di fare la process
-//                ->
-//             in >> qualcosa;
-//             if(timeout 5 min || clicco sulla X)
-//                 return;
-//        }
-//}
+// NOTA: open_new è un flag che indica da dove è stata chiamata la connect
+//       0 --> NEW_DOC
+//       1 --> OPEN_DOC
+// RETURN:
+//       1 --> tutto ok
+//       0 --> errore
+int Thread_management::connect(int docId, int userId, int open_new){
+
+    int esito = 1;
+    mutex_workingUsers->lock();
+
+    if(open_new == 0){              // arrivo da NEW_DOC
+
+        // creo nuova riga in workingUsers
+        QVector<int> value;
+        value.append(userId);
+        workingUsers.insert(docId, value);
+
+    } else if(open_new == 1){       // arrivo da OPEN_DOC
+
+        if(workingUsers.contains(docId)){
+            // chiave docId presente in workingUsers
+            // aggiorno il vettore corrispondente alla riga con chiave docId in workingUsers
+            workingUsers[docId].append(userId);
+        } else {
+            // non c'è alcuna chiave in workingUsers corrispondente al docId
+            esito = 0;
+        }
+
+    } else {
+        // open_new non è uguale nè a 0 nè a 1
+        esito = 0;
+    }
+
+    mutex_workingUsers->unlock();
+
+    return esito;
+}
+
+
+int Thread_management::disconnect(int docId, int userId){
+    int i = docId;      // schifo per togliermi i warning
+    docId = i;
+    i = userId;
+    userId = i;
+    // todo ila&paolo --------------------------------------------------------------------------------------
+}
+
+
+void Thread_management::newDoc(QString docName, int userId){
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
+    mutex_users->lock();
+    QString username;
+    //controllo che ci sia la cartella del dato utente
+    QMapIterator<QString, int> i(users);
+    while (i.hasNext()) {
+        i.next();
+        if(i.value()==userId){
+            username=i.key();
+            break;
+        }
+    }
+    mutex_users->unlock();
+
+    if(!username.isEmpty() && QDir(path+username).exists()){
+        mutex_db->lock();
+        if(database->creaDoc(username+"_"+docName)){
+            mutex_db->unlock();
+
+            // Documento creato e correttamente inserito nel DB
+            // Associazione nome_doc - docId nella QMap
+            mutex_docs->lock();
+            int id = documents.size();
+            id++;
+            documents.insert(username + "_" + docName, id);
+            mutex_docs->unlock();
+
+            // todo ila&paolo ------------------------------------------------------------------------------------------------------------------------------
+
+            // Aggiungo la riga (docId, [userId]) alla mappa degli workingUsers
+            int esito = connect(id, userId, 0);
+            if(esito == 0){
+                out << "errore";
+                socket->write(blocko);
+                return;
+            }
+
+            // Faccio la connect per venire notificato da un altro thread in caso di nuovo carattere da processare
+            //    connect(Thread_management, SIGNAL(notifica_gli_altri()), this, SLOT(sono_stato_notificato()));
+
+            // ?????????????????????????????????????????????????????????????????????????????
+            // Creazione del file
+            QString filename = docName;
+
+            // DUBBIO SULL'ESTENSIONE DEL FILE!! Al momento li faccio txt
+            QFile file(path+username+"/"+filename+".txt");
+            if (file.open(QIODevice::WriteOnly | QIODevice::Text)){
+                //riesce ad aprire il file creato
+                QTextStream out_file(&file);
+                // ATTENZIONE: per scrivere sul file:
+                // out_file << "The magic number is: " << 49 << "\n";       // DEBUG
+
+                // *******************************************************
+                // todo ila&paolo: gestione CRDT
+                // *******************************************************
+
+
+            }
+            // ?????????????????????????????????????????????????????????????????????????????
+
+            // todo ila: sistemare la aggiungiPartecipante (site_id e site_counter) ------------------------------------------------------------------
+
+            // Associazione username - nome_doc nella tabella utente_doc del DB
+            mutex_db->lock();
+            if(database->aggiungiPartecipante(username+"_"+docName, username, 0, 0) != 2){
+                mutex_db->unlock();
+                out << "ok";
+                out << id;
+                socket->write(blocko);
+            }else{
+                mutex_db->unlock();
+                out << "errore";
+                socket->write(blocko);
+            }
+        }else{
+           mutex_db->unlock();
+           out << "errore";
+           socket->write(blocko);
+        }
+
+        // ********************************************************************************
+        // GIULIA TODO: gestire meglio il "ritorno" e le modifiche su file -> crdt
+        // ********************************************************************************
+
+    } else {
+        // se username non esiste o non c'è la cartella relativa
+        out << "errore";
+        socket->write(blocko);
+    }
+}
+
+
+void Thread_management::openDoc(int docId, int userId){
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
+    // todo ila&paolo ------------------------------------------------------------------------------------------------------------------------------
+
+    // Aggiorno la riga (docId, [userId, ...]) nella mappa degli workingUsers
+    int esito = connect(docId, userId, 1);
+    if(esito == 0){
+        out << "errore";
+        socket->write(blocko);
+        return;
+    }
+
+    // Faccio la connect per venire notificato da un altro thread in caso di nuovo carattere da processare
+    //    connect(Thread_management, SIGNAL(notifica_gli_altri()), this, SLOT(sono_stato_notificato()));
+
+    // cose extra (che per ora ancora non so) da fare quando si apre il doc
+}
 
 
 void Thread_management::create(QString username, QString password, QString nickname, QString icon){
@@ -302,7 +437,7 @@ void Thread_management::login(QString username, QString password){
     std::vector<QString> v = database->login(username, password);
     mutex_db->unlock();
     if(v.size()==2){
-        //GESTIRE                           <---------- GIULIA?!?!?
+        //GESTIRE                           <---------- GIULIA?!?!? ----------------------------------------------
         mutex_users->lock();
         int id = users[username];
         if(id == 0){
@@ -514,87 +649,6 @@ void Thread_management::getDocs(int userId){
     }
 }
 
-
-void Thread_management::newDoc(QString docName, int userId){
-    QByteArray blocko;
-    QDataStream out(&blocko, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_12);
-
-    mutex_users->lock();
-    QString username;
-    //controllo che ci sia la cartella del dato utente
-    QMapIterator<QString, int> i(users);
-    while (i.hasNext()) {
-        i.next();
-        if(i.value()==userId){
-            username=i.key();
-            break;
-        }
-    }
-    mutex_users->unlock();
-
-    if(!username.isEmpty() && QDir(path+username).exists()){
-        mutex_db->lock();
-        if(database->creaDoc(username+"_"+docName)){
-            mutex_db->unlock();
-
-            // Documento creato e correttamente inserito nel DB
-            // Associazione nome_doc - docId nella QMap
-            mutex_docs->lock();
-            int id = documents.size();
-            id++;
-            documents.insert(username + "_" + docName,id);
-            mutex_docs->unlock();
-
-            // Creazione del file
-            QString filename = docName;
-
-            // DUBBIO SULL'ESTENSIONE DEL FILE!! Al momento li faccio txt
-            QFile file(path+username+"/"+filename+".txt");
-            if (file.open(QIODevice::WriteOnly | QIODevice::Text)){
-                //riesce ad aprire il file creato
-                QTextStream out_file(&file);
-                // ATTENZIONE: per scrivere sul file:
-                // out_file << "The magic number is: " << 49 << "\n";       // DEBUG
-
-                // *******************************************************
-                // todo ila&paolo: gestione CRDT -----------------------------------------------------------------------------------------------------
-                // *******************************************************
-
-
-            }
-
-            // todo ila: sistemare la aggiungiPartecipante (site_id e site_counter) ------------------------------------------------------------------
-
-            // Associazione username - nome_doc nella tabella utente_doc del DB
-            mutex_db->lock();
-            if(database->aggiungiPartecipante(username+"_"+docName, username, 0, 0) != 2){
-                mutex_db->unlock();
-                out << "ok";
-                out << id;
-                socket->write(blocko);
-            }else{
-                mutex_db->unlock();
-                out << "errore";
-                socket->write(blocko);
-            }
-        }else{
-           mutex_db->unlock();
-           out << "errore";
-           socket->write(blocko);
-        }
-
-
-        // ********************************************************************************
-        // GIULIA TODO: gestire meglio il "ritorno" e le modifiche su file -> crdt
-        // ********************************************************************************
-
-    } else {
-        // se username non esiste o non c'è la cartella relativa
-        out << "errore";
-        socket->write(blocko);
-    }
-}
 
 void Thread_management::getDocumentDatoUri(QString uri){
     QByteArray blocko;
