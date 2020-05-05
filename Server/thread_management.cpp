@@ -233,7 +233,7 @@ void Thread_management::run(){
 // RETURN:
 //       1 --> tutto ok
 //       0 --> errore
-int Thread_management::connect(int docId, int userId, int open_new){
+int Thread_management::addToWorkingUsers(int docId, int userId, int open_new){
 
     int esito = 1;
     mutex_workingUsers->lock();
@@ -267,11 +267,12 @@ int Thread_management::connect(int docId, int userId, int open_new){
 }
 
 
-int Thread_management::disconnect(int docId, int userId){
+int Thread_management::removeFromWorkingUsers(int docId, int userId){
     int i = docId;      // schifo per togliermi i warning
     docId = i;
     i = userId;
     userId = i;
+    return 1;
     // todo ila&paolo --------------------------------------------------------------------------------------
 }
 
@@ -310,7 +311,7 @@ void Thread_management::newDoc(QString docName, int userId){
             // todo ila&paolo ------------------------------------------------------------------------------------------------------------------------------
 
             // Aggiungo la riga (docId, [userId]) alla mappa degli workingUsers
-            int esito = connect(id, userId, 0);
+            int esito = addToWorkingUsers(id, userId, 0);
             if(esito == 0){
                 out << "errore";
                 socket->write(blocko);
@@ -380,7 +381,7 @@ void Thread_management::openDoc(int docId, int userId){
     // todo ila&paolo ------------------------------------------------------------------------------------------------------------------------------
 
     // Aggiorno la riga (docId, [userId, ...]) nella mappa degli workingUsers
-    int esito = connect(docId, userId, 1);
+    int esito = addToWorkingUsers(docId, userId, 1);
     if(esito == 0){
         out << "errore";
         socket->write(blocko);

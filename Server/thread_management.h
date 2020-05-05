@@ -44,17 +44,17 @@ private:
     void getUri(int docId);
     void getDocName(int docId);
     void deleteDoc(int userId, int docId);
-    void getWorkingUsersGivenDoc(int docId);
-    int connect(int docId, int userId, int open_new);
-    int disconnect(int docId, int userId);      // da implementare e da usare
     void openDoc(int docId, int userId);
+    void getWorkingUsersGivenDoc(int docId);
+    int addToWorkingUsers(int docId, int userId, int open_new);
+    int removeFromWorkingUsers(int docId, int userId);      // da implementare e da usare
 
 signals:
     void error(QTcpSocket::SocketError socketError);
-    void notifica_gli_altri();       // da implementare e da usare
+//    void notifica_gli_altri();       // da implementare e da usare
 
 public slots:
-    void sono_stato_notificato();        // da implementare e da usare
+//    void sono_stato_notificato();        // da implementare e da usare
     //    void executeJob();          // DA TOGLIERE POI
     //    void disconnected();        // DA TOGLIERE POI
 };

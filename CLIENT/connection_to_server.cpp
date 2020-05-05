@@ -21,7 +21,8 @@ connection_to_server::connection_to_server(QString port, QString ipAddress){
 int connection_to_server::requestTryLogin(QString username, QString password)
 {
     this->tcpSocket->abort();
-    this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
     if (!tcpSocket->waitForConnected(Timeout)) {
         emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -68,8 +69,9 @@ int connection_to_server::requestTryLogin(QString username, QString password)
 
 long connection_to_server::requestCreateDocument(int userId, QString name)
 {
-    this->tcpSocket->abort();
-    this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+//    this->tcpSocket->abort();
+    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
     if (!tcpSocket->waitForConnected(Timeout)) {
         emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -115,8 +117,9 @@ long connection_to_server::requestCreateDocument(int userId, QString name)
 }
 
 std::string connection_to_server::requestDocName(int docId){
-    this->tcpSocket->abort();
-    this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+//    this->tcpSocket->abort();
+    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
     if (!tcpSocket->waitForConnected(Timeout)) {
         emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -158,7 +161,8 @@ std::string connection_to_server::requestDocName(int docId){
 int connection_to_server::requestNewAccount(QString username, QString password, QString nickname, QString icon)
 {
     this->tcpSocket->abort();
-    this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
     if (!tcpSocket->waitForConnected(Timeout)) {
         emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -207,8 +211,9 @@ int connection_to_server::requestNewAccount(QString username, QString password, 
 
 long connection_to_server::requestUpdateAccount( int userId, QString password, QString nickname, QString icon)
 {
-    this->tcpSocket->abort();
-    this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+//    this->tcpSocket->abort();
+    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
     if (!tcpSocket->waitForConnected(Timeout)) {
         emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -254,8 +259,9 @@ long connection_to_server::requestUpdateAccount( int userId, QString password, Q
 }
 
 std::string connection_to_server::requestDocDatoUri(QString uri){
-    this->tcpSocket->abort();
-    this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+//    this->tcpSocket->abort();
+    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
     if (!tcpSocket->waitForConnected(Timeout)) {
         emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -293,8 +299,9 @@ std::string connection_to_server::requestDocDatoUri(QString uri){
 }
 
 std::string connection_to_server::requestUri(int docId){
-    this->tcpSocket->abort();
-    this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+//    this->tcpSocket->abort();
+    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
     if (!tcpSocket->waitForConnected(Timeout)) {
         emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -350,8 +357,9 @@ void connection_to_server::showFile(const QString &next)
 }
 
 std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int userId){
-    this->tcpSocket->abort();
-    this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+//    this->tcpSocket->abort();
+    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
     if (!tcpSocket->waitForConnected(Timeout)) {
         emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -418,8 +426,9 @@ std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int 
 }
 
 std::string connection_to_server::requestGetNickname(int userId){
-    this->tcpSocket->abort();
-    this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+//    this->tcpSocket->abort();
+    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
     if (!tcpSocket->waitForConnected(Timeout)) {
         emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -459,8 +468,9 @@ std::string connection_to_server::requestGetNickname(int userId){
 }
 
 std::string connection_to_server::requestIconId(int userId){
-    this->tcpSocket->abort();
-    this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+//    this->tcpSocket->abort();
+    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
     if (!tcpSocket->waitForConnected(Timeout)) {
         emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -500,8 +510,9 @@ std::string connection_to_server::requestIconId(int userId){
 }
 
 std::string connection_to_server::requestGetUsername(int userId){
-    this->tcpSocket->abort();
-    this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+//    this->tcpSocket->abort();
+    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
     if (!tcpSocket->waitForConnected(Timeout)) {
         emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -540,8 +551,9 @@ std::string connection_to_server::requestGetUsername(int userId){
 }
 
 std::string connection_to_server::requestDeleteDoc(int userId,int documentId){
-    this->tcpSocket->abort();
-    this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+//    this->tcpSocket->abort();
+    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
     if (!tcpSocket->waitForConnected(Timeout)) {
         emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -585,8 +597,9 @@ std::string connection_to_server::requestDeleteDoc(int userId,int documentId){
 }
 
 QString connection_to_server::getDocumentName(int docId){
-    this->tcpSocket->abort();
-    this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+//    this->tcpSocket->abort();
+    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
     if (!tcpSocket->waitForConnected(Timeout)) {
         emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -628,8 +641,9 @@ QString connection_to_server::getDocumentName(int docId){
 std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int docId){
     std::shared_ptr<QSet<int>> ritorno;
 
-    this->tcpSocket->abort();
-    this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+//    this->tcpSocket->abort();
+    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
     if (!tcpSocket->waitForConnected(Timeout)) {
         emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -688,8 +702,7 @@ std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int d
     return std::make_shared<QSet<int>>(vet);
 }
 
-void connection_to_server::displayError(int socketError, const QString &message)
-{
+void connection_to_server::displayError(int socketError, const QString &message) {
     switch (socketError) {
     case QAbstractSocket::HostNotFoundError:
         QMessageBox::information(this, tr("Client"),
@@ -709,5 +722,3 @@ void connection_to_server::displayError(int socketError, const QString &message)
                                  .arg(message));
     }
 }
-
-
