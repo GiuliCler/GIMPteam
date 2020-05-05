@@ -3,6 +3,7 @@
 
 #include "database/collegamentoDB.h"
 #include "crdt/crdt_message.h"
+#include "crdt/testint.h"
 #include <QThread>
 #include <QMutex>
 #include <QWaitCondition>
@@ -29,6 +30,7 @@ public:
     Thread_management(int socketDescriptor, QObject *parent);
     void run() override;
     QTcpSocket* socket;
+    TestInt* prova;
 
 private:
     CollegamentoDB *database;
@@ -54,11 +56,11 @@ private:
 signals:
     void error(QTcpSocket::SocketError socketError);
 //    void notifica_gli_altri(CRDT_Message messaggio);
-    void notifica_gli_altri(int messaggio);
+    void notifica_gli_altri();
 
 public slots:
 //    void sono_stato_notificato(CRDT_Message messaggio);
-    void sono_stato_notificato(int messaggio);
+    void sono_stato_notificato();
     //    void executeJob();          // DA TOGLIERE POI
     //    void disconnected();        // DA TOGLIERE POI
 };

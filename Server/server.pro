@@ -4,6 +4,7 @@ QT += core
 HEADERS       = server.h \
     crdt/crdt_message.h \
     crdt/crdt_symbol.h \
+    crdt/testint.h \
     database/collegamentoDB.h \
     database/sha256.h \
     dialog.h \
@@ -11,6 +12,7 @@ HEADERS       = server.h \
 SOURCES       = server.cpp \
                 crdt/crdt_message.cpp \
                 crdt/crdt_symbol.cpp \
+                crdt/testint.cpp \
                 database/collegamentoDB.cpp \
                 database/sha256.cpp \
                 dialog.cpp \

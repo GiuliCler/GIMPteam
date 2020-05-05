@@ -13,16 +13,11 @@ Thread_management::Thread_management(int socketDescriptor, QObject *parent): QTh
 
 
 void Thread_management::run(){
-    this->mex = new CRDT_Message("c", *(new CRDT_Symbol()), 8);   // todo ila : da togliere
-
-    // Faccio la connect per:
-    // thread --- notifica ---> Server
-    // Server --- notifica ---> tutti i threads
-    Server* babbo = qobject_cast<Server*>(this->parent());
-    QObject::connect(this, &Thread_management::notifica_gli_altri, babbo, &Server::notifica_tutti_i_threads);
-    QObject::connect(babbo, &Server::notifica_tutti_i_threads, this->mex, &CRDT_Message::sono_stato_notificato);
-
-    qDebug() << "THREAD - run iniziata - PARENT: "<<this->parent();           // DEBUG
+    prova = new TestInt();
+    //     Faccio la connect per:
+    //     thread --- notifica ---> Server
+    //     Server --- notifica ---> tutti i threads
+        QObject::connect(this, &Thread_management::notifica_gli_altri, this->prova, &TestInt::print);
 
     // todo ila&paolo ------------------------------------------------------------------------------------------------------------------------------------
     int timeoutReadRead = 5000;                     // todo ila : scegliere il timeout della ready read
@@ -174,10 +169,8 @@ void Thread_management::run(){
 
             getUri(docId);
 
-            CRDT_Message* messaggio = new CRDT_Message("c", *(new CRDT_Symbol()), 8);   // todo ila : da togliere
-
             // notifica gli altri utenti che il mio client ha cambiato qualcosa
-            emit notifica_gli_altri(1);
+            emit notifica_gli_altri();
         }
 
         c = "GET_WORKINGUSERS_ONADOC";
@@ -240,11 +233,10 @@ void Thread_management::run(){
     qDebug() << "THREAD - run finita";      // DEBUG
 }
 
-void Thread_management::sono_stato_notificato(int messaggio){
+void Thread_management::sono_stato_notificato(){
     auto thread_id = std::this_thread::get_id();
     std::cout << "---- THREAD sono_stato_notificato id: "<<thread_id<<" ---- "<< std::endl;      // DEBUG
 //    qDebug()<<"sono_stato_notificato - AZIONE: "<<QString::fromStdString(messaggio.getAzione())<<", ID CREATORE: "<<messaggio.getCreatore();
-    qDebug()<<"sono_stato_notificato - AZIONE: "<<messaggio;
 }
 
 
