@@ -15,10 +15,13 @@ private:
     int creatore;
 
 public:
+    CRDT_Message();
     CRDT_Message(std::string str, CRDT_Symbol s, int id);
     std::string getAzione() const;
     CRDT_Symbol getSimbolo() const;
     int getCreatore() const;
 };
+
+Q_DECLARE_METATYPE(CRDT_Message)
 
 #endif // CRDT_MESSAGE_H

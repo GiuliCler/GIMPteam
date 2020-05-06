@@ -23,11 +23,12 @@ void Thread_management::run(){
     auto thread_id = std::this_thread::get_id();
     std::cout << "---- THREAD run id: "<<thread_id<<" ---- "<< std::endl;      // DEBUG
 
+    qRegisterMetaType<CRDT_Message>("CRDT_Message");
     body = new Thread_body(socketDescriptor);
     QObject::connect(body->socket, &QTcpSocket::readyRead, body, &Thread_body::executeJob);
     Server* babbo = qobject_cast<Server*>(this->parent());
-    QObject::connect(body, &Thread_body::testNotifica, babbo, &Server::dispatchNotifica);
-    QObject::connect(babbo, &Server::dispatchNotifica, body, &Thread_body::receiveNotifica);
+    QObject::connect(body, &Thread_body::messageToServer, babbo, &Server::dispatchMessage);
+    QObject::connect(babbo, &Server::dispatchMessage, body, &Thread_body::processMessage);
 
     this->exec();
 }

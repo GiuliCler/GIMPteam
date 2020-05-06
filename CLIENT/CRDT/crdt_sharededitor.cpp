@@ -55,7 +55,7 @@ void CRDT_SharedEditor::localInsert(int index, QChar value, QTextCharFormat fmt,
 
     /* Creazione del messaggio e invio al NetworkServer */
     CRDT_Message* messaggio = new CRDT_Message("insert", *simbolo, this->_siteId);
-//    _server.send(*messaggio);
+//    _server.send(*messaggio);     --> chiamata alla funzione send di connection_to_server
 }
 
 QVector<int> CRDT_SharedEditor::generaPosizione(QVector<int> prev, QVector<int> next){

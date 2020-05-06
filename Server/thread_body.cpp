@@ -30,12 +30,9 @@
 
 void Thread_body::executeJob(){
     auto thread_id = std::this_thread::get_id();
-
     std::cout << "THREAD - executeJob; Thread: "<<thread_id<<" ---- "<< std::endl;
 
-
     QByteArray text;
-
     // Prendo la stringa di comando
     *in >> text;
 
@@ -175,13 +172,10 @@ void Thread_body::executeJob(){
 
         // todo ila&paolo -------------------------------------------------------------------------------------------------------------------------------
 
-        // *in >> messaggio
-
-        // lock
-        // codaMessaggi.push(messaggio, contatore);
-        // unlock
-
-        // notifica gli altri utenti ... dispatchMessages ... emit signal???
+        CRDT_Message messaggio;
+        // *in >> messaggio                  todo ila&paolo
+        // scrivi su crdt del server? MUTEX + chiediti se metterla dopo emit           todo ila&paolo
+        emit messageToServer(messaggio, thread_id, current_docId);
     }
 
     c = "DISCONNECT_FROM_DOC";
@@ -293,8 +287,8 @@ void Thread_body::newDoc(QString docName, int userId){
                 return;
             }
 
-            // Faccio la connect per venire notificato da un altro thread in caso di nuovo carattere da processare
-            //    connect(Thread_body, SIGNAL(notifica_gli_altri()), this, SLOT(sono_stato_notificato()));
+            // Aggiorno il docId su cui sto iniziando a lavorare
+            current_docId = id;
 
             // ?????????????????????????????????????????????????????????????????????????????
             // Creazione del file
@@ -353,7 +347,7 @@ void Thread_body::openDoc(int docId, int userId){
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
-    // todo ila&paolo ------------------------------------------------------------------------------------------------------------------------------
+    // todo ila&paolo -----------------------------------------------------------------------------------------------------------------------------
 
     // Aggiorno la riga (docId, [userId, ...]) nella mappa degli workingUsers
     int esito = addToWorkingUsers(docId, userId, 1);
@@ -363,10 +357,10 @@ void Thread_body::openDoc(int docId, int userId){
         return;
     }
 
-    // Faccio la connect per venire notificato da un altro thread in caso di nuovo carattere da processare
-    //    connect(Thread_body, SIGNAL(notifica_gli_altri()), this, SLOT(sono_stato_notificato()));
+    // Aggiorno il docId su cui sto iniziando a lavorare
+    current_docId = docId;
 
-    // cose extra (che per ora ancora non so) da fare quando si apre il doc
+    // cose extra (che per ora ancora non so) da fare quando si apre il doc      todo ila&paolo
 }
 
 
@@ -645,7 +639,7 @@ void Thread_body::getDocumentDatoUri(QString uri){
 }
 
 void Thread_body::getUri(int docId){
-    emit testNotifica();
+//    emit messageToServer(*(new CRDT_Message("mamma", *(new CRDT_Symbol()), 7)), std::this_thread::get_id());
 
     QByteArray blocko;
     QDataStream out(&blocko, QIODevice::WriteOnly);
@@ -846,7 +840,27 @@ void Thread_body::getWorkingUsersGivenDoc(int docId){
 
 }
 
-void Thread_body::receiveNotifica(){
+void Thread_body::processMessage(CRDT_Message m, std::thread::id thread_id_sender, int docId){
     auto thread_id = std::this_thread::get_id();
-    std::cout << "---- ThreadBody receivedNotifica id: "<<thread_id<<" ---- "<< std::endl;      // DEBUG
+    std::cout << "---- ThreadBody receivedNotifica id: "<<thread_id<<" ---- "<< "; Stringa: "<<m.getAzione()<< std::endl;      // DEBUG
+
+    //todo ila&paolo ------------------------------------------------------------------------------------
+    // se altro documento o stesso user_id di questo thread => discard (return)
+    if(thread_id == thread_id_sender || docId != current_docId)
+        return;
+    // out << m   ----> connettere NEL CLIENT con connect(socket, readyRead(), this, slotdelclient())
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
