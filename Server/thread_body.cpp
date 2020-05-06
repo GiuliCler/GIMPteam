@@ -29,7 +29,6 @@
     }
 
 void Thread_body::executeJob(){
-    emit testNotifica();
     auto thread_id = std::this_thread::get_id();
 
     std::cout << "THREAD - executeJob; Thread: "<<thread_id<<" ---- "<< std::endl;
@@ -646,6 +645,8 @@ void Thread_body::getDocumentDatoUri(QString uri){
 }
 
 void Thread_body::getUri(int docId){
+    emit testNotifica();
+
     QByteArray blocko;
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
@@ -843,4 +844,9 @@ void Thread_body::getWorkingUsersGivenDoc(int docId){
 
     mutex_workingUsers->unlock();
 
+}
+
+void Thread_body::receiveNotifica(){
+    auto thread_id = std::this_thread::get_id();
+    std::cout << "---- ThreadBody receivedNotifica id: "<<thread_id<<" ---- "<< std::endl;      // DEBUG
 }
