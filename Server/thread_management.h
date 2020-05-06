@@ -27,15 +27,8 @@ public:
     QTcpSocket* socket;
 
 private:
-    CollegamentoDB *database;
     int socketDescriptor;
-
     Thread_body* body;
-
-signals:
-
-public slots:
-    //    void disconnected();        // DA TOGLIERE POI
 };
 
 #endif // THREAD_MANAGEMENT_H

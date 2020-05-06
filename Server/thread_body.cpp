@@ -29,6 +29,7 @@
     }
 
 void Thread_body::executeJob(){
+    emit testNotifica();
     auto thread_id = std::this_thread::get_id();
 
     std::cout << "THREAD - executeJob; Thread: "<<thread_id<<" ---- "<< std::endl;

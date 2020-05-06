@@ -142,3 +142,7 @@ void Server::incomingConnection(qintptr socketDescriptor) {
 void Server::runServer() {
     qDebug()<< "SERVER - Sono nella runServer";      // DEBUG
 }
+
+void Server::testRicezione(){
+    std::cout << "Si può fare!" << std::endl;
+}

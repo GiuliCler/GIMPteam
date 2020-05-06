@@ -44,6 +44,7 @@ private:
     int removeFromWorkingUsers(int docId, int userId);      // da implementare e da usare
 signals:
     void error(QTcpSocket::SocketError socketError);
+    void testNotifica();
 
 public slots:
     void executeJob();
