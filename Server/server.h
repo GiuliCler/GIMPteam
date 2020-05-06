@@ -27,6 +27,7 @@ signals:
 
 public slots:
     void runServer();
+    void testRicezione();
 
 private:
     CollegamentoDB *database;
