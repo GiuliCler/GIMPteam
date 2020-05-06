@@ -2,15 +2,12 @@
 #define THREAD_MANAGEMENT_H
 
 #include "database/collegamentoDB.h"
+#include "thread_body.h"
 #include <QThread>
 #include <QMutex>
 #include <QWaitCondition>
 #include <QTcpSocket>
 #include <QPair>
-
-//extern QVector<QPair<QString, int>> jobs;
-//extern QWaitCondition* cv_jobs;
-//extern QMutex* mutex_jobs;
 
 extern QMutex* mutex_users;
 extern QMutex* mutex_docs;
@@ -48,14 +45,11 @@ private:
     void getWorkingUsersGivenDoc(int docId);
     int addToWorkingUsers(int docId, int userId, int open_new);
     int removeFromWorkingUsers(int docId, int userId);      // da implementare e da usare
+    Thread_body* body;
 
 signals:
-    void error(QTcpSocket::SocketError socketError);
-//    void notifica_gli_altri();       // da implementare e da usare
 
 public slots:
-//    void sono_stato_notificato();        // da implementare e da usare
-    //    void executeJob();          // DA TOGLIERE POI
     //    void disconnected();        // DA TOGLIERE POI
 };
 

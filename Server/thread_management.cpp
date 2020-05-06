@@ -16,7 +16,7 @@ void Thread_management::run(){
     qDebug() << "THREAD - run iniziata";           // DEBUG
 
     // todo ila&paolo ------------------------------------------------------------------------------------------------------------------------------------
-    int timeoutReadRead = 5400000;
+//    int timeoutReadRead = 5000;                     // todo ila : scegliere il timeout della ready read
                                                     // todo ila : scegliere funzione che mi fa la break dal while(1)
                                                     // todo ila : distruzione dei thread nel server
     auto thread_id = std::this_thread::get_id();
@@ -26,34 +26,12 @@ void Thread_management::run(){
 
     std::cout << "---- THREAD run id: "<<thread_id<<" ---- "<< std::endl;      // DEBUG
 
-    socket = new QTcpSocket();
-    if (!socket->setSocketDescriptor(socketDescriptor)) {
-        socket->disconnectFromHost(); //altrimenti non accetta più connessioni da altri client...
-        emit error(socket->error());
-        return;
-    }
+    body = new Thread_body(socketDescriptor);
+    QObject::connect(body->socket, &QTcpSocket::readyRead, body, &Thread_body::executeJob);
 
-    bool connected = (socket->state() == QTcpSocket::ConnectedState);
-    bool NOTconnected = (socket->state() == QTcpSocket::UnconnectedState);
-    qDebug() << "THREAD - Run - connected:"<<connected<<" & NOTconnected:"<<NOTconnected;      // DEBUG
+    this->exec();
 
-    // Creo nel thread un collegamento al DB, mettendo come nome univoco di connessione "connSOCKETDESCRIPTOR"
-    database = new CollegamentoDB();
-    database->connettiDB("gimpdocs_db", "conn" + QString::fromStdString(thread_id_string));
-
-    // Ridefinisco in e out relativi alla connessione corrente
-    QByteArray text;
-    QDataStream in(socket);
-    in.setVersion(QDataStream::Qt_5_12);
-    in.startTransaction();
-
-    QByteArray blocko;
-    QDataStream out(&blocko, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_12);
-
-    //    connect(socket, SIGNAL(readyRead()), this, SLOT(executeJob()));
-    //    connect(socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
-
+    /*
     while(1){
         qDebug() << this->socket->state();
         if (!socket->waitForReadyRead(timeoutReadRead)) {
@@ -228,7 +206,8 @@ void Thread_management::run(){
     socket->waitForDisconnected(3000);
 
     qDebug() << "THREAD - run finita";      // DEBUG
-    return;
+
+    */
 }
 
 
@@ -887,6 +866,3 @@ void Thread_management::getWorkingUsersGivenDoc(int docId){
 //    exit(0);
 //}
 
-//void Thread_management::executeJob(){
-//    std::cout << "THREAD - executeJob terminata"<< std::endl;      // DEBUG
-//}
