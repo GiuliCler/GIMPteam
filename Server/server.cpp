@@ -130,19 +130,9 @@ void Server::incomingConnection(qintptr socketDescriptor) {
     // Faccio partire thread_management (mod. detach)
     thread_mgm->start();
 
-//    socket = new QTcpSocket(this);
-//    if (!socket->setSocketDescriptor(socketDescriptor)) {
-//        emit error(socket->error());
-//        return;
-//    }
-
     qDebug()<< "SERVER - Fine incomingConnection";      // DEBUG
 }
 
 void Server::runServer() {
     qDebug()<< "SERVER - Sono nella runServer";      // DEBUG
-}
-
-void Server::testRicezione(){
-    std::cout << "Si può fare!" << std::endl;
 }

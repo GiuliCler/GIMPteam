@@ -24,10 +24,10 @@ protected:
 
 signals:
     void error(QTcpSocket::SocketError socketError);
+    void dispatchNotifica();
 
 public slots:
     void runServer();
-    void testRicezione();
 
 private:
     CollegamentoDB *database;

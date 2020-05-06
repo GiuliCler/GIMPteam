@@ -48,6 +48,7 @@ signals:
 
 public slots:
     void executeJob();
+    void receiveNotifica();
 
 };
 

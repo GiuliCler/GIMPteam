@@ -26,15 +26,8 @@ void Thread_management::run(){
     body = new Thread_body(socketDescriptor);
     QObject::connect(body->socket, &QTcpSocket::readyRead, body, &Thread_body::executeJob);
     Server* babbo = qobject_cast<Server*>(this->parent());
-    QObject::connect(body, &Thread_body::testNotifica, babbo, &Server::testRicezione);
+    QObject::connect(body, &Thread_body::testNotifica, babbo, &Server::dispatchNotifica);
+    QObject::connect(babbo, &Server::dispatchNotifica, body, &Thread_body::receiveNotifica);
 
     this->exec();
-
-    /*
-    while(1){
-        if (!socket->waitForReadyRead(timeoutReadRead)) {
-            emit error(socket->error());
-            return;
-        }
-        */
 }
