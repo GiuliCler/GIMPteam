@@ -5,6 +5,8 @@
 #include <QTcpSocket>
 #include "database/collegamentoDB.h"
 #include <QMutex>
+#include "crdt/crdt_message.h"
+#include "crdt/crdt_symbol.h"
 
 extern QMutex* mutex_users;
 extern QMutex* mutex_docs;
@@ -26,6 +28,7 @@ public:
 private:
     CollegamentoDB* database;
     QDataStream* in;
+    int current_docId;
     void create(QString username, QString password, QString nickname, QString icon);
     void login(QString username, QString password);
     void update(int userId, QString password, QString nickname, QString icon);
@@ -44,11 +47,11 @@ private:
     int removeFromWorkingUsers(int docId, int userId);      // da implementare e da usare
 signals:
     void error(QTcpSocket::SocketError socketError);
-    void testNotifica();
+    void messageToServer(CRDT_Message m, std::thread::id thread_id_sender, int docId);
 
 public slots:
     void executeJob();
-    void receiveNotifica();
+    void processMessage(CRDT_Message m, std::thread::id thread_id_sender, int docId);
 
 };
 
