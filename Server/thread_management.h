@@ -29,22 +29,7 @@ public:
 private:
     CollegamentoDB *database;
     int socketDescriptor;
-    void create(QString username, QString password, QString nickname, QString icon);
-    void login(QString username, QString password);
-    void update(int userId, QString password, QString nickname, QString icon);
-    void getUsername(int userId);
-    void getNickname(int userId);
-    void getIcon(int userId);
-    void getDocs(int userId);
-    void newDoc(QString docName, int userId);
-    void getDocumentDatoUri(QString uri);
-    void getUri(int docId);
-    void getDocName(int docId);
-    void deleteDoc(int userId, int docId);
-    void openDoc(int docId, int userId);
-    void getWorkingUsersGivenDoc(int docId);
-    int addToWorkingUsers(int docId, int userId, int open_new);
-    int removeFromWorkingUsers(int docId, int userId);      // da implementare e da usare
+
     Thread_body* body;
 
 signals:
