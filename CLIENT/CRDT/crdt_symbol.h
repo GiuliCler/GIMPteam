@@ -8,6 +8,9 @@
 
 class CRDT_Symbol
 {
+    friend QDataStream & operator<<(QDataStream &, const CRDT_Symbol &);
+    friend QDataStream & operator>>(QDataStream &, CRDT_Symbol &);
+
 private:
     QChar carattere;
     std::string id;

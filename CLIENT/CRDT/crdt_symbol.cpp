@@ -25,3 +25,17 @@ std::string CRDT_Symbol::getIDunivoco() const{
 QVector<int> CRDT_Symbol::getPosizione() const{
     return this->posizione;
 }
+
+QDataStream& operator<<(QDataStream& s, const CRDT_Symbol& simb){
+
+    // todo paolo ----------------------------------------------------------------
+
+    return s;
+}
+
+QDataStream& operator>>(QDataStream& s, CRDT_Symbol& simb){
+
+    // todo paolo ----------------------------------------------------------------
+
+    return s;
+}
