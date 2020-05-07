@@ -11,8 +11,7 @@
 #include <QWaitCondition>
 #include <queue>
 
-//Thread_management* thread_mgm;
-
+// CODICE DI PROVA - CONDITION VARIABLES
 //QVector<QPair<QString, int>> jobs;
 //QWaitCondition* cv_jobs = new QWaitCondition();
 //QMutex* mutex_jobs = new QMutex();
@@ -74,13 +73,6 @@ Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDesc
     }
     mutex_docs->unlock();
 
-//    // Creo thread_management
-//    thread_mgm = new Thread_management();
-//    connect(thread_mgm, SIGNAL(finished()), thread_mgm, SLOT(deleteLater()));
-
-//    // Faccio partire thread_management (mod. detach)
-//    thread_mgm->start();
-
 //    CODICE DI PROVA - PRODUTTORE
 //    mutex_jobs->lock();
 //    qDebug()<<"SERVER - Prima della prepend: "<<jobs.first();
@@ -120,7 +112,7 @@ void Server::incomingConnection(qintptr socketDescriptor) {
     */
 
     qDebug()<< "SERVER - Sono nella incomingConnection";       // DEBUG
-    std::cout << "---- SERVER incomingConnection id: " << std::this_thread::get_id() << " ---- " << std::endl;       // DEBUG
+    std::cout << "SERVER incomingConnection id: " << std::this_thread::get_id()<< std::endl;       // DEBUG
 
     // Creo thread_management
     Thread_management* thread_mgm = new Thread_management(socketDescriptor, this);

@@ -5,9 +5,7 @@
 
 Thread_management::Thread_management(int socketDescriptor, QObject *parent): QThread(parent), socketDescriptor(socketDescriptor){
     qDebug()<< "THREAD - Costruttore del thread con descrittore "<<socketDescriptor;          // DEBUG
-
-    std::cout << "---- THREAD Costruttore id: " << std::this_thread::get_id() << " ---- " << std::endl;      // DEBUG
-
+    std::cout << "THREAD Costruttore id: " << std::this_thread::get_id()<<std::endl;        // DEBUG
     qDebug()<< "THREAD - Fine costruttore del thread con descrittore "<<socketDescriptor;       // DEBUG
 }
 
@@ -21,7 +19,7 @@ void Thread_management::run(){
                                                     // todo ila : scegliere funzione che mi fa la break dal while(1)
                                                     // todo ila : distruzione dei thread nel server
     auto thread_id = std::this_thread::get_id();
-    std::cout << "---- THREAD run id: "<<thread_id<<" ---- "<< std::endl;      // DEBUG
+    std::cout << "THREAD run id: "<<thread_id<< std::endl;      // DEBUG
 
     qRegisterMetaType<CRDT_Message>("CRDT_Message");
     body = new Thread_body(socketDescriptor);
