@@ -722,3 +722,28 @@ void connection_to_server::displayError(int socketError, const QString &message)
                                  .arg(message));
     }
 }
+
+void connection_to_server::send(CRDT_Message *messaggio){
+    //    this->tcpSocket->abort();
+        if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+            this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+
+        if (!tcpSocket->waitForConnected(Timeout)) {
+            emit error(tcpSocket->error(), tcpSocket->errorString());
+            return;
+        }
+
+        QByteArray buffer;
+        QDataStream out(&buffer, QIODevice::WriteOnly);
+        out.setVersion(QDataStream::Qt_5_10);
+
+        out << "SEND";
+        // out << *messaggio;
+
+        this->tcpSocket->write(buffer);
+
+        if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
+            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+            return;
+        }
+}

@@ -6,6 +6,7 @@
 #include <memory>
 #include "GUI/connection/gui_connectionException.h"
 #include "GUI/connection/gui_genericException.h"
+#include "CRDT/crdt_message.h"
 
 QT_BEGIN_NAMESPACE
 class QDialogButtonBox;
@@ -35,10 +36,11 @@ public:
     std::string requestDocName(int docId);
     std::shared_ptr<QSet<int>> getWorkingUsersOnDocument(int docId);
     std::string requestDeleteDoc(int userId,int documentId);
+    void send(CRDT_Message *messaggio);
+
 private slots:
     void showFile(const QString &file);
     void displayError(int socketError, const QString &message);
-//    void responseAtRequest();
 
 signals:
     void error(int socketError, const QString &message);
