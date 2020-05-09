@@ -21,12 +21,13 @@ connection_to_server::connection_to_server(QString port, QString ipAddress){
 int connection_to_server::requestTryLogin(QString username, QString password)
 {
     this->tcpSocket->abort();
-    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+    if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
-    if (!tcpSocket->waitForConnected(Timeout)) {
-        emit error(tcpSocket->error(), tcpSocket->errorString());
-        return -1;
+        if (!tcpSocket->waitForConnected(Timeout)) {
+            emit error(tcpSocket->error(), tcpSocket->errorString());
+            return -1;
+        }
     }
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
@@ -70,12 +71,13 @@ int connection_to_server::requestTryLogin(QString username, QString password)
 long connection_to_server::requestCreateDocument(int userId, QString name)
 {
 //    this->tcpSocket->abort();
-    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+    if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
-    if (!tcpSocket->waitForConnected(Timeout)) {
-        emit error(tcpSocket->error(), tcpSocket->errorString());
-        return -1;
+        if (!tcpSocket->waitForConnected(Timeout)) {
+            emit error(tcpSocket->error(), tcpSocket->errorString());
+            return -1;
+        }
     }
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
@@ -118,12 +120,13 @@ long connection_to_server::requestCreateDocument(int userId, QString name)
 
 std::string connection_to_server::requestDocName(int docId){
 //    this->tcpSocket->abort();
-    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+    if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
-    if (!tcpSocket->waitForConnected(Timeout)) {
-        emit error(tcpSocket->error(), tcpSocket->errorString());
-        return "errore";
+        if (!tcpSocket->waitForConnected(Timeout)) {
+            emit error(tcpSocket->error(), tcpSocket->errorString());
+            return "errore";
+        }
     }
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
@@ -161,12 +164,13 @@ std::string connection_to_server::requestDocName(int docId){
 int connection_to_server::requestNewAccount(QString username, QString password, QString nickname, QString icon)
 {
     this->tcpSocket->abort();
-    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+    if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
-    if (!tcpSocket->waitForConnected(Timeout)) {
-        emit error(tcpSocket->error(), tcpSocket->errorString());
-        return -1;
+        if (!tcpSocket->waitForConnected(Timeout)) {
+            emit error(tcpSocket->error(), tcpSocket->errorString());
+            return -1;
+        }
     }
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
@@ -212,12 +216,13 @@ int connection_to_server::requestNewAccount(QString username, QString password, 
 long connection_to_server::requestUpdateAccount( int userId, QString password, QString nickname, QString icon)
 {
 //    this->tcpSocket->abort();
-    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+    if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
-    if (!tcpSocket->waitForConnected(Timeout)) {
-        emit error(tcpSocket->error(), tcpSocket->errorString());
-        return -1;
+        if (!tcpSocket->waitForConnected(Timeout)) {
+            emit error(tcpSocket->error(), tcpSocket->errorString());
+            return -1;
+        }
     }
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
@@ -260,12 +265,13 @@ long connection_to_server::requestUpdateAccount( int userId, QString password, Q
 
 std::string connection_to_server::requestDocDatoUri(QString uri){
 //    this->tcpSocket->abort();
-    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+    if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
-    if (!tcpSocket->waitForConnected(Timeout)) {
-        emit error(tcpSocket->error(), tcpSocket->errorString());
-        return "errore";
+        if (!tcpSocket->waitForConnected(Timeout)) {
+            emit error(tcpSocket->error(), tcpSocket->errorString());
+            return "errore";
+        }
     }
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
@@ -300,12 +306,13 @@ std::string connection_to_server::requestDocDatoUri(QString uri){
 
 std::string connection_to_server::requestUri(int docId){
 //    this->tcpSocket->abort();
-    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+    if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
-    if (!tcpSocket->waitForConnected(Timeout)) {
-        emit error(tcpSocket->error(), tcpSocket->errorString());
-        return "errore";
+        if (!tcpSocket->waitForConnected(Timeout)) {
+            emit error(tcpSocket->error(), tcpSocket->errorString());
+            return "errore";
+        }
     }
 
     QByteArray buffer;
@@ -357,13 +364,15 @@ void connection_to_server::showFile(const QString &next)
 }
 
 std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int userId){
+    QMap<QString, int> ritorno;
 //    this->tcpSocket->abort();
-    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+    if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
-    if (!tcpSocket->waitForConnected(Timeout)) {
-        emit error(tcpSocket->error(), tcpSocket->errorString());
-        throw GUI_ConnectionException();
+        if (!tcpSocket->waitForConnected(Timeout)) {
+            emit error(tcpSocket->error(), tcpSocket->errorString());
+            return std::make_shared<QMap<QString, int>>(ritorno);
+        }
     }
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
@@ -408,7 +417,6 @@ std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int 
 //    qDebug()<<"CONNECTION_TO_SERVER - vet.size(): "<<vet.size();     // DEBUG
 
     // Conversione del QVector<QString> in <QMap<QString, int>>
-    QMap<QString, int> ritorno;
     for(auto it=vet.begin(); it<vet.end(); it++){
         QString stringa = (*it);
         QStringList list = stringa.split('_');
@@ -427,12 +435,13 @@ std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int 
 
 std::string connection_to_server::requestGetNickname(int userId){
 //    this->tcpSocket->abort();
-    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+    if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
-    if (!tcpSocket->waitForConnected(Timeout)) {
-        emit error(tcpSocket->error(), tcpSocket->errorString());
-        return "errore";
+        if (!tcpSocket->waitForConnected(Timeout)) {
+            emit error(tcpSocket->error(), tcpSocket->errorString());
+            return "errore";
+        }
     }
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
@@ -469,12 +478,13 @@ std::string connection_to_server::requestGetNickname(int userId){
 
 std::string connection_to_server::requestIconId(int userId){
 //    this->tcpSocket->abort();
-    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+    if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
-    if (!tcpSocket->waitForConnected(Timeout)) {
-        emit error(tcpSocket->error(), tcpSocket->errorString());
-        return "errore";
+        if (!tcpSocket->waitForConnected(Timeout)) {
+            emit error(tcpSocket->error(), tcpSocket->errorString());
+            return "errore";
+        }
     }
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
@@ -511,12 +521,13 @@ std::string connection_to_server::requestIconId(int userId){
 
 std::string connection_to_server::requestGetUsername(int userId){
 //    this->tcpSocket->abort();
-    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+    if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
-    if (!tcpSocket->waitForConnected(Timeout)) {
-        emit error(tcpSocket->error(), tcpSocket->errorString());
-        return "errore";
+        if (!tcpSocket->waitForConnected(Timeout)) {
+            emit error(tcpSocket->error(), tcpSocket->errorString());
+            return "errore";
+        }
     }
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
@@ -552,12 +563,13 @@ std::string connection_to_server::requestGetUsername(int userId){
 
 std::string connection_to_server::requestDeleteDoc(int userId,int documentId){
 //    this->tcpSocket->abort();
-    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+    if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
-    if (!tcpSocket->waitForConnected(Timeout)) {
-        emit error(tcpSocket->error(), tcpSocket->errorString());
-        return "errore";
+        if (!tcpSocket->waitForConnected(Timeout)) {
+            emit error(tcpSocket->error(), tcpSocket->errorString());
+            return "errore";
+        }
     }
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
@@ -598,12 +610,13 @@ std::string connection_to_server::requestDeleteDoc(int userId,int documentId){
 
 QString connection_to_server::getDocumentName(int docId){
 //    this->tcpSocket->abort();
-    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+    if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
-    if (!tcpSocket->waitForConnected(Timeout)) {
-        emit error(tcpSocket->error(), tcpSocket->errorString());
-        return "errore";
+        if (!tcpSocket->waitForConnected(Timeout)) {
+            emit error(tcpSocket->error(), tcpSocket->errorString());
+            return "errore";
+        }
     }
 
     QByteArray buffer;
@@ -640,14 +653,16 @@ QString connection_to_server::getDocumentName(int docId){
 
 std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int docId){
     std::shared_ptr<QSet<int>> ritorno;
-
+    QSet<int> vet;
 //    this->tcpSocket->abort();
-    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+    if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
-    if (!tcpSocket->waitForConnected(Timeout)) {
-        emit error(tcpSocket->error(), tcpSocket->errorString());
-        throw GUI_ConnectionException();
+        if (!tcpSocket->waitForConnected(Timeout)) {
+            emit error(tcpSocket->error(), tcpSocket->errorString());
+            vet.insert(-1);
+            return std::make_shared<QSet<int>>(vet);
+        }
     }
 
     QByteArray buffer;
@@ -669,7 +684,7 @@ std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int d
     in.setVersion(QDataStream::Qt_4_0);
 
     int num, id;
-    QSet<int> vet;
+
 
     do {
         if (!this->tcpSocket->waitForReadyRead(Timeout)) {
