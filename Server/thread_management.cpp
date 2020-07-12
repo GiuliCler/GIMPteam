@@ -16,7 +16,7 @@ void Thread_management::run(){
     qDebug() << "THREAD - run iniziata";           // DEBUG
 
     // todo ila&paolo ------------------------------------------------------------------------------------------------------------------------------------
-    int timeoutReadRead = 5000;                     // todo ila : scegliere il timeout della ready read
+    int timeoutReadRead = 5400000;
                                                     // todo ila : scegliere funzione che mi fa la break dal while(1)
                                                     // todo ila : distruzione dei thread nel server
     auto thread_id = std::this_thread::get_id();
@@ -54,7 +54,9 @@ void Thread_management::run(){
     //    connect(socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
 
     while(1){
+        qDebug() << this->socket->state();
         if (!socket->waitForReadyRead(timeoutReadRead)) {
+            qDebug() << "Not enough time";
             emit error(socket->error());
             return;
         }

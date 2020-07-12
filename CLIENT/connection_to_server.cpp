@@ -71,6 +71,9 @@ int connection_to_server::requestTryLogin(QString username, QString password)
 long connection_to_server::requestCreateDocument(int userId, QString name)
 {
 //    this->tcpSocket->abort();
+ /*   qDebug() << this->tcpSocket->state();
+    qDebug() << this->ipAddress;
+    qDebug() << this->port;  ------------ DEBUG */
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
@@ -435,6 +438,8 @@ std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int 
 
 std::string connection_to_server::requestGetNickname(int userId){
 //    this->tcpSocket->abort();
+// debug:    qDebug() << this->tcpSocket->state();
+
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
@@ -521,6 +526,8 @@ std::string connection_to_server::requestIconId(int userId){
 
 std::string connection_to_server::requestGetUsername(int userId){
 //    this->tcpSocket->abort();
+//    qDebug() << this->tcpSocket->state();
+
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
