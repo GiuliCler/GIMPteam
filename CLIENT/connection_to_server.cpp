@@ -18,6 +18,12 @@ connection_to_server::connection_to_server(QString port, QString ipAddress){
 
 }
 
+int connection_to_server::requestTryLogOut(int userId)
+{
+    this->tcpSocket->close();
+    return 1;
+}
+
 int connection_to_server::requestTryLogin(QString username, QString password)
 {
     this->tcpSocket->abort();

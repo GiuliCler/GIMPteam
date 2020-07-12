@@ -175,6 +175,20 @@ int GUI_ConnectionToServerWrapper::openKnownDocumentWrapper(GIMPdocs *gimpdocs, 
 
     return 1;
 }
+int GUI_ConnectionToServerWrapper::requestLogOutWrapper(GIMPdocs *gimpdocs, int userId){
+    int returnValue = 1;
+    try {
+        gimpdocs->setCursor(Qt::WaitCursor);
+        returnValue = Stub::requestLogOut(gimpdocs->getConnection(), userId);
+        gimpdocs->setCursor(Qt::ArrowCursor);
+    } catch (GUI_ConnectionException &exception) {
+        gimpdocs->setCursor(Qt::ArrowCursor);
+        //provo a ristabilire la connessione
+        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
+        return -1;
+    }
+    return returnValue;
+}
 
 int GUI_ConnectionToServerWrapper::forgetKnownDocumentWrapper(GIMPdocs *gimpdocs, int userId, int documentId){
 

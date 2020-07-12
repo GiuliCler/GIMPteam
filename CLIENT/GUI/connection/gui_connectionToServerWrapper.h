@@ -19,7 +19,7 @@ public:
     static int requestTryLoginWrapper(GIMPdocs *gimpdocs, QString username, QString password);
     static int requestNewAccountWrapper(GIMPdocs *gimpdocs, QString username, QString password, QString nickname, QString icon);
     static int requestUpdateAccountWrapper(GIMPdocs *gimpdocs, int userId, QString password, QString nickname, QString icon);
-
+    static int requestLogOutWrapper(GIMPdocs *gimpdocs, int userId);
     static QString requestGetNicknameWrapper(GIMPdocs *gimpdocs, int userId);
     static QString requestGetUsernameWrapper(GIMPdocs *gimpdocs, int userId);
     static QString requestIconIdWrapper(GIMPdocs *gimpdocs, int userId);

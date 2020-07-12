@@ -24,7 +24,7 @@ public:
     static int requestTryLoginTemporary(connection_to_server *connection, QString username, QString password);
     static int requestNewAccountTemporary(connection_to_server *connection, QString username, QString password, QString nickname, QString icon);
     static int requestUpdateAccountTemporary(connection_to_server *connection, int userId, QString password, QString nickname, QString icon);
-
+    static int requestLogOut(connection_to_server *connection, int userId);
     static std::string requestGetNicknameTemporary(connection_to_server *connection, int userId);
     static std::string requestGetUsernameTemporary(connection_to_server *connection, int userId);
     static std::string requestIconIdTemporary(connection_to_server *connection, int userId);

@@ -22,6 +22,7 @@ class connection_to_server : public QWidget
 public:
     connection_to_server(QString port, QString ipAddress);
     int requestTryLogin(QString username, QString password);
+    int requestTryLogOut(int userId);
     int requestNewAccount(QString username, QString password, QString nickname, QString icon);
     long requestUpdateAccount(int userId, QString password, QString nickname, QString icon);
     long requestCreateDocument(int userId, QString name);

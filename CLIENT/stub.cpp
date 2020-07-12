@@ -12,6 +12,11 @@ bool Stub::isConnectionWorking(){
 }
 
 /*USERS*/
+int Stub::requestLogOut(connection_to_server *connection, int userId){
+    int result = connection->requestTryLogOut(userId);
+    return result;
+}
+
 int Stub::requestTryLoginTemporary(connection_to_server *connection, QString username, QString password){
     int result = connection->requestTryLogin(username, password);
 

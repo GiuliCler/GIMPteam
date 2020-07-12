@@ -28,6 +28,7 @@ void Thread_management::run(){
 
     socket = new QTcpSocket();
     if (!socket->setSocketDescriptor(socketDescriptor)) {
+        socket->disconnectFromHost(); //altrimenti non accetta più connessioni da altri client...
         emit error(socket->error());
         return;
     }
@@ -56,8 +57,9 @@ void Thread_management::run(){
     while(1){
         qDebug() << this->socket->state();
         if (!socket->waitForReadyRead(timeoutReadRead)) {
-            qDebug() << "Not enough time";
+          //  qDebug() << "Not enough time";
             emit error(socket->error());
+            socket->disconnectFromHost(); //altrimenti non accetta più connessioni da altri client...
             return;
         }
 
@@ -226,6 +228,7 @@ void Thread_management::run(){
     socket->waitForDisconnected(3000);
 
     qDebug() << "THREAD - run finita";      // DEBUG
+    return;
 }
 
 
