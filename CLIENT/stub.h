@@ -35,7 +35,7 @@ public:
     static void openKnownDocument(int documentId);                                  // FILE
     static void forgetKnownDocument(connection_to_server *connection,int userId, int documentId);                    // DA DECIDERE COSA FARE
     static std::shared_ptr<QMap<int, QString>> getKnownDocuments(int userId);
-    static std::string requestDocDatoUriTemporary(connection_to_server *connection, QString uri);       // FILE
+    static long requestDocDatoUriTemporary(connection_to_server *connection, QString uri);       // FILE
     static void closeDocument(int userId, int docId);                               // FILE
 
     static std::string requestUriTemporary(connection_to_server *connection, int docId);

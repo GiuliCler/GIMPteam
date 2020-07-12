@@ -266,14 +266,14 @@ long connection_to_server::requestUpdateAccount( int userId, QString password, Q
     }
 }
 
-std::string connection_to_server::requestDocDatoUri(QString uri){
+long connection_to_server::requestDocDatoUri(QString uri){
 //    this->tcpSocket->abort();
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
             emit error(tcpSocket->error(), tcpSocket->errorString());
-            return "errore";
+            return -1;
         }
     }
     QByteArray buffer;
@@ -287,24 +287,24 @@ std::string connection_to_server::requestDocDatoUri(QString uri){
 
     if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-        return "errore";
+        return -1;
     }
 
     //ora attendo una risposta dal server, sul login al db
-    QByteArray file;
+    int file;
     QDataStream in;
     in.setDevice(this->tcpSocket);
     in.setVersion(QDataStream::Qt_4_0);
     do {
         if (!this->tcpSocket->waitForReadyRead(Timeout)) {
             emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-            return "errore";
+            return -1;
         }
 
         in.startTransaction();
         in >> file;
     } while (!in.commitTransaction());
-    return std::string(file);
+    return file;
 }
 
 std::string connection_to_server::requestUri(int docId){

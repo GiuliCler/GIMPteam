@@ -219,14 +219,11 @@ std::shared_ptr<QMap<QString, int>> GUI_ConnectionToServerWrapper::getKnownDocum
 
 int GUI_ConnectionToServerWrapper::requestDocDatoUriWrapper(GIMPdocs *gimpdocs, QString uri){
     int returnValue;
-    //gli assegno un valore giusto per togliere il warning
-    returnValue = 1;
 
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
-        //non ho ben capito cos'è questa stringa ritornata
-        std::string stringa = Stub::requestDocDatoUriTemporary(gimpdocs->getConnection(), uri);
-
+        returnValue = gimpdocs->getConnection()->requestDocDatoUri(uri);
+        gimpdocs->setCursor(Qt::ArrowCursor);
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);

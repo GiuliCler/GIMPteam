@@ -29,7 +29,7 @@ public:
     std::string requestGetUsername(int userId);
     std::string requestIconId(int userId);
     std::string requestUri(int docId);
-    std::string requestDocDatoUri(QString uri);
+    long requestDocDatoUri(QString uri);
     std::shared_ptr<QMap<QString, int>> getKnownDocuments(int userId);
     QString getDocumentName(int docId);
     std::string requestDocName(int docId);

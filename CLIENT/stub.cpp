@@ -113,10 +113,10 @@ std::shared_ptr<QMap<int, QString>> Stub::getKnownDocuments(int userId){
     return vpointer;
 }
 
-std::string Stub::requestDocDatoUriTemporary(connection_to_server *connection, QString uri){
-    std::string result = connection->requestDocDatoUri(uri);
+long Stub::requestDocDatoUriTemporary(connection_to_server *connection, QString uri){
+    long result = connection->requestDocDatoUri(uri);
 
-    if(result.compare("errore") == 0)
+    if(result == -1)
         //throw GUI_ConnectionException();
         throw GUI_GenericException("Houston, abbiamo un problema");
 

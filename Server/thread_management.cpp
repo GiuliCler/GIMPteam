@@ -663,10 +663,16 @@ void Thread_management::getDocumentDatoUri(QString uri){
     mutex_db->unlock();
     if(doc != "errore"){
         // Nome del documento relativo all'URI ottenuto dal DB correttamente
-        out << doc.toLocal8Bit();
+        //out << doc.toLocal8Bit();
+        //cerco il documentId del documento richiesto e lo ritorno all'utente
+        // Cerco il docId del documento corrente
+        mutex_docs->lock();
+        int docId = documents.value(doc);
+        mutex_docs->unlock();
+        out << docId;
         socket->write(blocko);
     }else{
-        out << "errore";
+        out << -1;
         socket->write(blocko);
     }
 }
