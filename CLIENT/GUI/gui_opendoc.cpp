@@ -52,6 +52,7 @@ void GUI_Opendoc::on_openDocsPushButton_clicked()
     }
 
     int docId = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
+    //qDebug() << docId;
     Stub::openKnownDocument(docId);
 
     GUI_Editor *widget = new GUI_Editor(gimpParent, docId);
@@ -65,7 +66,7 @@ void GUI_Opendoc::on_getURIPushButton_clicked(){
     }
 
     int documentId = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
-
+    //qDebug() << documentId;
     QString uri = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
     if(uri.compare("errore") == 0)
         return;
