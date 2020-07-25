@@ -6,6 +6,7 @@
 #include <QVector>
 #include <QVectorIterator>
 //#include "NetworkServer.h"
+#include "connection_to_server.h"
 #include "crdt_symbol.h"
 #include <string>
 
@@ -28,8 +29,8 @@ public:
     explicit CRDT_SharedEditor(CRDT_controller *parent/*, NetworkServer& s*/);
     int getSiteId() const;
 //    std::string print();
-    void localInsert(int index, QChar value, QTextCharFormat fmt, Qt::Alignment align);
-    void localErase(int index);
+    void localInsert(connection_to_server *connection, int index, QChar value, QTextCharFormat fmt, Qt::Alignment align);
+    void localErase(connection_to_server *connection, int index);
     void process(const CRDT_Message& m);
     int getLength();
 //    std::string to_string();

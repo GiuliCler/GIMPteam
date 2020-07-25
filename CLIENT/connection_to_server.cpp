@@ -723,7 +723,7 @@ void connection_to_server::displayError(int socketError, const QString &message)
     }
 }
 
-void connection_to_server::send(CRDT_Message *messaggio){
+void connection_to_server::requestSendMessage(CRDT_Message *messaggio){
     //    this->tcpSocket->abort();
         if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
             this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
@@ -738,7 +738,7 @@ void connection_to_server::send(CRDT_Message *messaggio){
         out.setVersion(QDataStream::Qt_5_10);
 
         out << "SEND";
-        // out << *messaggio;
+        out << *messaggio;
 
         this->tcpSocket->write(buffer);
 

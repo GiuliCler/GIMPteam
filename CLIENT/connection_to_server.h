@@ -36,7 +36,7 @@ public:
     std::string requestDocName(int docId);
     std::shared_ptr<QSet<int>> getWorkingUsersOnDocument(int docId);
     std::string requestDeleteDoc(int userId,int documentId);
-    void send(CRDT_Message *messaggio);
+    void requestSendMessage(CRDT_Message *messaggio);
 
 private slots:
     void showFile(const QString &file);
