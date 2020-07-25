@@ -2,6 +2,7 @@
 #include "crdt_symbol.h"
 #include "crdt_message.h"
 #include "crdt_controller.h"
+#include "GUI/connection/gui_connectionToServerWrapper.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -16,7 +17,7 @@ int CRDT_SharedEditor::getSiteId() const{
     return this->_siteId;
 }
 
-void CRDT_SharedEditor::localInsert(int index, QChar value, QTextCharFormat fmt, Qt::Alignment align){
+void CRDT_SharedEditor::localInsert(connection_to_server *connection, int index, QChar value, QTextCharFormat fmt, Qt::Alignment align){
     QVector<int> posizione, posPREV, posNEXT;
 
 //    printf("Sto inserendo... %c\n", value);     // DEBUG -----
@@ -56,6 +57,8 @@ void CRDT_SharedEditor::localInsert(int index, QChar value, QTextCharFormat fmt,
     /* Creazione del messaggio e invio al NetworkServer */
     CRDT_Message* messaggio = new CRDT_Message("insert", *simbolo, this->_siteId);
 //    _server.send(*messaggio);     --> chiamata alla funzione send di connection_to_server
+    connection->requestSendMessage(messaggio);
+
 }
 
 QVector<int> CRDT_SharedEditor::generaPosizione(QVector<int> prev, QVector<int> next){
@@ -115,7 +118,7 @@ QVector<int> CRDT_SharedEditor::generaPosizione(QVector<int> prev, QVector<int> 
     return pos;
 }
 
-void CRDT_SharedEditor::localErase(int index){
+void CRDT_SharedEditor::localErase(connection_to_server *connection, int index){
     /* Recupero dal vettore di simboli il simbolo da eliminare */
     CRDT_Symbol simbolo = _symbols[index];
 
@@ -130,6 +133,7 @@ void CRDT_SharedEditor::localErase(int index){
     /* Creazione del messaggio e invio al NetworkServer */
     CRDT_Message* messaggio = new CRDT_Message("delete", simbolo, this->_siteId);
 //    _server.send(*messaggio);
+    connection->requestSendMessage(messaggio);
 }
 
 void CRDT_SharedEditor::process(const CRDT_Message& m){
