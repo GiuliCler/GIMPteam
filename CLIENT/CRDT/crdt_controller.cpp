@@ -1,4 +1,5 @@
 #include "crdt_controller.h"
+#include "crdt_message.h"
 #include <QClipboard>
 #include <QMimeData>
 #include <iostream>
@@ -26,6 +27,7 @@ CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyT
     QObject::connect(textEdit.document(), &QTextDocument::redoAvailable, this, &CRDT_controller::redoAvailableChanged);
 
     parent->childToolsBar->ui->spinBox->setSpecialValueText("Default");
+
 }
 
 void CRDT_controller::setLeft(){

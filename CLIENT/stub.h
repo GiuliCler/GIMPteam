@@ -48,7 +48,7 @@ public:
     static std::shared_ptr<QSet<int>> getWorkingUsersOnDocument(connection_to_server *connection,int docId);
     //ritorna tutti gli id degli users che hanno conrtibuito al document. Viene chiamata appena aperto il doc, mentre per l'update metto a disposizione altre funzioni
     static std::shared_ptr<QSet<int>> getContributorsUsersOnDocument(int docId);
-
+    static void Editor(connection_to_server *connection, int docId);
 };
 
 #endif // STUB_H

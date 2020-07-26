@@ -44,6 +44,8 @@ public:
     //non posso falro nel costruttore perchè quando costruisco il widget, il cambio di window deve ancora avvenire
     void changeWindowName();
 
+    void processMessage();
+
 public slots:
     void launchSetUi1();
     void on_actionApplyUsersColors();
