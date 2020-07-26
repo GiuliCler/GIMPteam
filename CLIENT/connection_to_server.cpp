@@ -17,6 +17,9 @@ connection_to_server::connection_to_server(QString port, QString ipAddress){
     //connect(&file, SIGNAL(error(int,QString)),this, SLOT(displayError(int,QString)));
 
 }
+QTcpSocket *connection_to_server::getSocket(){
+    return this->tcpSocket;
+}
 
 int connection_to_server::requestTryLogOut(int userId)
 {
@@ -774,4 +777,33 @@ void connection_to_server::requestSendMessage(CRDT_Message *messaggio){
             emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
             return;
         }
+}
+
+void connection_to_server::setEditor(int docId){
+    //qui possiamo verificare se ci sono messaggi da parte del server (riguardo
+    //inserimenti di altri utenti o all'avvio dell'editor, se era già stato scritto qualcosa).
+    //implementabile con una connect di readyRead sul socket
+    connect(this->tcpSocket, &QTcpSocket::readyRead, this, &connection_to_server::processMessage);
+}
+
+void connection_to_server::processMessage(){
+    qDebug() << "hereeee";
+   //viene mandato un messaggio dal server
+    CRDT_Symbol s = *new CRDT_Symbol();
+    CRDT_Message messaggio = *new CRDT_Message("",s,0);
+    QDataStream* myin;
+    // Ridefinisco in e out relativi alla connessione corrente
+    myin = new QDataStream(this->tcpSocket);
+    myin->setVersion(QDataStream::Qt_5_12);
+    myin->startTransaction();
+    QByteArray text;
+    // Prendo la stringa di comando
+    *myin >> text;
+
+    QString c = "SEND_FROM_SERVER";
+    if(text.contains(c.toUtf8())){
+        *myin >> messaggio;
+    }else{
+        return;
+    }
 }

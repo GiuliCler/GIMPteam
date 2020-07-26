@@ -849,6 +849,19 @@ void Thread_body::processMessage(CRDT_Message m, std::thread::id thread_id_sende
     if(thread_id == thread_id_sender || docId != current_docId)
         return;
     // out << m   ----> connettere NEL CLIENT con connect(socket, readyRead(), this, slotdelclient())
+
+    //PROVA DI DEBUG: provo a mandare qui dei messaggi al client in modo randomico
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+    out << "SEND_FROM_SERVER";
+    out << m;
+    socket->write(blocko);
+    CRDT_Symbol s2 = *new CRDT_Symbol();
+    CRDT_Message m2 = *new CRDT_Message("Ciao!!", s2, 1);
+    out << "SEND_SERVER";
+    out << m2;
+    socket->write(blocko);
 }
 
 

@@ -42,6 +42,8 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId) : QWidget(parent), docum
         return;
     for (QSet<int>::iterator userId = contributors->begin(); userId != contributors->end(); userId++)
         addContributorToCurrentDocument(*userId);
+
+    GUI_ConnectionToServerWrapper::startEditor(gimpParent, documentId);
 }
 
 GUI_Editor::~GUI_Editor(){
