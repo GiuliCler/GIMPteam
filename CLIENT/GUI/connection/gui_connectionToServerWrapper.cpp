@@ -179,7 +179,7 @@ int GUI_ConnectionToServerWrapper::requestLogOutWrapper(GIMPdocs *gimpdocs, int 
     int returnValue = 1;
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
-        returnValue = Stub::requestLogOut(gimpdocs->getConnection(), userId);
+        returnValue = Stub::requestTryLogOutTemporary(gimpdocs->getConnection(), userId);
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -194,7 +194,7 @@ int GUI_ConnectionToServerWrapper::forgetKnownDocumentWrapper(GIMPdocs *gimpdocs
 
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
-        Stub::forgetKnownDocument(gimpdocs->getConnection(), userId, documentId);
+        Stub::forgetKnownDocumentTemporary(gimpdocs->getConnection(), userId, documentId);
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -215,7 +215,7 @@ std::shared_ptr<QMap<QString, int>> GUI_ConnectionToServerWrapper::getKnownDocum
 
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
-        mpointer = gimpdocs->getConnection()->getKnownDocuments(userId);
+        mpointer = Stub::getKnownDocumentsTemporary(gimpdocs->getConnection(), userId);
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);

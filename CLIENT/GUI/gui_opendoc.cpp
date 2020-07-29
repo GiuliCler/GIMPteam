@@ -114,12 +114,9 @@ void GUI_Opendoc::on_forgetPushButton_clicked(){
         return;
 
     int docId = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
-    Stub::forgetKnownDocument(gimpParent->getConnection(),gimpParent->userid, docId);
-    /*if(id < 0){
-        QMessageBox::information(this, "", "PANIC! Qualcosa è andato storto");
-        //TODO gestire più dettagliatamente
+    int result = GUI_ConnectionToServerWrapper::forgetKnownDocumentWrapper(gimpParent, gimpParent->userid, docId);
+    if(result == -1)
         return;
-    }*/
 
     ui->docsListWidget->takeItem(ui->docsListWidget->currentRow());
 }

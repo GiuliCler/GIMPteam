@@ -12,13 +12,19 @@ bool Stub::isConnectionWorking(){
 }
 
 /*USERS*/
-int Stub::requestLogOut(connection_to_server *connection, int userId){
-    int result = connection->requestTryLogOut(userId);
+int Stub::requestTryLoginTemporary(connection_to_server *connection, QString username, QString password){
+    int result = connection->requestTryLogin(username, password);
+
+    if(result < 0)
+        //per ora ne tiro una a caso, ma la funzione requestTryLogin dovrà tirare quella appropriata
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
+
     return result;
 }
 
-int Stub::requestTryLoginTemporary(connection_to_server *connection, QString username, QString password){
-    int result = connection->requestTryLogin(username, password);
+int Stub::requestTryLogOutTemporary(connection_to_server *connection, int userId){
+    int result = connection->requestTryLogOut(userId);
 
     if(result < 0)
         //per ora ne tiro una a caso, ma la funzione requestTryLogin dovrà tirare quella appropriata
@@ -93,27 +99,20 @@ int Stub::requestCreateDocumentTemporary(connection_to_server *connection, int u
     return result;
 }
 
-void Stub::forgetKnownDocument(connection_to_server *connection, int userId, int documentId){
-    userId = documentId;
-    documentId = userId;
-
+void Stub::forgetKnownDocumentTemporary(connection_to_server *connection, int userId, int documentId){
     std::string result = connection->requestDeleteDoc(userId, documentId);
 
-    //lancia un errore solo se non riesce ad eliminare il documento
     if(result.compare("errore") == 0)
         //throw GUI_ConnectionException();
         throw GUI_GenericException("Houston, abbiamo un problema");
 }
 
-std::shared_ptr<QMap<int, QString>> Stub::getKnownDocuments(int userId){
-    int n = userId;
-    userId = n;
+std::shared_ptr<QMap<QString, int>> Stub::getKnownDocumentsTemporary(connection_to_server *connection, int userId){
+    std::shared_ptr<QMap<QString, int>> vpointer = connection->getKnownDocuments(userId);
 
-    std::shared_ptr<QMap<int, QString>> vpointer(new QMap<int, QString>());
-    vpointer->insert(0, "United States Declaration of independence");
-    vpointer->insert(1, "Magna Carta Libertatum");
-    vpointer->insert(2, "Hammurabi's Code");
-    vpointer->insert(3, "Domande e risposte di Security: appello gennaio 2020");
+    if(vpointer == nullptr)
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
 
     return vpointer;
 }

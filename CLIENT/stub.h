@@ -22,9 +22,9 @@ public:
     /*USERS*/
     //questa serve per fare il login. Restituisc l'id se username e password sono corretti, altrimenti lancia un'eccezione
     static int requestTryLoginTemporary(connection_to_server *connection, QString username, QString password);
+    static int requestTryLogOutTemporary(connection_to_server *connection, int userId);
     static int requestNewAccountTemporary(connection_to_server *connection, QString username, QString password, QString nickname, QString icon);
     static int requestUpdateAccountTemporary(connection_to_server *connection, int userId, QString password, QString nickname, QString icon);
-    static int requestLogOut(connection_to_server *connection, int userId);
     static std::string requestGetNicknameTemporary(connection_to_server *connection, int userId);
     static std::string requestGetUsernameTemporary(connection_to_server *connection, int userId);
     static std::string requestIconIdTemporary(connection_to_server *connection, int userId);
@@ -33,8 +33,8 @@ public:
     /*DOCUMENTS*/
     static int requestCreateDocumentTemporary(connection_to_server *connection, int userId, QString name);
     static void openKnownDocument(int documentId);                                  // FILE
-    static void forgetKnownDocument(connection_to_server *connection,int userId, int documentId);                    // DA DECIDERE COSA FARE
-    static std::shared_ptr<QMap<int, QString>> getKnownDocuments(int userId);
+    static void forgetKnownDocumentTemporary(connection_to_server *connection, int userId, int documentId);
+    static std::shared_ptr<QMap<QString, int>> getKnownDocumentsTemporary(connection_to_server *connection, int userId);
     static long requestDocDatoUriTemporary(connection_to_server *connection, QString uri);       // FILE
     static void closeDocument(int userId, int docId);                               // FILE
 

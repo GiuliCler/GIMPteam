@@ -27,5 +27,5 @@ GUI_URI::~GUI_URI(){
 void GUI_URI::on_copyPushButton_clicked(){
     QClipboard *clip = QApplication::clipboard();
     clip->setText(ui->URILabel->text());
-    qDebug() << clip->text();
+    //qDebug() << clip->text();
 }

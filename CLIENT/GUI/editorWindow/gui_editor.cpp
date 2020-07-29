@@ -28,6 +28,7 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId) : QWidget(parent), docum
     ui->toolsBarWidget->layout()->addWidget(childToolsBar);
     crdtController = new CRDT_controller(this, *childMyTextEdit);
 
+
     //ottengo l'elenco degli utenti che al momento stanno guardando il mio stesso document e ne creo icona e cursore
     std::shared_ptr<QSet<int>> users = GUI_ConnectionToServerWrapper::getWorkingUsersOnDocumentWrapper(gimpParent, documentId);
     if( users == nullptr)
@@ -45,6 +46,7 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId) : QWidget(parent), docum
 
 GUI_Editor::~GUI_Editor(){
     delete ui;
+    delete crdtController;
 }
 
 /*************ACTIONS*********************************/
