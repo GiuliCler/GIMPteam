@@ -54,8 +54,8 @@ int Stub::requestUpdateAccountTemporary(connection_to_server *connection, int us
     return result;
 }
 
-std::string Stub::requestGetNicknameTemporary(connection_to_server *connection, int userId){
-    std::string result = connection->requestGetNickname(userId);
+QString Stub::requestGetNicknameTemporary(connection_to_server *connection, int userId){
+    QString result = QString::fromStdString(connection->requestGetNickname(userId));
 
     if(result.compare("errore") == 0)
         //throw GUI_ConnectionException();
@@ -64,8 +64,8 @@ std::string Stub::requestGetNicknameTemporary(connection_to_server *connection, 
     return result;
 }
 
-std::string Stub::requestGetUsernameTemporary(connection_to_server *connection, int userId){
-    std::string result = connection->requestGetUsername(userId);
+QString Stub::requestGetUsernameTemporary(connection_to_server *connection, int userId){
+    QString result = QString::fromStdString(connection->requestGetUsername(userId));
 
     if(result.compare("errore") == 0)
         //throw GUI_ConnectionException();
@@ -74,8 +74,8 @@ std::string Stub::requestGetUsernameTemporary(connection_to_server *connection, 
     return result;
 }
 
-std::string Stub::requestIconIdTemporary(connection_to_server *connection, int userId){
-    std::string result = connection->requestIconId(userId);
+QString Stub::requestIconIdTemporary(connection_to_server *connection, int userId){
+    QString result = QString::fromStdString(connection->requestIconId(userId));
 
     if(result.compare("errore") == 0)
         //throw GUI_ConnectionException();
@@ -142,8 +142,8 @@ void Stub::closeDocument(int userId, int docId){
 
 
 
-std::string Stub::requestUriTemporary(connection_to_server *connection, int docId){
-    std::string result = connection->requestUri(docId);
+QString Stub::requestUriTemporary(connection_to_server *connection, int docId){
+    QString result = QString::fromStdString(connection->requestUri(docId));
 
     if(result.compare("errore") == 0)
         //throw GUI_ConnectionException();
@@ -152,10 +152,8 @@ std::string Stub::requestUriTemporary(connection_to_server *connection, int docI
     return result;
 }
 
-std::string Stub::getDocumentName(connection_to_server *connection,int docId){
-    int n = docId;
-    docId = n;
-    std::string name = connection->requestDocName(docId);
+QString Stub::requestDocNameTemporary(connection_to_server *connection,int docId){
+    QString name = QString::fromStdString(connection->requestDocName(docId));
 
     if(name.compare("errore") == 0)
         //throw GUI_ConnectionException();

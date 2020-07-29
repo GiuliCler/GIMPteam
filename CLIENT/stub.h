@@ -25,9 +25,9 @@ public:
     static int requestTryLogOutTemporary(connection_to_server *connection, int userId);
     static int requestNewAccountTemporary(connection_to_server *connection, QString username, QString password, QString nickname, QString icon);
     static int requestUpdateAccountTemporary(connection_to_server *connection, int userId, QString password, QString nickname, QString icon);
-    static std::string requestGetNicknameTemporary(connection_to_server *connection, int userId);
-    static std::string requestGetUsernameTemporary(connection_to_server *connection, int userId);
-    static std::string requestIconIdTemporary(connection_to_server *connection, int userId);
+    static QString requestGetNicknameTemporary(connection_to_server *connection, int userId);
+    static QString requestGetUsernameTemporary(connection_to_server *connection, int userId);
+    static QString requestIconIdTemporary(connection_to_server *connection, int userId);
 
 
     /*DOCUMENTS*/
@@ -38,8 +38,8 @@ public:
     static long requestDocDatoUriTemporary(connection_to_server *connection, QString uri);       // FILE
     static void closeDocument(int userId, int docId);                               // FILE
 
-    static std::string requestUriTemporary(connection_to_server *connection, int docId);
-    static std::string getDocumentName(connection_to_server *connection,int docId);
+    static QString requestUriTemporary(connection_to_server *connection, int docId);
+    static QString requestDocNameTemporary(connection_to_server *connection,int docId);
     //mi serve per l'export PDF da parte del server perchè i document sono ancora tutti chiusi (quindi non è per te Paul, credo)
     static std::shared_ptr<QTextDocument> getDocumentText(int docId);               // ?????
 

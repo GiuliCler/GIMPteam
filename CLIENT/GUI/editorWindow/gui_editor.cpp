@@ -100,7 +100,7 @@ void GUI_Editor::connectMenuBarActions(){
 void GUI_Editor::changeWindowName(){
 
     //modifico il nome della finestra
-    QString documentName = GUI_ConnectionToServerWrapper::getDocumentNameWrapper(gimpParent, documentId);
+    QString documentName = GUI_ConnectionToServerWrapper::requestDocNameWrapper(gimpParent, documentId);
     if(documentName.compare("errore") == 0)
         return;
     gimpParent->setWindowTitle("GIMPdocs - " + documentName);
