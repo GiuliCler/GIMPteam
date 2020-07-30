@@ -28,6 +28,7 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId) : QWidget(parent), docum
     ui->toolsBarWidget->layout()->addWidget(childToolsBar);
     crdtController = new CRDT_controller(this, *childMyTextEdit);
 
+
     //ottengo l'elenco degli utenti che al momento stanno guardando il mio stesso document e ne creo icona e cursore
     std::shared_ptr<QSet<int>> users = GUI_ConnectionToServerWrapper::getWorkingUsersOnDocumentWrapper(gimpParent, documentId);
     if( users == nullptr)
@@ -36,7 +37,7 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId) : QWidget(parent), docum
         addUserToEditorGUI(*userId);
 
     //creo l'icona per gli user che hanno contribuito al document
-    std::shared_ptr<QSet<int>> contributors = GUI_ConnectionToServerWrapper::getWorkingUsersOnDocumentWrapper(gimpParent, documentId);
+    std::shared_ptr<QSet<int>> contributors = GUI_ConnectionToServerWrapper::getContributorsUsersOnDocumentWrapper(gimpParent, documentId);
     if( contributors == nullptr)
         return;
     for (QSet<int>::iterator userId = contributors->begin(); userId != contributors->end(); userId++)
@@ -45,6 +46,7 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId) : QWidget(parent), docum
 
 GUI_Editor::~GUI_Editor(){
     delete ui;
+    delete crdtController;
 }
 
 /*************ACTIONS*********************************/
@@ -98,7 +100,7 @@ void GUI_Editor::connectMenuBarActions(){
 void GUI_Editor::changeWindowName(){
 
     //modifico il nome della finestra
-    QString documentName = GUI_ConnectionToServerWrapper::getDocumentNameWrapper(gimpParent, documentId);
+    QString documentName = GUI_ConnectionToServerWrapper::requestDocNameWrapper(gimpParent, documentId);
     if(documentName.compare("errore") == 0)
         return;
     gimpParent->setWindowTitle("GIMPdocs - " + documentName);

@@ -12,13 +12,19 @@ bool Stub::isConnectionWorking(){
 }
 
 /*USERS*/
-int Stub::requestLogOut(connection_to_server *connection, int userId){
-    int result = connection->requestTryLogOut(userId);
+int Stub::requestTryLoginTemporary(connection_to_server *connection, QString username, QString password){
+    int result = connection->requestTryLogin(username, password);
+
+    if(result < 0)
+        //per ora ne tiro una a caso, ma la funzione requestTryLogin dovrà tirare quella appropriata
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
+
     return result;
 }
 
-int Stub::requestTryLoginTemporary(connection_to_server *connection, QString username, QString password){
-    int result = connection->requestTryLogin(username, password);
+int Stub::requestTryLogOutTemporary(connection_to_server *connection, int userId){
+    int result = connection->requestTryLogOut(userId);
 
     if(result < 0)
         //per ora ne tiro una a caso, ma la funzione requestTryLogin dovrà tirare quella appropriata
@@ -48,8 +54,8 @@ int Stub::requestUpdateAccountTemporary(connection_to_server *connection, int us
     return result;
 }
 
-std::string Stub::requestGetNicknameTemporary(connection_to_server *connection, int userId){
-    std::string result = connection->requestGetNickname(userId);
+QString Stub::requestGetNicknameTemporary(connection_to_server *connection, int userId){
+    QString result = QString::fromStdString(connection->requestGetNickname(userId));
 
     if(result.compare("errore") == 0)
         //throw GUI_ConnectionException();
@@ -58,8 +64,8 @@ std::string Stub::requestGetNicknameTemporary(connection_to_server *connection, 
     return result;
 }
 
-std::string Stub::requestGetUsernameTemporary(connection_to_server *connection, int userId){
-    std::string result = connection->requestGetUsername(userId);
+QString Stub::requestGetUsernameTemporary(connection_to_server *connection, int userId){
+    QString result = QString::fromStdString(connection->requestGetUsername(userId));
 
     if(result.compare("errore") == 0)
         //throw GUI_ConnectionException();
@@ -68,8 +74,8 @@ std::string Stub::requestGetUsernameTemporary(connection_to_server *connection, 
     return result;
 }
 
-std::string Stub::requestIconIdTemporary(connection_to_server *connection, int userId){
-    std::string result = connection->requestIconId(userId);
+QString Stub::requestIconIdTemporary(connection_to_server *connection, int userId){
+    QString result = QString::fromStdString(connection->requestIconId(userId));
 
     if(result.compare("errore") == 0)
         //throw GUI_ConnectionException();
@@ -93,27 +99,20 @@ int Stub::requestCreateDocumentTemporary(connection_to_server *connection, int u
     return result;
 }
 
-void Stub::forgetKnownDocument(connection_to_server *connection, int userId, int documentId){
-    userId = documentId;
-    documentId = userId;
-
+void Stub::forgetKnownDocumentTemporary(connection_to_server *connection, int userId, int documentId){
     std::string result = connection->requestDeleteDoc(userId, documentId);
 
-    //lancia un errore solo se non riesce ad eliminare il documento
     if(result.compare("errore") == 0)
         //throw GUI_ConnectionException();
         throw GUI_GenericException("Houston, abbiamo un problema");
 }
 
-std::shared_ptr<QMap<int, QString>> Stub::getKnownDocuments(int userId){
-    int n = userId;
-    userId = n;
+std::shared_ptr<QMap<QString, int>> Stub::getKnownDocumentsTemporary(connection_to_server *connection, int userId){
+    std::shared_ptr<QMap<QString, int>> vpointer = connection->getKnownDocuments(userId);
 
-    std::shared_ptr<QMap<int, QString>> vpointer(new QMap<int, QString>());
-    vpointer->insert(0, "United States Declaration of independence");
-    vpointer->insert(1, "Magna Carta Libertatum");
-    vpointer->insert(2, "Hammurabi's Code");
-    vpointer->insert(3, "Domande e risposte di Security: appello gennaio 2020");
+    if(vpointer == nullptr)
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
 
     return vpointer;
 }
@@ -143,8 +142,8 @@ void Stub::closeDocument(int userId, int docId){
 
 
 
-std::string Stub::requestUriTemporary(connection_to_server *connection, int docId){
-    std::string result = connection->requestUri(docId);
+QString Stub::requestUriTemporary(connection_to_server *connection, int docId){
+    QString result = QString::fromStdString(connection->requestUri(docId));
 
     if(result.compare("errore") == 0)
         //throw GUI_ConnectionException();
@@ -153,10 +152,8 @@ std::string Stub::requestUriTemporary(connection_to_server *connection, int docI
     return result;
 }
 
-std::string Stub::getDocumentName(connection_to_server *connection,int docId){
-    int n = docId;
-    docId = n;
-    std::string name = connection->requestDocName(docId);
+QString Stub::requestDocNameTemporary(connection_to_server *connection,int docId){
+    QString name = QString::fromStdString(connection->requestDocName(docId));
 
     if(name.compare("errore") == 0)
         //throw GUI_ConnectionException();
@@ -179,10 +176,7 @@ std::shared_ptr<QTextDocument> Stub::getDocumentText(int docId){
 
 /*EDITOR*/
 //uso un set perchè mi scanso più avanti controlli sull'unicità dello userId, che dovrebbe essere già garanita, ma non si sa mai
-std::shared_ptr<QSet<int>> Stub::getWorkingUsersOnDocument(connection_to_server *connection, int docId){
-    int n = docId;
-    docId = n;
-
+std::shared_ptr<QSet<int>> Stub::getWorkingUsersOnDocumentTemporary(connection_to_server *connection, int docId){
     std::shared_ptr<QSet<int>> vpointer = connection->getWorkingUsersOnDocument(docId);
 
     return vpointer;
@@ -191,9 +185,11 @@ std::shared_ptr<QSet<int>> Stub::getWorkingUsersOnDocument(connection_to_server 
 std::shared_ptr<QSet<int>> Stub::getContributorsUsersOnDocument(int docId){
     int n = docId;
     docId = n;
+
     std::shared_ptr<QSet<int>> vpointer(new QSet<int>());
-    for(int i = 3; i < 6; i++)
-        vpointer->insert(i);
+    //l'ho disattivato perchè se ritorno una lista di users inventati il DB non li trova e crasha tutto
+    /*for(int i = 3; i < 6; i++)
+        vpointer->insert(i);*/
 
     return vpointer;
 }

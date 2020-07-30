@@ -71,8 +71,7 @@ QString GUI_ConnectionToServerWrapper::requestGetNicknameWrapper(GIMPdocs *gimpd
 
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
-        std::string stringa = Stub::requestGetNicknameTemporary(gimpdocs->getConnection(), userId);
-        returnValue = QString::fromStdString(stringa);
+        returnValue = Stub::requestGetNicknameTemporary(gimpdocs->getConnection(), userId);
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -93,8 +92,7 @@ QString GUI_ConnectionToServerWrapper::requestGetUsernameWrapper(GIMPdocs *gimpd
 
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
-        std::string stringa = Stub::requestGetUsernameTemporary(gimpdocs->getConnection(), userId);
-        returnValue = QString::fromStdString(stringa);
+        returnValue = Stub::requestGetUsernameTemporary(gimpdocs->getConnection(), userId);
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -115,8 +113,7 @@ QString GUI_ConnectionToServerWrapper::requestIconIdWrapper(GIMPdocs *gimpdocs, 
 
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
-        std::string stringa = Stub::requestIconIdTemporary(gimpdocs->getConnection(), userId);
-        returnValue = QString::fromStdString(stringa);
+        returnValue = Stub::requestIconIdTemporary(gimpdocs->getConnection(), userId);
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -179,7 +176,7 @@ int GUI_ConnectionToServerWrapper::requestLogOutWrapper(GIMPdocs *gimpdocs, int 
     int returnValue = 1;
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
-        returnValue = Stub::requestLogOut(gimpdocs->getConnection(), userId);
+        returnValue = Stub::requestTryLogOutTemporary(gimpdocs->getConnection(), userId);
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -194,7 +191,7 @@ int GUI_ConnectionToServerWrapper::forgetKnownDocumentWrapper(GIMPdocs *gimpdocs
 
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
-        Stub::forgetKnownDocument(gimpdocs->getConnection(), userId, documentId);
+        Stub::forgetKnownDocumentTemporary(gimpdocs->getConnection(), userId, documentId);
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -215,7 +212,7 @@ std::shared_ptr<QMap<QString, int>> GUI_ConnectionToServerWrapper::getKnownDocum
 
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
-        mpointer = gimpdocs->getConnection()->getKnownDocuments(userId);
+        mpointer = Stub::getKnownDocumentsTemporary(gimpdocs->getConnection(), userId);
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -258,8 +255,7 @@ QString GUI_ConnectionToServerWrapper::requestUriWrapper(GIMPdocs *gimpdocs, int
 
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
-        std::string stringa = Stub::requestUriTemporary(gimpdocs->getConnection(), docId);
-        returnValue = QString::fromStdString(stringa);
+        returnValue = Stub::requestUriTemporary(gimpdocs->getConnection(), docId);
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -275,13 +271,12 @@ QString GUI_ConnectionToServerWrapper::requestUriWrapper(GIMPdocs *gimpdocs, int
     return returnValue;
 }
 
-QString GUI_ConnectionToServerWrapper::getDocumentNameWrapper(GIMPdocs *gimpdocs, int docId){
+QString GUI_ConnectionToServerWrapper::requestDocNameWrapper(GIMPdocs *gimpdocs, int docId){
     QString returnValue;
 
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
-        std::string stringa = Stub::getDocumentName(gimpdocs->getConnection(), docId);
-        returnValue = QString::fromStdString(stringa);
+        returnValue = Stub::requestDocNameTemporary(gimpdocs->getConnection(), docId);
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -346,7 +341,7 @@ std::shared_ptr<QSet<int>> GUI_ConnectionToServerWrapper::getWorkingUsersOnDocum
 
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
-        users = Stub::getWorkingUsersOnDocument(gimpdocs->getConnection(), docId);
+        users = Stub::getWorkingUsersOnDocumentTemporary(gimpdocs->getConnection(), docId);
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -367,7 +362,7 @@ std::shared_ptr<QSet<int>> GUI_ConnectionToServerWrapper::getContributorsUsersOn
 
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
-        contributors = Stub::getWorkingUsersOnDocument(gimpdocs->getConnection(), docId);
+        contributors = Stub::getContributorsUsersOnDocument(docId);
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
