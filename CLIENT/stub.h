@@ -45,8 +45,8 @@ public:
 
     /*EDITOR*/
     //ritorna un set con un vettore di userId
-    static std::shared_ptr<QSet<int>> getWorkingUsersOnDocument(connection_to_server *connection,int docId);
-    //ritorna tutti gli id degli users che hanno conrtibuito al document. Viene chiamata appena aperto il doc, mentre per l'update metto a disposizione altre funzioni
+    static std::shared_ptr<QSet<int>> getWorkingUsersOnDocumentTemporary(connection_to_server *connection,int docId);
+    //ritorna tutti gli id degli users che hanno conrtibuito al document. Viene chiamata appena aperto il doc, mentre per l'update ci sono altre funzioni apposta nella classe gui_editor
     static std::shared_ptr<QSet<int>> getContributorsUsersOnDocument(int docId);
 
 };

@@ -341,7 +341,7 @@ std::shared_ptr<QSet<int>> GUI_ConnectionToServerWrapper::getWorkingUsersOnDocum
 
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
-        users = Stub::getWorkingUsersOnDocument(gimpdocs->getConnection(), docId);
+        users = Stub::getWorkingUsersOnDocumentTemporary(gimpdocs->getConnection(), docId);
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -362,7 +362,7 @@ std::shared_ptr<QSet<int>> GUI_ConnectionToServerWrapper::getContributorsUsersOn
 
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
-        contributors = Stub::getWorkingUsersOnDocument(gimpdocs->getConnection(), docId);
+        contributors = Stub::getContributorsUsersOnDocument(docId);
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);

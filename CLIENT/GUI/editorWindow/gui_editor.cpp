@@ -37,7 +37,7 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId) : QWidget(parent), docum
         addUserToEditorGUI(*userId);
 
     //creo l'icona per gli user che hanno contribuito al document
-    std::shared_ptr<QSet<int>> contributors = GUI_ConnectionToServerWrapper::getWorkingUsersOnDocumentWrapper(gimpParent, documentId);
+    std::shared_ptr<QSet<int>> contributors = GUI_ConnectionToServerWrapper::getContributorsUsersOnDocumentWrapper(gimpParent, documentId);
     if( contributors == nullptr)
         return;
     for (QSet<int>::iterator userId = contributors->begin(); userId != contributors->end(); userId++)

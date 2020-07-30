@@ -176,10 +176,7 @@ std::shared_ptr<QTextDocument> Stub::getDocumentText(int docId){
 
 /*EDITOR*/
 //uso un set perchè mi scanso più avanti controlli sull'unicità dello userId, che dovrebbe essere già garanita, ma non si sa mai
-std::shared_ptr<QSet<int>> Stub::getWorkingUsersOnDocument(connection_to_server *connection, int docId){
-    int n = docId;
-    docId = n;
-
+std::shared_ptr<QSet<int>> Stub::getWorkingUsersOnDocumentTemporary(connection_to_server *connection, int docId){
     std::shared_ptr<QSet<int>> vpointer = connection->getWorkingUsersOnDocument(docId);
 
     return vpointer;
@@ -188,9 +185,11 @@ std::shared_ptr<QSet<int>> Stub::getWorkingUsersOnDocument(connection_to_server 
 std::shared_ptr<QSet<int>> Stub::getContributorsUsersOnDocument(int docId){
     int n = docId;
     docId = n;
+
     std::shared_ptr<QSet<int>> vpointer(new QSet<int>());
-    for(int i = 3; i < 6; i++)
-        vpointer->insert(i);
+    //l'ho disattivato perchè se ritorno una lista di users inventati il DB non li trova e crasha tutto
+    /*for(int i = 3; i < 6; i++)
+        vpointer->insert(i);*/
 
     return vpointer;
 }
