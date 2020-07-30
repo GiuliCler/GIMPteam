@@ -418,7 +418,7 @@ void Thread_management::create(QString username, QString password, QString nickn
         users.insert(username, id);
         mutex_users->unlock();
         //creo la cartella sul file system per l'utente
-        QDir dir = QDir::root();
+        QDir dir = QDir::current();
         dir.mkpath(path+username);
         //verifico sia stata correttamente creata
         if(QDir(path+username).exists()){
