@@ -785,7 +785,9 @@ void connection_to_server::setEditor(int docId){
     //qui possiamo verificare se ci sono messaggi da parte del server (riguardo
     //inserimenti di altri utenti o all'avvio dell'editor, se era già stato scritto qualcosa).
     //implementabile con una connect di readyRead sul socket
-    connect(this->tcpSocket, &QTcpSocket::readyRead, this, &connection_to_server::receiveMessage);
+
+    // TODO DA SCOMMENTARE CONNECT SOTTOOOOOOOOOO -----------------------------------------------------------
+    //connect(this->tcpSocket, &QTcpSocket::readyRead, this, &connection_to_server::receiveMessage);
 }
 
 void connection_to_server::receiveMessage(){

@@ -14,6 +14,7 @@ Thread_body::Thread_body(int socketDescriptor, QObject *parent) : QObject(parent
 
     socket = new QTcpSocket();
     if (!socket->setSocketDescriptor(socketDescriptor)) {
+        socket->disconnectFromHost();       //altrimenti non accetta più connessioni da altri client...
         emit error(socket->error());
         return;
     }
@@ -383,7 +384,7 @@ void Thread_body::create(QString username, QString password, QString nickname, Q
         users.insert(username, id);
         mutex_users->unlock();
         //creo la cartella sul file system per l'utente
-        QDir dir = QDir::root();
+        QDir dir = QDir::current();
         dir.mkpath(path+username);
         //verifico sia stata correttamente creata
         if(QDir(path+username).exists()){
@@ -631,10 +632,16 @@ void Thread_body::getDocumentDatoUri(QString uri){
     mutex_db->unlock();
     if(doc != "errore"){
         // Nome del documento relativo all'URI ottenuto dal DB correttamente
-        out << doc.toLocal8Bit();
+        //out << doc.toLocal8Bit();
+        // cerco il documentId del documento richiesto e lo ritorno all'utente
+        // Cerco il docId del documento corrente
+        mutex_docs->lock();
+        int docId = documents.value(doc);
+        mutex_docs->unlock();
+        out << docId;
         socket->write(blocko);
     }else{
-        out << "errore";
+        out << -1;
         socket->write(blocko);
     }
 }
