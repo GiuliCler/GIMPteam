@@ -43,6 +43,8 @@ public:
     static QString requestDocNameTemporary(connection_to_server *connection,int docId);
     //mi serve per l'export PDF da parte del server perchè i document sono ancora tutti chiusi (quindi non è per te Paul, credo)
     static std::shared_ptr<QTextDocument> getDocumentText(int docId);               // ?????
+    //mi serve per ricevere l'id dell'owner del document
+    static int requestDocumentOwner(int docId);
 
     /*EDITOR*/
     //ritorna un set con un vettore di userId

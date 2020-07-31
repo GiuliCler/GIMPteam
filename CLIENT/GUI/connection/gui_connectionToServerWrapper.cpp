@@ -333,6 +333,28 @@ std::shared_ptr<QTextDocument> GUI_ConnectionToServerWrapper::getDocumentTextWra
     return docpointer;
 }
 
+int GUI_ConnectionToServerWrapper::requestDocumentOwnerWrapper(GIMPdocs *gimpdocs, int docId){
+    int returnValue;
+
+    try {
+        gimpdocs->setCursor(Qt::WaitCursor);
+        returnValue = Stub::requestDocumentOwner(docId);
+        gimpdocs->setCursor(Qt::ArrowCursor);
+    } catch (GUI_ConnectionException &exception) {
+        gimpdocs->setCursor(Qt::ArrowCursor);
+        //provo a ristabilire la connessione
+        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
+        return -1;
+    } catch(GUI_GenericException &exception){
+        gimpdocs->setCursor(Qt::ArrowCursor);
+        QMessageBox::information(gimpdocs, "", exception.message);
+        return -1;
+    }
+
+    return returnValue;
+}
+
+
 
 /*EDITOR*/
 std::shared_ptr<QSet<int>> GUI_ConnectionToServerWrapper::getWorkingUsersOnDocumentWrapper(GIMPdocs *gimpdocs, int docId){

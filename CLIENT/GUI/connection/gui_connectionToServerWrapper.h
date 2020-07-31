@@ -35,6 +35,7 @@ public:
     static QString requestDocNameWrapper(GIMPdocs *gimpdocs, int docId);
     static QString requestUriWrapper(GIMPdocs *gimpdocs, int docId);
     static std::shared_ptr<QTextDocument> getDocumentTextWrapper(GIMPdocs *gimpdocs, int docId);
+    static int requestDocumentOwnerWrapper(GIMPdocs *gimpdocs, int docId);
 
 
     /*EDITOR*/
