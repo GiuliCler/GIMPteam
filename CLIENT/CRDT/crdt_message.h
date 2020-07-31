@@ -18,6 +18,7 @@ private:
     int creatore;
 
 public:
+    CRDT_Message();
     CRDT_Message(std::string str, CRDT_Symbol s, int id);
     std::string getAzione() const;
     CRDT_Symbol getSimbolo() const;

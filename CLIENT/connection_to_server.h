@@ -39,7 +39,7 @@ public:
     std::string requestDeleteDoc(int userId,int documentId);
     void requestSendMessage(CRDT_Message *messaggio);
     void setEditor(int docId);
-    void processMessage();
+    void receiveMessage();
 
 private slots:
     void showFile(const QString &file);
