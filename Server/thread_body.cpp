@@ -170,11 +170,12 @@ void Thread_body::executeJob(){
     c = "SEND";
     if(text.contains(c.toUtf8())){
 
-        // todo ila&paolo -------------------------------------------------------------------------------------------------------------------------------
-
         CRDT_Message messaggio;
         *in >> messaggio;
-        // scrivi su crdt del server? MUTEX + chiediti se metterla dopo emit           todo ila&paolo
+
+        std::cout << "SEND - "<<messaggio.getAzione()<< std::endl;      // DEBUG
+
+        // scrivi su crdt del server? MUTEX + chiediti se metterla dopo emit        todo ila&paolo
         emit messageToServer(messaggio, thread_id, current_docId);
     }
 
