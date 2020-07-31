@@ -106,8 +106,15 @@ void GUI_Opendoc::on_forgetPushButton_clicked(){
     }
 
     QString docName = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCNAME).toString();
-    if(QMessageBox::question(this, "", "Do you really want to forget \"" + docName + "\" document?") == QMessageBox::No)
-        return;
+    //if the current user is the owner of the forgetted document
+    if(ui->ownedDocsListWidget->currentRow() != -1){
+        if(QMessageBox::question(this, "", "The document \"" + docName + "\" may be shared with other users. Do you really want to forget it?") == QMessageBox::No)
+            return;
+    }
+    else{
+        if(QMessageBox::question(this, "", "Do you really want to forget \"" + docName + "\" document?") == QMessageBox::No)
+            return;
+    }
 
     int docId = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
     int result = GUI_ConnectionToServerWrapper::forgetKnownDocumentWrapper(gimpParent, gimpParent->userid, docId);
@@ -132,21 +139,17 @@ void GUI_Opendoc::fillList(){
     if(vp == nullptr)
         return;
 
-    int debugCounter = 0;
-
     for(auto pair = vp->begin(); pair != vp->end(); pair++){
         //lo inizializzo per togliere il warning
         QListWidgetItem* item = new QListWidgetItem;
         item->setData(GUI_OPENDOC_WIDGETLIST_DOCNAME, pair.key());
         item->setData(GUI_OPENDOC_WIDGETLIST_DOCID, pair.value());
 
-        //TODO chiamare la funzione per controllare il vero owner
-        if(debugCounter % 2 == 0)
+        int ownerId = GUI_ConnectionToServerWrapper::requestDocumentOwnerWrapper(gimpParent, pair.value());
+        if(gimpParent->userid == ownerId)
             ui->ownedDocsListWidget->addItem(item);
         else
             ui->sharedDocsListWidget->addItem(item);
-
-        debugCounter++;
     }
 }
 
