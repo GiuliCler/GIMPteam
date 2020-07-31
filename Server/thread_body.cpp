@@ -841,6 +841,11 @@ void Thread_body::getWorkingUsersGivenDoc(int docId){
 }
 
 void Thread_body::processMessage(CRDT_Message m, std::thread::id thread_id_sender, int docId){
+
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
     auto thread_id = std::this_thread::get_id();
     std::cout << "---- ThreadBody receivedNotifica id: "<<thread_id<<" ---- "<< "; Stringa: "<<m.getAzione()<< std::endl;      // DEBUG
 
@@ -848,12 +853,13 @@ void Thread_body::processMessage(CRDT_Message m, std::thread::id thread_id_sende
     // se altro documento o stesso user_id di questo thread => discard (return)
     if(thread_id == thread_id_sender || docId != current_docId)
         return;
-    // out << m   ----> connettere NEL CLIENT con connect(socket, readyRead(), this, slotdelclient())
+    out << m;
 
-    //PROVA DI DEBUG: provo a mandare qui dei messaggi al client in modo randomico
-    QByteArray blocko;
-    QDataStream out(&blocko, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_12);
+
+
+
+    //PROVA DI DEBUG DI GIULIA: provo a mandare qui dei messaggi al client in modo randomico
+    /*
     out << "SEND_FROM_SERVER";
     out << m;
     socket->write(blocko);
@@ -862,6 +868,7 @@ void Thread_body::processMessage(CRDT_Message m, std::thread::id thread_id_sende
     out << "SEND_SERVER";
     out << m2;
     socket->write(blocko);
+    */
 }
 
 

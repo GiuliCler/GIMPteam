@@ -4,6 +4,7 @@
 #include <QtWidgets>
 #include <iostream>
 #include <QSet>
+#include "CRDT/crdt_message.h"
 
 connection_to_server::connection_to_server(QString port, QString ipAddress){
     this->tcpSocket=new QTcpSocket(this);
@@ -780,23 +781,42 @@ void connection_to_server::requestSendMessage(CRDT_Message *messaggio){
 }
 
 void connection_to_server::setEditor(int docId){
+    // todo ila&paolo ------------------------------------------------
     //qui possiamo verificare se ci sono messaggi da parte del server (riguardo
     //inserimenti di altri utenti o all'avvio dell'editor, se era già stato scritto qualcosa).
     //implementabile con una connect di readyRead sul socket
-    connect(this->tcpSocket, &QTcpSocket::readyRead, this, &connection_to_server::processMessage);
+    connect(this->tcpSocket, &QTcpSocket::readyRead, this, &connection_to_server::receiveMessage);
 }
 
-void connection_to_server::processMessage(){
+void connection_to_server::receiveMessage(){
+
+    CRDT_Message m;
+    QDataStream in;
+    in.setDevice(this->tcpSocket);
+    in.setVersion(QDataStream::Qt_4_0);
+
+    in >> m;
+
+    std::cout << "SLOT CLIENT receiveMessage - "<<m.getAzione()<< std::endl;      // DEBUG
+
+
+
+
+    //PROVA DI DEBUG DI GIULIA
+    /*
     qDebug() << "hereeee";
+
    //viene mandato un messaggio dal server
     CRDT_Symbol s = *new CRDT_Symbol();
     CRDT_Message messaggio = *new CRDT_Message("",s,0);
     QDataStream* myin;
+
     // Ridefinisco in e out relativi alla connessione corrente
     myin = new QDataStream(this->tcpSocket);
     myin->setVersion(QDataStream::Qt_5_12);
     myin->startTransaction();
     QByteArray text;
+
     // Prendo la stringa di comando
     *myin >> text;
 
@@ -806,4 +826,5 @@ void connection_to_server::processMessage(){
     }else{
         return;
     }
+    */
 }
