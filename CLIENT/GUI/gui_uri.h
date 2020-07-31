@@ -14,6 +14,8 @@ public:
 
 private slots:
     void on_copyPushButton_clicked();
+    void on_copyPushButton_pressed();
+    void on_copyPushButton_released();
 
 private:
     Ui::GUI_URI *ui;

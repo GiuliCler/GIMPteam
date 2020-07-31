@@ -29,3 +29,11 @@ void GUI_URI::on_copyPushButton_clicked(){
     clip->setText(ui->URILabel->text());
     //qDebug() << clip->text();
 }
+
+void GUI_URI::on_copyPushButton_pressed(){
+    ui->copiedLabel->setText("");
+}
+
+void GUI_URI::on_copyPushButton_released(){
+    ui->copiedLabel->setText("URI copied");
+}
