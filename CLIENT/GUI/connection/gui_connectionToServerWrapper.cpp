@@ -228,13 +228,12 @@ std::shared_ptr<QMap<QString, int>> GUI_ConnectionToServerWrapper::getKnownDocum
     return mpointer;
 }
 
-int GUI_ConnectionToServerWrapper::requestDocDatoUriWrapper(GIMPdocs *gimpdocs, QString uri){
+int GUI_ConnectionToServerWrapper::requestDocDatoUriWrapper(GIMPdocs *gimpdocs, int userId, QString uri){
     int returnValue;
 
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
-        returnValue = gimpdocs->getConnection()->requestDocDatoUri(uri);
-        gimpdocs->setCursor(Qt::ArrowCursor);
+        returnValue = Stub::requestDocDatoUri(gimpdocs->getConnection(), userId, uri);
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
