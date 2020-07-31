@@ -117,10 +117,14 @@ std::shared_ptr<QMap<QString, int>> Stub::getKnownDocumentsTemporary(connection_
     return vpointer;
 }
 
-long Stub::requestDocDatoUriTemporary(connection_to_server *connection, QString uri){
+long Stub::requestDocDatoUri(connection_to_server *connection, int userId, QString uri){
+    //come al solito è solo per togleire i warning
+    int n = userId;
+    userId = n;
+
     long result = connection->requestDocDatoUri(uri);
 
-    if(result == -1)
+    if(result < 0)
         //throw GUI_ConnectionException();
         throw GUI_GenericException("Houston, abbiamo un problema");
 
@@ -170,6 +174,11 @@ std::shared_ptr<QTextDocument> Stub::getDocumentText(int docId){
     docpointer->setHtml("<h1>Hello, World!</h1>\n<p>Sopra la panca la capra studia. Sotto la panca la capra studia</p>");
 
     return docpointer;
+}
+
+int Stub::requestDocumentOwner(int docId){
+    //ovviamente questa return è sbagliata
+    return docId;
 }
 
 

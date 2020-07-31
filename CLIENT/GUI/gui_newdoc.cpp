@@ -59,7 +59,7 @@ void GUI_Newdoc::on_openURIPushButton_clicked()
         return;
     }
 
-    int documentId = GUI_ConnectionToServerWrapper::requestDocDatoUriWrapper(gimpParent, ui->URILineEdit->text());
+    int documentId = GUI_ConnectionToServerWrapper::requestDocDatoUriWrapper(gimpParent, gimpParent->userid, ui->URILineEdit->text());
     if(documentId  == -1)
         return;
 

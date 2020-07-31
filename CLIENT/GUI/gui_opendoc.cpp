@@ -22,37 +22,28 @@ GUI_Opendoc::GUI_Opendoc(QWidget *parent) : QWidget(parent)
     fillList();
 
     //imposto la connect per il doppio click ed aprire il doc
-    connect(ui->docsListWidget, &QListWidget::doubleClicked, this, &GUI_Opendoc::on_openDocsPushButton_clicked);
+    connect(ui->ownedDocsListWidget, &QListWidget::doubleClicked, this, &GUI_Opendoc::on_openDocsPushButton_clicked);
+    connect(ui->sharedDocsListWidget, &QListWidget::doubleClicked, this, &GUI_Opendoc::on_openDocsPushButton_clicked);
+    //questo mi serve per avere al massimo un item selezionato alla volta
+    connect(ui->ownedDocsListWidget, &QListWidget::itemClicked, this, &GUI_Opendoc::on_ownedDocsListWidget_itemClicked);
+    connect(ui->sharedDocsListWidget, &QListWidget::itemClicked, this, &GUI_Opendoc::on_sharedDocsListWidget_itemClicked);
 }
 
 GUI_Opendoc::~GUI_Opendoc(){
     delete ui;
 }
 
-void GUI_Opendoc::fillList(){
-    std::shared_ptr<QMap<QString, int>> vp = GUI_ConnectionToServerWrapper::getKnownDocumentsWrapper(gimpParent, gimpParent->userid);
-    if(vp == nullptr)
-        return;
 
-    for(auto pair = vp->begin(); pair != vp->end(); pair++){
-        //lo inizializzo per togliere il warning
-        QListWidgetItem* item = new QListWidgetItem;
-        item->setData(GUI_OPENDOC_WIDGETLIST_DOCNAME, pair.key());
-        item->setData(GUI_OPENDOC_WIDGETLIST_DOCID, pair.value());
 
-        ui->docsListWidget->addItem(item);
-    }
-}
+void GUI_Opendoc::on_openDocsPushButton_clicked(){
+    QListWidgetItem *currentItem = getSelectedItem();
 
-void GUI_Opendoc::on_openDocsPushButton_clicked()
-{
-    if(ui->docsListWidget->currentItem() == nullptr){
+    if(currentItem == nullptr){
         QMessageBox::information(this, "", "Please, select a document");
         return;
     }
 
-    int docId = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
-    //qDebug() << docId;
+    int docId = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
     Stub::openKnownDocument(docId);
 
     GUI_Editor *widget = new GUI_Editor(gimpParent, docId);
@@ -60,13 +51,14 @@ void GUI_Opendoc::on_openDocsPushButton_clicked()
 }
 
 void GUI_Opendoc::on_getURIPushButton_clicked(){
-    if(ui->docsListWidget->currentItem() == nullptr){
+    QListWidgetItem *currentItem = getSelectedItem();
+
+    if(currentItem == nullptr){
         QMessageBox::information(this, "", "Please, select a document");
         return;
     }
 
-    int documentId = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
-    //qDebug() << documentId;
+    int documentId = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
     QString uri = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
     if(uri.compare("errore") == 0)
         return;
@@ -76,7 +68,9 @@ void GUI_Opendoc::on_getURIPushButton_clicked(){
 }
 
 void GUI_Opendoc::on_exportPDFPushButton_clicked(){
-    if(ui->docsListWidget->currentItem() == nullptr){
+    QListWidgetItem *currentItem = getSelectedItem();
+
+    if(currentItem == nullptr){
         QMessageBox::information(this, "", "Please, select a document");
         return;
     }
@@ -91,7 +85,7 @@ void GUI_Opendoc::on_exportPDFPushButton_clicked(){
     printer.setOutputFileName(fileName);
 
 
-    int docId = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
+    int docId = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
     std::shared_ptr<QTextDocument> docp = GUI_ConnectionToServerWrapper::getDocumentTextWrapper(gimpParent, docId);
     if( docp == nullptr)
         return;
@@ -104,21 +98,73 @@ void GUI_Opendoc::on_exportPDFPushButton_clicked(){
 //non potranno più accedervi (messaggio ulteriore di notifica). L'eliminazione del documento da parte dei collaboratori elimina
 //solamente la corrispondenza con quel documento nel db.
 void GUI_Opendoc::on_forgetPushButton_clicked(){
-    if(ui->docsListWidget->currentItem() == nullptr){
+    QListWidgetItem *currentItem = getSelectedItem();
+
+    if(currentItem == nullptr){
         QMessageBox::information(this, "", "Please, select a document");
         return;
     }
 
-    QString docName = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_DOCNAME).toString();
-    if(QMessageBox::question(this, "", "Do you really want to forget \"" + docName + "\" document?") == QMessageBox::No)
-        return;
+    QString docName = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCNAME).toString();
+    //if the current user is the owner of the forgetted document
+    if(ui->ownedDocsListWidget->currentRow() != -1){
+        if(QMessageBox::question(this, "", "The document \"" + docName + "\" may be shared with other users. Do you really want to forget it?") == QMessageBox::No)
+            return;
+    }
+    else{
+        if(QMessageBox::question(this, "", "Do you really want to forget \"" + docName + "\" document?") == QMessageBox::No)
+            return;
+    }
 
-    int docId = ui->docsListWidget->currentItem()->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
+    int docId = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
     int result = GUI_ConnectionToServerWrapper::forgetKnownDocumentWrapper(gimpParent, gimpParent->userid, docId);
     if(result == -1)
         return;
 
-    ui->docsListWidget->takeItem(ui->docsListWidget->currentRow());
+    removeSelectedItem();
+}
+
+void GUI_Opendoc::on_ownedDocsListWidget_itemClicked(){
+    ui->sharedDocsListWidget->setCurrentRow(-1);
+}
+
+void GUI_Opendoc::on_sharedDocsListWidget_itemClicked(){
+    ui->ownedDocsListWidget->setCurrentRow(-1);
 }
 
 
+
+void GUI_Opendoc::fillList(){
+    std::shared_ptr<QMap<QString, int>> vp = GUI_ConnectionToServerWrapper::getKnownDocumentsWrapper(gimpParent, gimpParent->userid);
+    if(vp == nullptr)
+        return;
+
+    for(auto pair = vp->begin(); pair != vp->end(); pair++){
+        //lo inizializzo per togliere il warning
+        QListWidgetItem* item = new QListWidgetItem;
+        item->setData(GUI_OPENDOC_WIDGETLIST_DOCNAME, pair.key());
+        item->setData(GUI_OPENDOC_WIDGETLIST_DOCID, pair.value());
+
+        int ownerId = GUI_ConnectionToServerWrapper::requestDocumentOwnerWrapper(gimpParent, pair.value());
+        if(gimpParent->userid == ownerId)
+            ui->ownedDocsListWidget->addItem(item);
+        else
+            ui->sharedDocsListWidget->addItem(item);
+    }
+}
+
+QListWidgetItem* GUI_Opendoc::getSelectedItem(){
+    if(ui->ownedDocsListWidget->currentRow() != -1)
+        return ui->ownedDocsListWidget->currentItem();
+    if(ui->sharedDocsListWidget->currentRow() != -1)
+        return ui->sharedDocsListWidget->currentItem();
+
+    return nullptr;
+}
+
+void GUI_Opendoc::removeSelectedItem(){
+    if(ui->ownedDocsListWidget->currentRow() != -1)
+        ui->ownedDocsListWidget->takeItem(ui->ownedDocsListWidget->currentRow());
+    if(ui->sharedDocsListWidget->currentRow() != -1)
+        ui->sharedDocsListWidget->takeItem(ui->sharedDocsListWidget->currentRow());
+}

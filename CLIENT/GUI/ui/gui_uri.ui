@@ -83,7 +83,7 @@ QPushButton:pressed,QPushButton:checked {
    </item>
    <item row="0" column="1">
     <widget class="QWidget" name="backgroundWidget" native="true">
-     <layout class="QVBoxLayout" name="verticalLayout_3">
+     <layout class="QVBoxLayout" name="verticalLayout_3" stretch="3,1,3">
       <property name="spacing">
        <number>25</number>
       </property>
@@ -136,8 +136,21 @@ QPushButton:pressed,QPushButton:checked {
        </layout>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="0">
          <spacer name="horizontalSpacer_3">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -150,14 +163,7 @@ QPushButton:pressed,QPushButton:checked {
           </property>
          </spacer>
         </item>
-        <item>
-         <widget class="QPushButton" name="copyPushButton">
-          <property name="text">
-           <string>Copy URI</string>
-          </property>
-         </widget>
-        </item>
-        <item>
+        <item row="0" column="2">
          <spacer name="horizontalSpacer_4">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -169,6 +175,23 @@ QPushButton:pressed,QPushButton:checked {
            </size>
           </property>
          </spacer>
+        </item>
+        <item row="1" column="1">
+         <widget class="QPushButton" name="copyPushButton">
+          <property name="text">
+           <string>Copy URI</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="copiedLabel">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

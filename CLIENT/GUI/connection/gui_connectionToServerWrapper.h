@@ -28,13 +28,14 @@ public:
     static int requestCreateDocumentWrapper(GIMPdocs *gimpdocs, int userId, QString name);
     static int openKnownDocumentWrapper(GIMPdocs *gimpdocs, int documentId);
     static int forgetKnownDocumentWrapper(GIMPdocs *gimpdocs, int userId, int documentId);
-    static int requestDocDatoUriWrapper(GIMPdocs *gimpdocs, QString uri);
+    static int requestDocDatoUriWrapper(GIMPdocs *gimpdocs, int userId, QString uri);
     static std::shared_ptr<QMap<QString, int>> getKnownDocumentsWrapper(GIMPdocs *gimpdocs, int userId);
     static int closeDocumentWrapper(GIMPdocs *gimpdocs, int userId, int docId);
 
     static QString requestDocNameWrapper(GIMPdocs *gimpdocs, int docId);
     static QString requestUriWrapper(GIMPdocs *gimpdocs, int docId);
     static std::shared_ptr<QTextDocument> getDocumentTextWrapper(GIMPdocs *gimpdocs, int docId);
+    static int requestDocumentOwnerWrapper(GIMPdocs *gimpdocs, int docId);
 
 
     /*EDITOR*/

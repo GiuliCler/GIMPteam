@@ -20,15 +20,76 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout" columnstretch="3,1">
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="spacing">
-    <number>0</number>
-   </property>
+   <item row="0" column="0">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QLabel" name="ownedDocsLabel">
+       <property name="text">
+        <string>My documents</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QListWidget" name="ownedDocsListWidget">
+       <property name="styleSheet">
+        <string notr="true">QListWidget{
+    border-width: 2px;
+	border-style: inset;
+	border-color: hsv(165, 55, 205);
+}
+
+QListWidget:focus{
+	border-color: hsv(165, 105, 205);
+}</string>
+       </property>
+       <property name="spacing">
+        <number>1</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>30</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="sharedDocsLabel">
+       <property name="text">
+        <string>Shared with me documents</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QListWidget" name="sharedDocsListWidget">
+       <property name="styleSheet">
+        <string notr="true">QListWidget{
+    border-width: 2px;
+	border-style: inset;
+	border-color: hsv(165, 55, 205);
+}
+
+QListWidget:focus{
+	border-color: hsv(165, 105, 205);
+}</string>
+       </property>
+       <property name="spacing">
+        <number>1</number>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
    <item row="0" column="1">
     <widget class="QWidget" name="widget" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout">
@@ -133,24 +194,6 @@
        </spacer>
       </item>
      </layout>
-    </widget>
-   </item>
-   <item row="0" column="0" rowspan="6">
-    <widget class="QListWidget" name="docsListWidget">
-     <property name="styleSheet">
-      <string notr="true">QListWidget{
-    border-width: 2px;
-	border-style: inset;
-	border-color: hsv(165, 55, 205);
-}
-
-QListWidget:focus{
-	border-color: hsv(165, 105, 205);
-}</string>
-     </property>
-     <property name="spacing">
-      <number>1</number>
-     </property>
     </widget>
    </item>
   </layout>

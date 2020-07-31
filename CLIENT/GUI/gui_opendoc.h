@@ -18,13 +18,17 @@ private slots:
     void on_openDocsPushButton_clicked();
     void on_getURIPushButton_clicked();
     void on_forgetPushButton_clicked();
-
     void on_exportPDFPushButton_clicked();
+
+    void on_ownedDocsListWidget_itemClicked();
+    void on_sharedDocsListWidget_itemClicked();
 
 private:
     Ui::GUI_Opendoc *ui;
 
     void fillList();
+    QListWidgetItem *getSelectedItem();
+    void removeSelectedItem();
 };
 
 #endif // GUI_OPENDOC_H

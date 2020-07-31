@@ -35,13 +35,16 @@ public:
     static void openKnownDocument(int documentId);                                  // FILE
     static void forgetKnownDocumentTemporary(connection_to_server *connection, int userId, int documentId);
     static std::shared_ptr<QMap<QString, int>> getKnownDocumentsTemporary(connection_to_server *connection, int userId);
-    static long requestDocDatoUriTemporary(connection_to_server *connection, QString uri);       // FILE
+    //lo userId serve per aggiungere il collegamento tra utente e document, se ancora non era presente nel DB
+    static long requestDocDatoUri(connection_to_server *connection, int userId, QString uri);       // FILE
     static void closeDocument(int userId, int docId);                               // FILE
 
     static QString requestUriTemporary(connection_to_server *connection, int docId);
     static QString requestDocNameTemporary(connection_to_server *connection,int docId);
     //mi serve per l'export PDF da parte del server perchè i document sono ancora tutti chiusi (quindi non è per te Paul, credo)
     static std::shared_ptr<QTextDocument> getDocumentText(int docId);               // ?????
+    //mi serve per ricevere l'id dell'owner del document
+    static int requestDocumentOwner(int docId);
 
     /*EDITOR*/
     //ritorna un set con un vettore di userId
