@@ -294,7 +294,7 @@ QString GUI_ConnectionToServerWrapper::requestDocNameWrapper(GIMPdocs *gimpdocs,
 int GUI_ConnectionToServerWrapper::closeDocumentWrapper(GIMPdocs *gimpdocs, int userId, int docId){
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
-        Stub::closeDocument(userId, docId);
+        Stub::closeDocument(gimpdocs->getConnection(), userId, docId);
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);

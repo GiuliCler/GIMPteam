@@ -40,11 +40,12 @@ void GUI_Newdoc::on_createPushButton_clicked()
         QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"Name\"");
         return;
     }
-    int documentId = GUI_ConnectionToServerWrapper::requestCreateDocumentWrapper(gimpParent, static_cast<GIMPdocs*>(gimpParent)->userid, ui->nameLineEdit->text());
+    QString docName = ui->nameLineEdit->text();
+    int documentId = GUI_ConnectionToServerWrapper::requestCreateDocumentWrapper(gimpParent, static_cast<GIMPdocs*>(gimpParent)->userid, docName);
     if(documentId == -1)
         return;
 
-    GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId);
+    GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId, docName);
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
 }
 
@@ -63,6 +64,8 @@ void GUI_Newdoc::on_openURIPushButton_clicked()
     if(documentId  == -1)
         return;
 
-    GUI_Editor *widget = new GUI_Editor(gimpParent, documentId);
+    QString docName = GUI_ConnectionToServerWrapper::requestDocNameWrapper(gimpParent, documentId);
+
+    GUI_Editor *widget = new GUI_Editor(gimpParent, documentId, docName);
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
 }

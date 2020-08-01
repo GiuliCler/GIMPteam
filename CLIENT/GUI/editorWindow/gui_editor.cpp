@@ -13,7 +13,7 @@
 #include <QFileDialog>
 #include <QFileInfo>
 
-GUI_Editor::GUI_Editor(QWidget *parent, int documentId) : QWidget(parent), documentId(documentId)
+GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName) : QWidget(parent), documentId(documentId), docName(docName)
 {
     this->setObjectName(GUI_Editor::getObjectName());
     gimpParent = static_cast<GIMPdocs*>(parent);
@@ -102,7 +102,8 @@ void GUI_Editor::connectMenuBarActions(){
 void GUI_Editor::changeWindowName(){
 
     //modifico il nome della finestra
-    QString documentName = GUI_ConnectionToServerWrapper::requestDocNameWrapper(gimpParent, documentId);
+    //QString documentName = GUI_ConnectionToServerWrapper::requestDocNameWrapper(gimpParent, documentId);
+    QString documentName = docName;                     // todo ila&paolo -- sistemare sto giochino bruttino
     if(documentName.compare("errore") == 0)
         return;
     gimpParent->setWindowTitle("GIMPdocs - " + documentName);

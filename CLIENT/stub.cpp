@@ -131,21 +131,6 @@ long Stub::requestDocDatoUri(connection_to_server *connection, int userId, QStri
     return result;
 }
 
-void Stub::openKnownDocument(int documentId){
-    int n =documentId;
-    documentId = n;
-
-}
-
-void Stub::closeDocument(int userId, int docId){
-    userId = docId;
-    docId = userId;
-
-    //I don't know. Do something
-}
-
-
-
 QString Stub::requestUriTemporary(connection_to_server *connection, int docId){
     QString result = QString::fromStdString(connection->requestUri(docId));
 
@@ -177,7 +162,7 @@ std::shared_ptr<QTextDocument> Stub::getDocumentText(int docId){
 }
 
 int Stub::requestDocumentOwner(int docId){
-    //ovviamente questa return è sbagliata
+    //ovviamente questa return è sbagliata      todo
     return docId;
 }
 
@@ -204,6 +189,16 @@ std::shared_ptr<QSet<int>> Stub::getContributorsUsersOnDocument(int docId){
 }
 
 void Stub::Editor(connection_to_server *connection, int docId){
-    connection->setEditor(docId);
-    return;
+    connection->connectEditor(docId);
+}
+
+void Stub::closeDocument(connection_to_server *connection, int userId, int docId){
+    connection->disconnectEditor(userId, docId);
+}
+
+void Stub::openKnownDocument(int documentId){
+    int n =documentId;
+    documentId = n;
+
+    // todo ... da riempire / rimuovere (?)
 }

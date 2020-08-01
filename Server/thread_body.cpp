@@ -174,7 +174,7 @@ void Thread_body::executeJob(){
         CRDT_Message messaggio;
         *in >> messaggio;
 
-        std::cout << "SEND - "<<messaggio.getAzione()<< std::endl;      // DEBUG
+        std::cout << "if SEND - "<<messaggio.getAzione()<< std::endl;      // DEBUG
 
         // scrivi su crdt del server? MUTEX + chiediti se metterla dopo emit        todo ila&paolo
         emit messageToServer(messaggio, thread_id, current_docId);
@@ -855,12 +855,12 @@ void Thread_body::processMessage(CRDT_Message m, std::thread::id thread_id_sende
     out.setVersion(QDataStream::Qt_5_12);
 
     auto thread_id = std::this_thread::get_id();
-    std::cout << "---- ThreadBody receivedNotifica id: "<<thread_id<<" ---- "<< "; Stringa: "<<m.getAzione()<< std::endl;      // DEBUG
+    std::cout << "---- ThreadBody processMessage id: "<<thread_id<<" ---- "<< "; Stringa: "<<m.getAzione()<< std::endl;      // DEBUG
 
-    //todo ila&paolo ------------------------------------------------------------------------------------
+    //todo ila&paolo -------------------------------------------------------------------------------------------
     // se altro documento o stesso user_id di questo thread => discard (return)
-    if(thread_id == thread_id_sender || docId != current_docId)
-        return;
+    //if(thread_id == thread_id_sender || docId != current_docId)
+    //    return;
     out << m;
 
 

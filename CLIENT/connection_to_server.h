@@ -33,13 +33,13 @@ public:
     std::string requestUri(int docId);
     long requestDocDatoUri(QString uri);
     std::shared_ptr<QMap<QString, int>> getKnownDocuments(int userId);
-    QString getDocumentName(int docId);
     QTcpSocket *getSocket();
     std::string requestDocName(int docId);
     std::shared_ptr<QSet<int>> getWorkingUsersOnDocument(int docId);
     std::string requestDeleteDoc(int userId,int documentId);
     void requestSendMessage(CRDT_Message *messaggio);
-    void setEditor(int docId);
+    void connectEditor(int docId);
+    void disconnectEditor(int userId, int docId);
     void receiveMessage();
 
 private slots:

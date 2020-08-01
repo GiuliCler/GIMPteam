@@ -42,11 +42,11 @@ void GUI_Opendoc::on_openDocsPushButton_clicked(){
         QMessageBox::information(this, "", "Please, select a document");
         return;
     }
-
     int docId = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
+    QString docName = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCNAME).toString();
     Stub::openKnownDocument(docId);
 
-    GUI_Editor *widget = new GUI_Editor(gimpParent, docId);
+    GUI_Editor *widget = new GUI_Editor(gimpParent, docId, docName);
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
 }
 

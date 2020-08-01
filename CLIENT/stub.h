@@ -37,7 +37,7 @@ public:
     static std::shared_ptr<QMap<QString, int>> getKnownDocumentsTemporary(connection_to_server *connection, int userId);
     //lo userId serve per aggiungere il collegamento tra utente e document, se ancora non era presente nel DB
     static long requestDocDatoUri(connection_to_server *connection, int userId, QString uri);       // FILE
-    static void closeDocument(int userId, int docId);                               // FILE
+    static void closeDocument(connection_to_server *connection, int userId, int docId);                               // FILE
 
     static QString requestUriTemporary(connection_to_server *connection, int docId);
     static QString requestDocNameTemporary(connection_to_server *connection,int docId);
