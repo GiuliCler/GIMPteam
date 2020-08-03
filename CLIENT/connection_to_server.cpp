@@ -44,7 +44,7 @@ int connection_to_server::requestTryLogin(QString username, QString password)
     }
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_10);
+    out.setVersion(QDataStream::Qt_5_12);
 
     out << "LOGIN";
     out << username;
@@ -62,7 +62,7 @@ int connection_to_server::requestTryLogin(QString username, QString password)
     QDataStream in;
     int userId;
     in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_4_0);
+    in.setVersion(QDataStream::Qt_5_12);
     do {
         if (!this->tcpSocket->waitForReadyRead(Timeout)) {
             emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -99,7 +99,7 @@ long connection_to_server::requestCreateDocument(int userId, QString name)
     }
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_10);
+    out.setVersion(QDataStream::Qt_5_12);
 
     out << "NEW_DOC";
     out << name;
@@ -115,7 +115,7 @@ long connection_to_server::requestCreateDocument(int userId, QString name)
     int docId;
     QDataStream in;
     in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_4_0);
+    in.setVersion(QDataStream::Qt_5_12);
     do {
         if (!this->tcpSocket->waitForReadyRead(Timeout)) {
             emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -151,7 +151,7 @@ std::string connection_to_server::requestDocName(int docId){
     }
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_10);
+    out.setVersion(QDataStream::Qt_5_12);
 
     out << "GET_DOC_NAME";
     out << docId;
@@ -167,7 +167,7 @@ std::string connection_to_server::requestDocName(int docId){
     QByteArray docName;
     QDataStream in;
     in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_4_0);
+    in.setVersion(QDataStream::Qt_5_12);
 
     do {
         if (!this->tcpSocket->waitForReadyRead(Timeout)) {
@@ -197,7 +197,7 @@ int connection_to_server::requestNewAccount(QString username, QString password, 
     }
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_10);
+    out.setVersion(QDataStream::Qt_5_12);
 
     out << "CREATE";
     out << username;
@@ -217,7 +217,7 @@ int connection_to_server::requestNewAccount(QString username, QString password, 
     int id;
     QDataStream in;
     in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_4_0);
+    in.setVersion(QDataStream::Qt_5_12);
     do {
         if (!this->tcpSocket->waitForReadyRead(Timeout)) {
             emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -251,7 +251,7 @@ long connection_to_server::requestUpdateAccount( int userId, QString password, Q
     }
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_10);
+    out.setVersion(QDataStream::Qt_5_12);
 
     out << "UPDATE";
     out << userId;
@@ -270,7 +270,7 @@ long connection_to_server::requestUpdateAccount( int userId, QString password, Q
     QByteArray file;
     QDataStream in;
     in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_4_0);
+    in.setVersion(QDataStream::Qt_5_12);
     do {
         if (!this->tcpSocket->waitForReadyRead(Timeout)) {
             emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -302,7 +302,7 @@ long connection_to_server::requestDocDatoUri(QString uri){
     }
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_10);
+    out.setVersion(QDataStream::Qt_5_12);
 
     out << "GET_DOCUMENT_DATO_URI";
     out << uri;
@@ -318,7 +318,7 @@ long connection_to_server::requestDocDatoUri(QString uri){
     int file;
     QDataStream in;
     in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_4_0);
+    in.setVersion(QDataStream::Qt_5_12);
     do {
         if (!this->tcpSocket->waitForReadyRead(Timeout)) {
             emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -347,7 +347,7 @@ std::string connection_to_server::requestUri(int docId){
 
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_10);
+    out.setVersion(QDataStream::Qt_5_12);
 
     out << "GET_URI";
     out << docId;
@@ -363,7 +363,7 @@ std::string connection_to_server::requestUri(int docId){
     QString uri;
     QDataStream in;
     in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_4_0);
+    in.setVersion(QDataStream::Qt_5_12);
 
     do {
         if (!this->tcpSocket->waitForReadyRead(Timeout)) {
@@ -409,7 +409,7 @@ std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int 
     }
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_10);
+    out.setVersion(QDataStream::Qt_5_12);
 
     out << "GET_DOCS";
     out << userId;
@@ -426,7 +426,7 @@ std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int 
     QVector<QString> vet;
     QDataStream in;
     in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_4_0);
+    in.setVersion(QDataStream::Qt_5_12);
 
     do {
         if (!this->tcpSocket->waitForReadyRead(Timeout)) {
@@ -483,7 +483,7 @@ std::string connection_to_server::requestGetNickname(int userId){
     }
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_10);
+    out.setVersion(QDataStream::Qt_5_12);
 
     out << "GET_NICKNAME";
     out << userId;
@@ -499,7 +499,7 @@ std::string connection_to_server::requestGetNickname(int userId){
     QByteArray nickname;
     QDataStream in;
     in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_4_0);
+    in.setVersion(QDataStream::Qt_5_12);
 
     do {
         if (!this->tcpSocket->waitForReadyRead(Timeout)) {
@@ -529,7 +529,7 @@ std::string connection_to_server::requestIconId(int userId){
     }
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_10);
+    out.setVersion(QDataStream::Qt_5_12);
 
     out << "GET_ICON";
     out << userId;
@@ -545,7 +545,7 @@ std::string connection_to_server::requestIconId(int userId){
     QByteArray iconId;
     QDataStream in;
     in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_4_0);
+    in.setVersion(QDataStream::Qt_5_12);
 
    do {
         if (!this->tcpSocket->waitForReadyRead(Timeout)) {
@@ -577,7 +577,7 @@ std::string connection_to_server::requestGetUsername(int userId){
     }
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_10);
+    out.setVersion(QDataStream::Qt_5_12);
 
     out << "GET_USERNAME";
     out << userId;
@@ -593,7 +593,7 @@ std::string connection_to_server::requestGetUsername(int userId){
     QByteArray username;
     QDataStream in;
     in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_4_0);
+    in.setVersion(QDataStream::Qt_5_12);
     do {
         if (!this->tcpSocket->waitForReadyRead(Timeout)) {
             emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -622,7 +622,7 @@ std::string connection_to_server::requestDeleteDoc(int userId,int documentId){
     }
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_10);
+    out.setVersion(QDataStream::Qt_5_12);
 
     out << "DELETE_DOC";
     out << userId;
@@ -639,7 +639,7 @@ std::string connection_to_server::requestDeleteDoc(int userId,int documentId){
     QByteArray file;
     QDataStream in;
     in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_4_0);
+    in.setVersion(QDataStream::Qt_5_12);
     do {
         if (!this->tcpSocket->waitForReadyRead(Timeout)) {
             emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -676,7 +676,7 @@ std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int d
 
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_10);
+    out.setVersion(QDataStream::Qt_5_12);
 
     out << "GET_WORKINGUSERS_ONADOC";
     out << docId;
@@ -690,7 +690,7 @@ std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int d
 
     QDataStream in;
     in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_4_0);
+    in.setVersion(QDataStream::Qt_5_12);
 
     int num, id;
 
@@ -762,7 +762,7 @@ void connection_to_server::requestSendMessage(CRDT_Message *messaggio){
 
         QByteArray buffer;
         QDataStream out(&buffer, QIODevice::WriteOnly);
-        out.setVersion(QDataStream::Qt_5_10);
+        out.setVersion(QDataStream::Qt_5_12);
 
         out << "SEND";
         out << *messaggio;
@@ -805,33 +805,4 @@ void connection_to_server::receiveMessage(){
     in >> m;
 
     std::cout << "SLOT CLIENT receiveMessage - "<<m.getAzione()<< std::endl;      // DEBUG
-
-
-
-
-    //PROVA DI DEBUG DI GIULIA
-    /*
-    qDebug() << "hereeee";
-
-   //viene mandato un messaggio dal server
-    CRDT_Symbol s = *new CRDT_Symbol();
-    CRDT_Message messaggio = *new CRDT_Message("",s,0);
-    QDataStream* myin;
-
-    // Ridefinisco in e out relativi alla connessione corrente
-    myin = new QDataStream(this->tcpSocket);
-    myin->setVersion(QDataStream::Qt_5_12);
-    myin->startTransaction();
-    QByteArray text;
-
-    // Prendo la stringa di comando
-    *myin >> text;
-
-    QString c = "SEND_FROM_SERVER";
-    if(text.contains(c.toUtf8())){
-        *myin >> messaggio;
-    }else{
-        return;
-    }
-    */
 }

@@ -162,7 +162,7 @@ std::shared_ptr<QTextDocument> Stub::getDocumentText(int docId){
 }
 
 int Stub::requestDocumentOwner(int docId){
-    //ovviamente questa return è sbagliata      todo
+    //ovviamente questa return è sbagliata      todo ila
     return docId;
 }
 

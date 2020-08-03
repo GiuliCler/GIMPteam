@@ -869,18 +869,4 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
     //    return;
     out << m;
     socket->write(blocko);
-
-
-
-    //PROVA DI DEBUG DI GIULIA: provo a mandare qui dei messaggi al client in modo randomico
-    /*
-    out << "SEND_FROM_SERVER";
-    out << m;
-    socket->write(blocko);
-    CRDT_Symbol s2 = *new CRDT_Symbol();
-    CRDT_Message m2 = *new CRDT_Message("Ciao!!", s2, 1);
-    out << "SEND_SERVER";
-    out << m2;
-    socket->write(blocko);
-    */
 }
