@@ -43,7 +43,8 @@ private:
     void getOwnerId(int docId);
     void getDocName(int docId);
     void deleteDoc(int userId, int docId);
-    int openDoc(QString docName, QString username, int docId, int userId);
+    void openDocument(int docId, int userId);
+    int openDoc(QString docName, QString username, int docId, int userId, int new_doc);
     void getWorkingUsersGivenDoc(int docId);
     int addToWorkingUsers(int docId, int userId, int open_new);
     void removeFromWorkingUsers(int docId, int userId);

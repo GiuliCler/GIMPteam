@@ -173,8 +173,8 @@ void Thread_body::executeJob(){
         int docId, userId;
         *in >> docId;
         *in >> userId;
-        //COMPLETARE
-        //openDoc(docId, userId);
+
+        openDocument(docId, userId);
     }
 
     c = "SEND";
@@ -302,7 +302,7 @@ void Thread_body::newDoc(QString docName, int userId){
             mutex_db->unlock();
             // Associazione username - nome_doc nella tabella utente_doc del DB
             mutex_db->lock();
-            int id = openDoc(docName, username, -1, userId);
+            int id = openDoc(docName, username, -1, userId, 0);
             if(id == -1){
                 mutex_db->unlock();
                 out << "errore";
@@ -338,7 +338,7 @@ void Thread_body::newDoc(QString docName, int userId){
 
 //viene passato anche il docId, nel caso possa servire per cose future. Si noti che nel caso di NewDoc
 //è -1!!!
-int Thread_body::openDoc(QString docName, QString username, int docId, int userId){
+int Thread_body::openDoc(QString docName, QString username, int docId, int userId, int new_doc){
     mutex_docs->lock();
     int id = documents.size();
     id++;
@@ -348,7 +348,7 @@ int Thread_body::openDoc(QString docName, QString username, int docId, int userI
     // todo ila&paolo ------------------------------------------------------------------------------------------------------------------------------
 
     // Aggiungo la riga (docId, [userId]) alla mappa degli workingUsers
-    int esito = addToWorkingUsers(id, userId, 0);
+    int esito = addToWorkingUsers(id, userId, new_doc);
     if(esito == 0){
         return -1;
     }
@@ -697,7 +697,7 @@ int Thread_body::associateDoc(int docId, int userId){
     if(!username.isEmpty() && QDir(path+username).exists()){
         mutex_db->lock();
         if(database->aggiungiPartecipante(docName,username,0,0)!=2){ //TODO ILA SISTEMARE GLI ID
-            int id = openDoc(docName, username, docId, userId);
+            int id = openDoc(docName, username, docId, userId, 1);
             mutex_db->unlock();
             if(id == -1){
                 return 0;
@@ -948,6 +948,45 @@ void Thread_body::getWorkingUsersGivenDoc(int docId){
 
     mutex_workingUsers->unlock();
 
+}
+
+void Thread_body::openDocument(int docId, int userId){
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
+    //cerco il nome del doc e dello user
+    mutex_users->lock();
+    QString username;
+    QMapIterator<QString, int> i(users);
+    while (i.hasNext()) {
+        i.next();
+        if(i.value()==userId){
+            username=i.key();
+            break;
+        }
+    }
+    mutex_users->unlock();
+
+    mutex_docs->lock();
+    QString docName;
+    QMapIterator<QString, int> j(documents);
+    while (j.hasNext()) {
+        j.next();
+        if(j.value()==docId){
+            docName=j.key();
+            break;
+        }
+    }
+    mutex_docs->unlock();
+
+    if(openDoc(docName, username, docId, userId, 1) == -1){
+        out << "errore";
+        socket->write(blocko);
+    }else{
+        out << "ok";
+        socket->write(blocko);
+    }
 }
 
 void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int docId){

@@ -197,9 +197,12 @@ void Stub::closeDocument(connection_to_server *connection, int userId, int docId
     connection->disconnectEditor(userId, docId);
 }
 
-void Stub::openKnownDocument(int documentId){
-    int n =documentId;
-    documentId = n;
+QString Stub::openKnownDocument(connection_to_server *connection, int userId, int documentId){
+    QString name = QString::fromStdString(connection->openDoc(userId, documentId));
 
-    // todo ... da riempire / rimuovere (?)
+    if(name.compare("errore") == 0)
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
+
+    return name;
 }

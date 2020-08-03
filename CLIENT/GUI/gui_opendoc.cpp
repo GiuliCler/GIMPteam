@@ -44,7 +44,9 @@ void GUI_Opendoc::on_openDocsPushButton_clicked(){
     }
     int docId = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
     QString docName = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCNAME).toString();
-    Stub::openKnownDocument(docId);
+    QString name = GUI_ConnectionToServerWrapper::requestOpenDocWrapper(gimpParent, gimpParent->userid, docId);
+    if(name.compare("errore") == 0)
+        return;
 
     GUI_Editor *widget = new GUI_Editor(gimpParent, docId, docName);
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);

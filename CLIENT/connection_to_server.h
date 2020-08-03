@@ -38,6 +38,7 @@ public:
     std::shared_ptr<QSet<int>> getWorkingUsersOnDocument(int docId);
     std::string requestDeleteDoc(int userId,int documentId);
     int getDocumentOwner(int docId);
+    std::string openDoc(int userId, int docId);
     void requestSendMessage(CRDT_Message *messaggio);
     void connectEditor(int docId);
     void disconnectEditor(int userId, int docId);
