@@ -800,7 +800,7 @@ void connection_to_server::receiveMessage(){
     CRDT_Message m;
     QDataStream in;
     in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_4_0);
+    in.setVersion(QDataStream::Qt_5_12);
 
     in >> m;
 

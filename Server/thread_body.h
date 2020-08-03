@@ -47,11 +47,11 @@ private:
     int removeFromWorkingUsers(int docId, int userId);      // da implementare e da usare
 signals:
     void error(QTcpSocket::SocketError socketError);
-    void messageToServer(CRDT_Message m, std::thread::id thread_id_sender, int docId);
+    void messageToServer(CRDT_Message m, QString thread_id_sender, int docId);
 
 public slots:
     void executeJob();
-    void processMessage(CRDT_Message m, std::thread::id thread_id_sender, int docId);
+    void processMessage(CRDT_Message m, QString thread_id_sender, int docId);
 
 };
 

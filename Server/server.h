@@ -25,7 +25,7 @@ protected:
 
 signals:
     void error(QTcpSocket::SocketError socketError);
-    void dispatchMessage(CRDT_Message m, std::thread::id thread_id_sender, int docId);
+    void dispatchMessage(CRDT_Message m, QString thread_id_sender, int docId);
 
 public slots:
     void runServer();

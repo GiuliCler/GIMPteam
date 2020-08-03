@@ -177,7 +177,10 @@ void Thread_body::executeJob(){
         std::cout << "if SEND - "<<messaggio.getAzione()<< std::endl;      // DEBUG
 
         // scrivi su crdt del server? MUTEX + chiediti se metterla dopo emit        todo ila&paolo
-        emit messageToServer(messaggio, thread_id, current_docId);
+        std::stringstream ss;
+        ss << thread_id;
+        std::string thread_id_string = ss.str();
+        emit messageToServer(messaggio, QString::fromStdString(thread_id_string), current_docId);
     }
 
     c = "DISCONNECT_FROM_DOC";
@@ -848,7 +851,7 @@ void Thread_body::getWorkingUsersGivenDoc(int docId){
 
 }
 
-void Thread_body::processMessage(CRDT_Message m, std::thread::id thread_id_sender, int docId){
+void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int docId){
 
     QByteArray blocko;
     QDataStream out(&blocko, QIODevice::WriteOnly);
@@ -856,13 +859,16 @@ void Thread_body::processMessage(CRDT_Message m, std::thread::id thread_id_sende
 
     auto thread_id = std::this_thread::get_id();
     std::cout << "---- ThreadBody processMessage id: "<<thread_id<<" ---- "<< "; Stringa: "<<m.getAzione()<< std::endl;      // DEBUG
+    std::stringstream ss;
+    ss << thread_id;
+    std::string thread_id_string = ss.str();
 
     //todo ila&paolo -------------------------------------------------------------------------------------------
     // se altro documento o stesso user_id di questo thread => discard (return)
-    //if(thread_id == thread_id_sender || docId != current_docId)
+    //if(QString::fromStdString(thread_id_string) == thread_id_sender || docId != current_docId)
     //    return;
     out << m;
-
+    socket->write(blocko);
 
 
 
@@ -878,17 +884,3 @@ void Thread_body::processMessage(CRDT_Message m, std::thread::id thread_id_sende
     socket->write(blocko);
     */
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
