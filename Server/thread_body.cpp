@@ -173,8 +173,8 @@ void Thread_body::executeJob(){
         int docId, userId;
         *in >> docId;
         *in >> userId;
-
-        openDoc(docId, userId);
+        //COMPLETARE
+        //openDoc(docId, userId);
     }
 
     c = "SEND";
@@ -300,61 +300,24 @@ void Thread_body::newDoc(QString docName, int userId){
         mutex_db->lock();
         if(database->creaDoc(username+"_"+docName)){
             mutex_db->unlock();
-
-            // Documento creato e correttamente inserito nel DB
-            // Associazione nome_doc - docId nella QMap
-            mutex_docs->lock();
-            int id = documents.size();
-            id++;
-            documents.insert(username + "_" + docName, id);
-            mutex_docs->unlock();
-
-            // todo ila&paolo ------------------------------------------------------------------------------------------------------------------------------
-
-            // Aggiungo la riga (docId, [userId]) alla mappa degli workingUsers
-            int esito = addToWorkingUsers(id, userId, 0);
-            if(esito == 0){
-                out << "errore";
-                socket->write(blocko);
-                return;
-            }
-
-            // Aggiorno il docId su cui sto iniziando a lavorare
-            current_docId = id;
-
-            // ?????????????????????????????????????????????????????????????????????????????
-            // Creazione del file
-            QString filename = docName;
-
-            // DUBBIO SULL'ESTENSIONE DEL FILE!! Al momento li faccio txt
-            QFile file(path+username+"/"+filename+".txt");
-            if (file.open(QIODevice::WriteOnly | QIODevice::Text)){
-                //riesce ad aprire il file creato
-                QTextStream out_file(&file);
-                // ATTENZIONE: per scrivere sul file:
-                // out_file << "The magic number is: " << 49 << "\n";       // DEBUG
-
-                // *******************************************************
-                // todo ila&paolo: gestione CRDT
-                // *******************************************************
-
-
-            }
-            // ?????????????????????????????????????????????????????????????????????????????
-
-            // todo ila: sistemare la aggiungiPartecipante (site_id e site_counter) ------------------------------------------------------------------
-
             // Associazione username - nome_doc nella tabella utente_doc del DB
             mutex_db->lock();
-            if(database->aggiungiPartecipante(username+"_"+docName, username, 0, 0) != 2){
-                mutex_db->unlock();
-                out << "ok";
-                out << id;
-                socket->write(blocko);
-            }else{
+            int id = openDoc(docName, username, -1, userId);
+            if(id == -1){
                 mutex_db->unlock();
                 out << "errore";
                 socket->write(blocko);
+            }else{
+                if(database->aggiungiPartecipante(username+"_"+docName, username, 0, 0) != 2){
+                    mutex_db->unlock();
+                    out << "ok";
+                    out << id;
+                    socket->write(blocko);
+                }else{
+                    mutex_db->unlock();
+                    out << "errore";
+                    socket->write(blocko);
+                }
             }
         }else{
            mutex_db->unlock();
@@ -373,26 +336,50 @@ void Thread_body::newDoc(QString docName, int userId){
     }
 }
 
+//viene passato anche il docId, nel caso possa servire per cose future. Si noti che nel caso di NewDoc
+//è -1!!!
+int Thread_body::openDoc(QString docName, QString username, int docId, int userId){
+    mutex_docs->lock();
+    int id = documents.size();
+    id++;
+    documents.insert(username + "_" + docName, id);
+    mutex_docs->unlock();
 
-void Thread_body::openDoc(int docId, int userId){
-    QByteArray blocko;
-    QDataStream out(&blocko, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_12);
+    // todo ila&paolo ------------------------------------------------------------------------------------------------------------------------------
 
-    // todo ila&paolo -----------------------------------------------------------------------------------------------------------------------------
-
-    // Aggiorno la riga (docId, [userId, ...]) nella mappa degli workingUsers
-    int esito = addToWorkingUsers(docId, userId, 1);
+    // Aggiungo la riga (docId, [userId]) alla mappa degli workingUsers
+    int esito = addToWorkingUsers(id, userId, 0);
     if(esito == 0){
-        out << "errore";
-        socket->write(blocko);
-        return;
+        return -1;
     }
 
     // Aggiorno il docId su cui sto iniziando a lavorare
-    current_docId = docId;
+    current_docId = id;
+
+    // ?????????????????????????????????????????????????????????????????????????????
+    // Creazione del file
+    QString filename = docName;
+
+    // DUBBIO SULL'ESTENSIONE DEL FILE!! Al momento li faccio txt
+    QFile file(path+username+"/"+filename+".txt");
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)){
+        //riesce ad aprire il file creato
+        QTextStream out_file(&file);
+        // ATTENZIONE: per scrivere sul file:
+        // out_file << "The magic number is: " << 49 << "\n";       // DEBUG
+
+        // *******************************************************
+        // todo ila&paolo: gestione CRDT
+        // *******************************************************
+
+
+    }
+    // ?????????????????????????????????????????????????????????????????????????????
+
+    // todo ila: sistemare la aggiungiPartecipante (site_id e site_counter) ------------------------------------------------------------------
 
     // cose extra (che per ora ancora non so) da fare quando si apre il doc      todo ila&paolo
+    return id;
 }
 
 
@@ -709,42 +696,17 @@ int Thread_body::associateDoc(int docId, int userId){
 
     if(!username.isEmpty() && QDir(path+username).exists()){
         mutex_db->lock();
-        if(database->aggiungiPartecipante(docName,username,0,0)!=2) //TODO ILA SISTEMARE GLI ID
+        if(database->aggiungiPartecipante(docName,username,0,0)!=2){ //TODO ILA SISTEMARE GLI ID
+            int id = openDoc(docName, username, docId, userId);
             mutex_db->unlock();
-            // Aggiungo la riga (docId, [userId]) alla mappa degli workingUsers
-            int esito = addToWorkingUsers(docId, userId, 0);
-            if(esito == 0){
+            if(id == -1){
                 return 0;
+            }else{
+                return 1;
             }
-
-            // Aggiorno il docId su cui sto iniziando a lavorare
-            current_docId = docId;
-
-            // ?????????????????????????????????????????????????????????????????????????????
-            // Creazione del file
-            QString filename = docName;
-
-            // DUBBIO SULL'ESTENSIONE DEL FILE!! Al momento li faccio txt
-            QFile file(path+username+"/"+filename+".txt");
-            if (file.open(QIODevice::WriteOnly | QIODevice::Text)){
-                //riesce ad aprire il file creato
-                QTextStream out_file(&file);
-                // ATTENZIONE: per scrivere sul file:
-                // out_file << "The magic number is: " << 49 << "\n";       // DEBUG
-
-                // *******************************************************
-                // todo ila&paolo: gestione CRDT
-                // *******************************************************
-
-
-            }
-            // ?????????????????????????????????????????????????????????????????????????????
-
-            // todo ila: sistemare la aggiungiPartecipante (site_id e site_counter) ------------------------------------------------------------------
-        }else{
-          return 0;
         }
-    return 1;
+    }
+    return 0;
 }
 
 void Thread_body::getUri(int docId){
