@@ -122,7 +122,7 @@ long Stub::requestDocDatoUri(connection_to_server *connection, int userId, QStri
     int n = userId;
     userId = n;
 
-    long result = connection->requestDocDatoUri(uri);
+    long result = connection->requestDocDatoUri(uri, userId);
 
     if(result < 0)
         //throw GUI_ConnectionException();

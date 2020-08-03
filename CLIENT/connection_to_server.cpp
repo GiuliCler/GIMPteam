@@ -288,7 +288,7 @@ long connection_to_server::requestUpdateAccount( int userId, QString password, Q
     }
 }
 
-long connection_to_server::requestDocDatoUri(QString uri){
+long connection_to_server::requestDocDatoUri(QString uri, int userId){
     qDebug()<<"GET_DOCUMENT_DATO_URI";      // DEBUG
 
 //    this->tcpSocket->abort();
@@ -306,6 +306,7 @@ long connection_to_server::requestDocDatoUri(QString uri){
 
     out << "GET_DOCUMENT_DATO_URI";
     out << uri;
+    out << userId;
 
     this->tcpSocket->write(buffer);
 

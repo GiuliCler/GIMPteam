@@ -128,9 +128,10 @@ void Thread_body::executeJob(){
     c = "GET_DOCUMENT_DATO_URI";
     if(text.contains(c.toUtf8())){
         QString uri;
+        int userId;
         *in >> uri;
-
-        getDocumentDatoUri(uri);
+        *in >> userId;
+        getDocumentDatoUri(uri, userId);
     }
 
     c = "GET_URI";
@@ -651,7 +652,7 @@ void Thread_body::getDocs(int userId){
 }
 
 
-void Thread_body::getDocumentDatoUri(QString uri){
+void Thread_body::getDocumentDatoUri(QString uri, int userId){
     QByteArray blocko;
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
@@ -667,12 +668,83 @@ void Thread_body::getDocumentDatoUri(QString uri){
         mutex_docs->lock();
         int docId = documents.value(doc);
         mutex_docs->unlock();
-        out << docId;
-        socket->write(blocko);
+        //creo sul db l'associazione documento-utente (non owner)
+        if(associateDoc(docId, userId)){
+            out << docId;
+            socket->write(blocko);
+        }else{
+            out << -1;
+            socket->write(blocko);
+        }
     }else{
         out << -1;
         socket->write(blocko);
     }
+}
+int Thread_body::associateDoc(int docId, int userId){
+    //cerco il nome del doc e dello user
+    mutex_users->lock();
+    QString username;
+    QMapIterator<QString, int> i(users);
+    while (i.hasNext()) {
+        i.next();
+        if(i.value()==userId){
+            username=i.key();
+            break;
+        }
+    }
+    mutex_users->unlock();
+
+    mutex_docs->lock();
+    QString docName;
+    QMapIterator<QString, int> j(documents);
+    while (j.hasNext()) {
+        j.next();
+        if(j.value()==docId){
+            docName=j.key();
+            break;
+        }
+    }
+    mutex_docs->unlock();
+
+    if(!username.isEmpty() && QDir(path+username).exists()){
+        mutex_db->lock();
+        if(database->aggiungiPartecipante(docName,username,0,0)!=2) //TODO ILA SISTEMARE GLI ID
+            mutex_db->unlock();
+            // Aggiungo la riga (docId, [userId]) alla mappa degli workingUsers
+            int esito = addToWorkingUsers(docId, userId, 0);
+            if(esito == 0){
+                return 0;
+            }
+
+            // Aggiorno il docId su cui sto iniziando a lavorare
+            current_docId = docId;
+
+            // ?????????????????????????????????????????????????????????????????????????????
+            // Creazione del file
+            QString filename = docName;
+
+            // DUBBIO SULL'ESTENSIONE DEL FILE!! Al momento li faccio txt
+            QFile file(path+username+"/"+filename+".txt");
+            if (file.open(QIODevice::WriteOnly | QIODevice::Text)){
+                //riesce ad aprire il file creato
+                QTextStream out_file(&file);
+                // ATTENZIONE: per scrivere sul file:
+                // out_file << "The magic number is: " << 49 << "\n";       // DEBUG
+
+                // *******************************************************
+                // todo ila&paolo: gestione CRDT
+                // *******************************************************
+
+
+            }
+            // ?????????????????????????????????????????????????????????????????????????????
+
+            // todo ila: sistemare la aggiungiPartecipante (site_id e site_counter) ------------------------------------------------------------------
+        }else{
+          return 0;
+        }
+    return 1;
 }
 
 void Thread_body::getUri(int docId){

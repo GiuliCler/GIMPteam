@@ -31,7 +31,7 @@ public:
     std::string requestGetUsername(int userId);
     std::string requestIconId(int userId);
     std::string requestUri(int docId);
-    long requestDocDatoUri(QString uri);
+    long requestDocDatoUri(QString uri, int userId);
     std::shared_ptr<QMap<QString, int>> getKnownDocuments(int userId);
     QTcpSocket *getSocket();
     std::string requestDocName(int docId);

@@ -46,7 +46,7 @@ Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDesc
     mutex_db->unlock();
 
     // Riempimento della QMap degli utenti con gli elementi presenti sul DB
-    int cont = 0;
+    int cont = 1;
     mutex_db->lock();
     std::vector<QString> utenti = database->recuperaUtentiNelDB();
     mutex_db->unlock();
@@ -60,7 +60,7 @@ Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDesc
     mutex_users->unlock();
 
     // Riempimento della QMap dei documenti con gli elementi presenti sul DB
-    cont = 0;
+    cont = 1;
     mutex_db->lock();
     std::vector<QString> documenti = database->recuperaDocsNelDB();
     mutex_db->unlock();
