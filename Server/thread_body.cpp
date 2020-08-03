@@ -235,7 +235,10 @@ int Thread_body::addToWorkingUsers(int docId, int userId, int open_new){
             workingUsers[docId].append(userId);
         } else {
             // non c'è alcuna chiave in workingUsers corrispondente al docId
-            esito = 0;
+            // creo nuova riga in workingUsers, perchè l'utente attuale richiede l'apertura del documento
+            QVector<int> value;
+            value.append(userId);
+            workingUsers.insert(docId, value);
         }
 
     } else {
@@ -348,7 +351,7 @@ int Thread_body::openDoc(QString docName, QString username, int docId, int userI
     // todo ila&paolo ------------------------------------------------------------------------------------------------------------------------------
 
     // Aggiungo la riga (docId, [userId]) alla mappa degli workingUsers
-    int esito = addToWorkingUsers(id, userId, new_doc);
+    int esito = addToWorkingUsers(docId, userId, new_doc);
     if(esito == 0){
         return -1;
     }
@@ -426,7 +429,6 @@ void Thread_body::login(QString username, QString password){
     std::vector<QString> v = database->login(username, password);
     mutex_db->unlock();
     if(v.size()==2){
-        //GESTIRE                           <---------- GIULIA?!?!? ----------------------------------------------
         mutex_users->lock();
         int id = users[username];
         if(id == 0){
