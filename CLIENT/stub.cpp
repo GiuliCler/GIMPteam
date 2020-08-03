@@ -161,9 +161,10 @@ std::shared_ptr<QTextDocument> Stub::getDocumentText(int docId){
     return docpointer;
 }
 
-int Stub::requestDocumentOwner(int docId){
-    //ovviamente questa return è sbagliata      todo ila
-    return docId;
+int Stub::requestDocumentOwner(connection_to_server *connection, int docId){
+    int userId = connection->getDocumentOwner(docId);
+    // NOTA: ritorna userId = -1 in caso di errore
+    return userId;
 }
 
 

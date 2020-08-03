@@ -39,6 +39,7 @@ private:
     void newDoc(QString docName, int userId);
     void getDocumentDatoUri(QString uri);
     void getUri(int docId);
+    void getOwnerId(int docId);
     void getDocName(int docId);
     void deleteDoc(int userId, int docId);
     void openDoc(int docId, int userId);

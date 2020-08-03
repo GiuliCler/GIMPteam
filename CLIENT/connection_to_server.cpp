@@ -657,6 +657,52 @@ std::string connection_to_server::requestDeleteDoc(int userId,int documentId){
     }
 }
 
+int connection_to_server::getDocumentOwner(int docId){
+
+    qDebug()<<"GET_DOC_OWNER";      // DEBUG
+
+//    this->tcpSocket->abort();
+    if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+
+        if (!tcpSocket->waitForConnected(Timeout)) {
+            emit error(tcpSocket->error(), tcpSocket->errorString());
+            return -1;
+        }
+    }
+    QByteArray buffer;
+    QDataStream out(&buffer, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
+    out << "GET_DOC_OWNER";
+    out << docId;
+
+    this->tcpSocket->write(buffer);
+
+    if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        return -1;
+    }
+
+    int ownerId;
+    QDataStream in;
+    in.setDevice(this->tcpSocket);
+    in.setVersion(QDataStream::Qt_5_12);
+
+    do {
+        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
+            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+            return -1;
+        }
+
+        in.startTransaction();
+        in >> ownerId;
+    } while (!in.commitTransaction());
+
+    return ownerId;
+}
+
+
 std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int docId){
 
     qDebug()<<"GET_WORKINGUSERS_ONADOC";      // DEBUG

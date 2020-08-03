@@ -141,6 +141,14 @@ void Thread_body::executeJob(){
         getUri(docId);
     }
 
+    c = "GET_DOC_OWNER";
+    if(text.contains(c.toUtf8())){
+        int docId;
+        *in >> docId;
+
+        getOwnerId(docId);
+    }
+
     c = "GET_WORKINGUSERS_ONADOC";
     if(text.contains(c.toUtf8())){
         int docId;
@@ -679,6 +687,45 @@ void Thread_body::getUri(int docId){
         socket->write(blocko);
     }
 }
+
+
+void Thread_body::getOwnerId(int docId){
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
+    QString docName;
+    QString ownerName;
+    int ownerId;
+
+    // Recupero il docName, dato il docId
+    mutex_docs->lock();
+    QMapIterator<QString, int> i(documents);
+    while (i.hasNext()) {
+        i.next();
+        if(i.value()==docId){
+            docName=i.key();
+            break;
+        }
+    }
+    mutex_docs->unlock();
+    if(!docName.isEmpty()){
+        // Faccio la split del docName e recupero ownerName (at(0))
+        ownerName = docName.split("_").at(0);
+
+        // Recupero il ownerId, dato il ownerName
+        mutex_users->lock();
+        ownerId = users.value(ownerName);
+        mutex_users->unlock();
+
+        out << ownerId;
+        socket->write(blocko);
+    }else{
+        out << -1;
+        socket->write(blocko);
+    }
+}
+
 
 //l'eliminazione di un documento deve avvertire il possessore del documento che anche tutti i collaboratori
 //non potranno più accedervi (messaggio di notifica). L'eliminazione del documento da parte dei collaboratori elimina
