@@ -194,14 +194,13 @@ void Thread_body::executeJob(){
     c = "DISCONNECT_FROM_DOC";
     if(text.contains(c.toUtf8())){
 
-        // todo ila&paolo ------------------------------------------------------------------------------------------------------------------------------
+        int docId, userId;
+        *in >> docId;
+        *in >> userId;
 
-        // disconnect: rimuovo riga all'interno di workingUsers
-
-        // break;
+        removeFromWorkingUsers(docId, userId);
     }
 
-//        break;      // todo ila : da rimuovere -------------------------------------------------------------------------------------------------------
 //    socket->disconnectFromHost();
 //    socket->waitForDisconnected(3000);
 
@@ -249,13 +248,32 @@ int Thread_body::addToWorkingUsers(int docId, int userId, int open_new){
 }
 
 
-int Thread_body::removeFromWorkingUsers(int docId, int userId){
-    int i = docId;      // schifo per togliermi i warning
-    docId = i;
-    i = userId;
-    userId = i;
-    return 1;
-    // todo ila&paolo --------------------------------------------------------------------------------------
+void Thread_body::removeFromWorkingUsers(int docId, int userId){
+
+    mutex_workingUsers->lock();
+
+    if(workingUsers.contains(docId)){
+        // chiave docId presente in workingUsers
+
+        // Recupero il vettore di userId associato al docId
+        // Conto quanti elementi ha il vettore (se count > 1 => rimuovo lo userId dal vettore e basta)
+        // Altrimenti (se count == 1), devo eliminare riga)
+        int count = workingUsers[docId].size();
+        if(count > 1){
+            for(auto i = workingUsers[docId].begin(); i < workingUsers[docId].end(); i++){
+                if((*i) == userId){
+                    workingUsers[docId].erase(i);
+                }
+            }
+        } else if(count == 1){
+            workingUsers.remove(docId);
+        }
+    } else {
+        // non c'è alcuna chiave in workingUsers corrispondente al docId
+        qDebug() << "Oh no, il docId non è presente nella workingUsers... Qualcosa non va...";
+    }
+
+    mutex_workingUsers->unlock();
 }
 
 

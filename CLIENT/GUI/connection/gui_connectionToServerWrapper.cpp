@@ -338,7 +338,7 @@ int GUI_ConnectionToServerWrapper::requestDocumentOwnerWrapper(GIMPdocs *gimpdoc
 
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
-        returnValue = Stub::requestDocumentOwner(docId);
+        returnValue = Stub::requestDocumentOwner(gimpdocs->getConnection(), docId);
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
