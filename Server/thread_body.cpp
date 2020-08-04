@@ -260,24 +260,32 @@ void Thread_body::removeFromWorkingUsers(int docId, int userId){
         // chiave docId presente in workingUsers
 
         // Recupero il vettore di userId associato al docId
-        // Conto quanti elementi ha il vettore (se count > 1 => rimuovo lo userId dal vettore e basta)
+        // Conto quanti elementi ha il vettore (se count > 1 => rimuovo lo userId dal vettore
         // Altrimenti (se count == 1), devo eliminare riga)
         int count = workingUsers[docId].size();
         if(count > 1){
-            for(auto i = workingUsers[docId].begin(); i < workingUsers[docId].end(); i++){
+            // In tal caso devo comunicare anche agli altri utenti che mi sono sconnesso.
+            CRDT_Symbol s = *new CRDT_Symbol();
+            for(auto i = workingUsers[docId].begin(); i <= workingUsers[docId].end(); i++){
                 if((*i) == userId){
                     workingUsers[docId].erase(i);
+                    CRDT_Message *m = new CRDT_Message("OFFLINEUSER_"+std::to_string(*i), s, userId);
+                    auto thread_id = std::this_thread::get_id();
+                    std::stringstream ss;
+                    ss << thread_id;
+                    std::string thread_id_string = ss.str();
+                    mutex_workingUsers->unlock();
+                    emit messageToServer(*m, QString::fromStdString(thread_id_string), docId);
                 }
             }
         } else if(count == 1){
             workingUsers.remove(docId);
+            mutex_workingUsers->unlock();
         }
     } else {
         // non c'è alcuna chiave in workingUsers corrispondente al docId
         qDebug() << "Oh no, il docId non è presente nella workingUsers... Qualcosa non va...";
     }
-
-    mutex_workingUsers->unlock();
 }
 
 
@@ -992,11 +1000,9 @@ void Thread_body::openDocument(int docId, int userId){
 }
 
 void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int docId){
-
-    QByteArray blocko;
-    QDataStream out(&blocko, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_12);
-
+    qDebug() << "THREAD ID SENDER: "+thread_id_sender;
+    QString docidForDebug =  "CURRENTDOCID: "+QString::number(current_docId);
+    qDebug() << docidForDebug;
     auto thread_id = std::this_thread::get_id();
     std::cout << "---- ThreadBody processMessage id: "<<thread_id<<" ---- "<< "; Stringa: "<<m.getAzione()<< std::endl;      // DEBUG
     std::stringstream ss;
@@ -1004,9 +1010,22 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
     std::string thread_id_string = ss.str();
 
     //todo ila&paolo -------------------------------------------------------------------------------------------
-    // se altro documento o stesso user_id di questo thread => discard (return)
-    //if(QString::fromStdString(thread_id_string) == thread_id_sender || docId != current_docId)
-    //    return;
-    out << m;
-    socket->write(blocko);
+
+
+    QString c = "OFFLINEUSER";
+    QString strAction = QString::fromStdString(m.getAzione());
+    if(strAction.contains(c.toUtf8())){
+        QStringList userIdDisconnect = strAction.split("_");
+        qDebug() << userIdDisconnect[1];
+        // se altro documento o stesso user_id di questo thread => discard (return)
+        /*if(QString::fromStdString(thread_id_string) == thread_id_sender || docId != current_docId)
+            return;*/
+        QByteArray blocko;
+        QDataStream out(&blocko, QIODevice::WriteOnly);
+        out.setVersion(QDataStream::Qt_5_12);
+        out << "OFFLINEUSER";
+        out <<  userIdDisconnect[1].toInt();
+        socket->write(blocko);
+    }
 }
+
