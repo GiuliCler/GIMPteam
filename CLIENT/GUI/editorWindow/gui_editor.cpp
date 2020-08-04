@@ -42,7 +42,7 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName) : QWidg
         return;
     for (QSet<int>::iterator userId = contributors->begin(); userId != contributors->end(); userId++)
         addContributorToCurrentDocument(*userId);
-
+    this->uri = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
     GUI_ConnectionToServerWrapper::startEditor(gimpParent, documentId);
 }
 
@@ -56,10 +56,7 @@ GUI_Editor::~GUI_Editor(){
 void GUI_Editor::connectMenuBarActions(){
     connect(this->gimpParent->ui2->closeDocumentAction, &QAction::triggered, this, &GUI_Editor::launchSetUi1);
     connect(gimpParent->ui2->getURIAction, &QAction::triggered, [this](){
-        QString uri = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
-        if(uri.compare("errore") == 0)
-            return;
-        GUI_URI *box = new GUI_URI(this, uri);
+        GUI_URI *box = new GUI_URI(this, this->uri);
         box->setVisible(true);
     });
     connect(gimpParent->ui2->exportPDFAction, &QAction::triggered, [this](){

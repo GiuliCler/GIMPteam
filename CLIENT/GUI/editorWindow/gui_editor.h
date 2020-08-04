@@ -21,6 +21,7 @@ class GUI_Editor : public QWidget
 public:
     int documentId;
     QString docName;
+    QString uri;
     GIMPdocs *gimpParent;
     GUI_ToolsBar *childToolsBar;
     GUI_UsersBar *childUsersBar;
