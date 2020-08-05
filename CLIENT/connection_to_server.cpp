@@ -921,14 +921,14 @@ void connection_to_server::disconnectEditor(int userId, int docId){
 void connection_to_server::receiveMessage(){
 
     //CRDT_Message m;
-    QString action;
+    QByteArray action;
     QDataStream in;
     in.setDevice(this->tcpSocket);
     in.setVersion(QDataStream::Qt_5_12);
 
     in >> action;
 
-    std::cout << "SLOT CLIENT receiveAction from server - "<<action.toUtf8().constData()<< std::endl;      // DEBUG
+    std::cout << "SLOT CLIENT receiveAction from server - "<<action.toStdString()<< std::endl;      // DEBUG
 
     if(action == "OFFLINEUSER"){
         //aggiorna la lista degli utenti online
