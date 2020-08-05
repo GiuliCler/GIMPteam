@@ -2,7 +2,6 @@
 #define GUI_EDITOR_H
 
 #include "ui_gui_editor.h"
-#include "../gimpdocs.h"
 #include "gui_colorsmanager.h"
 #include <QWidget>
 #include <QMap>
@@ -12,6 +11,7 @@ class CRDT_controller;
 class GUI_ToolsBar;
 class GUI_UsersBar;
 class GUI_MyTextEdit;
+class GIMPdocs;
 
 enum menuTools {UNDO_ON, UNDO_OFF, REDO_ON, REDO_OFF, CUT_ON, CUT_OFF, COPY_ON, COPY_OFF, PASTE_ON, PASTE_OFF, A_LEFT, A_CENTER, A_RIGHT, A_JUSTIFIED, BOLD_ON, BOLD_OFF, ITALIC_ON, ITALIC_OFF, UNDERLINED_ON, UNDERLINED_OFF, STRIKETHROUGH_ON, STRIKETHROUGH_OFF};
 

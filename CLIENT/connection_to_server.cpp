@@ -874,10 +874,10 @@ void connection_to_server::requestSendMessage(CRDT_Message *messaggio){
         }
 }
 
-void connection_to_server::connectEditor(int docId){
+void connection_to_server::connectEditor(GUI_Editor *editor){
 
     qDebug()<<"CONNECT EDITOR";      // DEBUG
-
+    this->editor = editor;
     // TODO
     //qui possiamo verificare se ci sono messaggi da parte del server (riguardo
     //inserimenti di altri utenti o all'avvio dell'editor, se era già stato scritto qualcosa).
@@ -921,22 +921,24 @@ void connection_to_server::disconnectEditor(int userId, int docId){
 void connection_to_server::receiveMessage(){
 
     CRDT_Message m;
-    QString action;
+    QByteArray action;
 
     QDataStream in;
     in.setDevice(this->tcpSocket);
     in.setVersion(QDataStream::Qt_5_12);
 
-    in >> m;
-    //in >> action;
+    //in >> m;
+    in >> action;
 
-    std::cout << "SLOT CLIENT receiveAction - "<<m.getAzione()<< std::endl;      // DEBUG
-    //std::cout << "SLOT CLIENT receiveAction from server - "<<action.toUtf8().constData()<< std::endl;      // DEBUG
+   // std::cout << "SLOT CLIENT receiveAction - "<<m.getAzione()<< std::endl;      // DEBUG
+    std::cout << "SLOT CLIENT receiveAction from server - "<<action.toStdString()<< std::endl;      // DEBUG
 
-//    if(action == "OFFLINEUSER"){
-//        //aggiorna la lista degli utenti online
-//        int userGetOffline;
-//        in >> userGetOffline;
-//        std::cout << userGetOffline<< std::endl;
-//    }
+    QString c = "OFFLINEUSER";
+    if(action.contains(c.toUtf8())){
+        //aggiorna la lista degli utenti online
+        int userGetOffline;
+        in >> userGetOffline;
+        std::cout << userGetOffline<< std::endl;
+        this->editor->removeUserFromEditorGUI(userGetOffline);
+    }
 }

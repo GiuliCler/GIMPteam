@@ -8,6 +8,7 @@
 
 #include "GUI/connection/gui_connectionException.h"
 #include "GUI/connection/gui_genericException.h"
+#include "GUI/editorWindow/gui_editor.h"
 #include "connection_to_server.h"
 
 
@@ -51,7 +52,7 @@ public:
     static std::shared_ptr<QSet<int>> getWorkingUsersOnDocumentTemporary(connection_to_server *connection,int docId);
     //ritorna tutti gli id degli users che hanno conrtibuito al document. Viene chiamata appena aperto il doc, mentre per l'update ci sono altre funzioni apposta nella classe gui_editor
     static std::shared_ptr<QSet<int>> getContributorsUsersOnDocument(int docId);
-    static void Editor(connection_to_server *connection, int docId);
+    static void Editor(connection_to_server *connection, GUI_Editor *editor);
 };
 
 #endif // STUB_H

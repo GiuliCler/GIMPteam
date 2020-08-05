@@ -189,8 +189,8 @@ std::shared_ptr<QSet<int>> Stub::getContributorsUsersOnDocument(int docId){
     return vpointer;
 }
 
-void Stub::Editor(connection_to_server *connection, int docId){
-    connection->connectEditor(docId);
+void Stub::Editor(connection_to_server *connection, GUI_Editor *editor){
+    connection->connectEditor(editor);
 }
 
 void Stub::closeDocument(connection_to_server *connection, int userId, int docId){

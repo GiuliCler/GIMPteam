@@ -6,6 +6,7 @@
 #include <memory>
 #include "GUI/connection/gui_connectionException.h"
 #include "GUI/connection/gui_genericException.h"
+#include "GUI/editorWindow/gui_editor.h"
 #include "CRDT/crdt_message.h"
 
 QT_BEGIN_NAMESPACE
@@ -40,7 +41,7 @@ public:
     int getDocumentOwner(int docId);
     std::string openDoc(int userId, int docId);
     void requestSendMessage(CRDT_Message *messaggio);
-    void connectEditor(int docId);
+    void connectEditor(GUI_Editor *editor);
     void disconnectEditor(int userId, int docId);
     void receiveMessage();
 
@@ -59,6 +60,7 @@ private:
     //Files file;
     QString current;
     QTcpSocket *tcpSocket = nullptr;
+    GUI_Editor *editor = nullptr;
     const int Timeout = 100 * 1000;
 
 

@@ -1030,26 +1030,22 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
-    out <<  m;
-    socket->write(blocko);
+   // ILA
+   // out <<  m;
+   // socket->write(blocko);
 
-    // GIULIA ------
-//    QString c = "OFFLINEUSER";
-//    QString strAction = QString::fromStdString(m.getAzione());
-//    if(strAction.contains(c.toUtf8())){
-//        QStringList userIdDisconnect = strAction.split("_");
-//        qDebug() << userIdDisconnect[1];
-//        // se altro documento o stesso user_id di questo thread => discard (return)
-//        /*if(QString::fromStdString(thread_id_string) == thread_id_sender || docId != current_docId)
-//            return;*/
+    QString c = "OFFLINEUSER";
+    QString strAction = QString::fromStdString(m.getAzione());
+    if(strAction.contains(c.toUtf8())){
+        QStringList userIdDisconnect = strAction.split("_");
+        qDebug() << userIdDisconnect[1];
+        QByteArray blocko;
+        QDataStream out(&blocko, QIODevice::WriteOnly);
+        out.setVersion(QDataStream::Qt_5_12);
 
-//        QByteArray blocko;
-//        QDataStream out(&blocko, QIODevice::WriteOnly);
-//        out.setVersion(QDataStream::Qt_5_12);
-
-//        out << "OFFLINEUSER";
-//        out <<  userIdDisconnect[1].toInt();
-//        socket->write(blocko);
-//    }
+        out << "OFFLINEUSER";
+        out <<  userIdDisconnect[1].toInt();
+        socket->write(blocko);
+    }
 }
 
