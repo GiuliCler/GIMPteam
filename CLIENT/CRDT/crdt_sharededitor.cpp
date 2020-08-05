@@ -8,16 +8,17 @@
 #include <vector>
 #include <cmath>
 
-CRDT_SharedEditor::CRDT_SharedEditor(CRDT_controller *parent/*, NetworkServer& s*/): parent(parent)/*, _server(s)*/{
+CRDT_SharedEditor::CRDT_SharedEditor(CRDT_controller *parent, connection_to_server *connection): parent(parent), connection(connection){
 //        _siteId = _server.connect(this);
         _counter = 0;
+        QObject::connect(connection, &connection_to_server::sigProcessMessage, this, &CRDT_SharedEditor::process);
 }
 
 int CRDT_SharedEditor::getSiteId() const{
     return this->_siteId;
 }
 
-void CRDT_SharedEditor::localInsert(connection_to_server *connection, int index, QChar value, QTextCharFormat fmt, Qt::Alignment align){
+void CRDT_SharedEditor::localInsert(int index, QChar value, QTextCharFormat fmt, Qt::Alignment align){
     QVector<int> posizione, posPREV, posNEXT;
 
 //    printf("Sto inserendo... %c\n", value);     // DEBUG -----
@@ -118,7 +119,7 @@ QVector<int> CRDT_SharedEditor::generaPosizione(QVector<int> prev, QVector<int> 
     return pos;
 }
 
-void CRDT_SharedEditor::localErase(connection_to_server *connection, int index){
+void CRDT_SharedEditor::localErase(int index){
     /* Recupero dal vettore di simboli il simbolo da eliminare */
     CRDT_Symbol simbolo = _symbols[index];
 

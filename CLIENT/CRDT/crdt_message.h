@@ -28,4 +28,6 @@ public:
     void setCreatore(int c);
 };
 
+Q_DECLARE_METATYPE(CRDT_Message)
+
 #endif // CRDT_MESSAGE_H

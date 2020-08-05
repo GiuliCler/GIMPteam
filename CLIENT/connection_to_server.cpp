@@ -927,27 +927,31 @@ void connection_to_server::receiveMessage(){
     in.setDevice(this->tcpSocket);
     in.setVersion(QDataStream::Qt_5_12);
 
-    //in >> m;
-    in >> action;
+    in >> m;
 
-   // std::cout << "SLOT CLIENT receiveAction - "<<m.getAzione()<< std::endl;      // DEBUG
-    std::cout << "SLOT CLIENT receiveAction from server - "<<action.toStdString()<< std::endl;      // DEBUG
+    emit sigProcessMessage(m);
+//    in >> action;
 
-    QString c = "OFFLINEUSER";
-    if(action.contains(c.toUtf8())){
-        //aggiorna la lista degli utenti online
-        int userGetOffline;
-        in >> userGetOffline;
-        std::cout << userGetOffline<< std::endl;
-        this->editor->removeUserFromEditorGUI(userGetOffline);
-    }
+    std::cout << "SLOT CLIENT receiveAction - "<<m.getAzione()<< std::endl;      // DEBUG
 
-    c = "ONLINEUSER";
-    if(action.contains(c.toUtf8())){
-        //aggiorna la lista degli utenti online
-        int userGetOnline;
-        in >> userGetOnline;
-        std::cout << userGetOnline<< std::endl;
-        this->editor->addUserToEditorGUI(userGetOnline);
-    }
+
+//    std::cout << "SLOT CLIENT receiveAction from server - "<<action.toStdString()<< std::endl;      // DEBUG
+
+//    QString c = "OFFLINEUSER";
+//    if(action.contains(c.toUtf8())){
+//        //aggiorna la lista degli utenti online
+//        int userGetOffline;
+//        in >> userGetOffline;
+//        std::cout << userGetOffline<< std::endl;
+//        this->editor->removeUserFromEditorGUI(userGetOffline);
+//    }
+
+//    c = "ONLINEUSER";
+//    if(action.contains(c.toUtf8())){
+//        //aggiorna la lista degli utenti online
+//        int userGetOnline;
+//        in >> userGetOnline;
+//        std::cout << userGetOnline<< std::endl;
+//        this->editor->addUserToEditorGUI(userGetOnline);
+//    }
 }

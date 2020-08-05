@@ -53,6 +53,7 @@ signals:
     void error(int socketError, const QString &message);
     void error(QTcpSocket::SocketError socketError);
     void newFile(const QString &fortune);
+    void sigProcessMessage(const CRDT_Message& m);
 
 private:
     QString port;

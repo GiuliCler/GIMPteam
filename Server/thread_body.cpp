@@ -1018,7 +1018,7 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
 
     qDebug() << "THREAD ID SENDER: "+thread_id_sender;                              // DEBUG
     QString docidForDebug = "CURRENTDOCID: "+QString::number(current_docId);       // DEBUG
-    qDebug() << docidForDebug;                                                      // DEBUG
+//    qDebug() << docidForDebug;                                                      // DEBUG
 
     auto thread_id = std::this_thread::get_id();
     std::cout << "---- ThreadBody processMessage RICEVUTO thread_id: "<<thread_id<<", doc_id: "<<docId<<" ---- "<< "; Stringa: "<<m.getAzione()<< std::endl;      // DEBUG
@@ -1037,35 +1037,35 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
     out.setVersion(QDataStream::Qt_5_12);
 
    // ILA
-   // out <<  m;
-   // socket->write(blocko);
+    out <<  m;
+    socket->write(blocko);
 
-    QString c = "OFFLINEUSER";
-    QString strAction = QString::fromStdString(m.getAzione());
-    if(strAction.contains(c.toUtf8())){
-        QStringList userIdDisconnect = strAction.split("_");
-        qDebug() << userIdDisconnect[1];
-        QByteArray blocko;
-        QDataStream out(&blocko, QIODevice::WriteOnly);
-        out.setVersion(QDataStream::Qt_5_12);
+//    QString c = "OFFLINEUSER";
+//    QString strAction = QString::fromStdString(m.getAzione());
+//    if(strAction.contains(c.toUtf8())){
+//        QStringList userIdDisconnect = strAction.split("_");
+//        qDebug() << userIdDisconnect[1];
+//        QByteArray blocko;
+//        QDataStream out(&blocko, QIODevice::WriteOnly);
+//        out.setVersion(QDataStream::Qt_5_12);
 
-        out << "OFFLINEUSER";
-        out <<  userIdDisconnect[1].toInt();
-        socket->write(blocko);
-    }
+//        out << "OFFLINEUSER";
+//        out <<  userIdDisconnect[1].toInt();
+//        socket->write(blocko);
+//    }
 
-    c = "ONLINEUSER";
-    strAction = QString::fromStdString(m.getAzione());
-    if(strAction.contains(c.toUtf8())){
-        QStringList userIdDisconnect = strAction.split("_");
-        qDebug() << userIdDisconnect[1];
-        QByteArray blocko;
-        QDataStream out(&blocko, QIODevice::WriteOnly);
-        out.setVersion(QDataStream::Qt_5_12);
+//    c = "ONLINEUSER";
+//    strAction = QString::fromStdString(m.getAzione());
+//    if(strAction.contains(c.toUtf8())){
+//        QStringList userIdDisconnect = strAction.split("_");
+//        qDebug() << userIdDisconnect[1];
+//        QByteArray blocko;
+//        QDataStream out(&blocko, QIODevice::WriteOnly);
+//        out.setVersion(QDataStream::Qt_5_12);
 
-        out << "ONLINEUSER";
-        out <<  userIdDisconnect[1].toInt();
-        socket->write(blocko);
-    }
+//        out << "ONLINEUSER";
+//        out <<  userIdDisconnect[1].toInt();
+//        socket->write(blocko);
+//    }
 }
 

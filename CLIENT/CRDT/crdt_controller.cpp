@@ -12,7 +12,7 @@
         rememberFormatChange = true; \
     }
 
-CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyTextEdit& textEdit): gimpDocs(gimpdocs), parent(parent), textEdit(textEdit), crdt(this),
+CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyTextEdit& textEdit): gimpDocs(gimpdocs), parent(parent), textEdit(textEdit), crdt(this, gimpDocs->getConnection()),
                         rememberFormatChange(false), validateSpin(true), validateFontCombo(true) {
     QObject::connect(this->parent, &GUI_Editor::menuTools_event, this, &CRDT_controller::menuCall);
     QObject::connect(this, &CRDT_controller::menuSet, parent, &GUI_Editor::setMenuToolStatus);
@@ -219,7 +219,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
     if(del > 0){
         for(int i = pos + del - 1; i >= pos; --i)
-            crdt.localErase(gimpDocs->getConnection(),i);
+            crdt.localErase(i);
     }
 
     if(add > 0){
@@ -227,7 +227,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         textEdit.textCursor().setPosition(pos + 1);
 
         for(int i = pos; i < pos + add; ++i, textEdit.textCursor().movePosition(QTextCursor::NextCharacter))
-            crdt.localInsert(gimpDocs->getConnection(), i, textEdit.toPlainText().at(i), textEdit.currentCharFormat(), textEdit.alignment());
+            crdt.localInsert(i, textEdit.toPlainText().at(i), textEdit.currentCharFormat(), textEdit.alignment());
 
         textEdit.setTextCursor(tmp);
     }
