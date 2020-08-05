@@ -920,20 +920,22 @@ void connection_to_server::disconnectEditor(int userId, int docId){
 
 void connection_to_server::receiveMessage(){
 
-    //CRDT_Message m;
+    CRDT_Message m;
     QString action;
     QDataStream in;
     in.setDevice(this->tcpSocket);
     in.setVersion(QDataStream::Qt_5_12);
 
-    in >> action;
+    in >> m;
+    //in >> action;
 
-    std::cout << "SLOT CLIENT receiveAction from server - "<<action.toUtf8().constData()<< std::endl;      // DEBUG
+    std::cout << "SLOT CLIENT receiveAction - "<<m.getAzione()<< std::endl;      // DEBUG
+    //std::cout << "SLOT CLIENT receiveAction from server - "<<action.toUtf8().constData()<< std::endl;      // DEBUG
 
-    if(action == "OFFLINEUSER"){
-        //aggiorna la lista degli utenti online
-        int userGetOffline;
-        in >> userGetOffline;
-        std::cout << userGetOffline<< std::endl;
-    }
+//    if(action == "OFFLINEUSER"){
+//        //aggiorna la lista degli utenti online
+//        int userGetOffline;
+//        in >> userGetOffline;
+//        std::cout << userGetOffline<< std::endl;
+//    }
 }

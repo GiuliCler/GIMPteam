@@ -3,7 +3,7 @@
 #include <sstream>
 #include <QThread>
 
-Thread_body::Thread_body(int socketDescriptor, QObject *parent) : QObject(parent)
+Thread_body::Thread_body(int socketDescriptor, QObject *parent) : QObject(parent), current_docId(-1)
 {
     auto thread_id = std::this_thread::get_id();
     std::stringstream ss;
@@ -265,10 +265,13 @@ void Thread_body::removeFromWorkingUsers(int docId, int userId){
         int count = workingUsers[docId].size();
         if(count > 1){
             // In tal caso devo comunicare anche agli altri utenti che mi sono sconnesso.
-            CRDT_Symbol s = *new CRDT_Symbol();
-            for(auto i = workingUsers[docId].begin(); i <= workingUsers[docId].end(); i++){
+            CRDT_Symbol s = *new CRDT_Symbol();             // GIULIA -----
+
+            for(auto i = workingUsers[docId].begin(); i < workingUsers[docId].end(); i++){
                 if((*i) == userId){
                     workingUsers[docId].erase(i);
+
+                     // GIULIA -- inizio ---
                     CRDT_Message *m = new CRDT_Message("OFFLINEUSER_"+std::to_string(*i), s, userId);
                     auto thread_id = std::this_thread::get_id();
                     std::stringstream ss;
@@ -276,6 +279,7 @@ void Thread_body::removeFromWorkingUsers(int docId, int userId){
                     std::string thread_id_string = ss.str();
                     mutex_workingUsers->unlock();
                     emit messageToServer(*m, QString::fromStdString(thread_id_string), docId);
+                     // GIULIA -- fine ---
                 }
             }
         } else if(count == 1){
@@ -285,7 +289,10 @@ void Thread_body::removeFromWorkingUsers(int docId, int userId){
     } else {
         // non c'è alcuna chiave in workingUsers corrispondente al docId
         qDebug() << "Oh no, il docId non è presente nella workingUsers... Qualcosa non va...";
+        mutex_workingUsers->unlock();
     }
+
+    current_docId = -1;
 }
 
 
@@ -350,13 +357,15 @@ void Thread_body::newDoc(QString docName, int userId){
 //viene passato anche il docId, nel caso possa servire per cose future. Si noti che nel caso di NewDoc
 //è -1!!!
 int Thread_body::openDoc(QString docName, QString username, int docId, int userId, int new_doc){
-    mutex_docs->lock();
-    int id = documents.size();
-    id++;
-    documents.insert(username + "_" + docName, id);
-    mutex_docs->unlock();
 
-    // todo ila&paolo ------------------------------------------------------------------------------------------------------------------------------
+    if(docId == -1){
+        // Sono arrivato dalla "newDoc"
+        mutex_docs->lock();
+        docId = documents.size();
+        docId++;
+        documents.insert(username + "_" + docName, docId);
+        mutex_docs->unlock();
+    }
 
     // Aggiungo la riga (docId, [userId]) alla mappa degli workingUsers
     int esito = addToWorkingUsers(docId, userId, new_doc);
@@ -365,7 +374,7 @@ int Thread_body::openDoc(QString docName, QString username, int docId, int userI
     }
 
     // Aggiorno il docId su cui sto iniziando a lavorare
-    current_docId = id;
+    current_docId = docId;
 
     // ?????????????????????????????????????????????????????????????????????????????
     // Creazione del file
@@ -387,10 +396,9 @@ int Thread_body::openDoc(QString docName, QString username, int docId, int userI
     }
     // ?????????????????????????????????????????????????????????????????????????????
 
-    // todo ila: sistemare la aggiungiPartecipante (site_id e site_counter) ------------------------------------------------------------------
-
     // cose extra (che per ora ancora non so) da fare quando si apre il doc      todo ila&paolo
-    return id;
+
+    return docId;
 }
 
 
@@ -678,6 +686,8 @@ void Thread_body::getDocumentDatoUri(QString uri, int userId){
         socket->write(blocko);
     }
 }
+
+
 int Thread_body::associateDoc(int docId, int userId){
     //cerco il nome del doc e dello user
     mutex_users->lock();
@@ -720,7 +730,6 @@ int Thread_body::associateDoc(int docId, int userId){
 }
 
 void Thread_body::getUri(int docId){
-//    emit messageToServer(*(new CRDT_Message("mamma", *(new CRDT_Symbol()), 7)), std::this_thread::get_id());
 
     QByteArray blocko;
     QDataStream out(&blocko, QIODevice::WriteOnly);
@@ -1000,32 +1009,47 @@ void Thread_body::openDocument(int docId, int userId){
 }
 
 void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int docId){
-    qDebug() << "THREAD ID SENDER: "+thread_id_sender;
-    QString docidForDebug =  "CURRENTDOCID: "+QString::number(current_docId);
-    qDebug() << docidForDebug;
+
+    qDebug() << "THREAD ID SENDER: "+thread_id_sender;                              // DEBUG
+    QString docidForDebug = "CURRENTDOCID: "+QString::number(current_docId);       // DEBUG
+    qDebug() << docidForDebug;                                                      // DEBUG
+
     auto thread_id = std::this_thread::get_id();
-    std::cout << "---- ThreadBody processMessage id: "<<thread_id<<" ---- "<< "; Stringa: "<<m.getAzione()<< std::endl;      // DEBUG
+    std::cout << "---- ThreadBody processMessage RICEVUTO thread_id: "<<thread_id<<", doc_id: "<<docId<<" ---- "<< "; Stringa: "<<m.getAzione()<< std::endl;      // DEBUG
     std::stringstream ss;
     ss << thread_id;
     std::string thread_id_string = ss.str();
 
-    //todo ila&paolo -------------------------------------------------------------------------------------------
+    // Se altro documento o stesso user_id di questo thread => discard (return)
+    if(QString::fromStdString(thread_id_string) == thread_id_sender || docId != current_docId)
+        return;
 
+    std::cout << "---- ThreadBody processMessage ACCETTATO thread_id: "<<thread_id<<", doc_id: "<<docId<<" ---- "<< "; Stringa: "<<m.getAzione()<< std::endl;      // DEBUG
 
-    QString c = "OFFLINEUSER";
-    QString strAction = QString::fromStdString(m.getAzione());
-    if(strAction.contains(c.toUtf8())){
-        QStringList userIdDisconnect = strAction.split("_");
-        qDebug() << userIdDisconnect[1];
-        // se altro documento o stesso user_id di questo thread => discard (return)
-        /*if(QString::fromStdString(thread_id_string) == thread_id_sender || docId != current_docId)
-            return;*/
-        QByteArray blocko;
-        QDataStream out(&blocko, QIODevice::WriteOnly);
-        out.setVersion(QDataStream::Qt_5_12);
-        out << "OFFLINEUSER";
-        out <<  userIdDisconnect[1].toInt();
-        socket->write(blocko);
-    }
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
+    out <<  m;
+    socket->write(blocko);
+
+    // GIULIA ------
+//    QString c = "OFFLINEUSER";
+//    QString strAction = QString::fromStdString(m.getAzione());
+//    if(strAction.contains(c.toUtf8())){
+//        QStringList userIdDisconnect = strAction.split("_");
+//        qDebug() << userIdDisconnect[1];
+//        // se altro documento o stesso user_id di questo thread => discard (return)
+//        /*if(QString::fromStdString(thread_id_string) == thread_id_sender || docId != current_docId)
+//            return;*/
+
+//        QByteArray blocko;
+//        QDataStream out(&blocko, QIODevice::WriteOnly);
+//        out.setVersion(QDataStream::Qt_5_12);
+
+//        out << "OFFLINEUSER";
+//        out <<  userIdDisconnect[1].toInt();
+//        socket->write(blocko);
+//    }
 }
 
