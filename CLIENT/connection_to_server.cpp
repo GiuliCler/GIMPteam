@@ -941,4 +941,13 @@ void connection_to_server::receiveMessage(){
         std::cout << userGetOffline<< std::endl;
         this->editor->removeUserFromEditorGUI(userGetOffline);
     }
+
+    c = "ONLINEUSER";
+    if(action.contains(c.toUtf8())){
+        //aggiorna la lista degli utenti online
+        int userGetOnline;
+        in >> userGetOnline;
+        std::cout << userGetOnline<< std::endl;
+        this->editor->addUserToEditorGUI(userGetOnline);
+    }
 }

@@ -228,7 +228,7 @@ int Thread_body::addToWorkingUsers(int docId, int userId, int open_new){
         workingUsers.insert(docId, value);
 
     } else if(open_new == 1){       // arrivo da OPEN_DOC
-
+        CRDT_Symbol s = *new CRDT_Symbol();             // GIULIA -----
         if(workingUsers.contains(docId)){
             // chiave docId presente in workingUsers
             // aggiorno il vettore corrispondente alla riga con chiave docId in workingUsers
@@ -240,14 +240,20 @@ int Thread_body::addToWorkingUsers(int docId, int userId, int open_new){
             value.append(userId);
             workingUsers.insert(docId, value);
         }
+        // GIULIA -- inizio ---
+       CRDT_Message *m = new CRDT_Message("ONLINEUSER_"+std::to_string(userId), s, userId);
+       auto thread_id = std::this_thread::get_id();
+       std::stringstream ss;
+       ss << thread_id;
+       std::string thread_id_string = ss.str();
+       mutex_workingUsers->unlock();
+       emit messageToServer(*m, QString::fromStdString(thread_id_string), docId);
+        // GIULIA -- fine ---
 
     } else {
         // open_new non è uguale nè a 0 nè a 1
         esito = 0;
     }
-
-    mutex_workingUsers->unlock();
-
     return esito;
 }
 
@@ -272,7 +278,7 @@ void Thread_body::removeFromWorkingUsers(int docId, int userId){
                     workingUsers[docId].erase(i);
 
                      // GIULIA -- inizio ---
-                    CRDT_Message *m = new CRDT_Message("OFFLINEUSER_"+std::to_string(*i), s, userId);
+                    CRDT_Message *m = new CRDT_Message("OFFLINEUSER_"+std::to_string(userId), s, userId);
                     auto thread_id = std::this_thread::get_id();
                     std::stringstream ss;
                     ss << thread_id;
@@ -1044,6 +1050,20 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         out.setVersion(QDataStream::Qt_5_12);
 
         out << "OFFLINEUSER";
+        out <<  userIdDisconnect[1].toInt();
+        socket->write(blocko);
+    }
+
+    c = "ONLINEUSER";
+    strAction = QString::fromStdString(m.getAzione());
+    if(strAction.contains(c.toUtf8())){
+        QStringList userIdDisconnect = strAction.split("_");
+        qDebug() << userIdDisconnect[1];
+        QByteArray blocko;
+        QDataStream out(&blocko, QIODevice::WriteOnly);
+        out.setVersion(QDataStream::Qt_5_12);
+
+        out << "ONLINEUSER";
         out <<  userIdDisconnect[1].toInt();
         socket->write(blocko);
     }
