@@ -1009,26 +1009,17 @@ void Thread_body::openDocument(int docId, int userId){
 }
 
 void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int docId){
-<<<<<<< HEAD
 
     qDebug() << "THREAD ID SENDER: "+thread_id_sender;                              // DEBUG
     QString docidForDebug = "CURRENTDOCID: "+QString::number(current_docId);       // DEBUG
     qDebug() << docidForDebug;                                                      // DEBUG
 
-=======
-    mutex_process->lock(); //TODO - RIMUOVERE UNA VOLTA FUNZIONANTE LO SLOT (Sia qui che in thread_body e in thread_management)
-
-    qDebug() << "THREAD ID SENDER: "+thread_id_sender;
-    QString docidForDebug =  "CURRENTDOCID: "+QString::number(current_docId);
-    qDebug() << docidForDebug;
->>>>>>> threads_fixed
     auto thread_id = std::this_thread::get_id();
     std::cout << "---- ThreadBody processMessage RICEVUTO thread_id: "<<thread_id<<", doc_id: "<<docId<<" ---- "<< "; Stringa: "<<m.getAzione()<< std::endl;      // DEBUG
     std::stringstream ss;
     ss << thread_id;
     std::string thread_id_string = ss.str();
 
-<<<<<<< HEAD
     // Se altro documento o stesso user_id di questo thread => discard (return)
     if(QString::fromStdString(thread_id_string) == thread_id_sender || docId != current_docId)
         return;
@@ -1060,30 +1051,5 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
 //        out <<  userIdDisconnect[1].toInt();
 //        socket->write(blocko);
 //    }
-=======
-    //todo ila&paolo -------------------------------------------------------------------------------------------
-
-    // se altro documento o stesso user_id di questo thread => discard (return)
-    /*------- DEBUG ------*/
-    //stampo il socket
-    std::cout << "---- socket: "<<socket<<" ---- "<< "; Stringa: "<< std::endl;      // DEBUG
-
-    if(QString::fromStdString(thread_id_string) == thread_id_sender || docId != current_docId)
-        return;
-
-    QString c = "OFFLINEUSER";
-    QString strAction = QString::fromStdString(m.getAzione());
-    if(strAction.contains(c.toUtf8())){
-        QStringList userIdDisconnect = strAction.split("_");
-        qDebug() << userIdDisconnect[1];
-        QByteArray blocko;
-        QDataStream out(&blocko, QIODevice::WriteOnly);
-        out.setVersion(QDataStream::Qt_5_12);
-        out << "OFFLINEUSER";
-        out <<  userIdDisconnect[1].toInt();
-        socket->write(blocko);
-    }
-    mutex_process->unlock();
->>>>>>> threads_fixed
 }
 
