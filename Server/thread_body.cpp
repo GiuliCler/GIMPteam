@@ -477,6 +477,8 @@ void Thread_body::update(int userId, QString password, QString nickname, QString
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
+    qDebug()<<"UPDATE -- PASSO DA QUI 0";          // DEBUG
+
     QString username;
     mutex_users->lock();
     QMapIterator<QString, int> i(users);
@@ -489,21 +491,25 @@ void Thread_body::update(int userId, QString password, QString nickname, QString
     }
     mutex_users->unlock();
 
+    qDebug()<<"UPDATE -- PASSO DA QUI 1";          // DEBUG
+
     if(!username.isEmpty()){
         mutex_db->lock();
         if(database->aggiornaUser(username, password, nickname, icon)){
             mutex_db->unlock();
             //correttamente aggiornato nel db
+            qDebug()<<"UPDATE -- PASSO DA QUI 2";          // DEBUG
             out << "ok";
             socket->write(blocko);
+            qDebug()<<"UPDATE -- TUTTO OK";          // DEBUG
         }else{
             mutex_db->unlock();
-//                qDebug()<<"ERRORE QUI 0";          // DEBUG
+            qDebug()<<"UPDATE -- ERRORE QUI 3";          // DEBUG
             out << "errore";
             socket->write(blocko);
         }
     }else{
-//            qDebug()<<"ERRORE QUI 4";           // DEBUG
+        qDebug()<<"UPDATE -- ERRORE QUI 4";           // DEBUG
         out << "errore";
         socket->write(blocko);
     }
@@ -1034,13 +1040,10 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
-   // ILA
- //   out << "CRDT";
- //   out <<  m;
- //   socket->write(blocko);
-
-    QString c = "OFFLINEUSER";
     QString strAction = QString::fromStdString(m.getAzione());
+
+    /* Messaggio che NON fa parte del CRDT */
+    QString c = "OFFLINEUSER";
     if(strAction.contains(c.toUtf8())){
         QStringList userIdDisconnect = strAction.split("_");
         qDebug() << userIdDisconnect[1];
@@ -1051,10 +1054,10 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         out << "OFFLINEUSER";
         out <<  userIdDisconnect[1].toInt();
         socket->write(blocko);
+        return;
     }
 
     c = "ONLINEUSER";
-    strAction = QString::fromStdString(m.getAzione());
     if(strAction.contains(c.toUtf8())){
         QStringList userIdDisconnect = strAction.split("_");
         qDebug() << userIdDisconnect[1];
@@ -1064,6 +1067,12 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         out << "ONLINEUSER";
         out <<  userIdDisconnect[1].toInt();
         socket->write(blocko);
+        return;
     }
+
+    /* Messaggio che fa parte del CRDT */
+    out << "CRDT";
+    out << m;
+    socket->write(blocko);
 }
 

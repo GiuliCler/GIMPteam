@@ -143,17 +143,24 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
         QVector<CRDT_Symbol>::iterator it = _symbols.begin();
 
         if(azione == "insert"){                 /* SIMBOLO INSERITO */
-            QVector<int> posNew = m.getSimbolo().getPosizione();
+
+            int count = 0;
+
             if(!_symbols.empty()){
+                QVector<int> posNew = m.getSimbolo().getPosizione();
                 it = trovaPosizione(posNew);
+                for(QVector<CRDT_Symbol>::iterator iterat=_symbols.begin(); iterat<it; iterat++)
+                    count++;
             }
 
             _symbols.insert(it, simbolo);
-            parent->remoteInsert(it - _symbols.begin(), simbolo.getCarattere(), simbolo.getFormat(), simbolo.getAlignment());
 
+            qDebug()<<"AAAAAAA "<<count;        // DEBUG ----------
+
+            parent->remoteInsert(count, simbolo.getCarattere(), simbolo.getFormat(), simbolo.getAlignment());
 
         } else if(azione == "delete"){           /* SIMBOLO CANCELLATO */
-            //std::cout<<"(dispatch nell'ed "<<_siteId<<"): elimino il carattere "<<simbolo.getCarattere()<<" di id "<<simbolo.getIDunivoco()<<std::endl;     // DEBUG ------
+            std::cout<<"(dispatch nell'ed "<<_siteId<<"): elimino un carattere di id "<<simbolo.getIDunivoco()<<std::endl;     // DEBUG ------
             for(; it < _symbols.end(); it++){
                 CRDT_Symbol s = *it;
                 //std::cout<<s.getCarattere()<<" "<<s.getIDunivoco()<<std::endl;      // DEBUG -------------

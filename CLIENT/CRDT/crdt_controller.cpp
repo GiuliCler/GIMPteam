@@ -293,6 +293,9 @@ void CRDT_controller::menuCall(menuTools op){
 }
 
 void CRDT_controller::remoteDelete(int pos){
+
+    std::cout<<"EHI! SONO NELLA REMOTE DELETE!"<<std::endl;
+
     processingMessage = true;
     QTextCursor tmp = textEdit.textCursor();
 
@@ -304,6 +307,9 @@ void CRDT_controller::remoteDelete(int pos){
 }
 
 void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align){
+
+    std::cout<<"EHI! SONO NELLA REMOTE INSERT!"<<std::endl;
+
     processingMessage = true;
     QTextCursor tmp = textEdit.textCursor();
 
