@@ -224,7 +224,7 @@ int Thread_body::addToWorkingUsers(int docId, int userId, int open_new){
         // creo nuova riga in workingUsers
         QVector<int> value;
         value.append(userId);
-         mutex_workingUsers->lock();
+        mutex_workingUsers->lock();
         workingUsers.insert(docId, value);
         mutex_workingUsers->unlock();
     } else if(open_new == 1){       // arrivo da OPEN_DOC
@@ -232,17 +232,17 @@ int Thread_body::addToWorkingUsers(int docId, int userId, int open_new){
         if(workingUsers.contains(docId)){
             // chiave docId presente in workingUsers
             // aggiorno il vettore corrispondente alla riga con chiave docId in workingUsers
-             mutex_workingUsers->lock();
+            mutex_workingUsers->lock();
             workingUsers[docId].append(userId);
-             mutex_workingUsers->unlock();
+            mutex_workingUsers->unlock();
         } else {
             // non c'è alcuna chiave in workingUsers corrispondente al docId
             // creo nuova riga in workingUsers, perchè l'utente attuale richiede l'apertura del documento
             QVector<int> value;
             value.append(userId);
-             mutex_workingUsers->lock();
+            mutex_workingUsers->lock();
             workingUsers.insert(docId, value);
-             mutex_workingUsers->unlock();
+            mutex_workingUsers->unlock();
         }
         // GIULIA -- inizio ---
        CRDT_Message *m = new CRDT_Message("ONLINEUSER_"+std::to_string(userId), s, userId);
@@ -328,13 +328,12 @@ void Thread_body::newDoc(QString docName, int userId){
         if(database->creaDoc(username+"_"+docName)){
             mutex_db->unlock();
             // Associazione username - nome_doc nella tabella utente_doc del DB
-            mutex_db->lock();
             int id = openDoc(docName, username, -1, userId, 0);
             if(id == -1){
-                mutex_db->unlock();
                 out << "errore";
                 socket->write(blocko);
             }else{
+                mutex_db->lock();
                 if(database->aggiungiPartecipante(username+"_"+docName, username, 0, 0) != 2){
                     mutex_db->unlock();
                     out << "ok";
@@ -420,7 +419,6 @@ void Thread_body::create(QString username, QString password, QString nickname, Q
     int ret = database->signup(username, password, nickname, icon);
     mutex_db->unlock();
     if(ret == 1){
-        //qDebug() << "OK";                    // DEBUG
         // Dati correttamente inseriti nel DB
         mutex_users->lock();
         int id = users.size();
@@ -428,9 +426,11 @@ void Thread_body::create(QString username, QString password, QString nickname, Q
         //qDebug()<<"STO SCRIVENDO NELLA MAPPA LA COPPIA key:"<<username<<" E value: "<<id;        // DEBUG
         users.insert(username, id);
         mutex_users->unlock();
+
         //creo la cartella sul file system per l'utente
         QDir dir = QDir::current();
         dir.mkpath(path+username);
+
         //verifico sia stata correttamente creata
         if(QDir(path+username).exists()){
             out << "ok";
@@ -488,6 +488,7 @@ void Thread_body::update(int userId, QString password, QString nickname, QString
         }
     }
     mutex_users->unlock();
+
     if(!username.isEmpty()){
         mutex_db->lock();
         if(database->aggiornaUser(username, password, nickname, icon)){
@@ -613,13 +614,6 @@ void Thread_body::getDocs(int userId){
     }
     mutex_users->unlock();
 
-    // ****************** DA TOGLIEREEEEE *********************                         // DEBUG
-//    database->creaDoc("DivinaCommedia");
-//    database->creaDoc("Oibaboi");
-//    database->aggiungiPartecipante("DivinaCommedia", "ilagioda@gimpteam.it");
-//    database->aggiungiPartecipante("Oibaboi", "ilagioda@gimpteam.it");
-    // ****************** DA TOGLIEREEEEE *********************
-
     if(!username.isEmpty()){
         // Recupero i documenti per cui l'utente e' abilitato ad accedere
         mutex_db->lock();
@@ -725,7 +719,7 @@ int Thread_body::associateDoc(int docId, int userId){
 
     if(!username.isEmpty() && QDir(path+username).exists()){
         mutex_db->lock();
-        if(database->aggiungiPartecipante(docName,username,0,0)!=2){ //TODO ILA SISTEMARE GLI ID
+        if(database->aggiungiPartecipante(docName,username,0,0)!=2){        //TODO ILA SISTEMARE GLI ID
             int id = openDoc(docName, username, docId, userId, 1);
             mutex_db->unlock();
             if(id == -1){
@@ -734,6 +728,7 @@ int Thread_body::associateDoc(int docId, int userId){
                 return 1;
             }
         }
+        mutex_db->unlock();
     }
     return 0;
 }
@@ -954,13 +949,13 @@ void Thread_body::getWorkingUsersGivenDoc(int docId){
 
         // Mando al client il numero di elementi/id che verranno inviati
         int num_working_users = utenti_online.size();
-                qDebug() << "GET_WORKINGUSERS_ONADOC - STO MANDANDO AL CLIENT num_working_users: "<<num_working_users;             // DEBUG
+//        qDebug() << "GET_WORKINGUSERS_ONADOC - STO MANDANDO AL CLIENT num_working_users: "<<num_working_users;             // DEBUG
         out << num_working_users;
 
         // Mando al client gli id degli utenti online che stanno lavorando sul documento al momento
         for(auto it = utenti_online.begin(); it<utenti_online.end(); it++){
             int id = (*it);
-                        qDebug()<<"GET_WORKINGUSERS_ONADOC - Sto mandando al client ID: "<<id;
+//            qDebug()<<"GET_WORKINGUSERS_ONADOC - Sto mandando al client ID: "<<id;
             // Mando la QString così generata al client
             out << id;
         }
