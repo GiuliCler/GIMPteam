@@ -15,8 +15,13 @@
 
 GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName) : QWidget(parent), documentId(documentId), docName(docName)
 {
+
     this->setObjectName(GUI_Editor::getObjectName());
     gimpParent = static_cast<GIMPdocs*>(parent);
+
+    QObject::connect(gimpParent->getConnection(), &connection_to_server::sigOfflineUser, this, &GUI_Editor::removeUserFromEditorGUI);
+    QObject::connect(gimpParent->getConnection(), &connection_to_server::sigOnlineUser, this, &GUI_Editor::addUserToEditorGUI);
+
     ui = new Ui::GUI_Editor();
     ui->setupUi(this);
 
@@ -43,14 +48,14 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName) : QWidg
     for (QSet<int>::iterator userId = contributors->begin(); userId != contributors->end(); userId++)
         addContributorToCurrentDocument(*userId);
     this->uri = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
-    GUI_ConnectionToServerWrapper::startEditor(gimpParent, this);
+    GUI_ConnectionToServerWrapper::startEditor(gimpParent);
 }
 
 GUI_Editor::~GUI_Editor(){
 
-    int result = GUI_ConnectionToServerWrapper::closeDocumentWrapper(gimpParent, gimpParent->userid, documentId);
-    if(result == -1)
-        return;
+    //int result = GUI_ConnectionToServerWrapper::closeDocumentWrapper(gimpParent, gimpParent->userid, documentId);
+    //if(result == -1)
+     //   return;
 
     delete ui;
     delete crdtController;

@@ -218,27 +218,31 @@ void Thread_body::executeJob(){
 int Thread_body::addToWorkingUsers(int docId, int userId, int open_new){
 
     int esito = 1;
-    mutex_workingUsers->lock();
 
     if(open_new == 0){              // arrivo da NEW_DOC
 
         // creo nuova riga in workingUsers
         QVector<int> value;
         value.append(userId);
+         mutex_workingUsers->lock();
         workingUsers.insert(docId, value);
-
+        mutex_workingUsers->unlock();
     } else if(open_new == 1){       // arrivo da OPEN_DOC
         CRDT_Symbol s = *new CRDT_Symbol();             // GIULIA -----
         if(workingUsers.contains(docId)){
             // chiave docId presente in workingUsers
             // aggiorno il vettore corrispondente alla riga con chiave docId in workingUsers
+             mutex_workingUsers->lock();
             workingUsers[docId].append(userId);
+             mutex_workingUsers->unlock();
         } else {
             // non c'è alcuna chiave in workingUsers corrispondente al docId
             // creo nuova riga in workingUsers, perchè l'utente attuale richiede l'apertura del documento
             QVector<int> value;
             value.append(userId);
+             mutex_workingUsers->lock();
             workingUsers.insert(docId, value);
+             mutex_workingUsers->unlock();
         }
         // GIULIA -- inizio ---
        CRDT_Message *m = new CRDT_Message("ONLINEUSER_"+std::to_string(userId), s, userId);
@@ -246,7 +250,6 @@ int Thread_body::addToWorkingUsers(int docId, int userId, int open_new){
        std::stringstream ss;
        ss << thread_id;
        std::string thread_id_string = ss.str();
-       mutex_workingUsers->unlock();
        emit messageToServer(*m, QString::fromStdString(thread_id_string), docId);
         // GIULIA -- fine ---
 
@@ -951,13 +954,13 @@ void Thread_body::getWorkingUsersGivenDoc(int docId){
 
         // Mando al client il numero di elementi/id che verranno inviati
         int num_working_users = utenti_online.size();
-        //        qDebug() << "GET_WORKINGUSERS_ONADOC - STO MANDANDO AL CLIENT num_working_users: "<<num_working_users;             // DEBUG
+                qDebug() << "GET_WORKINGUSERS_ONADOC - STO MANDANDO AL CLIENT num_working_users: "<<num_working_users;             // DEBUG
         out << num_working_users;
 
         // Mando al client gli id degli utenti online che stanno lavorando sul documento al momento
         for(auto it = utenti_online.begin(); it<utenti_online.end(); it++){
             int id = (*it);
-            //            qDebug()<<"GET_WORKINGUSERS_ONADOC - Sto mandando al client ID: "<<id;
+                        qDebug()<<"GET_WORKINGUSERS_ONADOC - Sto mandando al client ID: "<<id;
             // Mando la QString così generata al client
             out << id;
         }
@@ -1037,36 +1040,35 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
     out.setVersion(QDataStream::Qt_5_12);
 
    // ILA
-    out << "CRDT";
-    out <<  m;
-    socket->write(blocko);
+ //   out << "CRDT";
+ //   out <<  m;
+ //   socket->write(blocko);
 
-//    QString c = "OFFLINEUSER";
-//    QString strAction = QString::fromStdString(m.getAzione());
-//    if(strAction.contains(c.toUtf8())){
-//        QStringList userIdDisconnect = strAction.split("_");
-//        qDebug() << userIdDisconnect[1];
-//        QByteArray blocko;
-//        QDataStream out(&blocko, QIODevice::WriteOnly);
-//        out.setVersion(QDataStream::Qt_5_12);
+    QString c = "OFFLINEUSER";
+    QString strAction = QString::fromStdString(m.getAzione());
+    if(strAction.contains(c.toUtf8())){
+        QStringList userIdDisconnect = strAction.split("_");
+        qDebug() << userIdDisconnect[1];
+        QByteArray blocko;
+        QDataStream out(&blocko, QIODevice::WriteOnly);
+        out.setVersion(QDataStream::Qt_5_12);
 
-//        out << "OFFLINEUSER";
-//        out <<  userIdDisconnect[1].toInt();
-//        socket->write(blocko);
-//    }
+        out << "OFFLINEUSER";
+        out <<  userIdDisconnect[1].toInt();
+        socket->write(blocko);
+    }
 
-//    c = "ONLINEUSER";
-//    strAction = QString::fromStdString(m.getAzione());
-//    if(strAction.contains(c.toUtf8())){
-//        QStringList userIdDisconnect = strAction.split("_");
-//        qDebug() << userIdDisconnect[1];
-//        QByteArray blocko;
-//        QDataStream out(&blocko, QIODevice::WriteOnly);
-//        out.setVersion(QDataStream::Qt_5_12);
-
-//        out << "ONLINEUSER";
-//        out <<  userIdDisconnect[1].toInt();
-//        socket->write(blocko);
-//    }
+    c = "ONLINEUSER";
+    strAction = QString::fromStdString(m.getAzione());
+    if(strAction.contains(c.toUtf8())){
+        QStringList userIdDisconnect = strAction.split("_");
+        qDebug() << userIdDisconnect[1];
+        QByteArray blocko;
+        QDataStream out(&blocko, QIODevice::WriteOnly);
+        out.setVersion(QDataStream::Qt_5_12);
+        out << "ONLINEUSER";
+        out <<  userIdDisconnect[1].toInt();
+        socket->write(blocko);
+    }
 }
 

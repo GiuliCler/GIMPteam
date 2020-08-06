@@ -41,7 +41,7 @@ public:
     int getDocumentOwner(int docId);
     std::string openDoc(int userId, int docId);
     void requestSendMessage(CRDT_Message *messaggio);
-    void connectEditor(GUI_Editor *editor);
+    void connectEditor();
     void disconnectEditor(int userId, int docId);
     void receiveMessage();
 
@@ -54,6 +54,8 @@ signals:
     void error(QTcpSocket::SocketError socketError);
     void newFile(const QString &fortune);
     void sigProcessMessage(const CRDT_Message& m);
+    void sigOfflineUser(int userId);
+    void sigOnlineUser(int userId);
 
 private:
     QString port;
@@ -61,7 +63,7 @@ private:
     //Files file;
     QString current;
     QTcpSocket *tcpSocket = nullptr;
-    GUI_Editor *editor = nullptr;
+    //GUI_Editor *editor = nullptr;
     const int Timeout = 100 * 1000;
 
 

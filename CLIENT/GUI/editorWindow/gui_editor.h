@@ -38,8 +38,6 @@ public:
     //si occupano sia del cursore che dell'icona che del colore
     void addUserToEditorGUI(int userid);
     void removeUserFromEditorGUI(int userid);
-    void addContributorToCurrentDocument(int userid);
-    void removeContributorFromCurrentDocument(int userid);
 
     //mi serve perchè non posso fare le connect direttamente nel costruttore. Quando sono nel costruttore, la ui2 non è ancora stata caricata quindi la connect va fatta in un secondo momento
     void connectMenuBarActions();
@@ -66,6 +64,9 @@ public slots:
     void on_actionJustified();
 
     void setMenuToolStatus(menuTools code);
+
+    void addContributorToCurrentDocument(int userid);
+    void removeContributorFromCurrentDocument(int userid);
 
 private:
     Ui::GUI_Editor *ui;

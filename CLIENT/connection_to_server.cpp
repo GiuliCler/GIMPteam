@@ -10,7 +10,7 @@ connection_to_server::connection_to_server(QString port, QString ipAddress){
     this->tcpSocket=new QTcpSocket(this);
     this->port = port;
     this->ipAddress = ipAddress;
-    this->editor = nullptr;
+    //this->editor = nullptr;
     //richiedo i file di un dato utente al momento del login
     //chiudo la connessione quando viene premuto X (termina il programma)
     //connect(quitButton, SIGNAL(clicked()), this, SLOT(close())); <---------- SISTEMARE
@@ -874,10 +874,10 @@ void connection_to_server::requestSendMessage(CRDT_Message *messaggio){
         }
 }
 
-void connection_to_server::connectEditor(GUI_Editor *editor){
+void connection_to_server::connectEditor(){
 
     qDebug()<<"CONNECT EDITOR";      // DEBUG
-    this->editor = editor;
+    //this->editor = editor;
     // TODO
     //qui possiamo verificare se ci sono messaggi da parte del server (riguardo
     //inserimenti di altri utenti o all'avvio dell'editor, se era già stato scritto qualcosa).
@@ -889,7 +889,7 @@ void connection_to_server::connectEditor(GUI_Editor *editor){
 void connection_to_server::disconnectEditor(int userId, int docId){
 
     qDebug()<<"DISCONNECT EDITOR";      // DEBUG
-    this->editor = nullptr;
+
     disconnect(this->tcpSocket, &QTcpSocket::readyRead, this, &connection_to_server::receiveMessage);
 
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
@@ -915,6 +915,8 @@ void connection_to_server::disconnectEditor(int userId, int docId){
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
         throw GUI_ConnectionException();
     }
+
+    //this->editor = nullptr;
 }
 
 
@@ -934,7 +936,8 @@ void connection_to_server::receiveMessage(){
         int userGetOffline;
         in >> userGetOffline;
         std::cout << userGetOffline<< std::endl;
-        this->editor->removeUserFromEditorGUI(userGetOffline);
+        //this->editor->removeUserFromEditorGUI(userGetOffline);
+         emit sigOfflineUser(userGetOffline);
     }
 
     c = "ONLINEUSER";
@@ -943,7 +946,8 @@ void connection_to_server::receiveMessage(){
         int userGetOnline;
         in >> userGetOnline;
         std::cout << userGetOnline<< std::endl;
-        this->editor->addUserToEditorGUI(userGetOnline);
+        //this->editor->addUserToEditorGUI(userGetOnline);
+        emit sigOnlineUser(userGetOnline);
     }
 
     c = "CRDT";
