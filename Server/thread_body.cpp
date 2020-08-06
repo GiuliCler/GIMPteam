@@ -1037,6 +1037,7 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
     out.setVersion(QDataStream::Qt_5_12);
 
    // ILA
+    out << "CRDT";
     out <<  m;
     socket->write(blocko);
 

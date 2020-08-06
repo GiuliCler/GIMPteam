@@ -48,9 +48,9 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName) : QWidg
 
 GUI_Editor::~GUI_Editor(){
 
-//    int result = GUI_ConnectionToServerWrapper::closeDocumentWrapper(gimpParent, gimpParent->userid, documentId);
-//    if(result == -1)
-//        return;
+    int result = GUI_ConnectionToServerWrapper::closeDocumentWrapper(gimpParent, gimpParent->userid, documentId);
+    if(result == -1)
+        return;
 
     delete ui;
     delete crdtController;
