@@ -22,13 +22,14 @@ public:
     int creaDoc(QString nomeDOC);
     QString recuperaURI(QString nomeDOC);
     QString recuperaDocDatoURI(QString uri);
-    int aggiungiPartecipante(QString nomeDOC, QString username, int siteID, int siteCOUNTER);
+    int aggiungiPartecipante(QString nomeDOC, QString username);
     std::vector<QString> recuperaDocs(QString username);
     QString getNickname(QString username);
     QString getIconId(QString username);
     std::vector<std::vector<QString>> recuperaCollaboratori(QString nomeDOC);
     std::vector<int> recuperaInfoUtenteDoc(QString nomeDOC, QString username);
     int rimuoviPartecipante(QString nomeDOC, QString username);
+    int rimuoviAccesso(QString nomeDOC, QString username);
     int aggiornaSiteCounter(QString nomeDOC, QString username, int siteCount);
     int aggiornaUser(QString username, QString nuova_password, QString nuovo_nickname, QString nuova_icona);
     std::vector<QString> recuperaDocsNelDB();

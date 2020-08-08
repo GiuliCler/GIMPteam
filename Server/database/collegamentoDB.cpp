@@ -240,64 +240,105 @@ QString CollegamentoDB::recuperaDocDatoURI(QString uri){
  * Parametri:
  *      nomeDOC: nome del documento a cui l'utente può accedere per la prima volta
  *      username: nuovo partecipante alla modifica del documento in questione
- *      siteID: Sdel nuovo partecipante
- *      siteCOUNTER: del nuovo partecipante
  * Ritorno:
  *      1 -> L'utente non è ancora stato abilitato alla modifica del documento, quindi la riga
- *           (username,nomeDOC) è stata aggiunta alla tabella UTENTE_DOC
+ *           (username,nomeDOC) è stata aggiunta alla tabella UTENTE_DOC oppure accessibile è stato correttamente
+ *           aggiornato (settato a 1)
  *      0 -> L'utente è già stato abilitato alla modifica del documento, ovvero è già presente una riga
- *           con (username,nomeDOC) nella tabella UTENTE_DOC
+ *           con (username,nomeDOC) e accessibile = 1 nella tabella UTENTE_DOC
  *      2 -> Il documento di cui è stato fornito il nome non esiste nella tabella DOC oppure è stata fornita
  *           una stringa vuota
  */
-int CollegamentoDB::aggiungiPartecipante(QString nomeDOC, QString username, int siteID, int siteCOUNTER){
+int CollegamentoDB::aggiungiPartecipante(QString nomeDOC, QString username){
 
     if(nomeDOC.isEmpty())
         return 2;
 
     int esito = 1;
 
-    std::string query1 = "SELECT * FROM utente_doc WHERE username=:user AND nome_doc=:doc";
-    std::string query2 = "INSERT INTO utente_doc(username, nome_doc, site_id, site_counter) VALUES(:user, :doc, :siteid, :sitecounter)";
+    int siteID = -1, siteCOUNTER = -1;
+
+    std::string query1 = "SELECT * FROM utente_doc WHERE username=:user AND nome_doc=:doc AND accessibile=:acc";
     std::string query3 = "SELECT * FROM doc WHERE nome_doc=:doc";
-    QSqlQuery ris1(QSqlDatabase::database(connectionName)), ris2(QSqlDatabase::database(connectionName)), ris3(QSqlDatabase::database(connectionName));
+    QSqlQuery ris1(QSqlDatabase::database(connectionName)), ris2(QSqlDatabase::database(connectionName)), ris3(QSqlDatabase::database(connectionName)), ris4(QSqlDatabase::database(connectionName)), ris5(QSqlDatabase::database(connectionName));
     ris1.prepare(QString::fromStdString(query1));
-    ris2.prepare(QString::fromStdString(query2));
     ris3.prepare(QString::fromStdString(query3));
     ris1.bindValue(":user", username);
     ris1.bindValue(":doc", nomeDOC);
-    ris2.bindValue(":user", username);
-    ris2.bindValue(":doc", nomeDOC);
-    ris2.bindValue(":siteid", siteID);
-    ris2.bindValue(":sitecounter", siteCOUNTER);
+    ris1.bindValue(":acc", 1);
     ris3.bindValue(":doc", nomeDOC);
 
-//    if(QSqlDatabase::database().driver()->hasFeature(QSqlDriver::Transactions)){
+    QSqlDatabase::database().transaction();
 
-        QSqlDatabase::database().transaction();
+    ris3.exec();
+    if(ris3.size() == 0){
 
-        ris3.exec();
-        if(ris3.size() == 0){
+        /* Non esiste alcuna riga all'interno della tabella DOC con il nomeDOC specificato */
+        esito = 2;
 
-            /* Non esiste alcuna riga all'interno della tabella DOC con il nomeDOC specificato */
-            esito = 2;
+    } else {
 
+        ris1.exec();
+
+        /* "Esiste già una riga nella tabella UTENTE_DOC corrispondente alla coppia (username,nomeDOC) con accessibile = 1 (true)?" */
+        if(ris1.size() != 0){
+            /* L'utente è già stato abilitato alla modifica del documento */
+            esito = 0;
+            QSqlDatabase::database().commit();
         } else {
+            /* L'utente non è ancora stato abilitato alla modifica del documento */
+            /* "Esiste già una riga nella tabella UTENTE_DOC corrispondente alla coppia (username,nomeDOC) con accessibile = 0 (false)?"
+                  esiste --> setto accessibile = TRUE
+                  non esiste --> creo riga con siteCOUNTER = 0 e siteID = COUNT(site_id) */
+            std::string query4 = "SELECT * FROM utente_doc WHERE username=:user AND nome_doc=:doc AND accessibile=:acc";
+            ris4.prepare(QString::fromStdString(query4));
+            ris4.bindValue(":user", username);
+            ris4.bindValue(":doc", nomeDOC);
+            ris4.bindValue(":acc", 0);
 
-            ris1.exec();
+            ris4.exec();
 
-            /* "Esiste già una riga nella tabella UTENTE_DOC corrispondente alla coppia (username,nomeDOC)?" */
-            if(ris1.size() != 0){
-                /* L'utente è già stato abilitato alla modifica del documento */
-                esito = 0;
-                QSqlDatabase::database().commit();
+            if(ris4.size() != 0){
+                /* Esiste già una riga nella tabella utente_doc*/
+                // Recupero siteID e siteCOUNTER precedenti prima di fare la delete (motivo delete+insert: la UPDATE SQL non funziona)
+                while(ris4.next()){
+                    siteID = ris4.value(2).toInt();
+                    siteCOUNTER = ris4.value(3).toInt();
+                }
+
+                QSqlQuery risDEL(QSqlDatabase::database(connectionName));
+                risDEL.prepare("DELETE FROM utente_doc WHERE username=:user AND nome_doc=:doc");
+                risDEL.bindValue(":user", username);
+                risDEL.bindValue(":doc", nomeDOC);
+                risDEL.exec();
             } else {
-                /* L'utente non è ancora stato abilitato alla modifica del documento */
-                ris2.exec();
-                QSqlDatabase::database().commit();
+                /* Non esiste ancora una riga nella tabella utente_doc*/
+                siteCOUNTER = 0;
+
+                std::string query5 = "SELECT COUNT(*) FROM utente_doc WHERE nome_doc=:doc";
+                ris5.prepare(QString::fromStdString(query5));
+                ris5.bindValue(":doc", nomeDOC);
+
+                ris5.exec();
+
+                while(ris5.next()){
+                    siteID = ris5.value(0).toInt();
+                }
             }
+
+            std::string query2 = "INSERT INTO utente_doc(username, nome_doc, site_id, site_counter, accessibile) VALUES(:user, :doc, :siteid, :sitecounter, :acc)";
+            ris2.prepare(QString::fromStdString(query2));
+            ris2.bindValue(":user", username);
+            ris2.bindValue(":doc", nomeDOC);
+            ris2.bindValue(":siteid", siteID);
+            ris2.bindValue(":sitecounter", siteCOUNTER);
+            ris2.bindValue(":acc", 1);
+
+            ris2.exec();
+
+            QSqlDatabase::database().commit();
         }
-//    }
+    }
 
     return esito;
 }
@@ -315,10 +356,11 @@ std::vector<QString> CollegamentoDB::recuperaDocs(QString username){
 
     std::vector<QString> elenco;
 
-    std::string query = "SELECT nome_doc FROM utente_doc WHERE username=:user";
+    std::string query = "SELECT nome_doc FROM utente_doc WHERE username=:user AND accessibile=:acc";
     QSqlQuery ris(QSqlDatabase::database(connectionName));
     ris.prepare(QString::fromStdString(query));
     ris.bindValue(":user", username);
+    ris.bindValue(":acc", 1);
 
     ris.exec();
 
@@ -333,6 +375,7 @@ std::vector<QString> CollegamentoDB::recuperaDocs(QString username){
 
     return elenco;
 }
+
 /*
  * Funzione che ritorna il nickname dato username.
  * Se tutto ok => nickname
@@ -381,7 +424,7 @@ QString CollegamentoDB::getIconId(QString username){
 }
 
 /*
- * Utilizzo: funzione che permette di recuperare dalla tabella UTENTE_DOC tutti i collaboratori (utenti abilitati alla modifica)
+ * Utilizzo: funzione che permette di recuperare dalla tabella UTENTE_DOC tutti i collaboratori (utenti sia con accessibile = 0 sia con accessibile = 1)
  *           per un certo documento
  * Parametri:
  *      nomeDOC: documento di cui si devono conoscere i collaboratori
@@ -480,12 +523,10 @@ std::vector<int> CollegamentoDB::recuperaInfoUtenteDoc(QString nomeDOC, QString 
 }
 
 /*
- * Utilizzo: funzione che permette di eliminare una riga nella tabella UTENTE_DOC come conseguenza del fatto che un utente non voglia
- *           più partecipare alla modifica di un certo documento e che quindi voglia rimuoverlo dal suo elenco di documenti
- *           modificabili
+ * Utilizzo: funzione che permette di eliminare una riga nella tabella UTENTE_DOC
  * Parametri:
- *      nomeDOC: nome del documento che l'utente vuole rimuovere
- *      username: utente in questione
+ *      nomeDOC: nome del documento da rimuovere
+ *      username: username
  * Ritorno:
  *      1 -> riga della tabella UTENTE_DOC eliminata correttamente
  *      0 -> errore, riga relativa a (username, nomeDOC) non presente nella tabella UTENTE_DOC
@@ -499,47 +540,92 @@ int CollegamentoDB::rimuoviPartecipante(QString nomeDOC, QString username){
 
     std::string query1 = "SELECT * FROM utente_doc WHERE username=:user AND nome_doc=:doc";
     std::string query2 = "DELETE FROM utente_doc WHERE username=:user AND nome_doc=:doc";
-    std::string query3 = "SELECT * FROM utente_doc WHERE nome_doc=:doc";
-//    std::string query4 = "DELETE FROM doc WHERE nome_doc=:doc";
-    QSqlQuery ris1(QSqlDatabase::database(connectionName)), ris2(QSqlDatabase::database(connectionName)), ris3(QSqlDatabase::database(connectionName)), ris4(QSqlDatabase::database(connectionName));
+    QSqlQuery ris1(QSqlDatabase::database(connectionName)), ris2(QSqlDatabase::database(connectionName)), ris4(QSqlDatabase::database(connectionName));
     ris1.prepare(QString::fromStdString(query1));
     ris2.prepare(QString::fromStdString(query2));
-    ris3.prepare(QString::fromStdString(query3));
-//    ris4.prepare(QString::fromStdString(query4));
     ris1.bindValue(":user", username);
     ris1.bindValue(":doc", nomeDOC);
     ris2.bindValue(":user", username);
     ris2.bindValue(":doc", nomeDOC);
-    ris3.bindValue(":doc", nomeDOC);
-//    ris4.bindValue(":doc", nomeDOC);
 
-//    if(QSqlDatabase::database().driver()->hasFeature(QSqlDriver::Transactions)){
+    QSqlDatabase::database().transaction();
 
-        QSqlDatabase::database().transaction();
+    ris1.exec();
+    if(ris1.size() != 1){
 
-        ris1.exec();
-        if(ris1.size() != 1){
+        /* Non esiste alcuna riga all'interno della tabella UTENTE_DOC con i parametri specificati */
+        esito = 0;
 
-            /* Non esiste alcuna riga all'interno della tabella UTENTE_DOC con i parametri specificati */
-            esito = 0;
+    } else {
 
-        } else {
+        /* Riga (username, nomeDOC) esistente nella tabella UTENTE_DOC --> elimino tale riga dalla tabella UTENTE_DOC */
+        ris2.exec();
 
-            /* Riga (username, nomeDOC) esistente nella tabella UTENTE_DOC --> elimino tale riga dalla tabella UTENTE_DOC */
-            ris2.exec();
+        QSqlDatabase::database().commit();
 
-            //rimuovere?
-            /* Verifico se esistono altre righe nella tabella UTENTE_DOC relative al documento nomeDOC e, se non esistono,
-             * cancello il documento dalla tabella DOC */
-            /*ris3.exec();
-            if(ris3.size() == 0){
-                ris4.exec();
-            }*/
+    }
 
-            QSqlDatabase::database().commit();
+    return esito;
+}
 
+/*
+ * Utilizzo: funzione che permette di settare a 0 l'attributo "accessibile" in una riga nella tabella UTENTE_DOC
+ * Parametri:
+ *      nomeDOC: nome del documento
+ *      username: username dell'utente
+ * Ritorno:
+ *      1 -> riga della tabella UTENTE_DOC aggiornata correttamente (con accessibile = 0)
+ *      0 -> errore, riga relativa a (username, nomeDOC) non presente nella tabella UTENTE_DOC
+ */
+int CollegamentoDB::rimuoviAccesso(QString nomeDOC, QString username){
+
+    if(nomeDOC.isEmpty() || username.isEmpty())
+        return 0;
+
+    int esito = 1, siteID = -1, siteCOUNTER = -1;
+
+    std::string query1 = "SELECT * FROM utente_doc WHERE username=:user AND nome_doc=:doc";
+    QSqlQuery ris1(QSqlDatabase::database(connectionName)), ris2(QSqlDatabase::database(connectionName)), ris3(QSqlDatabase::database(connectionName)), ris4(QSqlDatabase::database(connectionName));
+    ris1.prepare(QString::fromStdString(query1));
+    ris1.bindValue(":user", username);
+    ris1.bindValue(":doc", nomeDOC);
+
+    QSqlDatabase::database().transaction();
+
+    ris1.exec();
+    if(ris1.size() != 1){
+
+        /* Non esiste alcuna riga all'interno della tabella UTENTE_DOC con i parametri specificati */
+        esito = 0;
+
+    } else {
+
+        // Recupero siteID e siteCOUNTER precedenti prima di fare la delete (motivo delete+insert: la UPDATE SQL non funziona)
+        while(ris1.next()){
+            siteID = ris1.value(2).toInt();
+            siteCOUNTER = ris1.value(3).toInt();
         }
-//    }
+
+        std::string query2 = "DELETE FROM utente_doc WHERE username=:user AND nome_doc=:doc";
+        std::string query3 = "INSERT INTO utente_doc(username, nome_doc, site_id, site_counter, accessibile) VALUES(:user, :doc, :siteid, :sitecounter, :acc)";
+        ris2.prepare(QString::fromStdString(query2));
+        ris3.prepare(QString::fromStdString(query3));
+        ris2.bindValue(":user", username);
+        ris2.bindValue(":doc", nomeDOC);
+        ris3.bindValue(":user", username);
+        ris3.bindValue(":doc", nomeDOC);
+        ris3.bindValue(":siteid", siteID);
+        ris3.bindValue(":sitecounter", siteCOUNTER);
+        ris3.bindValue(":acc", 0);
+
+        /* Riga (username, nomeDOC) esistente nella tabella UTENTE_DOC --> elimino tale riga dalla tabella UTENTE_DOC... */
+        ris2.exec();
+
+        QSqlDatabase::database().commit();
+
+        /* ... reinserisco tale riga nella tabella UTENTE_DOC ma con accessibile settato a 0 */
+        ris3.exec();
+    }
 
     return esito;
 }

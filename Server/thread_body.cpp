@@ -334,7 +334,7 @@ void Thread_body::newDoc(QString docName, int userId){
                 socket->write(blocko);
             }else{
                 mutex_db->lock();
-                if(database->aggiungiPartecipante(username+"_"+docName, username, 0, 0) != 2){
+                if(database->aggiungiPartecipante(username+"_"+docName, username) != 2){
                     mutex_db->unlock();
                     out << "ok";
                     out << id;
@@ -725,7 +725,7 @@ int Thread_body::associateDoc(int docId, int userId){
 
     if(!username.isEmpty() && QDir(path+username).exists()){
         mutex_db->lock();
-        if(database->aggiungiPartecipante(docName,username,0,0)!=2){        //TODO ILA SISTEMARE GLI ID
+        if(database->aggiungiPartecipante(docName,username)!=2){
             int id = openDoc(docName, username, docId, userId, 1);
             mutex_db->unlock();
             if(id == -1){
@@ -899,9 +899,9 @@ void Thread_body::deleteDoc(int userId, int docId){
             socket->write(blocko);
         }
     }else{
-        //il documento rimane e viene rimosso solo il partecipante
+        // il documento rimane e viene dimenticato il documento da parte del partecipane
         mutex_db->lock();
-        if(database->rimuoviPartecipante(docName, username)==0){
+        if(database->rimuoviAccesso(docName, username)==0){
             mutex_db->unlock();
             out << "errore";
             socket->write(blocko);
