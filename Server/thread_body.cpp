@@ -348,7 +348,7 @@ void Thread_body::newDoc(QString docName, int userId){
 
                     int siteId = info[0];
                     int siteCounter = info[1];
-                    QString ritorno = "ok_"+QString(siteId)+"_"+QString(siteCounter)+"_"+QString(id);
+                    QString ritorno = "ok_"+QString::number(siteId)+"_"+QString::number(siteCounter)+"_"+QString::number(id);
                     out << ritorno.toUtf8();
                     socket->write(blocko);
                 }else{
@@ -697,7 +697,7 @@ void Thread_body::getDocumentDatoUri(QString uri, int userId){
         //creo sul db l'associazione documento-utente (non owner)
         QString ritorno = associateDoc(docId, userId);
         if(ritorno.contains("ok")){
-            out << ritorno;
+            out << ritorno.toUtf8();
             socket->write(blocko);
             //segnalo agli altri contributors che ne faccio parte
             CRDT_Symbol s = *new CRDT_Symbol();
@@ -752,7 +752,7 @@ QString Thread_body::associateDoc(int docId, int userId){
 
             int siteId = info[0];
             int siteCounter = info[1];
-            QString ritorno = "ok_"+QString(siteId)+"_"+QString(siteCounter)+"_"+QString(docId);
+            QString ritorno = "ok_"+QString::number(siteId)+"_"+QString::number(siteCounter)+"_"+QString::number(docId);
             int id = openDoc(docName, username, docId, userId, 1);
             if(id == -1){
                 return "errore";
@@ -1094,7 +1094,7 @@ void Thread_body::openDocument(int docId, int userId){
         mutex_db->unlock();
         int siteId = info[0];
         int siteCounter = info[1];
-        QString ritorno = "ok_"+QString(siteId)+"_"+QString(siteCounter);
+        QString ritorno = "ok_"+QString::number(siteId)+"_"+QString::number(siteCounter);
 
         out << ritorno.toUtf8();
         socket->write(blocko);
