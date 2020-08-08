@@ -153,8 +153,8 @@ QString GUI_ConnectionToServerWrapper::requestIconIdWrapper(GIMPdocs *gimpdocs, 
 
 
 /*DOCUMENT*/
-int GUI_ConnectionToServerWrapper::requestCreateDocumentWrapper(GIMPdocs *gimpdocs, int userId, QString name){
-    int returnValue;
+QString GUI_ConnectionToServerWrapper::requestCreateDocumentWrapper(GIMPdocs *gimpdocs, int userId, QString name){
+    QString returnValue;
 
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
@@ -164,11 +164,11 @@ int GUI_ConnectionToServerWrapper::requestCreateDocumentWrapper(GIMPdocs *gimpdo
         gimpdocs->setCursor(Qt::ArrowCursor);
         //provo a ristabilire la connessione
         GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
-        return -1;
+        return "errore";
     } catch(GUI_GenericException &exception){
         gimpdocs->setCursor(Qt::ArrowCursor);
         QMessageBox::information(gimpdocs, "", exception.message);
-        return -1;
+        return "errore";
     }
 
     return returnValue;
@@ -250,8 +250,8 @@ std::shared_ptr<QMap<QString, int>> GUI_ConnectionToServerWrapper::getKnownDocum
     return mpointer;
 }
 
-int GUI_ConnectionToServerWrapper::requestDocDatoUriWrapper(GIMPdocs *gimpdocs, int userId, QString uri){
-    int returnValue;
+QString GUI_ConnectionToServerWrapper::requestDocDatoUriWrapper(GIMPdocs *gimpdocs, int userId, QString uri){
+    QString returnValue;
 
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
@@ -261,11 +261,11 @@ int GUI_ConnectionToServerWrapper::requestDocDatoUriWrapper(GIMPdocs *gimpdocs, 
         gimpdocs->setCursor(Qt::ArrowCursor);
         //provo a ristabilire la connessione
         GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
-        return -1;
+        return "errore";
     } catch(GUI_GenericException &exception){
         gimpdocs->setCursor(Qt::ArrowCursor);
         QMessageBox::information(gimpdocs, "", exception.message);
-        return -1;
+        return "errore";
     }
 
     return returnValue;

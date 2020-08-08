@@ -27,12 +27,12 @@ public:
     int requestTryLogOut(int userId);
     int requestNewAccount(QString username, QString password, QString nickname, QString icon);
     long requestUpdateAccount(int userId, QString password, QString nickname, QString icon);
-    long requestCreateDocument(int userId, QString name);
+    std::string requestCreateDocument(int userId, QString name);
     std::string requestGetNickname(int userId);
     std::string requestGetUsername(int userId);
     std::string requestIconId(int userId);
     std::string requestUri(int docId);
-    long requestDocDatoUri(QString uri, int userId);
+    std::string requestDocDatoUri(QString uri, int userId);
     std::shared_ptr<QMap<QString, int>> getKnownDocuments(int userId);
     QTcpSocket *getSocket();
     std::string requestDocName(int docId);
