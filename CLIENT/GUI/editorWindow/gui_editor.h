@@ -31,7 +31,7 @@ public:
     //indica se il testo è colorato coi colori degli utenti per identificarli
     bool usersColors;
 
-    explicit GUI_Editor(QWidget *parent, int documentId, QString docName);
+    explicit GUI_Editor(QWidget *parent, int documentId, QString docName, int siteId, int siteCounter);
     ~GUI_Editor();
     inline static QString getObjectName(){ return "GUI_Editor";}
     //lo scopo di queste 2 funzioni è di venire chiamate da un più basso livello quando viene aggiunto o rimosso un nuovo utente che sta lavorando allo stesso document

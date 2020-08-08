@@ -13,7 +13,7 @@
 #include <QFileDialog>
 #include <QFileInfo>
 
-GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName) : QWidget(parent), documentId(documentId), docName(docName)
+GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int siteId, int siteCounter) : QWidget(parent), documentId(documentId), docName(docName)
 {
 
     this->setObjectName(GUI_Editor::getObjectName());
@@ -31,7 +31,7 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName) : QWidg
     ui->usersBarWidget->layout()->addWidget(childUsersBar);
     childToolsBar = new GUI_ToolsBar(this);
     ui->toolsBarWidget->layout()->addWidget(childToolsBar);
-    crdtController = new CRDT_controller(gimpParent, this, *childMyTextEdit);
+    crdtController = new CRDT_controller(gimpParent, this, *childMyTextEdit, siteId, siteCounter);
 
 
     //ottengo l'elenco degli utenti che al momento stanno guardando il mio stesso document e ne creo icona e cursore

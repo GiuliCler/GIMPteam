@@ -26,7 +26,7 @@ private:
     int confrontaPos(QVector<int> pos, QVector<int> currentPos);
 
 public:
-    explicit CRDT_SharedEditor(CRDT_controller *parent, connection_to_server *connection);
+    explicit CRDT_SharedEditor(CRDT_controller *parent, connection_to_server *connection, int siteId, int siteCounter);
     int getSiteId() const;
 //    std::string print();
     void localInsert(int index, QChar value, QTextCharFormat fmt, Qt::Alignment align);

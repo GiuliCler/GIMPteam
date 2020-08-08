@@ -48,7 +48,10 @@ void GUI_Opendoc::on_openDocsPushButton_clicked(){
     if(name.compare("errore") == 0)
         return;
 
-    GUI_Editor *widget = new GUI_Editor(gimpParent, docId, docName);
+    int siteId = name.split("_").at(1).toInt();
+    int siteCounter = name.split("_").at(2).toInt();
+
+    GUI_Editor *widget = new GUI_Editor(gimpParent, docId, docName, siteId, siteCounter);
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
 }
 

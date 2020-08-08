@@ -8,9 +8,7 @@
 #include <vector>
 #include <cmath>
 
-CRDT_SharedEditor::CRDT_SharedEditor(CRDT_controller *parent, connection_to_server *connection): parent(parent), connection(connection){
-//        _siteId = _server.connect(this);
-        _counter = 0;
+CRDT_SharedEditor::CRDT_SharedEditor(CRDT_controller *parent, connection_to_server *connection, int siteId, int siteCounter): parent(parent), connection(connection), _siteId(siteId), _counter(siteCounter){
         QObject::connect(connection, &connection_to_server::sigProcessMessage, this, &CRDT_SharedEditor::process);
 }
 
