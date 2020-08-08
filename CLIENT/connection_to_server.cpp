@@ -81,7 +81,7 @@ int connection_to_server::requestTryLogin(QString username, QString password)
     }
 }
 
-long connection_to_server::requestCreateDocument(int userId, QString name)
+std::string connection_to_server::requestCreateDocument(int userId, QString name)
 {
     qDebug()<<"NEW_DOC";      // DEBUG
 
@@ -94,7 +94,7 @@ long connection_to_server::requestCreateDocument(int userId, QString name)
 
         if (!tcpSocket->waitForConnected(Timeout)) {
             emit error(tcpSocket->error(), tcpSocket->errorString());
-            return -1;
+            return "errore";
         }
     }
     QByteArray buffer;
@@ -109,29 +109,27 @@ long connection_to_server::requestCreateDocument(int userId, QString name)
 
     if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-        return -1;
+        return "errore";
     }
 
-    int docId;
     QDataStream in;
     in.setDevice(this->tcpSocket);
     in.setVersion(QDataStream::Qt_5_12);
     do {
         if (!this->tcpSocket->waitForReadyRead(Timeout)) {
             emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-            return -1;
+            return "errore";
         }
 
         in.startTransaction();
         in >> buffer;
-        in >> docId;
     } while (!in.commitTransaction());
     QString c = "ok";
     if(buffer.contains(c.toUtf8())){
         //TODO: settare il nome del documento nella barra in alto.
-        return docId;
+        return buffer.toStdString();
     }else{
-        return -1;
+        return "errore";
     }
     //TODO: il documento viene ritornato e aperto => gestione con CRDT                  // todo ila&paolo
 }
@@ -179,9 +177,10 @@ std::string connection_to_server::openDoc(int userId, int docId)
         in.startTransaction();
         in >> buffer;
     } while (!in.commitTransaction());
+
     QString c = "ok";
     if(buffer.contains(c.toUtf8())){
-        return "ok";
+        return buffer.toStdString();
     }else{
         return "errore";
     }
@@ -340,7 +339,7 @@ long connection_to_server::requestUpdateAccount( int userId, QString password, Q
     }
 }
 
-long connection_to_server::requestDocDatoUri(QString uri, int userId){
+std::string connection_to_server::requestDocDatoUri(QString uri, int userId){
     qDebug()<<"GET_DOCUMENT_DATO_URI";      // DEBUG
 
 //    this->tcpSocket->abort();
@@ -349,7 +348,7 @@ long connection_to_server::requestDocDatoUri(QString uri, int userId){
 
         if (!tcpSocket->waitForConnected(Timeout)) {
             emit error(tcpSocket->error(), tcpSocket->errorString());
-            return -1;
+            return "errore";
         }
     }
     QByteArray buffer;
@@ -364,24 +363,30 @@ long connection_to_server::requestDocDatoUri(QString uri, int userId){
 
     if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-        return -1;
+        return "errore";
     }
 
     //ora attendo una risposta dal server, sul login al db
-    int file;
+    QByteArray file;
     QDataStream in;
     in.setDevice(this->tcpSocket);
     in.setVersion(QDataStream::Qt_5_12);
     do {
         if (!this->tcpSocket->waitForReadyRead(Timeout)) {
             emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-            return -1;
+            return "errore";
         }
 
         in.startTransaction();
         in >> file;
     } while (!in.commitTransaction());
-    return file;
+    QString c = "ok";
+    if(file.contains(c.toUtf8())){
+        //TODO: settare il nome del documento nella barra in alto.
+        return file.toStdString();
+    }else{
+        return "errore";
+    }
 }
 
 std::string connection_to_server::requestUri(int docId){

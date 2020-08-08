@@ -41,11 +41,16 @@ void GUI_Newdoc::on_createPushButton_clicked()
         return;
     }
     QString docName = ui->nameLineEdit->text();
-    int documentId = GUI_ConnectionToServerWrapper::requestCreateDocumentWrapper(gimpParent, static_cast<GIMPdocs*>(gimpParent)->userid, docName);
-    if(documentId == -1)
+    QString name = GUI_ConnectionToServerWrapper::requestCreateDocumentWrapper(gimpParent, static_cast<GIMPdocs*>(gimpParent)->userid, docName);
+    if(name.compare("errore") == 0)
         return;
 
-    GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId, docName);
+    int siteId = name.split("_").at(1).toInt();
+    int siteCounter = name.split("_").at(2).toInt();
+    int documentId = name.split("_").at(3).toInt();
+
+
+    GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId, docName, siteId, siteCounter);
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
 }
 
@@ -60,12 +65,16 @@ void GUI_Newdoc::on_openURIPushButton_clicked()
         return;
     }
 
-    int documentId = GUI_ConnectionToServerWrapper::requestDocDatoUriWrapper(gimpParent, gimpParent->userid, ui->URILineEdit->text());
-    if(documentId  == -1)
+    QString name = GUI_ConnectionToServerWrapper::requestDocDatoUriWrapper(gimpParent, gimpParent->userid, ui->URILineEdit->text());
+    if(name.compare("errore") == 0)
         return;
+
+    int siteId = name.split("_").at(1).toInt();
+    int siteCounter = name.split("_").at(2).toInt();
+    int documentId = name.split("_").at(3).toInt();
 
     QString docName = GUI_ConnectionToServerWrapper::requestDocNameWrapper(gimpParent, documentId);
 
-    GUI_Editor *widget = new GUI_Editor(gimpParent, documentId, docName);
+    GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId, docName, siteId, siteCounter);
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
 }

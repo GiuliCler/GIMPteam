@@ -89,10 +89,10 @@ QString Stub::requestIconIdTemporary(connection_to_server *connection, int userI
 
 
 /*DOCUMENT*/
-int Stub::requestCreateDocumentTemporary(connection_to_server *connection, int userId, QString name){
-    int result = connection->requestCreateDocument(userId, name);
+QString Stub::requestCreateDocumentTemporary(connection_to_server *connection, int userId, QString name){
+    QString result = QString::fromStdString(connection->requestCreateDocument(userId, name));
 
-    if(result < 0)
+    if(result.compare("errore") == 0)
         //throw GUI_ConnectionException();
         throw GUI_GenericException("Houston, abbiamo un problema");
 
@@ -117,14 +117,14 @@ std::shared_ptr<QMap<QString, int>> Stub::getKnownDocumentsTemporary(connection_
     return vpointer;
 }
 
-long Stub::requestDocDatoUri(connection_to_server *connection, int userId, QString uri){
+QString Stub::requestDocDatoUri(connection_to_server *connection, int userId, QString uri){
     //come al solito è solo per togleire i warning
     int n = userId;
     userId = n;
 
-    long result = connection->requestDocDatoUri(uri, userId);
+    QString result = QString::fromStdString(connection->requestDocDatoUri(uri, userId));
 
-    if(result < 0)
+    if(result.compare("errore") == 0)
         //throw GUI_ConnectionException();
         throw GUI_GenericException("Houston, abbiamo un problema");
 
