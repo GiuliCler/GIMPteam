@@ -335,9 +335,13 @@ void Thread_body::newDoc(QString docName, int userId){
             }else{
                 mutex_db->lock();
                 if(database->aggiungiPartecipante(username+"_"+docName, username) != 2){
+                    std::vector<int> info = database->recuperaInfoUtenteDoc(username+"_"+docName, username);
                     mutex_db->unlock();
-                    out << "ok";
-                    out << id;
+
+                    int siteId = info[0];
+                    int siteCounter = info[1];
+                    QString ritorno = "ok_"+QString(siteId)+"_"+QString(siteCounter)+"_"+QString(id);
+                    out << ritorno.toUtf8();
                     socket->write(blocko);
                 }else{
                     mutex_db->unlock();
@@ -683,21 +687,22 @@ void Thread_body::getDocumentDatoUri(QString uri, int userId){
         int docId = documents.value(doc);
         mutex_docs->unlock();
         //creo sul db l'associazione documento-utente (non owner)
-        if(associateDoc(docId, userId)){
-            out << docId;
+        QString ritorno = associateDoc(docId, userId);
+        if(ritorno.contains("ok")){
+            out << ritorno;
             socket->write(blocko);
         }else{
-            out << -1;
+            out << "errore";
             socket->write(blocko);
         }
     }else{
-        out << -1;
+        out << "errore";
         socket->write(blocko);
     }
 }
 
 
-int Thread_body::associateDoc(int docId, int userId){
+QString Thread_body::associateDoc(int docId, int userId){
     //cerco il nome del doc e dello user
     mutex_users->lock();
     QString username;
@@ -726,17 +731,22 @@ int Thread_body::associateDoc(int docId, int userId){
     if(!username.isEmpty() && QDir(path+username).exists()){
         mutex_db->lock();
         if(database->aggiungiPartecipante(docName,username)!=2){
-            int id = openDoc(docName, username, docId, userId, 1);
+            std::vector<int> info = database->recuperaInfoUtenteDoc(docName, username);
             mutex_db->unlock();
+
+            int siteId = info[0];
+            int siteCounter = info[1];
+            QString ritorno = "ok_"+QString(siteId)+"_"+QString(siteCounter)+"_"+QString(docId);
+            int id = openDoc(docName, username, docId, userId, 1);
             if(id == -1){
-                return 0;
+                return "errore";
             }else{
-                return 1;
+                return ritorno;
             }
         }
         mutex_db->unlock();
     }
-    return 0;
+    return "errore";
 }
 
 void Thread_body::getUri(int docId){
@@ -1013,7 +1023,14 @@ void Thread_body::openDocument(int docId, int userId){
         out << "errore";
         socket->write(blocko);
     }else{
-        out << "ok";
+        mutex_db->lock();
+        std::vector<int> info = database->recuperaInfoUtenteDoc(docName, username);
+        mutex_db->unlock();
+        int siteId = info[0];
+        int siteCounter = info[1];
+        QString ritorno = "ok_"+QString(siteId)+"_"+QString(siteCounter);
+
+        out << ritorno.toUtf8();
         socket->write(blocko);
     }
 }
