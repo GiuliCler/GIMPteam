@@ -19,8 +19,12 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int sit
     this->setObjectName(GUI_Editor::getObjectName());
     gimpParent = static_cast<GIMPdocs*>(parent);
 
+    //Per gli online users
     QObject::connect(gimpParent->getConnection(), &connection_to_server::sigOfflineUser, this, &GUI_Editor::removeUserFromEditorGUI);
     QObject::connect(gimpParent->getConnection(), &connection_to_server::sigOnlineUser, this, &GUI_Editor::addUserToEditorGUI);
+
+    //per i contributors
+    QObject::connect(gimpParent->getConnection(), &connection_to_server::sigNewContributor, this, &GUI_Editor::addContributorToCurrentDocument);
 
     ui = new Ui::GUI_Editor();
     ui->setupUi(this);
@@ -43,11 +47,14 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int sit
 
     //creo l'icona per gli user che hanno contribuito al document
     std::shared_ptr<QSet<int>> contributors = GUI_ConnectionToServerWrapper::getContributorsUsersOnDocumentWrapper(gimpParent, documentId);
-    if( contributors == nullptr)
+    if( contributors == nullptr || contributors->size()==0)
         return;
     for (QSet<int>::iterator userId = contributors->begin(); userId != contributors->end(); userId++)
         addContributorToCurrentDocument(*userId);
+
+    //richiedo l'uri del documento
     this->uri = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
+    //avvio l'editor
     GUI_ConnectionToServerWrapper::startEditor(gimpParent);
 }
 

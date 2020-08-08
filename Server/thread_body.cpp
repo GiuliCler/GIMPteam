@@ -158,6 +158,14 @@ void Thread_body::executeJob(){
         getWorkingUsersGivenDoc(docId);
     }
 
+    c = "GET_CONTRIBUTORS_ONADOC";
+    if(text.contains(c.toUtf8())){
+        int docId;
+        *in >> docId;
+
+        getCollaboratorsGivenDoc(docId);
+    }
+
     c = "NEW_DOC";
     if(text.contains(c.toUtf8())){
         QString docName;
@@ -691,6 +699,14 @@ void Thread_body::getDocumentDatoUri(QString uri, int userId){
         if(ritorno.contains("ok")){
             out << ritorno;
             socket->write(blocko);
+            //segnalo agli altri contributors che ne faccio parte
+            CRDT_Symbol s = *new CRDT_Symbol();
+            CRDT_Message *m = new CRDT_Message("NEWCONTRIBUTOR_"+std::to_string(userId), s, userId);
+            auto thread_id = std::this_thread::get_id();
+            std::stringstream ss;
+            ss << thread_id;
+            std::string thread_id_string = ss.str();
+            emit messageToServer(*m, QString::fromStdString(thread_id_string), docId);
         }else{
             out << "errore";
             socket->write(blocko);
@@ -948,7 +964,6 @@ void Thread_body::getDocName(int docId){
     }
 }
 
-
 void Thread_body::getWorkingUsersGivenDoc(int docId){
     QByteArray blocko;
     QDataStream out(&blocko, QIODevice::WriteOnly);
@@ -987,6 +1002,57 @@ void Thread_body::getWorkingUsersGivenDoc(int docId){
 
     mutex_workingUsers->unlock();
 
+}
+
+void Thread_body::getCollaboratorsGivenDoc(int docId){
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
+    //cerco il nome del documento
+    QString docName;
+    mutex_docs->lock();
+    QMapIterator<QString, int> i(documents);
+    while (i.hasNext()) {
+        i.next();
+        if(i.value()==docId){
+            docName=i.key();
+            break;
+        }
+    }
+    mutex_docs->unlock();
+    if(!docName.isEmpty()){
+        //recupero i collaboratori dal db
+        mutex_db->lock();
+        std::vector<std::vector<QString>> collaboratori = this->database->recuperaCollaboratori(docName);
+        mutex_db->unlock();
+        // Mando al client il numero di elementi/id che verranno inviati
+        int num_collaborators = collaboratori.size();
+        out << num_collaborators;
+
+        for(auto it_ext = collaboratori.begin(); it_ext<collaboratori.end(); it_ext++){
+            for(auto it_int = it_ext->begin(); it_int<it_ext->begin()+1; it_int++){
+                QString c = (*it_int);
+                //controlli
+                QString val = "errore";
+                QString val2 = "no";
+                if(c.contains(val.toUtf8())){
+                    out << -2;
+                }
+                if(c.contains(val2.toUtf8())){
+                    out << -1;
+                }
+                //se sono qui, vuol dire che c'è almeno una tupla valida
+                //Mando quindi lo userId associato allo username
+                out << users[c];
+            }
+        }
+
+        socket->write(blocko);
+    }else{
+        out << "errore";
+        socket->write(blocko);
+    }
 }
 
 void Thread_body::openDocument(int docId, int userId){
@@ -1083,6 +1149,19 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         out.setVersion(QDataStream::Qt_5_12);
         out << "ONLINEUSER";
         out <<  userIdDisconnect[1].toInt();
+        socket->write(blocko);
+        return;
+    }
+
+    c = "NEWCONTRIBUTOR";
+    if(strAction.contains(c.toUtf8())){
+        QStringList userIdContributor = strAction.split("_");
+        qDebug() << userIdContributor[1];
+        QByteArray blocko;
+        QDataStream out(&blocko, QIODevice::WriteOnly);
+        out.setVersion(QDataStream::Qt_5_12);
+        out << "NEWCONTRIBUTOR";
+        out <<  userIdContributor[1].toInt();
         socket->write(blocko);
         return;
     }

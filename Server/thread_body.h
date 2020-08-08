@@ -46,8 +46,10 @@ private:
     void openDocument(int docId, int userId);
     int openDoc(QString docName, QString username, int docId, int userId, int new_doc);
     void getWorkingUsersGivenDoc(int docId);
+    void getCollaboratorsGivenDoc(int docId);
     int addToWorkingUsers(int docId, int userId, int open_new);
     void removeFromWorkingUsers(int docId, int userId);
+
 signals:
     void error(QTcpSocket::SocketError socketError);
     void messageToServer(CRDT_Message m, QString thread_id_sender, int docId);

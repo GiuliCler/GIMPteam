@@ -760,6 +760,72 @@ int connection_to_server::getDocumentOwner(int docId){
     return ownerId;
 }
 
+std::shared_ptr<QSet<int>> connection_to_server::getContributors(int docId){
+    qDebug()<<"GET_CONTRIBUTORS_ONADOC";      // DEBUG
+
+    std::shared_ptr<QSet<int>> ritorno;
+    QSet<int> vet;
+//    this->tcpSocket->abort();
+    if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+
+        if (!tcpSocket->waitForConnected(Timeout)) {
+            emit error(tcpSocket->error(), tcpSocket->errorString());
+            vet.insert(-1);
+            return std::make_shared<QSet<int>>(vet);
+        }
+    }
+
+    QByteArray buffer;
+    QDataStream out(&buffer, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
+    out << "GET_CONTRIBUTORS_ONADOC";
+    out << docId;
+
+    this->tcpSocket->write(buffer);
+
+    if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        throw GUI_ConnectionException();
+    }
+
+    QDataStream in;
+    in.setDevice(this->tcpSocket);
+    in.setVersion(QDataStream::Qt_5_12);
+
+    int num, id;
+
+    do {
+        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
+            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+            throw GUI_ConnectionException();
+        }
+
+        in.startTransaction();
+        in >> num;
+
+//        qDebug()<<"GET_COLLABORATORS_ONADOC - Ricevuto num_working_users: "<<num;     // DEBUG
+
+        for(int i=0; i<num; i++){
+            in >> id;
+            if(id == -1){
+                break;
+            }
+            if(id == -2){
+                //errore, lo metto come userId
+                vet.insert(-1);
+                break;
+            }
+            vet.insert(id);
+        }
+
+    } while (!in.commitTransaction());
+
+//    qDebug()<<"GET_COLLABORATORS_ONADOC - vet.size(): "<<vet.size();     // DEBUG
+
+    return std::make_shared<QSet<int>>(vet);
+}
 
 std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int docId){
 
@@ -953,6 +1019,16 @@ void connection_to_server::receiveMessage(){
         std::cout << userGetOnline<< std::endl;
         //this->editor->addUserToEditorGUI(userGetOnline);
         emit sigOnlineUser(userGetOnline);
+    }
+
+    c = "NEWCONTRIBUTOR";
+    if(action.contains(c.toUtf8())){
+        //aggiorna la lista degli utenti online
+        int userNewContributor;
+        in >> userNewContributor;
+        std::cout << userNewContributor<< std::endl;
+        //this->editor->addUserToEditorGUI(userGetOnline);
+        emit sigNewContributor(userNewContributor);
     }
 
     c = "CRDT";

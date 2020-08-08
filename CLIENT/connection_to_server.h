@@ -44,6 +44,7 @@ public:
     void connectEditor();
     void disconnectEditor(int userId, int docId);
     void receiveMessage();
+    std::shared_ptr<QSet<int>> getContributors(int docId);
 
 private slots:
     void showFile(const QString &file);
@@ -56,6 +57,7 @@ signals:
     void sigProcessMessage(const CRDT_Message& m);
     void sigOfflineUser(int userId);
     void sigOnlineUser(int userId);
+    void sigNewContributor(int userId);
 
 private:
     QString port;

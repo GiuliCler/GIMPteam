@@ -177,15 +177,12 @@ std::shared_ptr<QSet<int>> Stub::getWorkingUsersOnDocumentTemporary(connection_t
     return vpointer;
 }
 
-std::shared_ptr<QSet<int>> Stub::getContributorsUsersOnDocument(int docId){
+std::shared_ptr<QSet<int>> Stub::getContributorsUsersOnDocument(connection_to_server *connection, int docId){
     int n = docId;
     docId = n;
 
     std::shared_ptr<QSet<int>> vpointer(new QSet<int>());
-    //l'ho disattivato perchè se ritorno una lista di users inventati il DB non li trova e crasha tutto
-    /*for(int i = 3; i < 6; i++)
-        vpointer->insert(i);*/
-
+    vpointer = connection->getContributors(docId);
     return vpointer;
 }
 
