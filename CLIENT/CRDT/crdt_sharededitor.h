@@ -28,11 +28,11 @@ private:
 public:
     explicit CRDT_SharedEditor(CRDT_controller *parent, connection_to_server *connection, int siteId, int siteCounter);
     int getSiteId() const;
-//    std::string print();
+    std::string print();            // FUNZIONI PER IL DEBUG
     void localInsert(int index, QChar value, QTextCharFormat fmt, Qt::Alignment align);
     void localErase(int index);
     int getLength();
-//    std::string to_string();
+    std::string to_string();        // FUNZIONI PER IL DEBUG
 
 private slots:
     void process(const CRDT_Message& m);

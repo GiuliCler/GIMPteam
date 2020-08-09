@@ -208,6 +208,10 @@ void Thread_body::executeJob(){
         *in >> userId;
 
         removeFromWorkingUsers(docId, userId);
+
+        // TODO banana
+        // database->aggiornaSiteCounter
+        // prototipo: int aggiornaSiteCounter(QString nomeDOC, QString username, int siteCount);
     }
 
 //    socket->disconnectFromHost();

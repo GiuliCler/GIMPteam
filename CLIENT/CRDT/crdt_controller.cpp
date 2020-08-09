@@ -297,12 +297,16 @@ void CRDT_controller::remoteDelete(int pos){
     std::cout<<"EHI! SONO NELLA REMOTE DELETE!"<<std::endl;
 
     processingMessage = true;
-    QTextCursor tmp = textEdit.textCursor();
+    QTextCursor current = textEdit.textCursor();
 
-    textEdit.textCursor().setPosition(pos);
+    QTextCursor tmp{textEdit.document()};
+    tmp.setPosition(pos);
+    textEdit.setTextCursor(tmp);
+
+//    textEdit.textCursor().setPosition(pos);
     textEdit.textCursor().deleteChar();
 
-    textEdit.textCursor() = tmp;
+    textEdit.setTextCursor(current);
     processingMessage = false;
 }
 
@@ -311,12 +315,17 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
     std::cout<<"EHI! SONO NELLA REMOTE INSERT!"<<std::endl;
 
     processingMessage = true;
-    QTextCursor tmp = textEdit.textCursor();
+    QTextCursor current = textEdit.textCursor();
 
-    textEdit.textCursor().setPosition(pos);
+    QTextCursor tmp{textEdit.document()};
+    tmp.setPosition(pos);
+    textEdit.setTextCursor(tmp);
+
+//    textEdit.textCursor().setPosition(pos);        //   VECCHIA setPosition
+    std::cout<<"AAAA TextEdit... cursor: "<<textEdit.textCursor().position()<<", pos: "<<pos<<std::endl;        // DEBUG -----
     textEdit.textCursor().blockFormat().setAlignment(align);
     textEdit.textCursor().insertText(c, fmt);
 
-    textEdit.textCursor() = tmp;
+    textEdit.setTextCursor(current);
     processingMessage = false;
 }

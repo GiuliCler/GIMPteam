@@ -19,7 +19,6 @@ int CRDT_SharedEditor::getSiteId() const{
 void CRDT_SharedEditor::localInsert(int index, QChar value, QTextCharFormat fmt, Qt::Alignment align){
     QVector<int> posizione, posPREV, posNEXT;
 
-//    printf("Sto inserendo... %c\n", value);     // DEBUG -----
     std::cout << "Adding " << value.toLatin1() << " to CRDT in pos " << index << std::endl; // DEBUG
 
     if(index<0 || index>_symbols.size())
@@ -58,6 +57,9 @@ void CRDT_SharedEditor::localInsert(int index, QChar value, QTextCharFormat fmt,
 //    _server.send(*messaggio);     --> chiamata alla funzione send di connection_to_server
     connection->requestSendMessage(messaggio);
 
+    std::cout<<"*************************************"<<std::endl;                       // DEBUG -------
+    std::cout<<"PRINT (localInsert): "<<this->print()<<std::endl;                        // DEBUG -------
+    std::cout<<"*************************************"<<std::endl;                       // DEBUG -------
 }
 
 QVector<int> CRDT_SharedEditor::generaPosizione(QVector<int> prev, QVector<int> next){
@@ -136,6 +138,11 @@ void CRDT_SharedEditor::localErase(int index){
 }
 
 void CRDT_SharedEditor::process(const CRDT_Message& m){
+
+        std::cout<<"*************************************"<<std::endl;         // DEBUG -------
+        std::cout<<"PRINT (prima): "<<this->print()<<std::endl;                        // DEBUG -------
+        std::cout<<"*************************************"<<std::endl;         // DEBUG -------
+
         std::string azione = m.getAzione();
         CRDT_Symbol simbolo = m.getSimbolo();
         QVector<CRDT_Symbol>::iterator it = _symbols.begin();
@@ -153,7 +160,7 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
 
             _symbols.insert(it, simbolo);
 
-            qDebug()<<"AAAAAAA "<<count;        // DEBUG ----------
+//            qDebug()<<"AAAAAAA "<<count;        // DEBUG ----------
 
             parent->remoteInsert(count, simbolo.getCarattere(), simbolo.getFormat(), simbolo.getAlignment());
 
@@ -169,6 +176,10 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
                 }
             }
         }
+
+        std::cout<<"*************************************"<<std::endl;         // DEBUG -------
+        std::cout<<"PRINT (dopo): "<<this->print()<<std::endl;                        // DEBUG -------
+        std::cout<<"*************************************"<<std::endl;         // DEBUG -------
 }
 
 QVector<CRDT_Symbol>::iterator CRDT_SharedEditor::trovaPosizione(QVector<int> pos) {
@@ -215,26 +226,26 @@ int  CRDT_SharedEditor::getLength(){
     return _symbols.size();
 }
 
-//std::string CRDT_SharedEditor::to_string() {
-//    std::string documento;
-//    for(auto i=_symbols.begin(); i<_symbols.end(); i++)
-//        documento((*i).getCarattere();
-//    return documento;
-//}
+std::string CRDT_SharedEditor::to_string() {
+    std::string documento = "";
+    for(auto i=_symbols.begin(); i<_symbols.end(); i++)
+        documento += (*i).getCarattere().toLatin1();
+    return documento;
+}
 
-///* funzione per debug - mostra l'elenco dei caratteri e le rispettive posizioni*/
-//std::string CRDT_SharedEditor::print(){
-//    std::string posizioni = "--- SiteId: " + std::to_string(_siteId) + " ---\n";
-//    for(const CRDT_Symbol &s: _symbols){
-//        posizioni += s.getCarattere();
-//        posizioni += " -- " + s.getIDunivoco();
-//        posizioni += ": [ ";
-//        std::vector<int> vet = s.getPosizione();
-//        for(int num: vet){
-//            posizioni += std::to_string(num) + " ";
-//        }
-//        posizioni += "]\n";
-//    }
+/* funzione per debug - mostra l'elenco dei caratteri e le rispettive posizioni*/
+std::string CRDT_SharedEditor::print(){
+    std::string posizioni = "\nSiteId del mio editor: " + std::to_string(_siteId) + "\n";
+    for(const CRDT_Symbol &s: _symbols){
+        posizioni += s.getCarattere().toLatin1();
+        posizioni += " -- IDunivoco (siteID_siteCOUNTER): " + s.getIDunivoco();
+        posizioni += " -- [ ";
+        QVector<int> vet = s.getPosizione();
+        for(int num: vet){
+            posizioni += std::to_string(num) + " ";
+        }
+        posizioni += "]\n";
+    }
 
-//    return posizioni;
-//}
+    return posizioni;
+}

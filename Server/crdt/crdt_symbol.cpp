@@ -48,7 +48,7 @@ void CRDT_Symbol::setPosizione(QVector<int> pos){
 
 QDataStream& operator<<(QDataStream& s, const CRDT_Symbol& simb){
     QString str = QString::fromStdString(simb.getIDunivoco());
-    s << simb.getCarattere() << str << simb.getPosizione() << simb.getFormat() << simb.getAlignment();
+    s << simb.getCarattere() << str.toUtf8() << simb.getPosizione() << simb.getFormat() << simb.getAlignment();
     return s;
 }
 
