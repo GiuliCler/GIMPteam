@@ -5,6 +5,7 @@
 #include <QString>
 #include <QVector>
 #include "database/collegamentoDB.h"
+#include "crdt/crdt_message.h"
 
 QT_BEGIN_NAMESPACE
 #include <QFileSystemModel>
@@ -24,6 +25,7 @@ protected:
 
 signals:
     void error(QTcpSocket::SocketError socketError);
+    void dispatchMessage(CRDT_Message m, QString thread_id_sender, int docId);
 
 public slots:
     void runServer();
@@ -31,7 +33,6 @@ public slots:
 private:
     CollegamentoDB *database;
     int socketDescriptor;
-//    QTcpSocket *socket;
 };
 
 #endif

@@ -1,4 +1,5 @@
 #include "crdt_controller.h"
+#include "crdt_message.h"
 #include <QClipboard>
 #include <QMimeData>
 #include <iostream>
@@ -11,7 +12,7 @@
         rememberFormatChange = true; \
     }
 
-CRDT_controller::CRDT_controller(GUI_Editor *parent, GUI_MyTextEdit& textEdit): parent(parent), textEdit(textEdit), crdt(this),
+CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyTextEdit& textEdit, int siteId, int siteCounter): gimpDocs(gimpdocs), parent(parent), textEdit(textEdit), crdt{this, gimpDocs->getConnection(), siteId, siteCounter},
                         rememberFormatChange(false), validateSpin(true), validateFontCombo(true) {
     QObject::connect(this->parent, &GUI_Editor::menuTools_event, this, &CRDT_controller::menuCall);
     QObject::connect(this, &CRDT_controller::menuSet, parent, &GUI_Editor::setMenuToolStatus);
@@ -26,6 +27,7 @@ CRDT_controller::CRDT_controller(GUI_Editor *parent, GUI_MyTextEdit& textEdit): 
     QObject::connect(textEdit.document(), &QTextDocument::redoAvailable, this, &CRDT_controller::redoAvailableChanged);
 
     parent->childToolsBar->ui->spinBox->setSpecialValueText("Default");
+
 }
 
 void CRDT_controller::setLeft(){
@@ -291,24 +293,39 @@ void CRDT_controller::menuCall(menuTools op){
 }
 
 void CRDT_controller::remoteDelete(int pos){
-    processingMessage = true;
-    QTextCursor tmp = textEdit.textCursor();
 
-    textEdit.textCursor().setPosition(pos);
+    std::cout<<"EHI! SONO NELLA REMOTE DELETE!"<<std::endl;
+
+    processingMessage = true;
+    QTextCursor current = textEdit.textCursor();
+
+    QTextCursor tmp{textEdit.document()};
+    tmp.setPosition(pos);
+    textEdit.setTextCursor(tmp);
+
+//    textEdit.textCursor().setPosition(pos);
     textEdit.textCursor().deleteChar();
 
-    textEdit.textCursor() = tmp;
+    textEdit.setTextCursor(current);
     processingMessage = false;
 }
 
 void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align){
-    processingMessage = true;
-    QTextCursor tmp = textEdit.textCursor();
 
-    textEdit.textCursor().setPosition(pos);
+    std::cout<<"EHI! SONO NELLA REMOTE INSERT!"<<std::endl;
+
+    processingMessage = true;
+    QTextCursor current = textEdit.textCursor();
+
+    QTextCursor tmp{textEdit.document()};
+    tmp.setPosition(pos);
+    textEdit.setTextCursor(tmp);
+
+//    textEdit.textCursor().setPosition(pos);        //   VECCHIA setPosition
+    std::cout<<"AAAA TextEdit... cursor: "<<textEdit.textCursor().position()<<", pos: "<<pos<<std::endl;        // DEBUG -----
     textEdit.textCursor().blockFormat().setAlignment(align);
     textEdit.textCursor().insertText(c, fmt);
 
-    textEdit.textCursor() = tmp;
+    textEdit.setTextCursor(current);
     processingMessage = false;
 }

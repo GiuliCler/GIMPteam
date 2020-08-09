@@ -134,7 +134,7 @@ QLineEdit:focus{
    <item row="3" column="2">
     <widget class="QLineEdit" name="addressLineEdit">
      <property name="text">
-      <string>192.168.1.9</string>
+      <string>192.168.56.1</string>
      </property>
     </widget>
    </item>

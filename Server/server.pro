@@ -7,6 +7,7 @@ HEADERS       = server.h \
     database/collegamentoDB.h \
     database/sha256.h \
     dialog.h \
+    thread_body.h \
     thread_management.h
 SOURCES       = server.cpp \
                 crdt/crdt_message.cpp \
@@ -15,6 +16,7 @@ SOURCES       = server.cpp \
                 database/sha256.cpp \
                 dialog.cpp \
                 main.cpp \
+                thread_body.cpp \
                 thread_management.cpp
 
 # install

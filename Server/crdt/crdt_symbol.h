@@ -8,6 +8,9 @@
 
 class CRDT_Symbol
 {
+    friend QDataStream & operator<<(QDataStream &, const CRDT_Symbol &);
+    friend QDataStream & operator>>(QDataStream &, CRDT_Symbol &);
+
 private:
     QChar carattere;
     std::string id;
@@ -24,6 +27,11 @@ public:
     Qt::Alignment getAlignment() const;
     std::string getIDunivoco()const;
     QVector<int> getPosizione() const;
+    void setCarattere(QChar c);
+    void setFormat(QTextCharFormat fmt);
+    void setAlignment(Qt::Alignment align);
+    void setIDunivoco(std::string str);
+    void setPosizione(QVector<int> pos);
 };
 
 #endif // CRDT_SYMBOL_H

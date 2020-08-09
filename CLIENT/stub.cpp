@@ -89,10 +89,10 @@ QString Stub::requestIconIdTemporary(connection_to_server *connection, int userI
 
 
 /*DOCUMENT*/
-int Stub::requestCreateDocumentTemporary(connection_to_server *connection, int userId, QString name){
-    int result = connection->requestCreateDocument(userId, name);
+QString Stub::requestCreateDocumentTemporary(connection_to_server *connection, int userId, QString name){
+    QString result = QString::fromStdString(connection->requestCreateDocument(userId, name));
 
-    if(result < 0)
+    if(result.compare("errore") == 0)
         //throw GUI_ConnectionException();
         throw GUI_GenericException("Houston, abbiamo un problema");
 
@@ -117,34 +117,19 @@ std::shared_ptr<QMap<QString, int>> Stub::getKnownDocumentsTemporary(connection_
     return vpointer;
 }
 
-long Stub::requestDocDatoUri(connection_to_server *connection, int userId, QString uri){
+QString Stub::requestDocDatoUri(connection_to_server *connection, int userId, QString uri){
     //come al solito è solo per togleire i warning
     int n = userId;
     userId = n;
 
-    long result = connection->requestDocDatoUri(uri);
+    QString result = QString::fromStdString(connection->requestDocDatoUri(uri, userId));
 
-    if(result < 0)
+    if(result.compare("errore") == 0)
         //throw GUI_ConnectionException();
         throw GUI_GenericException("Houston, abbiamo un problema");
 
     return result;
 }
-
-void Stub::openKnownDocument(int documentId){
-    int n =documentId;
-    documentId = n;
-
-}
-
-void Stub::closeDocument(int userId, int docId){
-    userId = docId;
-    docId = userId;
-
-    //I don't know. Do something
-}
-
-
 
 QString Stub::requestUriTemporary(connection_to_server *connection, int docId){
     QString result = QString::fromStdString(connection->requestUri(docId));
@@ -176,9 +161,10 @@ std::shared_ptr<QTextDocument> Stub::getDocumentText(int docId){
     return docpointer;
 }
 
-int Stub::requestDocumentOwner(int docId){
-    //ovviamente questa return è sbagliata
-    return docId;
+int Stub::requestDocumentOwner(connection_to_server *connection, int docId){
+    int userId = connection->getDocumentOwner(docId);
+    // NOTA: ritorna userId = -1 in caso di errore
+    return userId;
 }
 
 
@@ -191,15 +177,29 @@ std::shared_ptr<QSet<int>> Stub::getWorkingUsersOnDocumentTemporary(connection_t
     return vpointer;
 }
 
-std::shared_ptr<QSet<int>> Stub::getContributorsUsersOnDocument(int docId){
+std::shared_ptr<QSet<int>> Stub::getContributorsUsersOnDocument(connection_to_server *connection, int docId){
     int n = docId;
     docId = n;
 
     std::shared_ptr<QSet<int>> vpointer(new QSet<int>());
-    //l'ho disattivato perchè se ritorno una lista di users inventati il DB non li trova e crasha tutto
-    /*for(int i = 3; i < 6; i++)
-        vpointer->insert(i);*/
-
+    vpointer = connection->getContributors(docId);
     return vpointer;
 }
 
+void Stub::Editor(connection_to_server *connection){
+    connection->connectEditor();
+}
+
+void Stub::closeDocument(connection_to_server *connection, int userId, int docId){
+    connection->disconnectEditor(userId, docId);
+}
+
+QString Stub::openKnownDocument(connection_to_server *connection, int userId, int documentId){
+    QString name = QString::fromStdString(connection->openDoc(userId, documentId));
+
+    if(name.compare("errore") == 0)
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
+
+    return name;
+}

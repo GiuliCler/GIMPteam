@@ -14,6 +14,7 @@ class CRDT_controller : public QObject
     Q_OBJECT
 
 private:
+    GIMPdocs *gimpDocs;
     GUI_Editor *parent;
     GUI_MyTextEdit& textEdit;
     CRDT_SharedEditor crdt;
@@ -44,9 +45,8 @@ private:
     void redo();
 
 public:
-    CRDT_controller(GUI_Editor *parent, GUI_MyTextEdit& textEdit);
+    CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyTextEdit& textEdit, int siteId, int siteCounter);
     void setCurrentTextColor(QColor color);
-
     void remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align);
     void remoteDelete(int pos);
 

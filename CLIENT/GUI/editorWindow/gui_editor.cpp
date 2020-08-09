@@ -13,10 +13,19 @@
 #include <QFileDialog>
 #include <QFileInfo>
 
-GUI_Editor::GUI_Editor(QWidget *parent, int documentId) : QWidget(parent), documentId(documentId)
+GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int siteId, int siteCounter) : QWidget(parent), documentId(documentId), docName(docName)
 {
+
     this->setObjectName(GUI_Editor::getObjectName());
     gimpParent = static_cast<GIMPdocs*>(parent);
+
+    //Per gli online users
+    QObject::connect(gimpParent->getConnection(), &connection_to_server::sigOfflineUser, this, &GUI_Editor::removeUserFromEditorGUI);
+    QObject::connect(gimpParent->getConnection(), &connection_to_server::sigOnlineUser, this, &GUI_Editor::addUserToEditorGUI);
+
+    //per i contributors
+    QObject::connect(gimpParent->getConnection(), &connection_to_server::sigNewContributor, this, &GUI_Editor::addContributorToCurrentDocument);
+
     ui = new Ui::GUI_Editor();
     ui->setupUi(this);
 
@@ -26,7 +35,7 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId) : QWidget(parent), docum
     ui->usersBarWidget->layout()->addWidget(childUsersBar);
     childToolsBar = new GUI_ToolsBar(this);
     ui->toolsBarWidget->layout()->addWidget(childToolsBar);
-    crdtController = new CRDT_controller(this, *childMyTextEdit);
+    crdtController = new CRDT_controller(gimpParent, this, *childMyTextEdit, siteId, siteCounter);
 
 
     //ottengo l'elenco degli utenti che al momento stanno guardando il mio stesso document e ne creo icona e cursore
@@ -38,13 +47,23 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId) : QWidget(parent), docum
 
     //creo l'icona per gli user che hanno contribuito al document
     std::shared_ptr<QSet<int>> contributors = GUI_ConnectionToServerWrapper::getContributorsUsersOnDocumentWrapper(gimpParent, documentId);
-    if( contributors == nullptr)
+    if( contributors == nullptr || contributors->size()==0)
         return;
     for (QSet<int>::iterator userId = contributors->begin(); userId != contributors->end(); userId++)
         addContributorToCurrentDocument(*userId);
+
+    //richiedo l'uri del documento
+    this->uri = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
+    //avvio l'editor
+    GUI_ConnectionToServerWrapper::startEditor(gimpParent);
 }
 
 GUI_Editor::~GUI_Editor(){
+
+    //int result = GUI_ConnectionToServerWrapper::closeDocumentWrapper(gimpParent, gimpParent->userid, documentId);
+    //if(result == -1)
+     //   return;
+
     delete ui;
     delete crdtController;
 }
@@ -54,10 +73,7 @@ GUI_Editor::~GUI_Editor(){
 void GUI_Editor::connectMenuBarActions(){
     connect(this->gimpParent->ui2->closeDocumentAction, &QAction::triggered, this, &GUI_Editor::launchSetUi1);
     connect(gimpParent->ui2->getURIAction, &QAction::triggered, [this](){
-        QString uri = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
-        if(uri.compare("errore") == 0)
-            return;
-        GUI_URI *box = new GUI_URI(this, uri);
+        GUI_URI *box = new GUI_URI(this, this->uri);
         box->setVisible(true);
     });
     connect(gimpParent->ui2->exportPDFAction, &QAction::triggered, [this](){
@@ -100,7 +116,8 @@ void GUI_Editor::connectMenuBarActions(){
 void GUI_Editor::changeWindowName(){
 
     //modifico il nome della finestra
-    QString documentName = GUI_ConnectionToServerWrapper::requestDocNameWrapper(gimpParent, documentId);
+    //QString documentName = GUI_ConnectionToServerWrapper::requestDocNameWrapper(gimpParent, documentId);
+    QString documentName = docName;                     // todo ila&paolo -- sistemare sto giochino bruttino
     if(documentName.compare("errore") == 0)
         return;
     gimpParent->setWindowTitle("GIMPdocs - " + documentName);

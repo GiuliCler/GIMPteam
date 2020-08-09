@@ -4,6 +4,7 @@
 #include "../../connection_to_server.h"
 //serve per gli shared pointers
 #include <memory>
+#include "GUI/editorWindow/gui_editor.h"
 #include <QTextDocument>
 
 class GIMPdocs;
@@ -25,22 +26,25 @@ public:
     static QString requestIconIdWrapper(GIMPdocs *gimpdocs, int userId);
 
     /*DOCUMENT*/
-    static int requestCreateDocumentWrapper(GIMPdocs *gimpdocs, int userId, QString name);
-    static int openKnownDocumentWrapper(GIMPdocs *gimpdocs, int documentId);
+    static QString requestCreateDocumentWrapper(GIMPdocs *gimpdocs, int userId, QString name);
+    //static int openKnownDocumentWrapper(GIMPdocs *gimpdocs, int documentId);
     static int forgetKnownDocumentWrapper(GIMPdocs *gimpdocs, int userId, int documentId);
-    static int requestDocDatoUriWrapper(GIMPdocs *gimpdocs, int userId, QString uri);
+    static QString requestDocDatoUriWrapper(GIMPdocs *gimpdocs, int userId, QString uri);
     static std::shared_ptr<QMap<QString, int>> getKnownDocumentsWrapper(GIMPdocs *gimpdocs, int userId);
     static int closeDocumentWrapper(GIMPdocs *gimpdocs, int userId, int docId);
-
+    static QString requestOpenDocWrapper(GIMPdocs *gimpdocs, int userId, int docId);
     static QString requestDocNameWrapper(GIMPdocs *gimpdocs, int docId);
     static QString requestUriWrapper(GIMPdocs *gimpdocs, int docId);
     static std::shared_ptr<QTextDocument> getDocumentTextWrapper(GIMPdocs *gimpdocs, int docId);
     static int requestDocumentOwnerWrapper(GIMPdocs *gimpdocs, int docId);
 
+    static void startEditor(GIMPdocs *gimpdocs);
 
     /*EDITOR*/
     static std::shared_ptr<QSet<int>> getWorkingUsersOnDocumentWrapper(GIMPdocs *gimpdocs, int docId);
     static std::shared_ptr<QSet<int>> getContributorsUsersOnDocumentWrapper(GIMPdocs *gimpdocs, int docId);
+    static void requestSendMessage(GIMPdocs * gimpdocs, CRDT_Message *messaggio);
+    static CRDT_Message requestReceiveMessage(GIMPdocs * gimpdocs);
 };
 
 #endif // GUI_CONNECTIONTOSERVERWRAPPER_H

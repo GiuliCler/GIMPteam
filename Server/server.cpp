@@ -11,8 +11,7 @@
 #include <QWaitCondition>
 #include <queue>
 
-//Thread_management* thread_mgm;
-
+// CODICE DI PROVA - CONDITION VARIABLES
 //QVector<QPair<QString, int>> jobs;
 //QWaitCondition* cv_jobs = new QWaitCondition();
 //QMutex* mutex_jobs = new QMutex();
@@ -47,7 +46,7 @@ Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDesc
     mutex_db->unlock();
 
     // Riempimento della QMap degli utenti con gli elementi presenti sul DB
-    int cont = 0;
+    int cont = 1;
     mutex_db->lock();
     std::vector<QString> utenti = database->recuperaUtentiNelDB();
     mutex_db->unlock();
@@ -61,7 +60,7 @@ Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDesc
     mutex_users->unlock();
 
     // Riempimento della QMap dei documenti con gli elementi presenti sul DB
-    cont = 0;
+    cont = 1;
     mutex_db->lock();
     std::vector<QString> documenti = database->recuperaDocsNelDB();
     mutex_db->unlock();
@@ -73,13 +72,6 @@ Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDesc
         documents.insert(QString::fromStdString((*i).toStdString()), cont++);
     }
     mutex_docs->unlock();
-
-//    // Creo thread_management
-//    thread_mgm = new Thread_management();
-//    connect(thread_mgm, SIGNAL(finished()), thread_mgm, SLOT(deleteLater()));
-
-//    // Faccio partire thread_management (mod. detach)
-//    thread_mgm->start();
 
 //    CODICE DI PROVA - PRODUTTORE
 //    mutex_jobs->lock();
@@ -120,7 +112,7 @@ void Server::incomingConnection(qintptr socketDescriptor) {
     */
 
     qDebug()<< "SERVER - Sono nella incomingConnection";       // DEBUG
-    std::cout << "---- SERVER incomingConnection id: " << std::this_thread::get_id() << " ---- " << std::endl;       // DEBUG
+    std::cout << "SERVER incomingConnection id: " << std::this_thread::get_id()<< std::endl;       // DEBUG
 
     // Creo thread_management
     Thread_management* thread_mgm = new Thread_management(socketDescriptor, this);
@@ -128,12 +120,6 @@ void Server::incomingConnection(qintptr socketDescriptor) {
 
     // Faccio partire thread_management (mod. detach)
     thread_mgm->start();
-
-//    socket = new QTcpSocket(this);
-//    if (!socket->setSocketDescriptor(socketDescriptor)) {
-//        emit error(socket->error());
-//        return;
-//    }
 
     qDebug()<< "SERVER - Fine incomingConnection";      // DEBUG
 }

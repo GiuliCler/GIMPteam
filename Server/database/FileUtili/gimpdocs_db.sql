@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Mag 01, 2020 alle 12:54
+-- Creato il: Ago 08, 2020 alle 11:13
 -- Versione del server: 10.1.40-MariaDB
 -- Versione PHP: 7.3.5
 
@@ -36,14 +36,6 @@ CREATE TABLE `doc` (
   `uri` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Dump dei dati per la tabella `doc`
---
-
-INSERT INTO `doc` (`nome_doc`, `uri`) VALUES
-('ilagioda@gimpteam.it_DivinaCommedia', '://GIMPdocs/80423b4c7a9c3e047148ececb88d1d41'),
-('ilagioda@gimpteam.it_Oibaboi', '://GIMPdocs/3b32d34c78a03e759aa185702748c408');
-
 -- --------------------------------------------------------
 
 --
@@ -55,16 +47,9 @@ CREATE TABLE `utente_doc` (
   `username` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `nome_doc` varchar(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `site_id` int(1) NOT NULL,
-  `site_counter` int(1) NOT NULL
+  `site_counter` int(1) NOT NULL,
+  `accessibile` int(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dump dei dati per la tabella `utente_doc`
---
-
-INSERT INTO `utente_doc` (`username`, `nome_doc`, `site_id`, `site_counter`) VALUES
-('ilagioda@gimpteam.it', 'ilagioda@gimpteam.it_DivinaCommedia', 0, 0),
-('ilagioda@gimpteam.it', 'ilagioda@gimpteam.it_Oibaboi', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -86,7 +71,8 @@ CREATE TABLE `utenti` (
 --
 
 INSERT INTO `utenti` (`username`, `password`, `sale`, `nickname`, `icona`) VALUES
-('ilagioda@gimpteam.it', 'mZ�����41�{��>���o�����~����', 'frAQBc8Wsa', 'ilagio', 'Manaphy.png');
+('ilagio', 'UO9��{�0L�Bu������Dp!��Ik,�E', 'frAQBc8Wsa', 'ila', 'Manaphy.png'),
+('stegio', 'UO9��{�0L�Bu������Dp!��Ik,�E', 'frAQBc8Wsa', 'ste', 'Deoxys_Attack.png');
 
 --
 -- Indici per le tabelle scaricate
