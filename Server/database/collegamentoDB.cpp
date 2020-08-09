@@ -644,42 +644,41 @@ int CollegamentoDB::aggiornaSiteCounter(QString nomeDOC, QString username, int s
     if(username.isEmpty() || nomeDOC.isEmpty())
         return 0;
 
-    std::string query0 = "SELECT site_id FROM utente_doc WHERE username=:user AND nome_doc=:doc";
+    std::string query0 = "SELECT * FROM utente_doc WHERE username=:user AND nome_doc=:doc";
     QSqlQuery ris0(QSqlDatabase::database(connectionName));
     ris0.prepare(QString::fromStdString(query0));
     ris0.bindValue(":user", username);
     ris0.bindValue(":doc", nomeDOC);
 
-//    if(QSqlDatabase::database().driver()->hasFeature(QSqlDriver::Transactions)) {
+    QSqlDatabase::database().transaction();
 
-        QSqlDatabase::database().transaction();
+    if(ris0.exec()){
+        if(ris0.size() == 1){
 
-        if(ris0.exec()){
-            if(ris0.size() == 1){
+            int id = -1, access = -1;
+            while(ris0.next()){
+                id = ris0.value(2).toInt();
+                access = ris0.value(4).toInt();
+            }
 
-                int id = ris0.value(0).toInt();
+            QSqlQuery risDEL(QSqlDatabase::database(connectionName));
+            risDEL.prepare("DELETE FROM utente_doc WHERE username=:user AND nome_doc=:doc");
+            risDEL.bindValue(":user", username);
+            risDEL.bindValue(":doc", nomeDOC);
+            risDEL.exec();
 
-                QSqlQuery risDEL(QSqlDatabase::database(connectionName));
-                risDEL.prepare("DELETE FROM utente_doc WHERE username=:user AND nome_doc=:doc");
-                risDEL.bindValue(":user", username);
-                risDEL.bindValue(":doc", nomeDOC);
-                risDEL.exec();
+            std::string query = "INSERT INTO utente_doc(username, nome_doc, site_id, site_counter, accessibile) VALUES(:user, :doc, :siteid, :sitecounter, :acc)";
+            QSqlQuery ris(QSqlDatabase::database(connectionName));
+            ris.prepare(QString::fromStdString(query));
+            ris.bindValue(":user", username);
+            ris.bindValue(":doc", nomeDOC);
+            ris.bindValue(":siteid", id);
+            ris.bindValue(":sitecounter", siteCount);
+            ris.bindValue(":acc", access);
 
-                std::string query = "INSERT INTO utente_doc(username, nome_doc, site_id, site_counter) VALUES(:user, :doc, :siteid, :sitecounter)";
-                QSqlQuery ris(QSqlDatabase::database(connectionName));
-                ris.prepare(QString::fromStdString(query));
-                ris.bindValue(":user", username);
-                ris.bindValue(":doc", nomeDOC);
-                ris.bindValue(":siteid", QString::number(id));
-                ris.bindValue(":sitecounter", QString::number(siteCount));
-
-                if(ris.exec()){
-                    QSqlDatabase::database().commit();
-                    return 1;
-                } else {
-                    QSqlDatabase::database().commit();
-                    return 0;
-                }
+            if(ris.exec()){
+                QSqlDatabase::database().commit();
+                return 1;
             } else {
                 QSqlDatabase::database().commit();
                 return 0;
@@ -688,10 +687,10 @@ int CollegamentoDB::aggiornaSiteCounter(QString nomeDOC, QString username, int s
             QSqlDatabase::database().commit();
             return 0;
         }
-
-//    } else {
-//        return 0;
-//    }
+    } else {
+        QSqlDatabase::database().commit();
+        return 0;
+    }
 }
 
 /*
