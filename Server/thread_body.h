@@ -29,6 +29,7 @@ private:
     CollegamentoDB* database;
     QDataStream* in;
     int current_docId;
+    int current_siteCounter;
     void create(QString username, QString password, QString nickname, QString icon);
     void login(QString username, QString password);
     void update(int userId, QString password, QString nickname, QString icon);

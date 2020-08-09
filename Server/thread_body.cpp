@@ -209,9 +209,33 @@ void Thread_body::executeJob(){
 
         removeFromWorkingUsers(docId, userId);
 
-        // TODO banana
-        // database->aggiornaSiteCounter
-        // prototipo: int aggiornaSiteCounter(QString nomeDOC, QString username, int siteCount);
+        QString username;
+        mutex_users->lock();
+        QMapIterator<QString, int> i(users);
+        while (i.hasNext()) {
+            i.next();
+            if(i.value()==userId){
+                username = i.key();
+                break;
+            }
+        }
+        mutex_users->unlock();
+
+        mutex_docs->lock();
+        QString docName;
+        QMapIterator<QString, int> j(documents);
+        while (j.hasNext()) {
+            j.next();
+            if(j.value()==docId){
+                docName=j.key();
+                break;
+            }
+        }
+        mutex_docs->unlock();
+
+        mutex_db->lock();
+        database->aggiornaSiteCounter(docName, username, current_siteCounter);
+        mutex_db->unlock();
     }
 
 //    socket->disconnectFromHost();
@@ -352,7 +376,9 @@ void Thread_body::newDoc(QString docName, int userId){
 
                     int siteId = info[0];
                     int siteCounter = info[1];
+                    current_siteCounter = siteCounter;
                     QString ritorno = "ok_"+QString::number(siteId)+"_"+QString::number(siteCounter)+"_"+QString::number(id);
+
                     out << ritorno.toUtf8();
                     socket->write(blocko);
                 }else{
@@ -692,14 +718,15 @@ void Thread_body::getDocumentDatoUri(QString uri, int userId){
     mutex_db->unlock();
     if(doc != "errore"){
         // Nome del documento relativo all'URI ottenuto dal DB correttamente
-        //out << doc.toLocal8Bit();
-        // cerco il documentId del documento richiesto e lo ritorno all'utente
+
         // Cerco il docId del documento corrente
         mutex_docs->lock();
         int docId = documents.value(doc);
         mutex_docs->unlock();
+
         //creo sul db l'associazione documento-utente (non owner)
         QString ritorno = associateDoc(docId, userId);
+
         if(ritorno.contains("ok")){
             out << ritorno.toUtf8();
             socket->write(blocko);
@@ -756,7 +783,9 @@ QString Thread_body::associateDoc(int docId, int userId){
 
             int siteId = info[0];
             int siteCounter = info[1];
+            current_siteCounter = siteCounter;
             QString ritorno = "ok_"+QString::number(siteId)+"_"+QString::number(siteCounter)+"_"+QString::number(docId);
+
             int id = openDoc(docName, username, docId, userId, 1);
             if(id == -1){
                 return "errore";
@@ -1098,6 +1127,7 @@ void Thread_body::openDocument(int docId, int userId){
         mutex_db->unlock();
         int siteId = info[0];
         int siteCounter = info[1];
+        current_siteCounter = siteCounter;
         QString ritorno = "ok_"+QString::number(siteId)+"_"+QString::number(siteCounter);
 
         out << ritorno.toUtf8();
@@ -1109,7 +1139,6 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
 
     qDebug() << "THREAD ID SENDER: "+thread_id_sender;                              // DEBUG
     QString docidForDebug = "CURRENTDOCID: "+QString::number(current_docId);       // DEBUG
-//    qDebug() << docidForDebug;                                                      // DEBUG
 
     auto thread_id = std::this_thread::get_id();
     std::cout << "---- ThreadBody processMessage RICEVUTO thread_id: "<<thread_id<<", doc_id: "<<docId<<" ---- "<< "; Stringa: "<<m.getAzione()<< std::endl;      // DEBUG
@@ -1117,9 +1146,18 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
     ss << thread_id;
     std::string thread_id_string = ss.str();
 
-    // Se altro documento o stesso user_id di questo thread => discard (return)
-    if(QString::fromStdString(thread_id_string) == thread_id_sender || docId != current_docId)
+    // Se altro documento o stesso user_id di questo thread => discard (return) del messaggio
+    // NOTA: se stesso user_id e è una insert, aggiorna il current_siteCounter
+    if(docId != current_docId){
         return;
+    }
+    if(QString::fromStdString(thread_id_string) == thread_id_sender){
+        if(m.getAzione() == "insert"){
+            QString str = QString::fromStdString(m.getSimbolo().getIDunivoco());
+            current_siteCounter = str.split("_")[1].toInt();
+        }
+        return;
+    }
 
     std::cout << "---- ThreadBody processMessage ACCETTATO thread_id: "<<thread_id<<", doc_id: "<<docId<<" ---- "<< "; Stringa: "<<m.getAzione()<< std::endl;      // DEBUG
 
