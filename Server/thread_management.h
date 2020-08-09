@@ -23,6 +23,7 @@ class Thread_management : public QThread {
     Q_OBJECT
 public:
     Thread_management(int socketDescriptor, QObject *parent);
+    ~Thread_management();
     void run() override;
     QTcpSocket* socket;
 

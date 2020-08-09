@@ -8,13 +8,7 @@
 #include <QTreeView>
 #include <QMutex>
 #include <QPair>
-#include <QWaitCondition>
 #include <queue>
-
-// CODICE DI PROVA - CONDITION VARIABLES
-//QVector<QPair<QString, int>> jobs;
-//QWaitCondition* cv_jobs = new QWaitCondition();
-//QMutex* mutex_jobs = new QMutex();
 
 QMutex* mutex_users = new QMutex();
 QMutex* mutex_docs = new QMutex();
@@ -73,15 +67,6 @@ Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDesc
     }
     mutex_docs->unlock();
 
-//    CODICE DI PROVA - PRODUTTORE
-//    mutex_jobs->lock();
-//    qDebug()<<"SERVER - Prima della prepend: "<<jobs.first();
-//    jobs.prepend(2);
-//    qDebug()<<"SERVER - Dopo la prepend: "<<jobs.first();
-//    mutex_jobs->unlock();
-//    std::this_thread::sleep_for(std::chrono::seconds(3));
-//    cv_jobs->wakeAll();     // non fa un tubo
-
     qDebug()<<"Fine costruttore di Server";          // DEBUG
 
 }
@@ -89,9 +74,6 @@ Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDesc
 Server::~Server(){
 
     qDebug()<<"Dentro al distruttore di Server";         // DEBUG
-
-    // Sveglio il thread_management addormentato nella wait
-//     cv_jobs->wakeAll();
 
     // Distruggo thread_management
 //    NOTA: faccio magari un vettore in cui mantengo tutti i puntatori ai thread
@@ -118,7 +100,7 @@ void Server::incomingConnection(qintptr socketDescriptor) {
     Thread_management* thread_mgm = new Thread_management(socketDescriptor, this);
     connect(thread_mgm, SIGNAL(finished()), thread_mgm, SLOT(deleteLater()));
 
-    // Faccio partire thread_management (mod. detach)
+    // Faccio partire thread_management (mod. detach)    
     thread_mgm->start();
 
     qDebug()<< "SERVER - Fine incomingConnection";      // DEBUG

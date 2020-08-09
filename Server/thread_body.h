@@ -23,9 +23,11 @@ class Thread_body : public QObject
     Q_OBJECT
 public:
     explicit Thread_body(int socketDescriptor, QObject *parent = nullptr);
+    ~Thread_body();
     QTcpSocket* socket;
 
 private:
+    const int Timeout = 100 * 1000;
     CollegamentoDB* database;
     QDataStream* in;
     int current_docId;
@@ -54,6 +56,7 @@ private:
 signals:
     void error(QTcpSocket::SocketError socketError);
     void messageToServer(CRDT_Message m, QString thread_id_sender, int docId);
+    void finished();
 
 public slots:
     void executeJob();

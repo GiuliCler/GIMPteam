@@ -25,8 +25,48 @@ QTcpSocket *connection_to_server::getSocket(){
 
 int connection_to_server::requestTryLogOut(int userId)
 {
+    qDebug()<<"LOGOUT";      // DEBUG
+
+    if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+
+        if (!tcpSocket->waitForConnected(Timeout)) {
+            emit error(tcpSocket->error(), tcpSocket->errorString());
+            return -1;
+        }
+    }
+
+    QByteArray buffer;
+    QDataStream out(&buffer, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
+    out << "LOGOUT";
+    this->tcpSocket->write(buffer);
+
+    if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        return -1;
+    }
+
+    int result;
+    QDataStream in;
+    in.setDevice(this->tcpSocket);
+    in.setVersion(QDataStream::Qt_5_12);
+
+    do {
+        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
+            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+            return -1;
+        }
+
+        in.startTransaction();
+        in >> result;
+    } while (!in.commitTransaction());
+
+    // Chiudo il socket dal lato del client
     this->tcpSocket->close();
-    return 1;
+
+    return result;
 }
 
 int connection_to_server::requestTryLogin(QString username, QString password)

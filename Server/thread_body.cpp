@@ -29,6 +29,10 @@ Thread_body::Thread_body(int socketDescriptor, QObject *parent) : QObject(parent
     in->startTransaction();
 }
 
+Thread_body::~Thread_body(){
+    std::cout<<"STO DISTRUGGENDO IL THREAD_BODY"<<std::endl;
+}
+
 void Thread_body::executeJob(){
     auto thread_id = std::this_thread::get_id();
     std::cout << "THREAD - executeJob; Thread: "<<thread_id<<" ---- "<< std::endl;
@@ -59,6 +63,23 @@ void Thread_body::executeJob(){
         *in >> password;
 
         login(username, password);
+    }
+
+    c = "LOGOUT";
+    if(text.contains(c.toUtf8())){
+
+        int result = 1;
+        QByteArray blocko;
+        QDataStream out(&blocko, QIODevice::WriteOnly);
+        out.setVersion(QDataStream::Qt_5_12);
+        out << result;
+        socket->write(blocko);
+        socket->waitForBytesWritten(Timeout);       // TODO capire il Timeout
+
+        // Chiudo il socket dal lato del client
+        socket->close();
+
+        emit finished();
     }
 
     c = "DELETE_DOC";
@@ -236,7 +257,7 @@ void Thread_body::executeJob(){
         mutex_db->lock();
         database->aggiornaSiteCounter(docName, username, current_siteCounter);
         mutex_db->unlock();
-    }
+    }    
 
 //    socket->disconnectFromHost();
 //    socket->waitForDisconnected(3000);
