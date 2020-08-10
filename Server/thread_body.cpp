@@ -357,24 +357,30 @@ void Thread_body::removeFromWorkingUsers(int docId, int userId){
         // chiave docId presente in workingUsers
 
         // Recupero il vettore di userId associato al docId
-        // Conto quanti elementi ha il vettore (se count > 1 => rimuovo lo userId dal vettore
-        // Altrimenti (se count == 1), devo eliminare riga)
+        // Conto quanti elementi ha il vettore... se count > 1 => rimuovo lo userId dal vettore e devo anche comunicare agli altri utenti
+        //                                                        che mi sono sconnesso
+        //                                        altrimenti (se count == 1), devo eliminare riga
         int count = workingUsers[docId].size();
         if(count > 1){
-            // In tal caso devo comunicare anche agli altri utenti che mi sono sconnesso.
-            CRDT_Symbol s = *new CRDT_Symbol();
-
             for(auto i = workingUsers[docId].begin(); i < workingUsers[docId].end(); i++){
                 if((*i) == userId){
                     workingUsers[docId].erase(i);
-                    mutex_workingUsers->unlock();
-                    CRDT_Message *m = new CRDT_Message("OFFLINEUSER_"+std::to_string(userId), s, userId);
-                    auto thread_id = std::this_thread::get_id();
-                    emit messageToServer(*m, threadId_toQString(thread_id), docId);
+                    break;
                 }
             }
+
+            mutex_workingUsers->unlock();
+
+            CRDT_Symbol s = *new CRDT_Symbol();
+            CRDT_Message *m = new CRDT_Message("OFFLINEUSER_"+std::to_string(userId), s, userId);
+            auto thread_id = std::this_thread::get_id();
+            emit messageToServer(*m, threadId_toQString(thread_id), docId);
+
         } else if(count == 1){
             workingUsers.remove(docId);
+            mutex_workingUsers->unlock();
+        } else {
+            // Nota: caso che *in teoria* non dovrebbe mai verificarsi
             mutex_workingUsers->unlock();
         }
     } else {
