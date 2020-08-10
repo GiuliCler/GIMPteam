@@ -219,8 +219,11 @@ std::string connection_to_server::openDoc(int userId, int docId)
     } while (!in.commitTransaction());
 
     QString c = "ok";
+    QString d = "doc-inesistente";
     if(buffer.contains(c.toUtf8())){
         return buffer.toStdString();
+    }else if(buffer.contains(d.toUtf8())){
+        return "doc-inesistente";
     }else{
         return "errore";
     }

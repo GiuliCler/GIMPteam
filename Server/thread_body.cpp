@@ -991,6 +991,12 @@ void Thread_body::deleteDoc(int userId, int docId){
             socket->write(blocko);
         }else{
             mutex_db->unlock();
+
+            // Rimuovo il documento da documents
+            mutex_docs->lock();
+            documents.remove(docName);
+            mutex_docs->unlock();
+
             //elimino il documento nel file system
             QFile file (path+username+"/"+docName+".txt");
             file.remove();
@@ -1147,7 +1153,7 @@ void Thread_body::openDocument(int docId, int userId){
     mutex_users->unlock();
 
     mutex_docs->lock();
-    QString docName;
+    QString docName = "";
     QMapIterator<QString, int> j(documents);
     while (j.hasNext()) {
         j.next();
@@ -1158,20 +1164,29 @@ void Thread_body::openDocument(int docId, int userId){
     }
     mutex_docs->unlock();
 
-    if(openDoc(docName, username, docId, userId, 1) == -1){
-        out << "errore";
+    // Controllo se il documento di cui si vuole fare la OPEN è tra i documenti esistenti
+    if(docName.compare("")){
+        // Il documento non esiste (vuol dire che è stato cancellato dall'owner)
+        QString mex = "doc-inesistente";
+        out << mex.toUtf8();
         socket->write(blocko);
-    }else{
-        mutex_db->lock();
-        std::vector<int> info = database->recuperaInfoUtenteDoc(docName, username);
-        mutex_db->unlock();
-        int siteId = info[0];
-        int siteCounter = info[1];
-        current_siteCounter = siteCounter;
-        QString ritorno = "ok_"+QString::number(siteId)+"_"+QString::number(siteCounter);
+    } else {
+        // Il documento esiste
+        if(openDoc(docName, username, docId, userId, 1) == -1){
+            out << "errore";
+            socket->write(blocko);
+        }else{
+            mutex_db->lock();
+            std::vector<int> info = database->recuperaInfoUtenteDoc(docName, username);
+            mutex_db->unlock();
+            int siteId = info[0];
+            int siteCounter = info[1];
+            current_siteCounter = siteCounter;
+            QString ritorno = "ok_"+QString::number(siteId)+"_"+QString::number(siteCounter);
 
-        out << ritorno.toUtf8();
-        socket->write(blocko);
+            out << ritorno.toUtf8();
+            socket->write(blocko);
+        }
     }
 }
 
