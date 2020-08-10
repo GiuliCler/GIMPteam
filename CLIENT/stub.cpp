@@ -201,7 +201,5 @@ QString Stub::openKnownDocument(connection_to_server *connection, int userId, in
         //throw GUI_ConnectionException();
         throw GUI_GenericException("Houston, abbiamo un problema");
 
-    // TODO fragola: mettere un if qua sulla stringa "doc-inesistente"??
-
     return name;
 }
