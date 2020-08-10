@@ -12,7 +12,6 @@ extern QMutex* mutex_users;
 extern QMutex* mutex_docs;
 extern QMutex* mutex_workingUsers;
 extern QMutex* mutex_db;
-extern QMutex* mutex_writeSocket;
 
 extern QMap<QString, int> users;
 extern QMap<QString, int> documents;

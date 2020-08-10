@@ -14,7 +14,6 @@ QMutex* mutex_users = new QMutex();
 QMutex* mutex_docs = new QMutex();
 QMutex* mutex_workingUsers = new QMutex();
 QMutex* mutex_db = new QMutex();
-QMutex* mutex_writeSocket = new QMutex();
 
 QMap<QString, int> users;
 QMap<QString, int> documents;
