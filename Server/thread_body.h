@@ -34,6 +34,7 @@ private:
     int current_siteCounter;
     QString getUsername(int userId);
     QString getDocname(int docId);
+    QString threadId_toQString(std::thread::id id);
     void create(QString username, QString password, QString nickname, QString icon);
     void login(QString username, QString password);
     void update(int userId, QString password, QString nickname, QString icon);

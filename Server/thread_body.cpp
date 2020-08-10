@@ -296,6 +296,13 @@ QString Thread_body::getDocname(int docId){
     return docName;
 }
 
+QString Thread_body::threadId_toQString(std::thread::id id){
+    std::stringstream ss;
+    ss << id;
+    std::string str = ss.str();
+    return QString::fromStdString(str);
+}
+
 // NOTA: open_new è un flag che indica da dove è stata chiamata la connect
 //       0 --> NEW_DOC
 //       1 --> OPEN_DOC
@@ -333,10 +340,7 @@ int Thread_body::addToWorkingUsers(int docId, int userId, int open_new){
         }
        CRDT_Message *m = new CRDT_Message("ONLINEUSER_"+std::to_string(userId), s, userId);
        auto thread_id = std::this_thread::get_id();
-       std::stringstream ss;
-       ss << thread_id;
-       std::string thread_id_string = ss.str();
-       emit messageToServer(*m, QString::fromStdString(thread_id_string), docId);
+       emit messageToServer(*m, threadId_toQString(thread_id), docId);
     } else {
         // open_new non è uguale nè a 0 nè a 1
         esito = 0;
@@ -363,14 +367,10 @@ void Thread_body::removeFromWorkingUsers(int docId, int userId){
             for(auto i = workingUsers[docId].begin(); i < workingUsers[docId].end(); i++){
                 if((*i) == userId){
                     workingUsers[docId].erase(i);
-
+                    mutex_workingUsers->unlock();
                     CRDT_Message *m = new CRDT_Message("OFFLINEUSER_"+std::to_string(userId), s, userId);
                     auto thread_id = std::this_thread::get_id();
-                    std::stringstream ss;
-                    ss << thread_id;
-                    std::string thread_id_string = ss.str();
-                    mutex_workingUsers->unlock();
-                    emit messageToServer(*m, QString::fromStdString(thread_id_string), docId);
+                    emit messageToServer(*m, threadId_toQString(thread_id), docId);
                 }
             }
         } else if(count == 1){
@@ -716,10 +716,7 @@ void Thread_body::getDocumentDatoUri(QString uri, int userId){
             CRDT_Symbol s = *new CRDT_Symbol();
             CRDT_Message *m = new CRDT_Message("NEWCONTRIBUTOR_"+std::to_string(userId), s, userId);
             auto thread_id = std::this_thread::get_id();
-            std::stringstream ss;
-            ss << thread_id;
-            std::string thread_id_string = ss.str();
-            emit messageToServer(*m, QString::fromStdString(thread_id_string), docId);
+            emit messageToServer(*m, threadId_toQString(thread_id), docId);
         }else{
             out << "errore";
             socket->write(blocko);
