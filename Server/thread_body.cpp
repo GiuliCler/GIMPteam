@@ -362,8 +362,10 @@ void Thread_body::removeFromWorkingUsers(int docId, int userId){
         //                                        altrimenti (se count == 1), devo eliminare riga
         int count = workingUsers[docId].size();
         if(count > 1){
+            int flag = 0;
             for(auto i = workingUsers[docId].begin(); i < workingUsers[docId].end(); i++){
                 if((*i) == userId){
+                    flag = 1;
                     workingUsers[docId].erase(i);
                     break;
                 }
@@ -371,11 +373,12 @@ void Thread_body::removeFromWorkingUsers(int docId, int userId){
 
             mutex_workingUsers->unlock();
 
-            CRDT_Symbol s = *new CRDT_Symbol();
-            CRDT_Message *m = new CRDT_Message("OFFLINEUSER_"+std::to_string(userId), s, userId);
-            auto thread_id = std::this_thread::get_id();
-            emit messageToServer(*m, threadId_toQString(thread_id), docId);
-
+            if(flag == 1){
+                CRDT_Symbol s = *new CRDT_Symbol();
+                CRDT_Message *m = new CRDT_Message("OFFLINEUSER_"+std::to_string(userId), s, userId);
+                auto thread_id = std::this_thread::get_id();
+                emit messageToServer(*m, threadId_toQString(thread_id), docId);
+            }
         } else if(count == 1){
             workingUsers.remove(docId);
             mutex_workingUsers->unlock();
