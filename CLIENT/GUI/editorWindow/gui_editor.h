@@ -65,7 +65,7 @@ public slots:
     //si occupano sia del cursore che dell'icona che del colore
     void addUserToEditorGUI(int userid);
     void removeUserFromEditorGUI(int userid);
-     void addContributorToCurrentDocument(int userid);
+    void addContributorToCurrentDocument(int userid);
 
 private:
     Ui::GUI_Editor *ui;

@@ -1196,10 +1196,11 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         QByteArray blocko;
         QDataStream out(&blocko, QIODevice::WriteOnly);
         out.setVersion(QDataStream::Qt_5_12);
-
+        mutex_writeSocket->lock();
         out << "OFFLINEUSER";
         out <<  userIdDisconnect[1].toInt();
         socket->write(blocko);
+        mutex_writeSocket->unlock();
         return;
     }
 
@@ -1210,9 +1211,11 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         QByteArray blocko;
         QDataStream out(&blocko, QIODevice::WriteOnly);
         out.setVersion(QDataStream::Qt_5_12);
+        mutex_writeSocket->lock();
         out << "ONLINEUSER";
         out <<  userIdDisconnect[1].toInt();
         socket->write(blocko);
+        mutex_writeSocket->unlock();
         return;
     }
 
@@ -1223,15 +1226,19 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         QByteArray blocko;
         QDataStream out(&blocko, QIODevice::WriteOnly);
         out.setVersion(QDataStream::Qt_5_12);
+        mutex_writeSocket->lock();
         out << "NEWCONTRIBUTOR";
         out <<  userIdContributor[1].toInt();
         socket->write(blocko);
+        mutex_writeSocket->unlock();
         return;
     }
 
     /* Messaggio che fa parte del CRDT */
+    mutex_writeSocket->lock();
     out << "CRDT";
     out << m;
     socket->write(blocko);
+    mutex_writeSocket->unlock();
 }
 
