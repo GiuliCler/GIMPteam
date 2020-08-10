@@ -223,7 +223,7 @@ std::string connection_to_server::openDoc(int userId, int docId)
     if(buffer.contains(c.toUtf8())){
         return buffer.toStdString();
     }else if(buffer.contains(d.toUtf8())){
-        return "doc-inesistente";
+        // TODO fragola: emit funzioneDiMirko("Il documento selezionato e' stato cancellato dall'owner!");
     }else{
         return "errore";
     }
