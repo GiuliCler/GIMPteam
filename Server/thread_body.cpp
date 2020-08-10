@@ -207,18 +207,37 @@ void Thread_body::executeJob(){
     }
 
     c = "SEND";
+    QByteArray action;
     if(text.contains(c.toUtf8())){
+        do {
+            CRDT_Message m;
+            *in >> m;
+            //DEBUG
+            std::cout << "if SEND - messaggeAction - "<<m.getAzione()<< std::endl;
+            std::stringstream ss;
+            ss << thread_id;
+            std::string thread_id_string = ss.str();
+            emit messageToServer(m, QString::fromStdString(thread_id_string), current_docId);
+            if(!in->commitTransaction()){
+                *in >> action;
+                if(action.isEmpty()){
+                    break;
+                }
+            }
+            std::cout << "if SEND - "<<action.toStdString()<< std::endl;
+        } while (!in->commitTransaction());
 
-        CRDT_Message messaggio;
-        *in >> messaggio;
+        //PRIMA ERA COSì:
+        //CRDT_Message messaggio;
+        //*in >> messaggio;
 
-        std::cout << "if SEND - "<<messaggio.getAzione()<< std::endl;      // DEBUG
+        //std::cout << "if SEND - "<<messaggio.getAzione()<< std::endl;      // DEBUG
 
         // scrivi su crdt del server? MUTEX + chiediti se metterla dopo emit        todo ila&paolo
-        std::stringstream ss;
-        ss << thread_id;
-        std::string thread_id_string = ss.str();
-        emit messageToServer(messaggio, QString::fromStdString(thread_id_string), current_docId);
+        //std::stringstream ss;
+        //ss << thread_id;
+        //std::string thread_id_string = ss.str();
+        //emit messageToServer(messaggio, QString::fromStdString(thread_id_string), current_docId);
     }
 
     c = "DISCONNECT_FROM_DOC";
@@ -1196,11 +1215,10 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         QByteArray blocko;
         QDataStream out(&blocko, QIODevice::WriteOnly);
         out.setVersion(QDataStream::Qt_5_12);
-        mutex_writeSocket->lock();
         out << "OFFLINEUSER";
         out <<  userIdDisconnect[1].toInt();
         socket->write(blocko);
-        mutex_writeSocket->unlock();
+        socket->flush();
         return;
     }
 
@@ -1211,11 +1229,10 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         QByteArray blocko;
         QDataStream out(&blocko, QIODevice::WriteOnly);
         out.setVersion(QDataStream::Qt_5_12);
-        mutex_writeSocket->lock();
         out << "ONLINEUSER";
         out <<  userIdDisconnect[1].toInt();
         socket->write(blocko);
-        mutex_writeSocket->unlock();
+        socket->flush();
         return;
     }
 
@@ -1226,19 +1243,19 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         QByteArray blocko;
         QDataStream out(&blocko, QIODevice::WriteOnly);
         out.setVersion(QDataStream::Qt_5_12);
-        mutex_writeSocket->lock();
         out << "NEWCONTRIBUTOR";
         out <<  userIdContributor[1].toInt();
         socket->write(blocko);
-        mutex_writeSocket->unlock();
+        socket->flush();
         return;
     }
 
     /* Messaggio che fa parte del CRDT */
-    mutex_writeSocket->lock();
+
+    std::cout << "PROCESS: sto per scrivere: "<<m.getAzione()<< std::endl;      // DEBUG
     out << "CRDT";
     out << m;
     socket->write(blocko);
-    mutex_writeSocket->unlock();
+    socket->flush();
 }
 

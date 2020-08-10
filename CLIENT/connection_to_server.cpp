@@ -1073,9 +1073,19 @@ void connection_to_server::receiveMessage(){
 
     c = "CRDT";
     if(action.contains(c.toUtf8())){
-        CRDT_Message m;
-        in >> m;
-        std::cout << "SLOT CLIENT receiveAction - "<<m.getAzione()<< std::endl;      // DEBUG
-        emit sigProcessMessage(m);
+        do {
+            CRDT_Message m;
+            in >> m;
+            emit sigProcessMessage(m);
+            //DEBUG
+            std::cout << "SLOT CLIENT receiveAction - "<<action.toStdString()<< std::endl;
+            std::cout << "SLOT CLIENT messaggeAction - "<<m.getAzione()<< std::endl;
+            if(!in.commitTransaction()){
+                in >> action;
+                if(action.isEmpty()){
+                    break;
+                }
+            }
+        } while (!in.commitTransaction());
     }
 }
