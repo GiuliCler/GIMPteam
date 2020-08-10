@@ -109,7 +109,7 @@ void Thread_body::executeJob(){
         int userId;
         *in >> userId;
 
-        getUsername(userId);
+        retrieveUsername(userId);
     }
 
     c = "GET_NICKNAME";
@@ -249,29 +249,8 @@ void Thread_body::executeJob(){
 
         removeFromWorkingUsers(docId, userId);
 
-        QString username;
-        mutex_users->lock();
-        QMapIterator<QString, int> i(users);
-        while (i.hasNext()) {
-            i.next();
-            if(i.value()==userId){
-                username = i.key();
-                break;
-            }
-        }
-        mutex_users->unlock();
-
-        mutex_docs->lock();
-        QString docName;
-        QMapIterator<QString, int> j(documents);
-        while (j.hasNext()) {
-            j.next();
-            if(j.value()==docId){
-                docName=j.key();
-                break;
-            }
-        }
-        mutex_docs->unlock();
+        QString username = getUsername(userId);
+        QString docName = getDocname(docId);
 
         mutex_db->lock();
         database->aggiornaSiteCounter(docName, username, current_siteCounter);
@@ -284,6 +263,38 @@ void Thread_body::executeJob(){
     qDebug() << "EXECUTE JOB finita";      // DEBUG
 }
 
+
+QString Thread_body::getUsername(int userId){
+    QString username = "";
+    mutex_users->lock();
+    QMapIterator<QString, int> i(users);
+    while (i.hasNext()) {
+        i.next();
+        if(i.value()==userId){
+            username=i.key();
+            break;
+        }
+    }
+    mutex_users->unlock();
+
+    return username;
+}
+
+QString Thread_body::getDocname(int docId){
+    QString docName = "";
+    mutex_docs->lock();
+    QMapIterator<QString, int> j(documents);
+    while (j.hasNext()) {
+        j.next();
+        if(j.value()==docId){
+            docName=j.key();
+            break;
+        }
+    }
+    mutex_docs->unlock();
+
+    return docName;
+}
 
 // NOTA: open_new è un flag che indica da dove è stata chiamata la connect
 //       0 --> NEW_DOC
@@ -386,19 +397,9 @@ void Thread_body::newDoc(QString docName, int userId){
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
-    mutex_users->lock();
-    QString username;
-    //controllo che ci sia la cartella del dato utente
-    QMapIterator<QString, int> i(users);
-    while (i.hasNext()) {
-        i.next();
-        if(i.value()==userId){
-            username=i.key();
-            break;
-        }
-    }
-    mutex_users->unlock();
+    QString username = getUsername(userId);
 
+    //controllo che ci sia la cartella del dato utente
     if(!username.isEmpty() && QDir(path+username).exists()){
         mutex_db->lock();
         if(database->creaDoc(username+"_"+docName)){
@@ -561,17 +562,7 @@ void Thread_body::update(int userId, QString password, QString nickname, QString
 
     qDebug()<<"UPDATE -- PASSO DA QUI 0";          // DEBUG
 
-    QString username;
-    mutex_users->lock();
-    QMapIterator<QString, int> i(users);
-    while (i.hasNext()) {
-        i.next();
-        if(i.value()==userId){
-            username = i.key();
-            break;
-        }
-    }
-    mutex_users->unlock();
+    QString username = getUsername(userId);
 
     qDebug()<<"UPDATE -- PASSO DA QUI 1";          // DEBUG
 
@@ -598,22 +589,13 @@ void Thread_body::update(int userId, QString password, QString nickname, QString
 }
 
 
-void Thread_body::getUsername(int userId){
+void Thread_body::retrieveUsername(int userId){
     QByteArray blocko;
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
-    QString username;
-    mutex_users->lock();
-    QMapIterator<QString, int> i(users);
-    while (i.hasNext()) {
-        i.next();
-        if(i.value()==userId){
-            username = i.key();
-            break;
-        }
-    }
-    mutex_users->unlock();
+    QString username = getUsername(userId);
+
     if(!username.isEmpty()){
         out << username;
         socket->write(blocko);
@@ -629,28 +611,15 @@ void Thread_body::getNickname(int userId){
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
-    QString username;
-    //qDebug() << "L'UTENTE MI HA DATO COME userID... "<<userId;       // DEBUG
-    mutex_users->lock();
-    QMapIterator<QString, int> i(users);
-    while (i.hasNext()) {
-        i.next();
-        //qDebug() << "ITERO... key:"<<i.key()<<" E value:"<<i.value();       // DEBUG
-        if(i.value()==userId){
-            username=i.key();
-            break;
-        }
-    }
-    mutex_users->unlock();
+    QString username = getUsername(userId);
+
     if(!username.isEmpty()){
-        //qDebug()<<"YESS";                       // DEBUG
         mutex_db->lock();
         QString nick = database->getNickname(username);       // DEBUG
         mutex_db->unlock();
         out << nick.toLocal8Bit();
         socket->write(blocko);
     }else{
-        //qDebug()<<"ZIOFA";                      // DEBUG
         out << "errore";
         socket->write(blocko);
     }
@@ -662,17 +631,8 @@ void Thread_body::getIcon(int userId){
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
-    QString username;
-    mutex_users->lock();
-    QMapIterator<QString, int> i(users);
-    while (i.hasNext()) {
-        i.next();
-        if(i.value()==userId){
-            username = i.key();
-            break;
-        }
-    }
-    mutex_users->unlock();
+    QString username = getUsername(userId);
+
     if(!username.isEmpty()){
         mutex_db->lock();
         QString icon = database->getIconId(username);
@@ -690,17 +650,7 @@ void Thread_body::getDocs(int userId){
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
-    mutex_users->lock();
-    QString username;
-    QMapIterator<QString, int> i(users);
-    while (i.hasNext()) {
-        i.next();
-        if(i.value()==userId){
-            username = i.key();
-            break;
-        }
-    }
-    mutex_users->unlock();
+    QString username = getUsername(userId);
 
     if(!username.isEmpty()){
         // Recupero i documenti per cui l'utente e' abilitato ad accedere
@@ -791,29 +741,8 @@ void Thread_body::getDocumentDatoUri(QString uri, int userId){
 
 QString Thread_body::associateDoc(int docId, int userId){
     //cerco il nome del doc e dello user
-    mutex_users->lock();
-    QString username;
-    QMapIterator<QString, int> i(users);
-    while (i.hasNext()) {
-        i.next();
-        if(i.value()==userId){
-            username=i.key();
-            break;
-        }
-    }
-    mutex_users->unlock();
-
-    mutex_docs->lock();
-    QString docName;
-    QMapIterator<QString, int> j(documents);
-    while (j.hasNext()) {
-        j.next();
-        if(j.value()==docId){
-            docName=j.key();
-            break;
-        }
-    }
-    mutex_docs->unlock();
+    QString username = getUsername(userId);
+    QString docName = getDocname(docId);
 
     if(!username.isEmpty() && QDir(path+username).exists()){
         mutex_db->lock();
@@ -844,17 +773,8 @@ void Thread_body::getUri(int docId){
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
-    QString docName;
-    mutex_docs->lock();
-    QMapIterator<QString, int> i(documents);
-    while (i.hasNext()) {
-        i.next();
-        if(i.value()==docId){
-            docName=i.key();
-            break;
-        }
-    }
-    mutex_docs->unlock();
+    QString docName = getDocname(docId);
+
     if(!docName.isEmpty()){
         mutex_db->lock();
 //        qDebug()<<"GET_URI ----- docName: "<<docName;      // DEBUG
@@ -874,21 +794,12 @@ void Thread_body::getOwnerId(int docId){
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
-    QString docName;
     QString ownerName;
     int ownerId;
 
     // Recupero il docName, dato il docId
-    mutex_docs->lock();
-    QMapIterator<QString, int> i(documents);
-    while (i.hasNext()) {
-        i.next();
-        if(i.value()==docId){
-            docName=i.key();
-            break;
-        }
-    }
-    mutex_docs->unlock();
+    QString docName = getDocname(docId);
+
     if(!docName.isEmpty()){
         // Faccio la split del docName e recupero ownerName (at(0))
         ownerName = docName.split("_").at(0);
@@ -917,17 +828,7 @@ void Thread_body::deleteDoc(int userId, int docId){
     out.setVersion(QDataStream::Qt_5_12);
 
     //cerco il nome del documento da eliminare
-    QString docName;
-    mutex_docs->lock();
-    QMapIterator<QString, int> i(documents);
-    while (i.hasNext()) {
-        i.next();
-        if(i.value()==docId){
-            docName=i.key();
-            break;
-        }
-    }
-    mutex_docs->unlock();
+    QString docName = getDocname(docId);
 
     if(docName.isEmpty()){
         out << "errore";
@@ -937,17 +838,7 @@ void Thread_body::deleteDoc(int userId, int docId){
 
     //cerco lo username dell'utente che ha chiesto l'eliminazione (per fare
     //la verifica sul fatto che sia l'owner o meno
-    QString username;
-    mutex_users->lock();
-    QMapIterator<QString, int> k(users);
-    while (k.hasNext()) {
-        k.next();
-        if(k.value()==userId){
-            username = k.key();
-            break;
-        }
-    }
-    mutex_users->unlock();
+    QString username = getUsername(userId);
     if(username.isEmpty()){
         out << "errore";
         socket->write(blocko);
@@ -1023,17 +914,7 @@ void Thread_body::getDocName(int docId){
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
-    QString docName;
-    mutex_docs->lock();
-    QMapIterator<QString, int> i(documents);
-    while (i.hasNext()) {
-        i.next();
-        if(i.value()==docId){
-            docName=i.key();
-            break;
-        }
-    }
-    mutex_docs->unlock();
+    QString docName = getDocname(docId);
     if(!docName.isEmpty()){
         out << docName.split("_").at(1);
         socket->write(blocko);
@@ -1089,17 +970,7 @@ void Thread_body::getCollaboratorsGivenDoc(int docId){
     out.setVersion(QDataStream::Qt_5_12);
 
     //cerco il nome del documento
-    QString docName;
-    mutex_docs->lock();
-    QMapIterator<QString, int> i(documents);
-    while (i.hasNext()) {
-        i.next();
-        if(i.value()==docId){
-            docName=i.key();
-            break;
-        }
-    }
-    mutex_docs->unlock();
+    QString docName = getDocname(docId);
     if(!docName.isEmpty()){
         //recupero i collaboratori dal db
         mutex_db->lock();
@@ -1140,32 +1011,11 @@ void Thread_body::openDocument(int docId, int userId){
     out.setVersion(QDataStream::Qt_5_12);
 
     //cerco il nome del doc e dello user
-    mutex_users->lock();
-    QString username;
-    QMapIterator<QString, int> i(users);
-    while (i.hasNext()) {
-        i.next();
-        if(i.value()==userId){
-            username=i.key();
-            break;
-        }
-    }
-    mutex_users->unlock();
-
-    mutex_docs->lock();
-    QString docName = "";
-    QMapIterator<QString, int> j(documents);
-    while (j.hasNext()) {
-        j.next();
-        if(j.value()==docId){
-            docName=j.key();
-            break;
-        }
-    }
-    mutex_docs->unlock();
+    QString username = getUsername(userId);
+    QString docName = getDocname(docId);
 
     // Controllo se il documento di cui si vuole fare la OPEN è tra i documenti esistenti
-    if(docName.compare("")){
+    if(docName.isEmpty()){
         // Il documento non esiste (vuol dire che è stato cancellato dall'owner)
         QString mex = "doc-inesistente";
         out << mex.toUtf8();

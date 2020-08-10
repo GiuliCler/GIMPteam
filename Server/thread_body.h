@@ -32,10 +32,12 @@ private:
     QDataStream* in;
     int current_docId;
     int current_siteCounter;
+    QString getUsername(int userId);
+    QString getDocname(int docId);
     void create(QString username, QString password, QString nickname, QString icon);
     void login(QString username, QString password);
     void update(int userId, QString password, QString nickname, QString icon);
-    void getUsername(int userId);
+    void retrieveUsername(int userId);
     void getNickname(int userId);
     void getIcon(int userId);
     void getDocs(int userId);
