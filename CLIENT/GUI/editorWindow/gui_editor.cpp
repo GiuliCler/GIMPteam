@@ -123,6 +123,10 @@ void GUI_Editor::changeWindowName(){
     gimpParent->setWindowTitle("GIMPdocs - " + documentName);
 }
 
+void GUI_Editor::setUpEditor(){
+    childMyTextEdit->setupTextEdit();
+}
+
 void GUI_Editor::launchSetUi1(){
     int result = GUI_ConnectionToServerWrapper::closeDocumentWrapper(gimpParent, gimpParent->userid, documentId);
     if(result == -1)

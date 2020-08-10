@@ -60,6 +60,7 @@ void GIMPdocs::setUi2(QWidget *widget){
     //devo attivare qui le connect e non posso farlo prima nel costruttore perchè quando chiamo il costruttore ui2 non è ancora stato caricato
     static_cast<GUI_Editor*>(widget)->connectMenuBarActions();
     static_cast<GUI_Editor*>(widget)->changeWindowName();
+    static_cast<GUI_Editor*>(widget)->setUpEditor();
 }
 
 //Warning! May return a nullptr if the user hasn't set up the correction

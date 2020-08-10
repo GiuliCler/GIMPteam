@@ -39,6 +39,7 @@ public:
     void connectMenuBarActions();
     //non posso falro nel costruttore perchè quando costruisco il widget, il cambio di window deve ancora avvenire
     void changeWindowName();
+    void setUpEditor();
     void removeContributorFromCurrentDocument(int userid);
 
 public slots:
