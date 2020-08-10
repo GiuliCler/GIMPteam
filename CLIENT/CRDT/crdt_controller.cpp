@@ -315,6 +315,7 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
     std::cout<<"EHI! SONO NELLA REMOTE INSERT!"<<std::endl;
 
     processingMessage = true;
+    textEdit.setAlignment(align);
     QTextCursor current = textEdit.textCursor();
 
     QTextCursor tmp{textEdit.document()};
