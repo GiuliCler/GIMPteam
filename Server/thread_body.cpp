@@ -75,7 +75,7 @@ void Thread_body::executeJob(){
         out << result;
         socket->write(blocko);
         socket->flush();
-        socket->waitForBytesWritten(Timeout);       // TODO capire il Timeout
+        //socket->waitForBytesWritten(Timeout);       // TODO capire il Timeout
 
         // Chiudo il socket dal lato del client
         socket->close();
@@ -1135,13 +1135,20 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
 
     c = "ONLINEUSER";
     if(strAction.contains(c.toUtf8())){
-        QStringList userIdDisconnect = strAction.split("_");
-        qDebug() << userIdDisconnect[1];
+        QStringList userIdConnect = strAction.split("_");
+        qDebug() << userIdConnect[1];
         QByteArray blocko;
         QDataStream out(&blocko, QIODevice::WriteOnly);
         out.setVersion(QDataStream::Qt_5_12);
+        //mando in uscita anche Nickname e icona -- TODO
+        mutex_db->lock();
+        QString nick = database->getNickname(getUsername(userIdConnect[1].toInt()));       // DEBUG
+        QString icon = database->getIconId(getUsername(userIdConnect[1].toInt()));
+        mutex_db->unlock();
         out << "ONLINEUSER";
-        out <<  userIdDisconnect[1].toInt();
+        out <<  userIdConnect[1].toInt();
+        out << nick.toLocal8Bit();
+        out << icon.toLocal8Bit();
         socket->write(blocko);
         socket->flush();
         return;
@@ -1154,8 +1161,15 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         QByteArray blocko;
         QDataStream out(&blocko, QIODevice::WriteOnly);
         out.setVersion(QDataStream::Qt_5_12);
+        //mando in uscita anche Nickname e icona -- TODO
+        mutex_db->lock();
+        QString nick = database->getNickname(getUsername(userIdContributor[1].toInt()));
+        QString icon = database->getIconId(getUsername(userIdContributor[1].toInt()));
+        mutex_db->unlock();
         out << "NEWCONTRIBUTOR";
         out <<  userIdContributor[1].toInt();
+        out << nick.toLocal8Bit();
+        out << icon.toLocal8Bit();
         socket->write(blocko);
         socket->flush();
         return;

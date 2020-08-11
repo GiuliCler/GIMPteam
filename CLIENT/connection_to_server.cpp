@@ -1058,8 +1058,15 @@ void connection_to_server::receiveMessage(){
     if(action.contains(c.toUtf8())){
         //aggiorna la lista degli utenti online
         int userGetOnline;
+        QByteArray iconId, nickname;
         in >> userGetOnline;
-        std::cout << userGetOnline<< std::endl;
+        in >> iconId;
+        in >> nickname;
+        iconId.replace('\0',"");
+        std::string icona = iconId.toStdString();
+        nickname.replace('\0',"");
+        std::string nick = iconId.toStdString();
+        std::cout << userGetOnline << "icona: " + icona << " nickname: " + nick << std::endl;
         //this->editor->addUserToEditorGUI(userGetOnline);
         emit sigOnlineUser(userGetOnline);
     }
@@ -1068,8 +1075,15 @@ void connection_to_server::receiveMessage(){
     if(action.contains(c.toUtf8())){
         //aggiorna la lista degli utenti online
         int userNewContributor;
+        QByteArray iconId, nickname;
         in >> userNewContributor;
-        std::cout << userNewContributor<< std::endl;
+        in >> iconId;
+        in >> nickname;
+        iconId.replace('\0',"");
+        std::string icona = iconId.toStdString();
+        nickname.replace('\0',"");
+        std::string nick = iconId.toStdString();
+        std::cout << userNewContributor << "icona: " + icona << " nickname: " + nick << std::endl;
         //this->editor->addUserToEditorGUI(userGetOnline);
         emit sigNewContributor(userNewContributor);
     }
