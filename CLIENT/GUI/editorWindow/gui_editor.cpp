@@ -19,13 +19,6 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int sit
     this->setObjectName(GUI_Editor::getObjectName());
     gimpParent = static_cast<GIMPdocs*>(parent);
 
-    //Per gli online users
-    QObject::connect(gimpParent->getConnection(), &connection_to_server::sigOfflineUser, this, &GUI_Editor::removeUserFromEditorGUI);
-    QObject::connect(gimpParent->getConnection(), &connection_to_server::sigOnlineUser, this, &GUI_Editor::addUserToEditorGUI);
-
-    //per i contributors
-    QObject::connect(gimpParent->getConnection(), &connection_to_server::sigNewContributor, this, &GUI_Editor::addContributorToCurrentDocument);
-
     ui = new Ui::GUI_Editor();
     ui->setupUi(this);
 
@@ -56,6 +49,12 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int sit
     this->uri = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
     //avvio l'editor
     GUI_ConnectionToServerWrapper::startEditor(gimpParent);
+
+    //Per gli online users
+    QObject::connect(gimpParent->getConnection(), &connection_to_server::sigOfflineUser, this, &GUI_Editor::removeUserFromEditorGUI);
+    QObject::connect(gimpParent->getConnection(), &connection_to_server::sigOnlineUser, this, &GUI_Editor::addUserToEditorGUI);
+    QObject::connect(gimpParent->getConnection(), &connection_to_server::sigNewContributor, this, &GUI_Editor::addContributorToCurrentDocument);
+
 }
 
 GUI_Editor::~GUI_Editor(){
