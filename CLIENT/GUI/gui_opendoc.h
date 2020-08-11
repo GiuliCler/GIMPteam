@@ -14,6 +14,9 @@ public:
     ~GUI_Opendoc();
     static QString getObjectName() {return QString("GUI_Opendoc");}
 
+signals:
+    void unavailableSharedDocument(int docId);
+
 private slots:
     void on_openDocsPushButton_clicked();
     void on_getURIPushButton_clicked();
