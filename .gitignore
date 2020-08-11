@@ -58,3 +58,6 @@ Server/debug/server.exe
 CLIENT/debug/GIMPdocs.exe
 CLIENT/Makefile.*
 Server/Makefile.*
+
+#Documents salvati nel DB
+Server/Files/*

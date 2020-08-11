@@ -58,7 +58,7 @@ void GUI_Profile::on_savePushButton_clicked()
     if(!checkFieldValidity(ui->repeatLineEdit->text(), "Repeat password"))
         return;
 
-    if(!checkPasswordSecurity(ui->passwordLineEdit->text()))
+    if(!checkPasswordSecurity(ui->passwordLineEdit->text(), ui->repeatLineEdit->text()))
         return;
 
     //creo un nuovo utente o aggiorno quello vecchio
@@ -136,8 +136,13 @@ bool GUI_Profile::checkFieldValidity(QString value, QString fieldName){
     return true;
 }
 
-bool GUI_Profile::checkPasswordSecurity(QString password){
+bool GUI_Profile::checkPasswordSecurity(QString password, QString repeatPassword){
     int minLength = 4;
+
+    if(password.compare(repeatPassword) != 0){
+        QMessageBox::information(this, "", "Password and repeated password must be equal");
+        return false;
+    }
 
     if(password.length() < minLength){
         QMessageBox::information(this, "", "Password should be at least " + QString::number(minLength) + " characters long");
