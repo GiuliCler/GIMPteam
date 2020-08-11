@@ -1140,7 +1140,7 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         QByteArray blocko;
         QDataStream out(&blocko, QIODevice::WriteOnly);
         out.setVersion(QDataStream::Qt_5_12);
-        //mando in uscita anche Nickname e icona -- TODO
+        //mando in uscita anche Nickname e icona
         mutex_db->lock();
         QString nick = database->getNickname(getUsername(userIdConnect[1].toInt()));       // DEBUG
         QString icon = database->getIconId(getUsername(userIdConnect[1].toInt()));
@@ -1161,7 +1161,7 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         QByteArray blocko;
         QDataStream out(&blocko, QIODevice::WriteOnly);
         out.setVersion(QDataStream::Qt_5_12);
-        //mando in uscita anche Nickname e icona -- TODO
+        //mando in uscita anche Nickname e icona
         mutex_db->lock();
         QString nick = database->getNickname(getUsername(userIdContributor[1].toInt()));
         QString icon = database->getIconId(getUsername(userIdContributor[1].toInt()));

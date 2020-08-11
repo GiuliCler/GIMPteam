@@ -111,14 +111,13 @@ int connection_to_server::requestTryLogin(QString username, QString password)
 
         in.startTransaction();
         in >> file;
+        QString c = "errore";
+        if(file.contains(c.toUtf8())){
+            return -1;
+        }
         in >> userId;
     } while (!in.commitTransaction());
-    QString c = "ok";
-    if(file.contains(c.toUtf8())){
-        return userId;
-    }else{
-        return -1;
-    }
+    return userId;
 }
 
 std::string connection_to_server::requestCreateDocument(int userId, QString name)
@@ -166,7 +165,6 @@ std::string connection_to_server::requestCreateDocument(int userId, QString name
     } while (!in.commitTransaction());
     QString c = "ok";
     if(buffer.contains(c.toUtf8())){
-        //TODO: settare il nome del documento nella barra in alto.
         return buffer.toStdString();
     }else{
         return "errore";
@@ -320,14 +318,12 @@ int connection_to_server::requestNewAccount(QString username, QString password, 
 
         in.startTransaction();
         in >> file;
+        QString c = "errore";
+        if(file.contains(c.toUtf8()))
+            return -1;
         in >> id;
     } while (!in.commitTransaction());
-    QString c = "errore";
-    if(file.contains(c.toUtf8())){
-        return -1;
-    }else{
-        return id;
-    }
+    return id;
 }
 
 long connection_to_server::requestUpdateAccount( int userId, QString password, QString nickname, QString icon)
