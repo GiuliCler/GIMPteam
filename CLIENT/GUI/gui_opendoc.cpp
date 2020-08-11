@@ -138,8 +138,18 @@ void GUI_Opendoc::on_sharedDocsListWidget_itemClicked(){
 }
 
 void GUI_Opendoc::on_unavailableSharedDocument_emitted(int docId){
-    int n = docId;
-    docId = n;
+    //in pratica questa funzione fa da wrapper che fa qualche controllo. Non vedo come possa fallire, ma non si sa mai
+    QListWidgetItem* currentItem = getSelectedItem();
+
+    //in teoria non dovrebbe mai succedere
+    if(currentItem == nullptr)
+        return;
+
+    //anche questo non dovrebbe mai succedere
+    if(currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt() != docId)
+        return;
+
+    removeSelectedItem();
 }
 
 
