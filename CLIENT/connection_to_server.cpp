@@ -102,7 +102,8 @@ int connection_to_server::requestTryLogin(QString username, QString password)
     //ora attendo una risposta dal server, sul login al db
     QByteArray file;
     QDataStream in;
-    int userId;
+    QString err = "errore", c = "ok", d = "alreadyLogged";
+    int userId = -1;
     in.setDevice(this->tcpSocket);
     in.setVersion(QDataStream::Qt_5_12);
     do {
@@ -113,17 +114,18 @@ int connection_to_server::requestTryLogin(QString username, QString password)
 
         in.startTransaction();
         in >> file;
-        QString c = "errore";
-        if(file.contains(c.toUtf8())){
-            return -1;
+
+        if(file.contains(err.toUtf8()) || file.contains(d.toUtf8())){
+            break;
         }
+
         in >> userId;
+
     } while (!in.commitTransaction());
-    QString c = "ok";
+
     if(file.contains(c.toUtf8())){
         return userId;
     }else{
-        QString d = "alreadyLogged";
         if(file.contains(d.toUtf8())){
             throw GUI_GenericException("Attenzione! Login già effettuato su un altro dispositivo!");
         } else {
