@@ -48,11 +48,10 @@ void GUI_Menu::on_editPushButton_clicked(){
 }
 
 void GUI_Menu::on_logoutPushButton_clicked(){
-    GUI_Login *widget = new GUI_Login(gimpParent);
     long value = GUI_ConnectionToServerWrapper::requestLogOutWrapper(gimpParent, gimpParent->userid);
-    if(value == -1){
-        //ERRORE NEL LOGOUT => GESTIRE
+    if(value == -1)
         return;
-    }
+
+    GUI_Login *widget = new GUI_Login(gimpParent);
     gimpParent->setCentralWidget(widget);
 }
