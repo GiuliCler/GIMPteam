@@ -1095,16 +1095,14 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
 
     auto thread_id = std::this_thread::get_id();
     std::cout << "---- ThreadBody processMessage RICEVUTO thread_id: "<<thread_id<<", doc_id: "<<docId<<" ---- "<< "; Stringa: "<<m.getAzione()<< std::endl;      // DEBUG
-    std::stringstream ss;
-    ss << thread_id;
-    std::string thread_id_string = ss.str();
+    QString thread_id_string = threadId_toQString(thread_id);
 
     // Se altro documento o stesso user_id di questo thread => discard (return) del messaggio
     // NOTA: se stesso user_id e è una insert, aggiorna il current_siteCounter
     if(docId != current_docId){
         return;
     }
-    if(QString::fromStdString(thread_id_string) == thread_id_sender){
+    if(thread_id_string == thread_id_sender){
         if(m.getAzione() == "insert"){
             QString str = QString::fromStdString(m.getSimbolo().getIDunivoco());
             current_siteCounter = str.split("_")[1].toInt();
@@ -1165,7 +1163,6 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
 
     /* Messaggio che fa parte del CRDT */
 
-    std::cout << "PROCESS: sto per scrivere: "<<m.getAzione()<< std::endl;      // DEBUG
     out << "CRDT";
     out << m;
     socket->write(blocko);
