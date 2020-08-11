@@ -45,7 +45,7 @@ void Thread_body::executeJob(){
 
     QString c = "CREATE";
     if(text.contains(c.toUtf8())){
-//        qDebug() << "SONO DENTRO LA CREATE";             // DEBUG
+        //        qDebug() << "SONO DENTRO LA CREATE";             // DEBUG
         QString username, password, nickname, icon;
         *in >> username;
         *in >> password;
@@ -74,6 +74,7 @@ void Thread_body::executeJob(){
         out.setVersion(QDataStream::Qt_5_12);
         out << result;
         socket->write(blocko);
+        socket->flush();
         socket->waitForBytesWritten(Timeout);       // TODO capire il Timeout
 
         // Chiudo il socket dal lato del client
@@ -93,7 +94,7 @@ void Thread_body::executeJob(){
 
     c = "UPDATE";
     if(text.contains(c.toUtf8())){
-//        qDebug()<<"SONO DENTRO LA UPDATE";          // DEBUG
+        //        qDebug()<<"SONO DENTRO LA UPDATE";          // DEBUG
         QString password, nickname, icon;
         int userId;
         *in >> userId;
@@ -255,10 +256,10 @@ void Thread_body::executeJob(){
         mutex_db->lock();
         database->aggiornaSiteCounter(docName, username, current_siteCounter);
         mutex_db->unlock();
-    }    
+    }
 
-//    socket->disconnectFromHost();
-//    socket->waitForDisconnected(3000);
+    //    socket->disconnectFromHost();
+    //    socket->waitForDisconnected(3000);
 
     qDebug() << "EXECUTE JOB finita";      // DEBUG
 }
@@ -338,9 +339,9 @@ int Thread_body::addToWorkingUsers(int docId, int userId, int open_new){
             workingUsers.insert(docId, value);
             mutex_workingUsers->unlock();
         }
-       CRDT_Message *m = new CRDT_Message("ONLINEUSER_"+std::to_string(userId), s, userId);
-       auto thread_id = std::this_thread::get_id();
-       emit messageToServer(*m, threadId_toQString(thread_id), docId);
+        CRDT_Message *m = new CRDT_Message("ONLINEUSER_"+std::to_string(userId), s, userId);
+        auto thread_id = std::this_thread::get_id();
+        emit messageToServer(*m, threadId_toQString(thread_id), docId);
     } else {
         // open_new non è uguale nè a 0 nè a 1
         esito = 0;
@@ -413,6 +414,7 @@ void Thread_body::newDoc(QString docName, int userId){
             if(id == -1){
                 out << "errore";
                 socket->write(blocko);
+                socket->flush();
             }else{
                 mutex_db->lock();
                 if(database->aggiungiPartecipante(username+"_"+docName, username) != 2){
@@ -426,16 +428,19 @@ void Thread_body::newDoc(QString docName, int userId){
 
                     out << ritorno.toUtf8();
                     socket->write(blocko);
+                    socket->flush();
                 }else{
                     mutex_db->unlock();
                     out << "errore";
                     socket->write(blocko);
+                    socket->flush();
                 }
             }
         }else{
-           mutex_db->unlock();
-           out << "errore";
-           socket->write(blocko);
+            mutex_db->unlock();
+            out << "errore";
+            socket->write(blocko);
+            socket->flush();
         }
 
         // ********************************************************************************
@@ -446,6 +451,7 @@ void Thread_body::newDoc(QString docName, int userId){
         // se username non esiste o non c'è la cartella relativa
         out << "errore";
         socket->write(blocko);
+        socket->flush();
     }
 }
 
@@ -521,10 +527,12 @@ void Thread_body::create(QString username, QString password, QString nickname, Q
             out << "ok";
             out << id;
             socket->write(blocko);
+            socket->flush();
         }
     } else {
         out << "errore";
         socket->write(blocko);
+        socket->flush();
     }
 }
 
@@ -549,9 +557,11 @@ void Thread_body::login(QString username, QString password){
         out << "ok";
         out << id;
         socket->write(blocko);
+        socket->flush();
     }else{
         out << "errore";
         socket->write(blocko);
+        socket->flush();
     }
 }
 
@@ -561,31 +571,34 @@ void Thread_body::update(int userId, QString password, QString nickname, QString
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
-//    qDebug()<<"UPDATE -- PASSO DA QUI 0";          // DEBUG
+    //    qDebug()<<"UPDATE -- PASSO DA QUI 0";          // DEBUG
 
     QString username = getUsername(userId);
 
-//    qDebug()<<"UPDATE -- PASSO DA QUI 1";          // DEBUG
+    //    qDebug()<<"UPDATE -- PASSO DA QUI 1";          // DEBUG
 
     if(!username.isEmpty()){
         mutex_db->lock();
         if(database->aggiornaUser(username, password, nickname, icon)){
             mutex_db->unlock();
             //correttamente aggiornato nel db
-//            qDebug()<<"UPDATE -- PASSO DA QUI 2";          // DEBUG
+            //            qDebug()<<"UPDATE -- PASSO DA QUI 2";          // DEBUG
             out << "ok";
             socket->write(blocko);
-//            qDebug()<<"UPDATE -- TUTTO OK";          // DEBUG
+            socket->flush();
+            //            qDebug()<<"UPDATE -- TUTTO OK";          // DEBUG
         } else {
             mutex_db->unlock();
-//            qDebug()<<"UPDATE -- ERRORE QUI 3";          // DEBUG
+            //            qDebug()<<"UPDATE -- ERRORE QUI 3";          // DEBUG
             out << "errore";
             socket->write(blocko);
+            socket->flush();
         }
     } else {
-//        qDebug()<<"UPDATE -- ERRORE QUI 4";           // DEBUG
+        //        qDebug()<<"UPDATE -- ERRORE QUI 4";           // DEBUG
         out << "errore";
         socket->write(blocko);
+        socket->flush();
     }
 }
 
@@ -600,9 +613,11 @@ void Thread_body::retrieveUsername(int userId){
     if(!username.isEmpty()){
         out << username;
         socket->write(blocko);
+        socket->flush();
     }else{
         out << "errore";
         socket->write(blocko);
+        socket->flush();
     }
 }
 
@@ -620,9 +635,11 @@ void Thread_body::getNickname(int userId){
         mutex_db->unlock();
         out << nick.toLocal8Bit();
         socket->write(blocko);
+        socket->flush();
     }else{
         out << "errore";
         socket->write(blocko);
+        socket->flush();
     }
 }
 
@@ -640,9 +657,11 @@ void Thread_body::getIcon(int userId){
         mutex_db->unlock();
         out << icon.toLocal8Bit();
         socket->write(blocko);
+        socket->flush();
     }else{
         out << "errore";
         socket->write(blocko);
+        socket->flush();
     }
 }
 
@@ -661,15 +680,15 @@ void Thread_body::getDocs(int userId){
 
         // Mando al client il numero di elementi/documenti che verranno inviati
         int num_doc = documenti.size();
-//        qDebug() << "GET_DOCS - STO MANDANDO AL CLIENT num_doc: "<<num_doc;             // DEBUG
+        //        qDebug() << "GET_DOCS - STO MANDANDO AL CLIENT num_doc: "<<num_doc;             // DEBUG
         out << num_doc;
 
         // Mando al client i nomi dei documenti a cui l'utente può accedere singolarmente
         for(auto it = documenti.begin(); it<documenti.end(); it++){
             // Salvo il nome documento corrente
-//            qDebug()<< "GET_DOCS - (*it): "<<(*it);             // DEBUG
+            //            qDebug()<< "GET_DOCS - (*it): "<<(*it);             // DEBUG
             QString doc_name = (*it);
-//            qDebug()<< "GET_DOCS - docname: "<<doc_name;             // DEBUG
+            //            qDebug()<< "GET_DOCS - docname: "<<doc_name;             // DEBUG
 
             // Cerco il docId del documento corrente
             mutex_docs->lock();
@@ -680,21 +699,23 @@ void Thread_body::getDocs(int userId){
 
             QString doc;
             if(doc_name != "nessuno"){
-                 //se non ho documenti, questa cosa genera sigsev perchè giustamente non riesce a ottenere at(1)
+                //se non ho documenti, questa cosa genera sigsev perchè giustamente non riesce a ottenere at(1)
                 //ecco perchè aggiunto il controllo
                 doc = doc_name.split("_").at(1) + "_" + QString::number(docId);
             }else{
                 doc = doc_name+"_"+QString::number(docId);
             }
-//            qDebug()<< "GET_DOCS - coppia: "<<doc;             // DEBUG
+            //            qDebug()<< "GET_DOCS - coppia: "<<doc;             // DEBUG
 
             // Mando la QString così generata al client
             out << doc.toUtf8();
-         }
-         socket->write(blocko);
+        }
+        socket->write(blocko);
+        socket->flush();
     }else{
         out << "errore";
         socket->write(blocko);
+        socket->flush();
     }
 }
 
@@ -721,6 +742,7 @@ void Thread_body::getDocumentDatoUri(QString uri, int userId){
         if(ritorno.contains("ok")){
             out << ritorno.toUtf8();
             socket->write(blocko);
+            socket->flush();
             //segnalo agli altri contributors che ne faccio parte
             CRDT_Symbol s = *new CRDT_Symbol();
             CRDT_Message *m = new CRDT_Message("NEWCONTRIBUTOR_"+std::to_string(userId), s, userId);
@@ -729,10 +751,12 @@ void Thread_body::getDocumentDatoUri(QString uri, int userId){
         }else{
             out << "errore";
             socket->write(blocko);
+            socket->flush();
         }
     }else{
         out << "errore";
         socket->write(blocko);
+        socket->flush();
     }
 }
 
@@ -779,9 +803,11 @@ void Thread_body::getUri(int docId){
         out << database->recuperaURI(docName);
         mutex_db->unlock();
         socket->write(blocko);
+        socket->flush();
     }else{
         out << "errore";
         socket->write(blocko);
+        socket->flush();
     }
 }
 
@@ -808,9 +834,11 @@ void Thread_body::getOwnerId(int docId){
 
         out << ownerId;
         socket->write(blocko);
+        socket->flush();
     }else{
         out << -1;
         socket->write(blocko);
+        socket->flush();
     }
 }
 
@@ -830,6 +858,7 @@ void Thread_body::deleteDoc(int userId, int docId){
     if(docName.isEmpty()){
         out << "errore";
         socket->write(blocko);
+        socket->flush();
         return;
     }
 
@@ -839,6 +868,7 @@ void Thread_body::deleteDoc(int userId, int docId){
     if(username.isEmpty()){
         out << "errore";
         socket->write(blocko);
+        socket->flush();
         return;
     }
 
@@ -851,11 +881,13 @@ void Thread_body::deleteDoc(int userId, int docId){
         if(collaboratori.size()==0){
             out << "errore";
             socket->write(blocko);
+            socket->flush();
             return;
         }
         if(collaboratori.size()==1 && (collaboratori.at(0).at(0)=="errore")) {
             out << "errore";
             socket->write(blocko);
+            socket->flush();
             return;
         }
 
@@ -866,6 +898,7 @@ void Thread_body::deleteDoc(int userId, int docId){
                 mutex_db->unlock();
                 out << "errore";
                 socket->write(blocko);
+                socket->flush();
                 return;
             }
             mutex_db->unlock();
@@ -877,6 +910,7 @@ void Thread_body::deleteDoc(int userId, int docId){
             mutex_db->unlock();
             out << "errore";
             socket->write(blocko);
+            socket->flush();
         }else{
             mutex_db->unlock();
 
@@ -890,6 +924,7 @@ void Thread_body::deleteDoc(int userId, int docId){
             file.remove();
             out << "ok";
             socket->write(blocko);
+            socket->flush();
         }
     }else{
         // il documento rimane e viene dimenticato il documento da parte del partecipane
@@ -898,10 +933,12 @@ void Thread_body::deleteDoc(int userId, int docId){
             mutex_db->unlock();
             out << "errore";
             socket->write(blocko);
+            socket->flush();
         }else{
             mutex_db->unlock();
             out << "ok";
             socket->write(blocko);
+            socket->flush();
         }
     }
 }
@@ -915,9 +952,11 @@ void Thread_body::getDocName(int docId){
     if(!docName.isEmpty()){
         out << docName.split("_").at(1);
         socket->write(blocko);
+        socket->flush();
     }else{
         out << "errore";
         socket->write(blocko);
+        socket->flush();
     }
 }
 
@@ -937,24 +976,26 @@ void Thread_body::getWorkingUsersGivenDoc(int docId){
 
         // Mando al client il numero di elementi/id che verranno inviati
         int num_working_users = utenti_online.size();
-//        qDebug() << "GET_WORKINGUSERS_ONADOC - STO MANDANDO AL CLIENT num_working_users: "<<num_working_users;             // DEBUG
+        //        qDebug() << "GET_WORKINGUSERS_ONADOC - STO MANDANDO AL CLIENT num_working_users: "<<num_working_users;             // DEBUG
         out << num_working_users;
 
         // Mando al client gli id degli utenti online che stanno lavorando sul documento al momento
         for(auto it = utenti_online.begin(); it<utenti_online.end(); it++){
             int id = (*it);
-//            qDebug()<<"GET_WORKINGUSERS_ONADOC - Sto mandando al client ID: "<<id;
+            //            qDebug()<<"GET_WORKINGUSERS_ONADOC - Sto mandando al client ID: "<<id;
             // Mando la QString così generata al client
             out << id;
         }
 
         socket->write(blocko);
+        socket->flush();
 
     } else {
         // Documento non presente nella mappa workingUsers
         int no_doc = -1;
         out << no_doc;
         socket->write(blocko);
+        socket->flush();
     }
 
     mutex_workingUsers->unlock();
@@ -996,9 +1037,11 @@ void Thread_body::getCollaboratorsGivenDoc(int docId){
         }
 
         socket->write(blocko);
+        socket->flush();
     }else{
         out << "errore";
         socket->write(blocko);
+        socket->flush();
     }
 }
 
@@ -1017,16 +1060,19 @@ void Thread_body::openDocument(int docId, int userId){
             // L'utente non esiste
             out << "errore";
             socket->write(blocko);
+            socket->flush();
         } else {
             // Il documento non esiste (vuol dire che è stato cancellato dall'owner)
             out << "doc-inesistente";
             socket->write(blocko);
+            socket->flush();
         }
     } else {
         // L'utente e il documento esistono
         if(openDoc(docName, username, docId, userId, 1) == -1){
             out << "errore";
             socket->write(blocko);
+            socket->flush();
         }else{
             mutex_db->lock();
             std::vector<int> info = database->recuperaInfoUtenteDoc(docName, username);
@@ -1037,6 +1083,7 @@ void Thread_body::openDocument(int docId, int userId){
             QString ritorno = "ok_"+QString::number(siteId)+"_"+QString::number(siteCounter);
             out << ritorno.toUtf8();
             socket->write(blocko);
+            socket->flush();
         }
     }
 }

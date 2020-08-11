@@ -42,6 +42,7 @@ int connection_to_server::requestTryLogOut(int userId)
 
     out << "LOGOUT";
     this->tcpSocket->write(buffer);
+    this->tcpSocket->flush();
 
     if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -91,6 +92,7 @@ int connection_to_server::requestTryLogin(QString username, QString password)
     out << password;
 
     this->tcpSocket->write(buffer);
+    this->tcpSocket->flush();
 
     if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -146,6 +148,7 @@ std::string connection_to_server::requestCreateDocument(int userId, QString name
     out << userId;
 
     this->tcpSocket->write(buffer);
+    this->tcpSocket->flush();
 
     if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -199,6 +202,7 @@ std::string connection_to_server::openDoc(int userId, int docId)
     out << userId;
 
     this->tcpSocket->write(buffer);
+    this->tcpSocket->flush();
 
     if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -251,6 +255,7 @@ std::string connection_to_server::requestDocName(int docId){
     out << docId;
 
     this->tcpSocket->write(buffer);
+    this->tcpSocket->flush();
 
     if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -300,6 +305,7 @@ int connection_to_server::requestNewAccount(QString username, QString password, 
     out << icon;
 
     this->tcpSocket->write(buffer);
+    this->tcpSocket->flush();
 
     if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -354,6 +360,7 @@ long connection_to_server::requestUpdateAccount( int userId, QString password, Q
     out << icon;
 
     this->tcpSocket->write(buffer);
+    this->tcpSocket->flush();
 
     if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -403,6 +410,7 @@ std::string connection_to_server::requestDocDatoUri(QString uri, int userId){
     out << userId;
 
     this->tcpSocket->write(buffer);
+    this->tcpSocket->flush();
 
     if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -454,6 +462,7 @@ std::string connection_to_server::requestUri(int docId){
     out << docId;
 
     this->tcpSocket->write(buffer);
+    this->tcpSocket->flush();
 
     if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -516,6 +525,7 @@ std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int 
     out << userId;
 
     this->tcpSocket->write(buffer);
+    this->tcpSocket->flush();
 
     if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -590,6 +600,7 @@ std::string connection_to_server::requestGetNickname(int userId){
     out << userId;
 
     this->tcpSocket->write(buffer);
+    this->tcpSocket->flush();
 
     if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -636,6 +647,7 @@ std::string connection_to_server::requestIconId(int userId){
     out << userId;
 
     this->tcpSocket->write(buffer);
+    this->tcpSocket->flush();
 
     if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -684,6 +696,7 @@ std::string connection_to_server::requestGetUsername(int userId){
     out << userId;
 
     this->tcpSocket->write(buffer);
+    this->tcpSocket->flush();
 
     if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -730,6 +743,7 @@ std::string connection_to_server::requestDeleteDoc(int userId,int documentId){
     out << documentId;
 
     this->tcpSocket->write(buffer);
+    this->tcpSocket->flush();
 
     if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -779,6 +793,7 @@ int connection_to_server::getDocumentOwner(int docId){
     out << docId;
 
     this->tcpSocket->write(buffer);
+    this->tcpSocket->flush();
 
     if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -827,6 +842,7 @@ std::shared_ptr<QSet<int>> connection_to_server::getContributors(int docId){
     out << docId;
 
     this->tcpSocket->write(buffer);
+    this->tcpSocket->flush();
 
     if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -895,6 +911,7 @@ std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int d
     out << docId;
 
     this->tcpSocket->write(buffer);
+    this->tcpSocket->flush();
 
     if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -981,6 +998,7 @@ void connection_to_server::requestSendMessage(CRDT_Message *messaggio){
         out << *messaggio;
 
         this->tcpSocket->write(buffer);
+    this->tcpSocket->flush();
 
         if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
             emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
@@ -1024,6 +1042,7 @@ void connection_to_server::disconnectEditor(int userId, int docId){
     out << userId;
 
     this->tcpSocket->write(buffer);
+    this->tcpSocket->flush();
 
     if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
