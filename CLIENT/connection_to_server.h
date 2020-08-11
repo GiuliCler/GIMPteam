@@ -58,6 +58,7 @@ signals:
     void sigOfflineUser(int userId);
     void sigOnlineUser(int userId);
     void sigNewContributor(int userId);
+    void unavailableSharedDocument(int docId);
 
 private:
     QString port;

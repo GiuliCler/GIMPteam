@@ -12,9 +12,11 @@ extern QMutex* mutex_users;
 extern QMutex* mutex_docs;
 extern QMutex* mutex_workingUsers;
 extern QMutex* mutex_db;
+extern QMutex* mutex_logged_users;
 
 extern QMap<QString, int> users;
 extern QMap<QString, int> documents;
+extern QVector<QString> logged_users;
 extern QMap<int, QVector<int>> workingUsers;
 extern QString path;
 
@@ -35,8 +37,10 @@ private:
     QString getUsername(int userId);
     QString getDocname(int docId);
     QString threadId_toQString(std::thread::id id);
+    void stampaLoggedUsers();
     void create(QString username, QString password, QString nickname, QString icon);
     void login(QString username, QString password);
+    void logout(int userId);
     void update(int userId, QString password, QString nickname, QString icon);
     void retrieveUsername(int userId);
     void getNickname(int userId);

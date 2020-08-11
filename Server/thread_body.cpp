@@ -68,19 +68,12 @@ void Thread_body::executeJob(){
     c = "LOGOUT";
     if(text.contains(c.toUtf8())){
 
-        int result = 1;
-        QByteArray blocko;
-        QDataStream out(&blocko, QIODevice::WriteOnly);
-        out.setVersion(QDataStream::Qt_5_12);
-        out << result;
-        socket->write(blocko);
-        socket->flush();
-        //socket->waitForBytesWritten(Timeout);       // TODO capire il Timeout
+        int userId;
+        *in >> userId;
 
-        // Chiudo il socket dal lato del client
-        socket->close();
+        std::cout<<"LOGOUT - Ricevuto dal client lo userId: "<<userId<<std::endl;           // DEBUG
 
-        emit finished();
+        logout(userId);
     }
 
     c = "DELETE_DOC";
@@ -215,10 +208,9 @@ void Thread_body::executeJob(){
             *in >> m;
 
             std::cout << "if SEND - messaggeAction - "<<m.getAzione()<< std::endl;      // DEBUG
-            std::stringstream ss;
-            ss << thread_id;
-            std::string thread_id_string = ss.str();
-            emit messageToServer(m, QString::fromStdString(thread_id_string), current_docId);
+
+            emit messageToServer(m, threadId_toQString(thread_id), current_docId);
+
             if(!in->commitTransaction()){
                 *in >> action;
                 if(action.isEmpty()){
@@ -536,33 +528,117 @@ void Thread_body::create(QString username, QString password, QString nickname, Q
     }
 }
 
+void Thread_body::stampaLoggedUsers(){          // Funzione per il DEBUG
+    std::cout<<"### LOGGED USERS: ";
+    mutex_logged_users->lock();
+    for(auto it=logged_users.begin(); it<logged_users.end(); it++){
+        std::cout<<(*it).toStdString()<<" ";
+    }
+    mutex_logged_users->unlock();
+    std::cout<<"###"<<std::endl;
+}
 
 void Thread_body::login(QString username, QString password){
     QByteArray blocko;
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
-    mutex_db->lock();
-    std::vector<QString> v = database->login(username, password);
-    mutex_db->unlock();
-    if(v.size()==2){
-        mutex_users->lock();
-        int id = users[username];
-        if(id == 0){
-            id = users.size();
-            id++;
-            users.insert(username, id);
+//    std::cout<<"### LOGIN di: "<<username.toStdString()<<std::endl;     // DEBUG
+//    stampaLoggedUsers();                                                // DEBUG
+
+    // Controllo se l'utente ha già effettuato il login ed è attualmente loggato
+    mutex_logged_users->lock();
+    if(logged_users.contains(username)){
+        // L'utente ha già effettuato il login ed è attualmente loggato
+        mutex_logged_users->unlock();
+//        std::cout<<"### Utente gia' loggato"<<std::endl;                // DEBUG
+        out << "alreadyLogged";
+        socket->write(blocko);
+        socket->flush();
+    } else {
+        // L'utente non è ancora loggato
+        mutex_logged_users->unlock();
+
+//        std::cout<<"### Utente non ancora loggato"<<std::endl;          // DEBUG
+        mutex_db->lock();
+        std::vector<QString> v = database->login(username, password);
+        mutex_db->unlock();
+        if(v.size()==2){
+            // Aggiungo al vettore di users
+            mutex_users->lock();
+            int id = users[username];
+            if(id == 0){
+                id = users.size();
+                id++;
+                users.insert(username, id);
+            }
+            mutex_users->unlock();
+
+            // Aggiungo al vettore di logged_users
+            mutex_logged_users->lock();
+            logged_users.push_back(username);
+            mutex_logged_users->unlock();
+
+            out << "ok";
+            out << id;
+            socket->write(blocko);
+            socket->flush();
+        }else{
+            out << "errore";
+            socket->write(blocko);
+            socket->flush();
         }
-        mutex_users->unlock();
-        out << "ok";
-        out << id;
-        socket->write(blocko);
-        socket->flush();
-    }else{
-        out << "errore";
-        socket->write(blocko);
-        socket->flush();
     }
+
+//    stampaLoggedUsers();                                                // DEBUG
+}
+
+
+void Thread_body::logout(int userId){
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
+    int result = 1;
+    QString username = getUsername(userId);
+
+//    std::cout<<"### LOGOUT di: "<<username.toStdString()<<std::endl;    // DEBUG
+//    stampaLoggedUsers();                                                // DEBUG
+
+    if(username.isEmpty()){
+        result = -1;
+    } else {
+        // Rimuovo l'utente dal vettore di logged_users
+        mutex_logged_users->lock();
+        bool flag = false;
+        for(auto it=logged_users.begin(); it<logged_users.end(); it++){
+            if((*it) == username){
+                logged_users.erase(it);
+                flag = true;
+                break;
+            }
+        }
+        mutex_logged_users->unlock();
+
+//        std::cout<<"### Utente rimosso"<<std::endl;                     // DEBUG
+
+        if(!flag){
+            // L'username non è presente all'interno di logged_users
+            result = -1;
+        }
+    }
+
+//    stampaLoggedUsers();                                                // DEBUG
+
+    out << result;
+    socket->write(blocko);
+    socket->flush();
+    //socket->waitForBytesWritten(Timeout);
+
+    // Chiudo il socket dal lato del client
+    socket->close();
+
+    emit finished();
 }
 
 

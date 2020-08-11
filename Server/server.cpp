@@ -14,9 +14,11 @@ QMutex* mutex_users = new QMutex();
 QMutex* mutex_docs = new QMutex();
 QMutex* mutex_workingUsers = new QMutex();
 QMutex* mutex_db = new QMutex();
+QMutex* mutex_logged_users = new QMutex();
 
 QMap<QString, int> users;
 QMap<QString, int> documents;
+QVector<QString> logged_users;
 
 QString path = "Files/";
 

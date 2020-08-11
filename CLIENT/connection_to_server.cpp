@@ -41,6 +41,8 @@ int connection_to_server::requestTryLogOut(int userId)
     out.setVersion(QDataStream::Qt_5_12);
 
     out << "LOGOUT";
+    out << userId;
+
     this->tcpSocket->write(buffer);
 
     if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
@@ -117,7 +119,17 @@ int connection_to_server::requestTryLogin(QString username, QString password)
         }
         in >> userId;
     } while (!in.commitTransaction());
-    return userId;
+    QString c = "ok";
+    if(file.contains(c.toUtf8())){
+        return userId;
+    }else{
+        QString d = "alreadyLogged";
+        if(file.contains(d.toUtf8())){
+            throw GUI_GenericException("Attenzione! Login già effettuato su un altro dispositivo!");
+        } else {
+            return -1;
+        }
+    }
 }
 
 std::string connection_to_server::requestCreateDocument(int userId, QString name)
@@ -221,10 +233,11 @@ std::string connection_to_server::openDoc(int userId, int docId)
     if(buffer.contains(c.toUtf8())){
         return buffer.toStdString();
     }else if(buffer.contains(d.toUtf8())){
-        // TODO fragola: emit funzioneDiMirko("Il documento selezionato e' stato cancellato dall'owner!");
-    }else{
-        return "errore";
+        emit unavailableSharedDocument(docId);
     }
+
+    return "errore";
+
     //TODO: il documento viene ritornato e aperto => gestione con CRDT                  // todo ila&paolo
 }
 
