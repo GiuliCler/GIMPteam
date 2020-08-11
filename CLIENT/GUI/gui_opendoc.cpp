@@ -27,6 +27,8 @@ GUI_Opendoc::GUI_Opendoc(QWidget *parent) : QWidget(parent)
     //questo mi serve per avere al massimo un item selezionato alla volta
     connect(ui->ownedDocsListWidget, &QListWidget::itemClicked, this, &GUI_Opendoc::on_ownedDocsListWidget_itemClicked);
     connect(ui->sharedDocsListWidget, &QListWidget::itemClicked, this, &GUI_Opendoc::on_sharedDocsListWidget_itemClicked);
+    //questa connect è per rimuovere dall'elenco un documento appena eliminato da qualcun altro
+    connect(gimpParent->getConnection(), &connection_to_server::unavailableSharedDocument, this, &GUI_Opendoc::on_unavailableSharedDocument_emitted);
 }
 
 GUI_Opendoc::~GUI_Opendoc(){
@@ -34,6 +36,7 @@ GUI_Opendoc::~GUI_Opendoc(){
 }
 
 
+/*SLOTS*/
 
 void GUI_Opendoc::on_openDocsPushButton_clicked(){
     QListWidgetItem *currentItem = getSelectedItem();
@@ -99,9 +102,6 @@ void GUI_Opendoc::on_exportPDFPushButton_clicked(){
     docp->print(&printer);
 }
 
-//TODO: l'eliminazione di un documento deve avvertire il possessore del documento che anche tutti i collaboratori
-//non potranno più accedervi (messaggio ulteriore di notifica). L'eliminazione del documento da parte dei collaboratori elimina
-//solamente la corrispondenza con quel documento nel db.
 void GUI_Opendoc::on_forgetPushButton_clicked(){
     QListWidgetItem *currentItem = getSelectedItem();
 
@@ -137,6 +137,22 @@ void GUI_Opendoc::on_sharedDocsListWidget_itemClicked(){
     ui->ownedDocsListWidget->setCurrentRow(-1);
 }
 
+void GUI_Opendoc::on_unavailableSharedDocument_emitted(int docId){
+    //in pratica questa funzione fa da wrapper che fa qualche controllo. Non vedo come possa fallire, ma non si sa mai
+    QListWidgetItem* currentItem = getSelectedItem();
+
+    //in teoria non dovrebbe mai succedere
+    if(currentItem == nullptr)
+        return;
+
+    //anche questo non dovrebbe mai succedere
+    if(currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt() != docId)
+        return;
+
+    removeSelectedItem();
+}
+
+
 
 
 void GUI_Opendoc::fillList(){
@@ -168,6 +184,7 @@ QListWidgetItem* GUI_Opendoc::getSelectedItem(){
 }
 
 void GUI_Opendoc::removeSelectedItem(){
+    //non so da quale tabella devo eliminarlo, ma so che è selezionato
     if(ui->ownedDocsListWidget->currentRow() != -1)
         ui->ownedDocsListWidget->takeItem(ui->ownedDocsListWidget->currentRow());
     if(ui->sharedDocsListWidget->currentRow() != -1)
