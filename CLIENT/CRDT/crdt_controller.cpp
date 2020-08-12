@@ -116,9 +116,6 @@ void CRDT_controller::setCurrentTextColor(QColor color){
 }
 
 void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
-    if(processingMessage)
-        return;
-
     BACKWARD_SEL(
                 emit menuSet(tmp.charFormat().fontItalic() ? menuTools::ITALIC_ON : menuTools::ITALIC_OFF);
                 emit menuSet(tmp.charFormat().fontStrikeOut() ? menuTools::STRIKETHROUGH_ON : menuTools::STRIKETHROUGH_OFF);
@@ -164,9 +161,6 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
 }
 
 void CRDT_controller::cursorMoved(){
-    if(processingMessage)
-        return;
-
     switch (textEdit.alignment()) {
         case Qt::AlignLeft:
             emit menuSet(menuTools::A_LEFT);
