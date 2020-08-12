@@ -235,7 +235,8 @@ std::string connection_to_server::openDoc(int userId, int docId)
     if(buffer.contains(c.toUtf8())){
         return buffer.toStdString();
     }else if(buffer.contains(d.toUtf8())){
-        emit unavailableSharedDocument(docId);
+//        emit unavailableSharedDocument(docId);
+        return "errore";
     }
 
     return "errore";
@@ -321,7 +322,9 @@ int connection_to_server::requestNewAccount(QString username, QString password, 
 
     //ora attendo una risposta dal server, sul login al db
     QByteArray file;
-    int id;
+    QString c = "errore";
+    int id = -1;
+
     QDataStream in;
     in.setDevice(this->tcpSocket);
     in.setVersion(QDataStream::Qt_5_12);
@@ -333,11 +336,14 @@ int connection_to_server::requestNewAccount(QString username, QString password, 
 
         in.startTransaction();
         in >> file;
-        QString c = "errore";
+
         if(file.contains(c.toUtf8()))
-            return -1;
+            break;
+
         in >> id;
+
     } while (!in.commitTransaction());
+
     return id;
 }
 
@@ -354,6 +360,7 @@ long connection_to_server::requestUpdateAccount( int userId, QString password, Q
             return -1;
         }
     }
+
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
@@ -372,7 +379,7 @@ long connection_to_server::requestUpdateAccount( int userId, QString password, Q
     }
 
     //ora attendo una risposta dal server, sul login al db
-    QByteArray file;
+    QByteArray buff;
     QDataStream in;
     in.setDevice(this->tcpSocket);
     in.setVersion(QDataStream::Qt_5_12);
@@ -383,10 +390,11 @@ long connection_to_server::requestUpdateAccount( int userId, QString password, Q
         }
 
         in.startTransaction();
-        in >> file;
+        in >> buff;
     } while (!in.commitTransaction());
+
     QString c = "ok";
-    if(file.contains(c.toUtf8())){
+    if(buff.contains(c.toUtf8())){
         return 0;
     }else{
         return -1;
@@ -434,9 +442,9 @@ std::string connection_to_server::requestDocDatoUri(QString uri, int userId){
         in.startTransaction();
         in >> file;
     } while (!in.commitTransaction());
+
     QString c = "ok";
     if(file.contains(c.toUtf8())){
-        //TODO: settare il nome del documento nella barra in alto.
         return file.toStdString();
     }else{
         return "errore";
@@ -487,22 +495,7 @@ std::string connection_to_server::requestUri(int docId){
         in >> uri;
     } while (!in.commitTransaction());
 
-    return uri.toLocal8Bit().constData();
-}
-
-//per mostrare i file (nomi)<--------TODO
-void connection_to_server::showFile(const QString &next)
-{
-    //qui stampo il nome del file richiesto al server
-    if (next == current) {
-        //requestTryLogin();
-        return;
-    }
-
-    current = next;
-    //-----------debug-------------
-    QMessageBox::information(this, "", current);
-
+    return uri.toStdString();
 }
 
 std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int userId){
@@ -549,30 +542,36 @@ std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int 
         in.startTransaction();
         in >> num;
 
-//        qDebug()<<"CONNECTION_TO_SERVER - num_doc RICEVUTO: "<<num;     // DEBUG
+        if(num == -1){
+            // In caso di errore...
+            return std::make_shared<QMap<QString, int>>(ritorno);
+        }
+
+        qDebug()<<"CONNECTION_TO_SERVER - num_doc RICEVUTO: "<<num;     // DEBUG
 
         for(int i=0; i<num; i++){
             in >> doc;
-//            qDebug()<<"CONNECTION_TO_SERVER - Arrivato dal server... "<<QString::fromStdString(doc.toStdString());       // DEBUG
+            qDebug()<<"CONNECTION_TO_SERVER - Arrivato dal server... "<<QString::fromStdString(doc.toStdString());       // DEBUG
             vet.push_back(QString::fromStdString(doc.toStdString()));
         }
 
     } while (!in.commitTransaction());
 
-//    qDebug()<<"CONNECTION_TO_SERVER - vet.size(): "<<vet.size();     // DEBUG
+    qDebug()<<"CONNECTION_TO_SERVER - vet.size(): "<<vet.size();     // DEBUG
 
     // Conversione del QVector<QString> in <QMap<QString, int>>
     for(auto it=vet.begin(); it<vet.end(); it++){
         QString stringa = (*it);
+
+        if(stringa == "nessuno")
+            break;
+
         QStringList list = stringa.split('_');
         QString doc_name = list.at(0);
         int docId = list.at(1).toInt();
 
-        if(doc_name == "nessuno")
-            break;
-
         ritorno.insert(doc_name, docId);
-//        qDebug()<<"CONNECTION_TO_SERVER - Salvo la coppia (doc_name, docId): ("<<doc_name<<","<<docId<<")";       // DEBUG
+        qDebug()<<"CONNECTION_TO_SERVER - Salvo la coppia (doc_name, docId): ("<<doc_name<<","<<docId<<")";       // DEBUG
     }
 
     return std::make_shared<QMap<QString, int>>(ritorno);
@@ -622,6 +621,7 @@ std::string connection_to_server::requestGetNickname(int userId){
         in.startTransaction();
         in >> nickname;
     } while (!in.commitTransaction());
+
     nickname.replace('\0',"");
     return nickname.toStdString();
 }
@@ -668,6 +668,7 @@ std::string connection_to_server::requestIconId(int userId){
         in.startTransaction();
         in >> iconId;
    } while (!in.commitTransaction());
+
     iconId.replace('\0',"");
     return iconId.toStdString();
 }
@@ -715,6 +716,7 @@ std::string connection_to_server::requestGetUsername(int userId){
         in.startTransaction();
         in >> username;
     } while (!in.commitTransaction());
+
     username.replace('\0',"");
     return username.toStdString();
 }
@@ -761,6 +763,7 @@ std::string connection_to_server::requestDeleteDoc(int userId,int documentId){
         in.startTransaction();
         in >> file;
     } while (!in.commitTransaction());
+
     QString c = "errore";
     if(file.contains(c.toUtf8())){
         return "errore";
@@ -859,10 +862,12 @@ std::shared_ptr<QSet<int>> connection_to_server::getContributors(int docId){
         in.startTransaction();
         in >> num;
 
-//        qDebug()<<"GET_COLLABORATORS_ONADOC - Ricevuto num_working_users: "<<num;     // DEBUG
+//        qDebug()<<"GET_COLLABORATORS_ONADOC - Ricevuto num_collaborators: "<<num;     // DEBUG
 
         for(int i=0; i<num; i++){
+
             in >> id;
+
             if(id == -1){
                 break;
             }
@@ -871,6 +876,7 @@ std::shared_ptr<QSet<int>> connection_to_server::getContributors(int docId){
                 vet.insert(-1);
                 break;
             }
+
             vet.insert(id);
         }
 
@@ -931,9 +937,8 @@ std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int d
 //        qDebug()<<"GET_WORKINGUSERS_ONADOC - Ricevuto num_working_users: "<<num;     // DEBUG
 
         // Controllo il caso di documento non risulta presente nella mappa del server workingUsers
-        // NOTA PER ILA: controllare che "continue" funzioni... Eventualmente mettere "break" -------------------
         if(num == -1)
-            continue;
+            break;
 
         for(int i=0; i<num; i++){
             in >> id;

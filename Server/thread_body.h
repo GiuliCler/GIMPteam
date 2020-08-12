@@ -51,7 +51,7 @@ private:
     QString associateDoc(int docId, int userId);
     void getUri(int docId);
     void getOwnerId(int docId);
-    void getDocName(int docId);
+    void retrieveDocName(int docId);
     void deleteDoc(int userId, int docId);
     void openDocument(int docId, int userId);
     int openDoc(QString docName, QString username, int docId, int userId, int new_doc);

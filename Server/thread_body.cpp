@@ -120,7 +120,7 @@ void Thread_body::executeJob(){
         int docId;
         *in >> docId;
 
-        getDocName(docId);
+        retrieveDocName(docId);
     }
 
     c = "GET_ICON";
@@ -146,6 +146,7 @@ void Thread_body::executeJob(){
         int userId;
         *in >> uri;
         *in >> userId;
+
         getDocumentDatoUri(uri, userId);
     }
 
@@ -649,31 +650,23 @@ void Thread_body::update(int userId, QString password, QString nickname, QString
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
-    //    qDebug()<<"UPDATE -- PASSO DA QUI 0";          // DEBUG
-
     QString username = getUsername(userId);
-
-    //    qDebug()<<"UPDATE -- PASSO DA QUI 1";          // DEBUG
 
     if(!username.isEmpty()){
         mutex_db->lock();
         if(database->aggiornaUser(username, password, nickname, icon)){
             mutex_db->unlock();
-            //correttamente aggiornato nel db
-            //            qDebug()<<"UPDATE -- PASSO DA QUI 2";          // DEBUG
+            // orrettamente aggiornato nel db
             out << "ok";
             socket->write(blocko);
             socket->flush();
-            //            qDebug()<<"UPDATE -- TUTTO OK";          // DEBUG
         } else {
             mutex_db->unlock();
-            //            qDebug()<<"UPDATE -- ERRORE QUI 3";          // DEBUG
             out << "errore";
             socket->write(blocko);
             socket->flush();
         }
     } else {
-        //        qDebug()<<"UPDATE -- ERRORE QUI 4";           // DEBUG
         out << "errore";
         socket->write(blocko);
         socket->flush();
@@ -763,35 +756,33 @@ void Thread_body::getDocs(int userId){
 
         // Mando al client i nomi dei documenti a cui l'utente può accedere singolarmente
         for(auto it = documenti.begin(); it<documenti.end(); it++){
+            //            qDebug()<< "GET_DOCS - (*it): "<<(*it);                  // DEBUG
+
             // Salvo il nome documento corrente
-            //            qDebug()<< "GET_DOCS - (*it): "<<(*it);             // DEBUG
             QString doc_name = (*it);
-            //            qDebug()<< "GET_DOCS - docname: "<<doc_name;             // DEBUG
 
-            // Cerco il docId del documento corrente
-            mutex_docs->lock();
-            int docId = documents.value(doc_name);
-            mutex_docs->unlock();
+            qDebug()<< "GET_DOCS - docname: "<<doc_name;             // DEBUG
 
-            // Concateno in una stringa unica da mandare al client
-
-            QString doc;
             if(doc_name != "nessuno"){
-                //se non ho documenti, questa cosa genera sigsev perchè giustamente non riesce a ottenere at(1)
-                //ecco perchè aggiunto il controllo
-                doc = doc_name.split("_").at(1) + "_" + QString::number(docId);
-            }else{
-                doc = doc_name+"_"+QString::number(docId);
-            }
-            //            qDebug()<< "GET_DOCS - coppia: "<<doc;             // DEBUG
+                // Cerco il docId del documento corrente
+                mutex_docs->lock();
+                int docId = documents.value(doc_name);
+                mutex_docs->unlock();
 
-            // Mando la QString così generata al client
-            out << doc.toUtf8();
+                // Concateno in una stringa unica da mandare al client
+                QString doc = doc_name.split("_").at(1) + "_" + QString::number(docId);
+
+                // Mando la QString così generata al client
+                out << doc.toUtf8();
+
+            }else{
+                out << doc_name.toUtf8();
+            }
         }
         socket->write(blocko);
         socket->flush();
     }else{
-        out << "errore";
+        out << -1;
         socket->write(blocko);
         socket->flush();
     }
@@ -1021,14 +1012,14 @@ void Thread_body::deleteDoc(int userId, int docId){
     }
 }
 
-void Thread_body::getDocName(int docId){
+void Thread_body::retrieveDocName(int docId){
     QByteArray blocko;
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
     QString docName = getDocname(docId);
     if(!docName.isEmpty()){
-        out << docName.split("_").at(1);
+        out << docName.split("_").at(1).toUtf8();
         socket->write(blocko);
         socket->flush();
     }else{
@@ -1092,32 +1083,35 @@ void Thread_body::getCollaboratorsGivenDoc(int docId){
         mutex_db->lock();
         std::vector<std::vector<QString>> collaboratori = this->database->recuperaCollaboratori(docName);
         mutex_db->unlock();
+
         // Mando al client il numero di elementi/id che verranno inviati
         int num_collaborators = collaboratori.size();
         out << num_collaborators;
 
         for(auto it_ext = collaboratori.begin(); it_ext<collaboratori.end(); it_ext++){
             for(auto it_int = it_ext->begin(); it_int<it_ext->begin()+1; it_int++){
+
                 QString c = (*it_int);
+
                 //controlli
-                QString val = "errore";
-                QString val2 = "no";
-                if(c.contains(val.toUtf8())){
+                QString err = "errore";
+                QString no = "no";
+                if(c.contains(err.toUtf8())){
                     out << -2;
-                }
-                if(c.contains(val2.toUtf8())){
+                } else if(c.contains(no.toUtf8())){
                     out << -1;
+                } else {
+                    //se sono qui, vuol dire che c'è almeno una tupla valida
+                    //Mando quindi lo userId associato allo username
+                    out << users[c];
                 }
-                //se sono qui, vuol dire che c'è almeno una tupla valida
-                //Mando quindi lo userId associato allo username
-                out << users[c];
             }
         }
-
         socket->write(blocko);
         socket->flush();
     }else{
-        out << "errore";
+        out << 1;
+        out << -2;
         socket->write(blocko);
         socket->flush();
     }

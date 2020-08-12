@@ -47,7 +47,6 @@ public:
     std::shared_ptr<QSet<int>> getContributors(int docId);
 
 private slots:
-    void showFile(const QString &file);
     void displayError(int socketError, const QString &message);
 
 signals:
