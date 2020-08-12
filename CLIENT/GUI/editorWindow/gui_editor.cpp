@@ -127,7 +127,7 @@ void GUI_Editor::setUpEditor(){
 }
 
 void GUI_Editor::launchSetUi1(){
-    int result = GUI_ConnectionToServerWrapper::closeDocumentWrapper(gimpParent, gimpParent->userid, documentId);
+    int result = GUI_ConnectionToServerWrapper::requestCloseDocumentWrapper(gimpParent, gimpParent->userid, documentId);
     if(result == -1)
         return;
 

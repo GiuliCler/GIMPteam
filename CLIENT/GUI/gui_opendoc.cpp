@@ -47,7 +47,7 @@ void GUI_Opendoc::on_openDocsPushButton_clicked(){
     }
     int docId = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
     QString docName = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCNAME).toString();
-    QString name = GUI_ConnectionToServerWrapper::requestOpenDocWrapper(gimpParent, gimpParent->userid, docId);
+    QString name = GUI_ConnectionToServerWrapper::requestOpenDocumentWrapper(gimpParent, gimpParent->userid, docId);
     if(name.compare("errore") == 0)
         return;
 
@@ -122,7 +122,7 @@ void GUI_Opendoc::on_forgetPushButton_clicked(){
     }
 
     int docId = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
-    int result = GUI_ConnectionToServerWrapper::forgetKnownDocumentWrapper(gimpParent, gimpParent->userid, docId);
+    int result = GUI_ConnectionToServerWrapper::requestDeleteDocumentWrapper(gimpParent, gimpParent->userid, docId);
     if(result == -1)
         return;
 
@@ -156,7 +156,7 @@ void GUI_Opendoc::on_unavailableSharedDocument_emitted(int docId){
 
 
 void GUI_Opendoc::fillList(){
-    std::shared_ptr<QMap<QString, int>> vp = GUI_ConnectionToServerWrapper::getKnownDocumentsWrapper(gimpParent, gimpParent->userid);
+    std::shared_ptr<QMap<QString, int>> vp = GUI_ConnectionToServerWrapper::requestGetKnownDocumentsWrapper(gimpParent, gimpParent->userid);
     if(vp == nullptr)
         return;
 

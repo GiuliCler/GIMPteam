@@ -35,7 +35,7 @@ GUI_UsersBar::~GUI_UsersBar(){
 
 QLabel *GUI_UsersBar::getUserIcon(int userId, QColor color){
     //carico l'icona e le metto uno sfondo
-    QString iconId = GUI_ConnectionToServerWrapper::requestIconIdWrapper(editorParent->gimpParent, userId);
+    QString iconId = GUI_ConnectionToServerWrapper::requestGetIconIdWrapper(editorParent->gimpParent, userId);
     if(iconId.compare("errore") == 0)
         //non dovremmo mai entrare in questo if perchè in caso di errore di connessione si dovrebbe ricaricare il widget da capo
         return new QLabel;

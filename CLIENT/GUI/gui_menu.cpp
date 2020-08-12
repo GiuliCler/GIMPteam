@@ -28,7 +28,7 @@ void GUI_Menu::setProfileArea(){
         return;
     ui->nicknameLabel->setText(nickname);
 
-    QString iconId = GUI_ConnectionToServerWrapper::requestIconIdWrapper(gimpParent, gimpParent->userid);
+    QString iconId = GUI_ConnectionToServerWrapper::requestGetIconIdWrapper(gimpParent, gimpParent->userid);
     if(iconId.compare("errore") == 0)
         return;
     QPixmap image = QPixmap(GUI_Icons::getIconPath(iconId));
@@ -48,7 +48,7 @@ void GUI_Menu::on_editPushButton_clicked(){
 }
 
 void GUI_Menu::on_logoutPushButton_clicked(){
-    long value = GUI_ConnectionToServerWrapper::requestLogOutWrapper(gimpParent, gimpParent->userid);
+    long value = GUI_ConnectionToServerWrapper::requestLogoutWrapper(gimpParent, gimpParent->userid);
     if(value == -1)
         return;
 

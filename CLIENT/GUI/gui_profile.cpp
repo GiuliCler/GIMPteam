@@ -98,7 +98,7 @@ void GUI_Profile::fillForm(){
     if(gimpParent->userid < 0)
         return;
 
-    QString iconId = GUI_ConnectionToServerWrapper::requestIconIdWrapper(gimpParent, gimpParent->userid);
+    QString iconId = GUI_ConnectionToServerWrapper::requestGetIconIdWrapper(gimpParent, gimpParent->userid);
     if(iconId.compare("errore") == 0)
         return;
     int boxIndex = ui->iconComboBox->findData(iconId);
