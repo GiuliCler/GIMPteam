@@ -223,13 +223,17 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     }
 
     if(add > 0){
-        QTextCursor tmp = textEdit.textCursor();
-        textEdit.textCursor().setPosition(pos + 1);
+        QTextCursor current = textEdit.textCursor();
+        QTextCursor tmp{textEdit.document()};
+        tmp.setPosition(pos+1);
 
-        for(int i = pos; i < pos + add; ++i, textEdit.textCursor().movePosition(QTextCursor::NextCharacter))
+        for(int i = pos; i < pos + add; ++i, tmp.movePosition(QTextCursor::NextCharacter)){
+            textEdit.setTextCursor(tmp);
+            //std::cout << "Cursor position: " << textEdit.textCursor().position() << std::endl; // ---- DEBUG
             crdt.localInsert(i, textEdit.toPlainText().at(i), textEdit.currentCharFormat(), textEdit.alignment());
+        }
 
-        textEdit.setTextCursor(tmp);
+        textEdit.setTextCursor(current);
     }
 }
 
@@ -315,7 +319,6 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
     std::cout<<"EHI! SONO NELLA REMOTE INSERT!"<<std::endl;
 
     processingMessage = true;
-    textEdit.setAlignment(align);
     QTextCursor current = textEdit.textCursor();
 
     QTextCursor tmp{textEdit.document()};
@@ -324,8 +327,12 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
 
 //    textEdit.textCursor().setPosition(pos);        //   VECCHIA setPosition
     std::cout<<"AAAA TextEdit... cursor: "<<textEdit.textCursor().position()<<", pos: "<<pos<<std::endl;        // DEBUG -----
-    textEdit.textCursor().blockFormat().setAlignment(align);
+    QTextBlockFormat blockFmt{textEdit.textCursor().blockFormat()};
     textEdit.textCursor().insertText(c, fmt);
+    blockFmt.setAlignment(align);
+    textEdit.textCursor().mergeBlockFormat(blockFmt);
+//    std::cout << "Block End: " << textEdit.textCursor().atBlockEnd() << "; Alignment: " << align << std::endl;
+
 
     textEdit.setTextCursor(current);
     processingMessage = false;
