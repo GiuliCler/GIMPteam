@@ -201,36 +201,17 @@ void Thread_body::executeJob(){
     }
 
     c = "SEND";
-    QByteArray action;
     if(text.contains(c.toUtf8())){
-        do {
-            CRDT_Message m;
-            *in >> m;
+        CRDT_Message messaggio;
+        *in >> messaggio;
 
-            std::cout << "if SEND - messaggeAction - "<<m.getAzione()<< std::endl;      // DEBUG
-
-            emit messageToServer(m, threadId_toQString(thread_id), current_docId);
-
-            if(!in->commitTransaction()){
-                *in >> action;
-                if(action.isEmpty()){
-                    break;
-                }
-            }
-            std::cout << "if SEND - "<<action.toStdString()<< std::endl;        // DEBUG
-        } while (!in->commitTransaction());
-
-        //PRIMA ERA COSì:
-        //CRDT_Message messaggio;
-        //*in >> messaggio;
-
-        //std::cout << "if SEND - "<<messaggio.getAzione()<< std::endl;      // DEBUG
+        std::cout << "if SEND - "<<messaggio.getAzione()<< std::endl;      // DEBUG
 
         // scrivi su crdt del server? MUTEX + chiediti se metterla dopo emit        todo ila&paolo
-        //std::stringstream ss;
-        //ss << thread_id;
-        //std::string thread_id_string = ss.str();
-        //emit messageToServer(messaggio, QString::fromStdString(thread_id_string), current_docId);
+        std::stringstream ss;
+        ss << thread_id;
+        std::string thread_id_string = ss.str();
+        emit messageToServer(messaggio, QString::fromStdString(thread_id_string), current_docId);
     }
 
     c = "DISCONNECT_FROM_DOC";

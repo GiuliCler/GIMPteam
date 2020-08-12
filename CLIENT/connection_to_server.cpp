@@ -1079,7 +1079,7 @@ void connection_to_server::receiveMessage(){
         std::string nick = iconId.toStdString();
         std::cout << userGetOnline << "icona: " + icona << " nickname: " + nick << std::endl;
         //this->editor->addUserToEditorGUI(userGetOnline);
-        emit sigOnlineUser(userGetOnline);
+        emit sigOnlineUser(userGetOnline); //TODO: nel segnale vanno passati anche nick e icona
     }
 
     c = "NEWCONTRIBUTOR";
@@ -1096,24 +1096,25 @@ void connection_to_server::receiveMessage(){
         std::string nick = iconId.toStdString();
         std::cout << userNewContributor << "icona: " + icona << " nickname: " + nick << std::endl;
         //this->editor->addUserToEditorGUI(userGetOnline);
-        emit sigNewContributor(userNewContributor);
+        emit sigNewContributor(userNewContributor); //TODO: nel segnale vanno passati anche nick e icona
     }
 
     c = "CRDT";
     if(action.contains(c.toUtf8())){
-        do {
+        //do {
             CRDT_Message m;
             in >> m;
-            emit sigProcessMessage(m);
             //DEBUG
             std::cout << "SLOT CLIENT receiveAction - "<<action.toStdString()<< std::endl;
             std::cout << "SLOT CLIENT messaggeAction - "<<m.getAzione()<< std::endl;
-            if(!in.commitTransaction()){
+            emit sigProcessMessage(m);
+
+            /*if(!in.commitTransaction()){
                 in >> action;
                 if(action.isEmpty()){
                     break;
                 }
             }
-        } while (!in.commitTransaction());
+        } while (!in.commitTransaction());*/
     }
 }
