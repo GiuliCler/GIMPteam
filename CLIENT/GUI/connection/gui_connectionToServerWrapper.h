@@ -8,6 +8,7 @@
 #include <QTextDocument>
 
 class GIMPdocs;
+class CRDT_SharedEditor;
 
 
 //lo scopo di questa classe è quello di gestire i try catch qua dentro quando chiamo una funzione relativa alla connessione. In questo modo il codice delle altre classi dovrebbe risultare più leggibile
@@ -38,7 +39,7 @@ public:
     static std::shared_ptr<QTextDocument> getDocumentTextWrapper(GIMPdocs *gimpdocs, int docId);
     static int requestDocumentOwnerWrapper(GIMPdocs *gimpdocs, int docId);
 
-    static void startEditor(GIMPdocs *gimpdocs);
+    static void startEditor(GIMPdocs *gimpdocs, CRDT_SharedEditor *crdt);
 
     /*EDITOR*/
     static std::shared_ptr<QSet<int>> getWorkingUsersOnDocumentWrapper(GIMPdocs *gimpdocs, int docId);

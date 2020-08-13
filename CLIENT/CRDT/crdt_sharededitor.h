@@ -5,12 +5,12 @@
 #include <QTextCharFormat>
 #include <QVector>
 #include <QVectorIterator>
-#include "connection_to_server.h"
 #include "crdt_symbol.h"
 #include <string>
 
 class CRDT_controller;
 class CRDT_Message;
+class connection_to_server;
 
 class CRDT_SharedEditor: public QObject
 {
@@ -34,7 +34,7 @@ public:
     int getLength();
     std::string to_string();        // FUNZIONI PER IL DEBUG
 
-private slots:
+public slots:
     void process(const CRDT_Message& m);
 };
 

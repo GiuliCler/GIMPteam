@@ -49,6 +49,7 @@ public:
     void setCurrentTextColor(QColor color);
     void remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align);
     void remoteDelete(int pos);
+    CRDT_SharedEditor* getSharedEditor();
 
 private slots:
     void menuCall(menuTools op);

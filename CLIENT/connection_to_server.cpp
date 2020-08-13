@@ -7,16 +7,22 @@
 #include "CRDT/crdt_message.h"
 
 connection_to_server::connection_to_server(QString port, QString ipAddress){
+    QString s{"SEND"};
+    std::cout << "Size di SEND: "<< s.size() << std::endl;
     this->tcpSocket=new QTcpSocket(this);
     this->port = port;
     this->ipAddress = ipAddress;
+    this->tcpSocket->setReadBufferSize(0);
     //this->editor = nullptr;
     //richiedo i file di un dato utente al momento del login
     //chiudo la connessione quando viene premuto X (termina il programma)
     //connect(quitButton, SIGNAL(clicked()), this, SLOT(close())); <---------- SISTEMARE
     //connect(&file, SIGNAL(newFile(QString)),this, SLOT(showString(QString)));
     //connect(&file, SIGNAL(error(int,QString)),this, SLOT(displayError(int,QString)));
-
+    // Ridefinisco in e out relativi alla connessione corrente
+    in = new QDataStream(this->tcpSocket);
+    in->setVersion(QDataStream::Qt_5_12);
+//    in->startTransaction();
 }
 QTcpSocket *connection_to_server::getSocket(){
     qDebug()<<"FUCKING GET SOCKET!!!";      // DEBUG
@@ -1004,7 +1010,7 @@ void connection_to_server::requestSendMessage(CRDT_Message *messaggio){
         }
 }
 
-void connection_to_server::connectEditor(){
+void connection_to_server::connectEditor(CRDT_SharedEditor *crdt){
 
     qDebug()<<"CONNECT EDITOR";      // DEBUG
     //this->editor = editor;
@@ -1013,13 +1019,14 @@ void connection_to_server::connectEditor(){
     //inserimenti di altri utenti o all'avvio dell'editor, se era già stato scritto qualcosa).
 
     //implementabile con una connect di readyRead sul socket
+    this->crdt = crdt;
     connect(this->tcpSocket, &QTcpSocket::readyRead, this, &connection_to_server::receiveMessage);
 }
 
 void connection_to_server::disconnectEditor(int userId, int docId){
 
     qDebug()<<"DISCONNECT EDITOR";      // DEBUG
-
+    this->crdt = nullptr;
     disconnect(this->tcpSocket, &QTcpSocket::readyRead, this, &connection_to_server::receiveMessage);
 
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
@@ -1051,83 +1058,96 @@ void connection_to_server::disconnectEditor(int userId, int docId){
 
 
 void connection_to_server::receiveMessage(){
-    if(isProcessing)
+    if(isProcessing){
+        std::cout << "EHEHEH RECEIVE MESSAGE RITORNATA" << std::endl;
         return;
+    }
 
     isProcessing = true;
-    QByteArray action;
-    QDataStream in;
-    in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_5_12);
+
     while(this->tcpSocket->bytesAvailable() > 0){
-    in >> action;
-//    std::cout << "SLOT CLIENT receiveAction from server - "<<action.toStdString()<< std::endl;      // DEBUG
+        std::cout << "Outside bytesAvailable: " << this->tcpSocket->bytesAvailable();
+        while(this->tcpSocket->bytesAvailable() < 5);
+        std::cout << "Inside bytesAvailable: " << this->tcpSocket->bytesAvailable() << std::endl;
+        QByteArray action;
+        //    do{
+        //        in.startTransaction();
+        *in >> action;
+        //    }while(!in.commitTransaction());
+        //    std::cout << "SLOT CLIENT receiveAction from server - "<<action.toStdString()<< std::endl;      // DEBUG
 
-    QString c = "OFFLINEUSER";
-    if(action.contains(c.toUtf8())){
-        //aggiorna la lista degli utenti online
-        int userGetOffline;
-        in >> userGetOffline;
-        std::cout << userGetOffline<< std::endl;
-        //this->editor->removeUserFromEditorGUI(userGetOffline);
-         emit sigOfflineUser(userGetOffline);
-        continue;
-    }
+        QString c = "OFFLINEUSER";
+        if(action.contains(c.toUtf8())){
+            //aggiorna la lista degli utenti online
+            int userGetOffline;
+            *in >> userGetOffline;
+            std::cout << userGetOffline<< std::endl;
+            //this->editor->removeUserFromEditorGUI(userGetOffline);
+            emit sigOfflineUser(userGetOffline);
+            continue;
+        }
 
-    c = "ONLINEUSER";
-    if(action.contains(c.toUtf8())){
-        //aggiorna la lista degli utenti online
-        int userGetOnline;
-        QByteArray iconId, nickname;
-        in >> userGetOnline;
-        in >> iconId;
-        in >> nickname;
-        iconId.replace('\0',"");
-        std::string icona = iconId.toStdString();
-        nickname.replace('\0',"");
-        std::string nick = iconId.toStdString();
-        std::cout << userGetOnline << "icona: " + icona << " nickname: " + nick << std::endl;
-        //this->editor->addUserToEditorGUI(userGetOnline);
-        emit sigOnlineUser(userGetOnline); //TODO: nel segnale vanno passati anche nick e icona
-        continue;
-    }
+        c = "ONLINEUSER";
+        if(action.contains(c.toUtf8())){
+            //aggiorna la lista degli utenti online
+            int userGetOnline;
+            QByteArray iconId, nickname;
+            *in >> userGetOnline;
+            *in >> iconId;
+            *in >> nickname;
+            iconId.replace('\0',"");
+            std::string icona = iconId.toStdString();
+            nickname.replace('\0',"");
+            std::string nick = iconId.toStdString();
+            std::cout << userGetOnline << "icona: " + icona << " nickname: " + nick << std::endl;
+            //this->editor->addUserToEditorGUI(userGetOnline);
+            emit sigOnlineUser(userGetOnline); //TODO: nel segnale vanno passati anche nick e icona
+            continue;
+        }
 
-    c = "NEWCONTRIBUTOR";
-    if(action.contains(c.toUtf8())){
-        //aggiorna la lista degli utenti online
-        int userNewContributor;
-        QByteArray iconId, nickname;
-        in >> userNewContributor;
-        in >> iconId;
-        in >> nickname;
-        iconId.replace('\0',"");
-        std::string icona = iconId.toStdString();
-        nickname.replace('\0',"");
-        std::string nick = iconId.toStdString();
-        std::cout << userNewContributor << "icona: " + icona << " nickname: " + nick << std::endl;
-        //this->editor->addUserToEditorGUI(userGetOnline);
-        emit sigNewContributor(userNewContributor); //TODO: nel segnale vanno passati anche nick e icona
-        continue;
-    }
+        c = "NEWCONTRIBUTOR";
+        if(action.contains(c.toUtf8())){
+            //aggiorna la lista degli utenti online
+            int userNewContributor;
+            QByteArray iconId, nickname;
+            *in >> userNewContributor;
+            *in >> iconId;
+            *in >> nickname;
+            iconId.replace('\0',"");
+            std::string icona = iconId.toStdString();
+            nickname.replace('\0',"");
+            std::string nick = iconId.toStdString();
+            std::cout << userNewContributor << "icona: " + icona << " nickname: " + nick << std::endl;
+            //this->editor->addUserToEditorGUI(userGetOnline);
+            emit sigNewContributor(userNewContributor); //TODO: nel segnale vanno passati anche nick e icona
+            continue;
+        }
 
-    c = "CRDT";
-    if(action.contains(c.toUtf8())){
-//        do {
+        c = "CRDT";
+        if(action.contains(c.toUtf8())){
             CRDT_Message m;
-            in >> m;
-//            std::cout << "SLOT CLIENT receiveAction - "<<action.toStdString()<< std::endl;
-            std::cout << "SLOT CLIENT messaggeAction - "<<m.getAzione()<< std::endl;
-            emit sigProcessMessage(m);
+            //        do {
+            //            in.startTransaction();
+            *in >> m;
+            //        } while (!in.commitTransaction());
+            //            std::cout << "SLOT CLIENT receiveAction - "<<action.toStdString()<< std::endl;
+            std::cout << "SLOT CLIENT messageAction - "<<m.getAzione()<< std::endl;
+            if(this->crdt == nullptr)
+                std::cout << "PERNACCHIAAAAAAAAAAAAAAAA PRRRRRRRRRR" << std::endl;
+            else
+                this->crdt->process(m);
+            //            emit sigProcessMessage(m);
             //DEBUG
             continue;
-/*            if(!in.commitTransaction()){
+            /*            if(!in.commitTransaction()){
                 in >> action;
                 if(action.isEmpty()){
                     break;
                 }
             }
-        } while (!in.commitTransaction())*/;
-    }
+        } while (!in.commitTransaction());*/
+        }
+        std::cout << "WAAAATTTTAFFFUUUCK size:" << action.size() << "; Content:" << action.toStdString() << ";" << std::endl;
     }
     isProcessing = false;
 }

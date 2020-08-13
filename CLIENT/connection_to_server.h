@@ -8,6 +8,7 @@
 #include "GUI/connection/gui_genericException.h"
 #include "GUI/editorWindow/gui_editor.h"
 #include "CRDT/crdt_message.h"
+#include "CRDT/crdt_sharededitor.h"
 
 QT_BEGIN_NAMESPACE
 class QDialogButtonBox;
@@ -16,6 +17,7 @@ class QLineEdit;
 class QPushButton;
 class QAction;
 QT_END_NAMESPACE
+class CRDT_SharedEditor;
 
 class connection_to_server : public QWidget
 {
@@ -41,7 +43,7 @@ public:
     int getDocumentOwner(int docId);
     std::string openDoc(int userId, int docId);
     void requestSendMessage(CRDT_Message *messaggio);
-    void connectEditor();
+    void connectEditor(CRDT_SharedEditor *crdt);
     void disconnectEditor(int userId, int docId);
     void receiveMessage();
     std::shared_ptr<QSet<int>> getContributors(int docId);
@@ -61,12 +63,14 @@ signals:
 
 private:
     bool isProcessing = false;
+    QDataStream* in;
     QString port;
     QString ipAddress;
     //Files file;
     QString current;
     QTcpSocket *tcpSocket = nullptr;
     //GUI_Editor *editor = nullptr;
+    CRDT_SharedEditor *crdt;
     const int Timeout = 100 * 1000;
 
 

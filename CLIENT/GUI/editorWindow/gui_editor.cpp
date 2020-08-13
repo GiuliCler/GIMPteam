@@ -48,7 +48,7 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int sit
     //richiedo l'uri del documento
     this->uri = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
     //avvio l'editor
-    GUI_ConnectionToServerWrapper::startEditor(gimpParent);
+    GUI_ConnectionToServerWrapper::startEditor(gimpParent, crdtController->getSharedEditor());
 
     //Per gli online users
     QObject::connect(gimpParent->getConnection(), &connection_to_server::sigOfflineUser, this, &GUI_Editor::removeUserFromEditorGUI);

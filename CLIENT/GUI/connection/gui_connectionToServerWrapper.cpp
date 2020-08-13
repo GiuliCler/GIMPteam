@@ -421,10 +421,10 @@ std::shared_ptr<QSet<int>> GUI_ConnectionToServerWrapper::getContributorsUsersOn
     return contributors;
 }
 
-void GUI_ConnectionToServerWrapper::startEditor(GIMPdocs *gimpdocs){
+void GUI_ConnectionToServerWrapper::startEditor(GIMPdocs *gimpdocs, CRDT_SharedEditor *crdt){
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
-        Stub::Editor(gimpdocs->getConnection());
+        Stub::Editor(gimpdocs->getConnection(), crdt);
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);

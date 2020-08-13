@@ -18,7 +18,7 @@ Thread_body::Thread_body(int socketDescriptor, QObject *parent) : QObject(parent
         emit error(socket->error());
         return;
     }
-
+    socket->setReadBufferSize(0);
     // Creo nel thread un collegamento al DB, mettendo come nome univoco di connessione "connSOCKETDESCRIPTOR"
     database = new CollegamentoDB();
     database->connettiDB("gimpdocs_db", "conn" + QString::fromStdString(thread_id_string));
@@ -26,7 +26,7 @@ Thread_body::Thread_body(int socketDescriptor, QObject *parent) : QObject(parent
     // Ridefinisco in e out relativi alla connessione corrente
     in = new QDataStream(socket);
     in->setVersion(QDataStream::Qt_5_12);
-    in->startTransaction();
+//    in->startTransaction();
 }
 
 Thread_body::~Thread_body(){
@@ -233,7 +233,7 @@ void Thread_body::executeJob(){
         CRDT_Message messaggio;
         *in >> messaggio;
 
-        std::cout << "if SEND - "<<messaggio.getAzione()<< std::endl;      // DEBUG
+//        std::cout << "if SEND - "<<messaggio.getAzione()<< std::endl;      // DEBUG
 
 //         scrivi su crdt del server? MUTEX + chiediti se metterla dopo emit        todo ila&paolo
         std::stringstream ss;
@@ -1264,5 +1264,6 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
     std::cout << "Azione: " << m.getAzione() << "; Carattere: " << m.getSimbolo().getCarattere().toLatin1() << std::endl;
     socket->write(blocko);
     socket->flush();
+    socket->waitForBytesWritten();
 }
 

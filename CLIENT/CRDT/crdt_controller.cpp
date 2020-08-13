@@ -30,6 +30,10 @@ CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyT
 
 }
 
+CRDT_SharedEditor* CRDT_controller::getSharedEditor(){
+    return &this->crdt;
+}
+
 void CRDT_controller::setLeft(){
     textEdit.setAlignment(Qt::AlignLeft);
     emit menuSet(menuTools::A_LEFT);
