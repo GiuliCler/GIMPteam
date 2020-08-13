@@ -46,23 +46,22 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int sit
         addContributorToCurrentDocument(*userId);
 
     //richiedo l'uri del documento
-    this->uri = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
-    //avvio l'editor
-    GUI_ConnectionToServerWrapper::startEditor(gimpParent);
+    QString uri = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
+    if(uri.compare("errore") == 0)
+        return;
+    this->uri = uri;
 
-    //Per gli online users
+    //Per gli online users ed i contributors
     QObject::connect(gimpParent->getConnection(), &connection_to_server::sigOfflineUser, this, &GUI_Editor::removeUserFromEditorGUI);
     QObject::connect(gimpParent->getConnection(), &connection_to_server::sigOnlineUser, this, &GUI_Editor::addUserToEditorGUI);
     QObject::connect(gimpParent->getConnection(), &connection_to_server::sigNewContributor, this, &GUI_Editor::addContributorToCurrentDocument);
 
+    //avvio la connessione speciale per l'editor. D'ora in poi la connection_to_server è off-limits
+    if(GUI_ConnectionToServerWrapper::requestStartEditorConnection(gimpParent) < 0)
+        return;
 }
 
 GUI_Editor::~GUI_Editor(){
-
-    //int result = GUI_ConnectionToServerWrapper::closeDocumentWrapper(gimpParent, gimpParent->userid, documentId);
-    //if(result == -1)
-     //   return;
-
     delete ui;
     delete crdtController;
 }
@@ -112,23 +111,15 @@ void GUI_Editor::connectMenuBarActions(){
 
 }
 
-void GUI_Editor::changeWindowName(){
-
-    //modifico il nome della finestra
-    //QString documentName = GUI_ConnectionToServerWrapper::requestDocNameWrapper(gimpParent, documentId);
-    QString documentName = docName;                     // todo ila&paolo -- sistemare sto giochino bruttino
-    if(documentName.compare("errore") == 0)
-        return;
-    gimpParent->setWindowTitle("GIMPdocs - " + documentName);
-}
-
 void GUI_Editor::setUpEditor(){
+    //modifico il nome della finestra
+    gimpParent->setWindowTitle("GIMPdocs - " + docName);
+
     childMyTextEdit->setupTextEdit();
 }
 
 void GUI_Editor::launchSetUi1(){
-    int result = GUI_ConnectionToServerWrapper::closeDocumentWrapper(gimpParent, gimpParent->userid, documentId);
-    if(result == -1)
+    if(GUI_ConnectionToServerWrapper::requestCloseDocumentWrapper(gimpParent, gimpParent->userid, documentId) == -1)
         return;
 
     GUI_Menu *widget = new GUI_Menu(this->gimpParent);
@@ -364,11 +355,6 @@ void GUI_Editor::addContributorToCurrentDocument(int userid){
     findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->addContributorUserIcon(userid, *color);
 }
 
-void GUI_Editor::removeContributorFromCurrentDocument(int userid){
-    findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->removeContributorUserIcon(userid);
-    if(!findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->isOnline(userid))
-        forgetUserColor(userid);
-}
 
 QColor *GUI_Editor::getUserColor(int userId){
     QColor *color;

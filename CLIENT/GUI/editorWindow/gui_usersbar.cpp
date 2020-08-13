@@ -35,12 +35,17 @@ GUI_UsersBar::~GUI_UsersBar(){
 
 QLabel *GUI_UsersBar::getUserIcon(int userId, QColor color){
     //carico l'icona e le metto uno sfondo
-    QString iconId = GUI_ConnectionToServerWrapper::requestIconIdWrapper(editorParent->gimpParent, userId);
+    QString iconId = GUI_ConnectionToServerWrapper::requestGetIconIdWrapper(editorParent->gimpParent, userId);
     if(iconId.compare("errore") == 0)
         //non dovremmo mai entrare in questo if perchè in caso di errore di connessione si dovrebbe ricaricare il widget da capo
-        return new QLabel;
+        return nullptr;
 
-    QPixmap *image = new QPixmap(GUI_Icons::getIconPath(iconId));
+    QString iconPath = GUI_Icons::getIconPath(iconId);
+    if(iconPath.compare("") == 0)
+        //non dovrebbe mai succedere, a meno che il server non elimini delle icone senza avvisare gli user che avevano scelto quell'icona
+        return nullptr;
+
+    QPixmap *image = new QPixmap(iconPath);
     QPixmap *background = new QPixmap(image->height(), image->width());
     background->fill(color);
     QPainter painter(background);
@@ -57,7 +62,7 @@ QLabel *GUI_UsersBar::getUserIcon(int userId, QColor color){
     QString tooltip = GUI_ConnectionToServerWrapper::requestGetNicknameWrapper(editorParent->gimpParent, userId);
     if(tooltip.compare("errore") == 0)
         //non dovremmo mai entrare in questo if perchè in caso di errore di connessione si dovrebbe ricaricare il widget da capo
-        return new QLabel;
+        return nullptr;
     label->setToolTip(tooltip);
 
     return label;
@@ -69,6 +74,8 @@ void GUI_UsersBar::addOnlineUserIcon(int userId, QColor color){
         return;
 
     QLabel *iconLabel = getUserIcon(userId, color);
+    if(iconLabel == nullptr)
+        return;
     onlineUsersIconMap.insert(userId, iconLabel);
     ui->numberOnlineUsersLabel->setNum(onlineUsersIconMap.size());
     this->findChild<GUI_MyScrollArea*>(getOnlineAreaName())->widget()->layout()->addWidget(iconLabel);
@@ -100,6 +107,8 @@ void GUI_UsersBar::addContributorUserIcon(int userId, QColor color){
         return;
 
     QLabel *iconLabel = getUserIcon(userId, color);
+    if(iconLabel == nullptr)
+        return;
     contributorUsersIconMap.insert(userId, iconLabel);
     ui->numberContributorUsersLabel->setNum(contributorUsersIconMap.size());
     this->findChild<GUI_MyScrollArea*>(getContributorsAreaName())->widget()->layout()->addWidget(iconLabel);
@@ -108,17 +117,6 @@ void GUI_UsersBar::addContributorUserIcon(int userId, QColor color){
         this->findChild<GUI_MyScrollArea*>(getContributorsAreaName())->updateSize(contributorUsersIconMap.size());
 }
 
-void GUI_UsersBar::removeContributorUserIcon(int userId){
-    if(this->contributorUsersIconMap.find(userId) == contributorUsersIconMap.end())
-        return;
-
-    contributorUsersIconMap[userId]->close();
-    contributorUsersIconMap.remove(userId);
-    ui->numberContributorUsersLabel->setNum(contributorUsersIconMap.size());
-
-    if(contributorUsersIconMap.size() <= GUI_MyScrollArea::getMaxUsersIconsNumber()+1)
-        this->findChild<GUI_MyScrollArea*>(getContributorsAreaName())->updateSize(contributorUsersIconMap.size());
-}
 
 bool GUI_UsersBar::isOnline(int userId){
     return onlineUsersIconMap.find(userId) != onlineUsersIconMap.end();
@@ -161,8 +159,4 @@ void GUI_UsersBar::on_pushButton_2_clicked()
 void GUI_UsersBar::on_pushButton_3_clicked()
 {
     editorParent->addContributorToCurrentDocument(QRandomGenerator::global()->bounded(2000));
-}
-
-void GUI_UsersBar::on_pushButton_4_clicked(){
-    editorParent->removeContributorFromCurrentDocument(contributorUsersIconMap.keys().first());
 }

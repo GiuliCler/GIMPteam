@@ -16,11 +16,9 @@ public:
     ~GUI_UsersBar();
     static QString getObjectName() {return QString("GUI_UsersBar");}
 
-    //se serve posso metterci un codice di ritorno
     void addOnlineUserIcon(int userId, QColor color);
     void removeOnlineUserIcon(int userId);
     void addContributorUserIcon(int userId, QColor color);
-    void removeContributorUserIcon(int userId);
 
     bool isOnline(int userId);
     bool isContributor(int userId);
@@ -34,7 +32,6 @@ public slots:
     void on_pushButton_clicked();
     void on_pushButton_2_clicked();
     void on_pushButton_3_clicked();
-    void on_pushButton_4_clicked();
 
 private:
     Ui::GUI_UsersBar *ui;

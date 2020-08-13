@@ -38,9 +38,7 @@ public:
     //mi serve perchè non posso fare le connect direttamente nel costruttore. Quando sono nel costruttore, la ui2 non è ancora stata caricata quindi la connect va fatta in un secondo momento
     void connectMenuBarActions();
     //non posso falro nel costruttore perchè quando costruisco il widget, il cambio di window deve ancora avvenire
-    void changeWindowName();
     void setUpEditor();
-    void removeContributorFromCurrentDocument(int userid);
 
 public slots:
     void launchSetUi1();

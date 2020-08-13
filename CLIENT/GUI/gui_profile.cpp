@@ -98,11 +98,17 @@ void GUI_Profile::fillForm(){
     if(gimpParent->userid < 0)
         return;
 
-    QString iconId = GUI_ConnectionToServerWrapper::requestIconIdWrapper(gimpParent, gimpParent->userid);
+    QString iconId = GUI_ConnectionToServerWrapper::requestGetIconIdWrapper(gimpParent, gimpParent->userid);
     if(iconId.compare("errore") == 0)
         return;
-    int boxIndex = ui->iconComboBox->findData(iconId);
-    ui->iconComboBox->setCurrentIndex(boxIndex);
+
+    QString iconPath = GUI_Icons::getIconPath(iconId);
+    //non dovrebbe mai dare problemi, a meno che il server non elimini delle icone senza avvisare gli user che avevano scelto quell'icona
+    if(iconPath.compare("") != 0){
+        int boxIndex = ui->iconComboBox->findData(iconId);
+        ui->iconComboBox->setCurrentIndex(boxIndex);
+    }
+
 
     QString nickname = GUI_ConnectionToServerWrapper::requestGetNicknameWrapper(gimpParent, gimpParent->userid);
     if(nickname.compare("errore") == 0)
@@ -113,8 +119,6 @@ void GUI_Profile::fillForm(){
 
     ui->nicknameLineEdit->setText(nickname);
     ui->usernameLabelReadonly->setText(username);
-    //ui->passwordLineEdit->setText("");
-    //ui->repeatLineEdit->setText("");
 }
 
 void GUI_Profile::loadIcons(){

@@ -54,7 +54,7 @@ void GUI_Login::on_loginButton_clicked()
         return;
     }
 
-    int result = GUI_ConnectionToServerWrapper::requestTryLoginWrapper(gimpParent, ui->usernameLineEdit->text(), ui->passwordLineEdit->text());
+    int result = GUI_ConnectionToServerWrapper::requestLoginWrapper(gimpParent, ui->usernameLineEdit->text(), ui->passwordLineEdit->text());
     if( result == -1)
         return;
     else
