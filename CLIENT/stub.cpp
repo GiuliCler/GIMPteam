@@ -125,7 +125,7 @@ QString Stub::openDocTemporary(connection_to_server *connection, int userId, int
     return name;
 }
 
-void Stub::closeDocument(connection_to_server *connection, int userId, int docId){
+void Stub::closeDocumentTemporary(connection_to_server *connection, int userId, int docId){
     connection->disconnectEditor(userId, docId);
 }
 
@@ -208,6 +208,6 @@ std::shared_ptr<QSet<int>> Stub::getContributorsTemporary(connection_to_server *
     return vpointer;
 }
 
-void Stub::Editor(connection_to_server *connection){
+void Stub::startEditorConnectionTemporary(connection_to_server *connection){
     connection->connectEditor();
 }

@@ -36,7 +36,7 @@ public:
     static QString requestCreateDocumentTemporary(connection_to_server *connection, int userId, QString name);
     static void requestDeleteDocTemporary(connection_to_server *connection, int userId, int documentId);
     static QString openDocTemporary(connection_to_server *connection, int userId, int documentId);
-    static void closeDocument(connection_to_server *connection, int userId, int docId);
+    static void closeDocumentTemporary(connection_to_server *connection, int userId, int docId);
     //lo userId serve per aggiungere il collegamento tra utente e document, se ancora non era presente nel DB
     static QString requestDocDatoUriTemporary(connection_to_server *connection, int userId, QString uri);
 
@@ -55,7 +55,7 @@ public:
     //ritorna tutti gli id degli users che hanno conrtibuito al document. Viene chiamata appena aperto il doc, mentre per l'update ci sono altre funzioni apposta nella classe gui_editor
     static std::shared_ptr<QSet<int>> getContributorsTemporary(connection_to_server *connection, int docId);
     //.... e questo da dove salta fuori?
-    static void Editor(connection_to_server *connection);
+    static void startEditorConnectionTemporary(connection_to_server *connection);
 };
 
 #endif // STUB_H

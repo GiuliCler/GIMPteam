@@ -47,12 +47,12 @@ void GUI_Opendoc::on_openDocsPushButton_clicked(){
     }
     int docId = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
     QString docName = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCNAME).toString();
-    QString name = GUI_ConnectionToServerWrapper::requestOpenDocumentWrapper(gimpParent, gimpParent->userid, docId);
-    if(name.compare("errore") == 0)
+    QString codedParameters = GUI_ConnectionToServerWrapper::requestOpenDocumentWrapper(gimpParent, gimpParent->userid, docId);
+    if(codedParameters.compare("errore") == 0)
         return;
 
-    int siteId = name.split("_").at(1).toInt();
-    int siteCounter = name.split("_").at(2).toInt();
+    int siteId = codedParameters.split("_").at(1).toInt();
+    int siteCounter = codedParameters.split("_").at(2).toInt();
 
     GUI_Editor *widget = new GUI_Editor(gimpParent, docId, docName, siteId, siteCounter);
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
@@ -122,8 +122,8 @@ void GUI_Opendoc::on_forgetPushButton_clicked(){
     }
 
     int docId = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
-    int result = GUI_ConnectionToServerWrapper::requestDeleteDocumentWrapper(gimpParent, gimpParent->userid, docId);
-    if(result == -1)
+
+    if(GUI_ConnectionToServerWrapper::requestDeleteDocumentWrapper(gimpParent, gimpParent->userid, docId) == -1)
         return;
 
     removeSelectedItem();

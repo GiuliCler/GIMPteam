@@ -117,17 +117,6 @@ void GUI_UsersBar::addContributorUserIcon(int userId, QColor color){
         this->findChild<GUI_MyScrollArea*>(getContributorsAreaName())->updateSize(contributorUsersIconMap.size());
 }
 
-void GUI_UsersBar::removeContributorUserIcon(int userId){
-    if(this->contributorUsersIconMap.find(userId) == contributorUsersIconMap.end())
-        return;
-
-    contributorUsersIconMap[userId]->close();
-    contributorUsersIconMap.remove(userId);
-    ui->numberContributorUsersLabel->setNum(contributorUsersIconMap.size());
-
-    if(contributorUsersIconMap.size() <= GUI_MyScrollArea::getMaxUsersIconsNumber()+1)
-        this->findChild<GUI_MyScrollArea*>(getContributorsAreaName())->updateSize(contributorUsersIconMap.size());
-}
 
 bool GUI_UsersBar::isOnline(int userId){
     return onlineUsersIconMap.find(userId) != onlineUsersIconMap.end();
@@ -170,8 +159,4 @@ void GUI_UsersBar::on_pushButton_2_clicked()
 void GUI_UsersBar::on_pushButton_3_clicked()
 {
     editorParent->addContributorToCurrentDocument(QRandomGenerator::global()->bounded(2000));
-}
-
-void GUI_UsersBar::on_pushButton_4_clicked(){
-    editorParent->removeContributorFromCurrentDocument(contributorUsersIconMap.keys().first());
 }
