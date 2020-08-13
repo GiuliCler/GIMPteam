@@ -59,7 +59,7 @@ QPushButton:pressed,QPushButton:checked {
    </property>
    <item>
     <widget class="QWidget" name="widget" native="true">
-     <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,0,1,0">
+     <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,0,1">
       <property name="spacing">
        <number>6</number>
       </property>
@@ -530,44 +530,6 @@ QPushButton:pressed,QPushButton:checked {
          </item>
         </layout>
        </widget>
-      </item>
-      <item>
-       <layout class="QGridLayout" name="gridLayout">
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <item row="1" column="0">
-         <widget class="QPushButton" name="pushButton_3">
-          <property name="text">
-           <string>Add contributor</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QPushButton" name="pushButton">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="text">
-           <string>Add User</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QPushButton" name="pushButton_2">
-          <property name="text">
-           <string>Remove User</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QPushButton" name="pushButton_4">
-          <property name="text">
-           <string>Remove contributor</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
       </item>
      </layout>
     </widget>
