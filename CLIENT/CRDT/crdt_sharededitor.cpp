@@ -57,9 +57,9 @@ void CRDT_SharedEditor::localInsert(int index, QChar value, QTextCharFormat fmt,
 //    _server.send(*messaggio);     --> chiamata alla funzione send di connection_to_server
     connection->requestSendMessage(messaggio);
 
-    std::cout<<"*************************************"<<std::endl;                       // DEBUG -------
-    std::cout<<"PRINT (localInsert): "<<this->print()<<std::endl;                        // DEBUG -------
-    std::cout<<"*************************************"<<std::endl;                       // DEBUG -------
+//    std::cout<<"*************************************"<<std::endl;                       // DEBUG -------
+//    std::cout<<"PRINT (localInsert): "<<this->print()<<std::endl;                        // DEBUG -------
+//    std::cout<<"*************************************"<<std::endl;                       // DEBUG -------
 }
 
 QVector<int> CRDT_SharedEditor::generaPosizione(QVector<int> prev, QVector<int> next){
@@ -139,9 +139,9 @@ void CRDT_SharedEditor::localErase(int index){
 
 void CRDT_SharedEditor::process(const CRDT_Message& m){
 
-        std::cout<<"*************************************"<<std::endl;         // DEBUG -------
-        std::cout<<"PRINT (prima): "<<this->print()<<std::endl;                        // DEBUG -------
-        std::cout<<"*************************************"<<std::endl;         // DEBUG -------
+//        std::cout<<"*************************************"<<std::endl;         // DEBUG -------
+//        std::cout<<"PRINT (prima): "<<this->print()<<std::endl;                        // DEBUG -------
+//        std::cout<<"*************************************"<<std::endl;         // DEBUG -------
 
         std::string azione = m.getAzione();
         CRDT_Symbol simbolo = m.getSimbolo();
@@ -177,9 +177,9 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
             }
         }
 
-        std::cout<<"*************************************"<<std::endl;         // DEBUG -------
-        std::cout<<"PRINT (dopo): "<<this->print()<<std::endl;                        // DEBUG -------
-        std::cout<<"*************************************"<<std::endl;         // DEBUG -------
+//        std::cout<<"*************************************"<<std::endl;         // DEBUG -------
+//        std::cout<<"PRINT (dopo): "<<this->print()<<std::endl;                        // DEBUG -------
+//        std::cout<<"*************************************"<<std::endl;         // DEBUG -------
 }
 
 QVector<CRDT_Symbol>::iterator CRDT_SharedEditor::trovaPosizione(QVector<int> pos) {

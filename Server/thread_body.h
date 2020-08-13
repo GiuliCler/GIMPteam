@@ -29,6 +29,7 @@ public:
     QTcpSocket* socket;
 
 private:
+    bool isProcessing = false;
     const int Timeout = 100 * 1000;
     CollegamentoDB* database;
     QDataStream* in;

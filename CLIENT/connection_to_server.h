@@ -60,6 +60,7 @@ signals:
     void unavailableSharedDocument(int docId);
 
 private:
+    bool isProcessing = false;
     QString port;
     QString ipAddress;
     //Files file;

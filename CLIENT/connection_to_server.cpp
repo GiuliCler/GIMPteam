@@ -1051,14 +1051,17 @@ void connection_to_server::disconnectEditor(int userId, int docId){
 
 
 void connection_to_server::receiveMessage(){
+    if(isProcessing)
+        return;
 
+    isProcessing = true;
     QByteArray action;
     QDataStream in;
     in.setDevice(this->tcpSocket);
     in.setVersion(QDataStream::Qt_5_12);
-
+    while(this->tcpSocket->bytesAvailable() > 0){
     in >> action;
-    std::cout << "SLOT CLIENT receiveAction from server - "<<action.toStdString()<< std::endl;      // DEBUG
+//    std::cout << "SLOT CLIENT receiveAction from server - "<<action.toStdString()<< std::endl;      // DEBUG
 
     QString c = "OFFLINEUSER";
     if(action.contains(c.toUtf8())){
@@ -1068,6 +1071,7 @@ void connection_to_server::receiveMessage(){
         std::cout << userGetOffline<< std::endl;
         //this->editor->removeUserFromEditorGUI(userGetOffline);
          emit sigOfflineUser(userGetOffline);
+        continue;
     }
 
     c = "ONLINEUSER";
@@ -1085,6 +1089,7 @@ void connection_to_server::receiveMessage(){
         std::cout << userGetOnline << "icona: " + icona << " nickname: " + nick << std::endl;
         //this->editor->addUserToEditorGUI(userGetOnline);
         emit sigOnlineUser(userGetOnline); //TODO: nel segnale vanno passati anche nick e icona
+        continue;
     }
 
     c = "NEWCONTRIBUTOR";
@@ -1102,23 +1107,27 @@ void connection_to_server::receiveMessage(){
         std::cout << userNewContributor << "icona: " + icona << " nickname: " + nick << std::endl;
         //this->editor->addUserToEditorGUI(userGetOnline);
         emit sigNewContributor(userNewContributor); //TODO: nel segnale vanno passati anche nick e icona
+        continue;
     }
 
     c = "CRDT";
     if(action.contains(c.toUtf8())){
-        do {
+//        do {
             CRDT_Message m;
             in >> m;
+//            std::cout << "SLOT CLIENT receiveAction - "<<action.toStdString()<< std::endl;
+            std::cout << "SLOT CLIENT messaggeAction - "<<m.getAzione()<< std::endl;
             emit sigProcessMessage(m);
             //DEBUG
-            std::cout << "SLOT CLIENT receiveAction - "<<action.toStdString()<< std::endl;
-            std::cout << "SLOT CLIENT messaggeAction - "<<m.getAzione()<< std::endl;
-            if(!in.commitTransaction()){
+            continue;
+/*            if(!in.commitTransaction()){
                 in >> action;
                 if(action.isEmpty()){
                     break;
                 }
             }
-        } while (!in.commitTransaction());
+        } while (!in.commitTransaction())*/;
     }
+    }
+    isProcessing = false;
 }

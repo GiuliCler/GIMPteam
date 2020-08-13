@@ -291,9 +291,6 @@ void CRDT_controller::menuCall(menuTools op){
 }
 
 void CRDT_controller::remoteDelete(int pos){
-
-    std::cout<<"EHI! SONO NELLA REMOTE DELETE!"<<std::endl;
-
     processingMessage = true;
     QTextCursor current = textEdit.textCursor();
 
@@ -305,12 +302,11 @@ void CRDT_controller::remoteDelete(int pos){
     textEdit.textCursor().deleteChar();
 
     textEdit.setTextCursor(current);
+    std::cout<<"EHI! SONO NELLA REMOTE DELETE! Position: "<< pos <<std::endl;
     processingMessage = false;
 }
 
 void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align){
-
-    std::cout<<"EHI! SONO NELLA REMOTE INSERT!"<<std::endl;
 
     processingMessage = true;
     QTextCursor current = textEdit.textCursor();
@@ -318,16 +314,17 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
     QTextCursor tmp{textEdit.document()};
     tmp.setPosition(pos);
     textEdit.setTextCursor(tmp);
-
+    textEdit.textCursor().beginEditBlock();
 //    textEdit.textCursor().setPosition(pos);        //   VECCHIA setPosition
-    std::cout<<"AAAA TextEdit... cursor: "<<textEdit.textCursor().position()<<", pos: "<<pos<<std::endl;        // DEBUG -----
+//    std::cout<<"AAAA TextEdit... cursor: "<<textEdit.textCursor().position()<<", pos: "<<pos<<std::endl;        // DEBUG -----
     QTextBlockFormat blockFmt{textEdit.textCursor().blockFormat()};
     textEdit.textCursor().insertText(c, fmt);
     blockFmt.setAlignment(align);
     textEdit.textCursor().mergeBlockFormat(blockFmt);
 //    std::cout << "Block End: " << textEdit.textCursor().atBlockEnd() << "; Alignment: " << align << std::endl;
-
+    textEdit.textCursor().endEditBlock();
 
     textEdit.setTextCursor(current);
     processingMessage = false;
+    std::cout<<"EHI! SONO NELLA REMOTE INSERT! Char: "<< c.toLatin1() <<std::endl;
 }

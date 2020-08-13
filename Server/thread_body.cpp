@@ -34,8 +34,13 @@ Thread_body::~Thread_body(){
 }
 
 void Thread_body::executeJob(){
+    if(isProcessing)
+        return;
+
+    isProcessing = true;
+    while(socket->bytesAvailable() > 0){
     auto thread_id = std::this_thread::get_id();
-    std::cout << "THREAD - executeJob; Thread: "<<thread_id<<" ---- "<< std::endl;
+//    std::cout << "THREAD - executeJob; Thread: "<<thread_id<<" ---- "<< std::endl;
 
     QByteArray text;
     // Prendo la stringa di comando
@@ -53,6 +58,7 @@ void Thread_body::executeJob(){
         *in >> icon;
 
         create(username, password, nickname, icon);
+        continue;
     }
 
     c = "LOGIN";
@@ -203,37 +209,38 @@ void Thread_body::executeJob(){
 
     c = "SEND";
     if(text.contains(c.toUtf8())){
-        QByteArray action;
-        do {
-            CRDT_Message m;
-            *in >> m;
-            std::cout << "if SEND - messaggeAction - "<<m.getAzione()<< std::endl;      // DEBUG
+//        QByteArray action;
+//        do {
+//            CRDT_Message m;
+//            *in >> m;
+//            std::cout << "if SEND - messaggeAction - "<<m.getAzione()<< std::endl;      // DEBUG
 
-            emit messageToServer(m, threadId_toQString(thread_id), current_docId);
+//            emit messageToServer(m, threadId_toQString(thread_id), current_docId);
 
-            if(!in->commitTransaction()){
-                *in >> action;
-                if(action.isEmpty()){
-                    break;
-                }else{
-                    std::cout << "if SEND - "<<action.toStdString()<< std::endl;        // DEBUG
-                }
-            }else{
-                break;
-            }
-        } while (!in->commitTransaction());
+//            if(!in->commitTransaction()){
+//                *in >> action;
+//                if(action.isEmpty()){
+//                    break;
+//                }else{
+//                    std::cout << "if SEND - "<<action.toStdString()<< std::endl;        // DEBUG
+//                }
+//            }else{
+//                break;
+//            }
+//        } while (!in->commitTransaction());
 
         //PRIMA ERA COSì:
-        //CRDT_Message messaggio;
-        //*in >> messaggio;
+        CRDT_Message messaggio;
+        *in >> messaggio;
 
-        //std::cout << "if SEND - "<<messaggio.getAzione()<< std::endl;      // DEBUG
+        std::cout << "if SEND - "<<messaggio.getAzione()<< std::endl;      // DEBUG
 
-        // scrivi su crdt del server? MUTEX + chiediti se metterla dopo emit        todo ila&paolo
-        //std::stringstream ss;
-        //ss << thread_id;
-        //std::string thread_id_string = ss.str();
-        //emit messageToServer(messaggio, QString::fromStdString(thread_id_string), current_docId);
+//         scrivi su crdt del server? MUTEX + chiediti se metterla dopo emit        todo ila&paolo
+        std::stringstream ss;
+        ss << thread_id;
+        std::string thread_id_string = ss.str();
+        emit messageToServer(messaggio, QString::fromStdString(thread_id_string), current_docId);
+        continue;
     }
 
     c = "DISCONNECT_FROM_DOC";
@@ -251,12 +258,15 @@ void Thread_body::executeJob(){
         mutex_db->lock();
         database->aggiornaSiteCounter(docName, username, current_siteCounter);
         mutex_db->unlock();
+        continue;
     }
 
     //    socket->disconnectFromHost();
     //    socket->waitForDisconnected(3000);
 
-    qDebug() << "EXECUTE JOB finita";      // DEBUG
+    }
+//    qDebug() << "EXECUTE JOB finita";      // DEBUG
+    isProcessing = false;
 }
 
 
@@ -1162,11 +1172,11 @@ void Thread_body::openDocument(int docId, int userId){
 
 void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int docId){
 
-    qDebug() << "THREAD ID SENDER: "+thread_id_sender;                              // DEBUG
+//    qDebug() << "THREAD ID SENDER: "+thread_id_sender;                              // DEBUG
     QString docidForDebug = "CURRENTDOCID: "+QString::number(current_docId);       // DEBUG
 
     auto thread_id = std::this_thread::get_id();
-    std::cout << "---- ThreadBody processMessage RICEVUTO thread_id: "<<thread_id<<", doc_id: "<<docId<<" ---- "<< "; Stringa: "<<m.getAzione()<< std::endl;      // DEBUG
+//    std::cout << "---- ThreadBody processMessage RICEVUTO thread_id: "<<thread_id<<", doc_id: "<<docId<<" ---- "<< "; Stringa: "<<m.getAzione()<< std::endl;      // DEBUG
     QString thread_id_string = threadId_toQString(thread_id);
 
     // Se altro documento o stesso user_id di questo thread => discard (return) del messaggio
@@ -1182,7 +1192,7 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         return;
     }
 
-    std::cout << "---- ThreadBody processMessage ACCETTATO thread_id: "<<thread_id<<", doc_id: "<<docId<<" ---- "<< "; Stringa: "<<m.getAzione()<< std::endl;      // DEBUG
+//    std::cout << "---- ThreadBody processMessage ACCETTATO thread_id: "<<thread_id<<", doc_id: "<<docId<<" ---- "<< "; Stringa: "<<m.getAzione()<< std::endl;      // DEBUG
 
     QByteArray blocko;
     QDataStream out(&blocko, QIODevice::WriteOnly);
@@ -1251,6 +1261,7 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
 
     out << "CRDT";
     out << m;
+    std::cout << "Azione: " << m.getAzione() << "; Carattere: " << m.getSimbolo().getCarattere().toLatin1() << std::endl;
     socket->write(blocko);
     socket->flush();
 }
