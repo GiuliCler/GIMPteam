@@ -36,6 +36,10 @@ int GUI_ConnectionToServerWrapper::requestLogoutWrapper(GIMPdocs *gimpdocs, int 
         //provo a ristabilire la connessione
         GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
         return -1;
+    } catch(GUI_GenericException &exception){
+        gimpdocs->setCursor(Qt::ArrowCursor);
+        QMessageBox::information(gimpdocs, "", exception.message);
+        return -1;
     }
 
     return 1;

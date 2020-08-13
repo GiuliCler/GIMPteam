@@ -16,9 +16,9 @@ public:
     ~GUI_UsersBar();
     static QString getObjectName() {return QString("GUI_UsersBar");}
 
-    void addOnlineUserIcon(int userId, QColor color);
+    void addOnlineUserIcon(int userId, QColor color, QString nickname, QString iconId);
     void removeOnlineUserIcon(int userId);
-    void addContributorUserIcon(int userId, QColor color);
+    void addContributorUserIcon(int userId, QColor color, QString nickname, QString iconId);
 
     bool isOnline(int userId);
     bool isContributor(int userId);
@@ -27,11 +27,6 @@ public slots:
     //questi 2 metodi non servono solo per la users bar, ma anche per attivare il comando che cambia colore al testo
     void on_showColorsPushButton_clicked();
     void on_hideColorsPushButton_clicked();
-
-    //per il debug
-    void on_pushButton_clicked();
-    void on_pushButton_2_clicked();
-    void on_pushButton_3_clicked();
 
 private:
     Ui::GUI_UsersBar *ui;
@@ -42,7 +37,7 @@ private:
     //serve per ritrovare i figli. Avrei anche potuto salvarmi direttamente un pointer ai figli
     inline static QString getOnlineAreaName() {return QString("onlineIconsScrollArea");}
     inline static QString getContributorsAreaName() {return QString("contributorIconsScrollArea");}
-    QLabel *getUserIcon(int userId, QColor color);
+    QLabel *getUserIcon(QColor color, QString nickname, QString iconId);
 };
 
 #endif // GUI_USERSBAR_H
