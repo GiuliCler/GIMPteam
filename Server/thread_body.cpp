@@ -523,7 +523,16 @@ void Thread_body::create(QString username, QString password, QString nickname, Q
             out << id;
             socket->write(blocko);
             socket->flush();
+            // Aggiungo al vettore di logged_users
+            mutex_logged_users->lock();
+            logged_users.push_back(username);
+            mutex_logged_users->unlock();
+        }else {
+            out << "errore";
+            socket->write(blocko);
+            socket->flush();
         }
+
     } else {
         out << "errore";
         socket->write(blocko);

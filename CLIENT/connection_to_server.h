@@ -55,11 +55,8 @@ signals:
     void newFile(const QString &fortune);
     void sigProcessMessage(const CRDT_Message& m);
     void sigOfflineUser(int userId);
-    //MIRKO: al posto di queste 2 signals, avrei bisogno di queste 2 altre che per ora ho aggiunto solo come commentate
-    void sigOnlineUser(int userId);
-    void sigNewContributor(int userId);
-    //void sigOnlineUser(int userid, QString nickname, QString iconId);
-    //void sigNewContributor(int userid, QString nickname, QString iconId);
+    void sigOnlineUser(int userid, QString nickname, QString iconId);
+    void sigNewContributor(int userid, QString nickname, QString iconId);
     void unavailableSharedDocument(int docId);
 
 private:

@@ -1079,12 +1079,12 @@ void connection_to_server::receiveMessage(){
         in >> iconId;
         in >> nickname;
         iconId.replace('\0',"");
-        std::string icona = iconId.toStdString();
+        QString icona = QString::fromStdString(iconId.toStdString());
         nickname.replace('\0',"");
-        std::string nick = iconId.toStdString();
-        std::cout << userGetOnline << "icona: " + icona << " nickname: " + nick << std::endl;
+        QString nick = QString::fromStdString(iconId.toStdString());
+        //std::cout << userGetOnline << "icona: " + icona << " nickname: " + nick << std::endl;
         //this->editor->addUserToEditorGUI(userGetOnline);
-        emit sigOnlineUser(userGetOnline); //TODO: nel segnale vanno passati anche nick e icona
+        emit sigOnlineUser(userGetOnline, nick, icona);
     }
 
     c = "NEWCONTRIBUTOR";
@@ -1096,12 +1096,11 @@ void connection_to_server::receiveMessage(){
         in >> iconId;
         in >> nickname;
         iconId.replace('\0',"");
-        std::string icona = iconId.toStdString();
+        QString icona = QString::fromStdString(iconId.toStdString());
         nickname.replace('\0',"");
-        std::string nick = iconId.toStdString();
-        std::cout << userNewContributor << "icona: " + icona << " nickname: " + nick << std::endl;
-        //this->editor->addUserToEditorGUI(userGetOnline);
-        emit sigNewContributor(userNewContributor); //TODO: nel segnale vanno passati anche nick e icona
+        QString nick = QString::fromStdString(iconId.toStdString());
+        //std::cout << userNewContributor << "icona: " + icona << " nickname: " + nick << std::endl;
+        emit sigNewContributor(userNewContributor, nick, icona);
     }
 
     c = "CRDT";
