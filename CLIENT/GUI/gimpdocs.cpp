@@ -2,6 +2,8 @@
 #include "connection/gui_server.h"
 #include "editorWindow/gui_editor.h"
 
+#include <QMessageBox>
+
 GIMPdocs::GIMPdocs(QWidget *parent) : QMainWindow(parent), userid(-1)
 {
     ui1 = new Ui::GIMPdocs;
@@ -21,6 +23,35 @@ GIMPdocs::GIMPdocs(QWidget *parent) : QMainWindow(parent), userid(-1)
 GIMPdocs::~GIMPdocs(){
     delete ui1;
     delete ui2;
+}
+
+void GIMPdocs::closeEvent (QCloseEvent *event){
+
+    if(QMessageBox::question(this, "", "Do you really want to close GIMPdocs?") == QMessageBox::No){
+        event->ignore();
+        return;
+    }
+
+    /*in teoria si potrebbe pensare che un controllo su isEditorConnected sia superfluo se già controlliamo che il widget ci sia,
+    ma in realtà ci interessa solo sapere se la disconnessione dal server è stata fatta o meno, non se il widget esiste ancora o se avrà problemi in fase di distruzione*/
+    if(isEditorConnected == true){
+        GUI_Editor* editorWidget = this->findChild<GUI_Editor*>(GUI_Editor::getObjectName());
+        if(editorWidget != nullptr)
+            if(GUI_ConnectionToServerWrapper::requestCloseDocumentWrapper(this, userid, editorWidget->documentId) == -1){
+                event->ignore();
+                return;
+            }
+    }
+
+    if (userid != -1)
+        if(GUI_ConnectionToServerWrapper::requestLogoutWrapper(this, userid) == -1){
+            qDebug() << "Logout fallita";
+            event->ignore();
+            return;
+        }
+
+    qDebug() << "Logout eseguita";
+    event->accept();
 }
 
 void GIMPdocs::setUi1(QWidget *widget){
