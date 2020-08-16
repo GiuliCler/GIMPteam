@@ -14,6 +14,7 @@
 
 #include <QMainWindow>
 #include <QDebug>
+#include <QCloseEvent>
 
 class GIMPdocs : public QMainWindow
 {
@@ -21,23 +22,25 @@ class GIMPdocs : public QMainWindow
 
 public:
     int userid;
-    QSize regularWindowSize;
-    //serve per ripristinare lo stato maximized/normal dopo la chiusura del document in base a com'era prima
-    bool alreadyMaximized;
+    bool isEditorConnected = false;
     //mi servono public per fare delle connect
     Ui::GIMPdocs *ui1;
     Ui::GUI_EditWindow *ui2;
 
     explicit GIMPdocs(QWidget *parent = nullptr);
     ~GIMPdocs();
+    void closeEvent (QCloseEvent *event);
 
     //servono a cambiare l'ui attiva. Widget è il central widget da caricare
     void setUi1(QWidget *widget);
     void setUi2(QWidget *widget);
-    connection_to_server *getConnection();
     void setConnection(connection_to_server *connection);
+    connection_to_server *getConnection();
 
 private:
+    QSize regularWindowSize;
+    //serve per ripristinare lo stato maximized/normal dopo la chiusura del document in base a com'era prima
+    bool alreadyMaximized;
     connection_to_server *c = nullptr;
 
 };

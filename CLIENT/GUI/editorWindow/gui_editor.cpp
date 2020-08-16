@@ -47,9 +47,11 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int sit
     //avvio la connessione speciale per l'editor. D'ora in poi la connection_to_server è off-limits
     if(GUI_ConnectionToServerWrapper::requestStartEditorConnection(gimpParent) < 0)
         return;
+
+    gimpParent->isEditorConnected = true;
 }
 
-GUI_Editor::~GUI_Editor(){
+GUI_Editor::~GUI_Editor(){    
     delete ui;
     delete crdtController;
 }
@@ -109,6 +111,8 @@ void GUI_Editor::setUpEditor(){
 void GUI_Editor::launchSetUi1(){
     if(GUI_ConnectionToServerWrapper::requestCloseDocumentWrapper(gimpParent, gimpParent->userid, documentId) == -1)
         return;
+
+    gimpParent->isEditorConnected = false;
 
     GUI_Menu *widget = new GUI_Menu(this->gimpParent);
     static_cast<GIMPdocs*>(this->gimpParent)->setUi1(widget);
