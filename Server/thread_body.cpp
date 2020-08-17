@@ -715,7 +715,7 @@ void Thread_body::getNickname(int userId){
         mutex_db->lock();
         QString nick = database->getNickname(username);       // DEBUG
         mutex_db->unlock();
-        out << nick.toLocal8Bit();
+        out << nick.toUtf8();
         socket->write(blocko);
         socket->flush();
     }else{
@@ -737,7 +737,7 @@ void Thread_body::getIcon(int userId){
         mutex_db->lock();
         QString icon = database->getIconId(username);
         mutex_db->unlock();
-        out << icon.toLocal8Bit();
+        out << icon.toUtf8();
         socket->write(blocko);
         socket->flush();
     }else{
@@ -1226,8 +1226,8 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         mutex_db->unlock();
         out << "ONLINEUSER";
         out << userIdConnect[1].toInt();
-        out << icon.toLocal8Bit();
-        out << nick.toLocal8Bit();
+        out << icon.toUtf8();
+        out << nick.toUtf8();
         writeData(blocko);
         return;
     }
@@ -1244,8 +1244,8 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         mutex_db->unlock();
         out << "NEWCONTRIBUTOR";
         out << userIdContributor[1].toInt();
-        out << icon.toLocal8Bit();
-        out << nick.toLocal8Bit();
+        out << icon.toUtf8();
+        out << nick.toUtf8();
         writeData(blocko);
         return;
     }
