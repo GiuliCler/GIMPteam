@@ -22,7 +22,8 @@ void Thread_management::run(){
 
     qRegisterMetaType<CRDT_Message>("CRDT_Message");
     body = new Thread_body(socketDescriptor);
-    QObject::connect(body->socket, &QTcpSocket::readyRead, body, &Thread_body::executeJob);
+//    QObject::connect(body->socket, &QTcpSocket::readyRead, body, &Thread_body::executeJob);       // VECCHIO (FUNZIONANTE)
+    QObject::connect(body->socket, &QTcpSocket::readyRead, body, &Thread_body::readData);           // NUOVO
     Server* babbo = qobject_cast<Server*>(this->parent());
     QObject::connect(body, &Thread_body::messageToServer, babbo, &Server::dispatchMessage);
     QObject::connect(babbo, &Server::dispatchMessage, body, &Thread_body::processMessage);

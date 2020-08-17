@@ -34,6 +34,9 @@ private:
     QDataStream* in;
     int current_docId;
     int current_siteCounter;
+    QByteArray readBuffer;
+    qint32 readBuffer_size;
+
     QString getUsername(int userId);
     QString getDocname(int docId);
     QString threadId_toQString(std::thread::id id);
@@ -59,14 +62,19 @@ private:
     void getCollaboratorsGivenDoc(int docId);
     int addToWorkingUsers(int docId, int userId, int open_new);
     void removeFromWorkingUsers(int docId, int userId);
+    static qint32 ArrayToInt(QByteArray source);
+    bool writeData(QByteArray data);
+    static QByteArray IntToArray(qint32 source);
 
 signals:
     void error(QTcpSocket::SocketError socketError);
     void messageToServer(CRDT_Message m, QString thread_id_sender, int docId);
     void finished();
+    void dataReceived(QByteArray data);
 
 public slots:
-    void executeJob();
+    void readData();
+    void executeJob(QByteArray data);
     void processMessage(CRDT_Message m, QString thread_id_sender, int docId);
 
 };

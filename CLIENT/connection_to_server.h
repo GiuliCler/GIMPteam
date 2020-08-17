@@ -43,11 +43,12 @@ public:
     void requestSendMessage(CRDT_Message *messaggio);
     void connectEditor();
     void disconnectEditor(int userId, int docId);
-    void receiveMessage();
     std::shared_ptr<QSet<int>> getContributors(int docId);
 
 private slots:
     void displayError(int socketError, const QString &message);
+    void readData();
+    void receiveMessage(QByteArray data);
 
 signals:
     void error(int socketError, const QString &message);
@@ -58,6 +59,7 @@ signals:
     void sigOnlineUser(int userid, QString nickname, QString iconId);
     void sigNewContributor(int userid, QString nickname, QString iconId);
     void unavailableSharedDocument(int docId);
+    void dataReceived(QByteArray data);
 
 private:
     QString port;
@@ -67,7 +69,12 @@ private:
     QTcpSocket *tcpSocket = nullptr;
     //GUI_Editor *editor = nullptr;
     const int Timeout = 100 * 1000;
+    QByteArray readBuffer;
+    qint32 readBuffer_size;
 
+    bool writeData(QByteArray data);
+    static QByteArray IntToArray(qint32 source);
+    static qint32 ArrayToInt(QByteArray source);
 
     //QNetworkSession *networkSession = nullptr;
 };

@@ -57,9 +57,9 @@ void CRDT_SharedEditor::localInsert(int index, QChar value, QTextCharFormat fmt,
 //    _server.send(*messaggio);     --> chiamata alla funzione send di connection_to_server
     connection->requestSendMessage(messaggio);
 
-    std::cout<<"*************************************"<<std::endl;                       // DEBUG -------
-    std::cout<<"PRINT (localInsert): "<<this->print()<<std::endl;                        // DEBUG -------
-    std::cout<<"*************************************"<<std::endl;                       // DEBUG -------
+//    std::cout<<"*************************************"<<std::endl;                       // DEBUG -------
+//    std::cout<<"PRINT (localInsert): "<<this->print()<<std::endl;                        // DEBUG -------
+//    std::cout<<"*************************************"<<std::endl;                       // DEBUG -------
 }
 
 QVector<int> CRDT_SharedEditor::generaPosizione(QVector<int> prev, QVector<int> next){
@@ -123,7 +123,7 @@ void CRDT_SharedEditor::localErase(int index){
     /* Recupero dal vettore di simboli il simbolo da eliminare */
     CRDT_Symbol simbolo = _symbols[index];
 
-    std::cout<< "Ho pescato... "<< simbolo.getCarattere().toLatin1() <<" -- "<<simbolo.getIDunivoco()<<std::endl;            // DEBUG ----
+    std::cout<< "Deleting "<< simbolo.getCarattere().toLatin1() <<" -- "<<simbolo.getIDunivoco()<<std::endl;            // DEBUG ----
 
     /* Elimino il simbolo */
     auto it = _symbols.begin()+index;
@@ -139,9 +139,9 @@ void CRDT_SharedEditor::localErase(int index){
 
 void CRDT_SharedEditor::process(const CRDT_Message& m){
 
-        std::cout<<"*************************************"<<std::endl;         // DEBUG -------
-        std::cout<<"PRINT (prima): "<<this->print()<<std::endl;                        // DEBUG -------
-        std::cout<<"*************************************"<<std::endl;         // DEBUG -------
+//        std::cout<<"*************************************"<<std::endl;         // DEBUG -------
+//        std::cout<<"PRINT (prima): "<<this->print()<<std::endl;                        // DEBUG -------
+//        std::cout<<"*************************************"<<std::endl;         // DEBUG -------
 
         std::string azione = m.getAzione();
         CRDT_Symbol simbolo = m.getSimbolo();
@@ -165,7 +165,7 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
             parent->remoteInsert(count, simbolo.getCarattere(), simbolo.getFormat(), simbolo.getAlignment());
 
         } else if(azione == "delete"){           /* SIMBOLO CANCELLATO */
-            std::cout<<"(dispatch nell'ed "<<_siteId<<"): elimino un carattere di id "<<simbolo.getIDunivoco()<<std::endl;     // DEBUG ------
+//            std::cout<<"(dispatch nell'ed "<<_siteId<<"): elimino un carattere di id "<<simbolo.getIDunivoco()<<std::endl;     // DEBUG ------
             for(; it < _symbols.end(); it++){
                 CRDT_Symbol s = *it;
                 //std::cout<<s.getCarattere()<<" "<<s.getIDunivoco()<<std::endl;      // DEBUG -------------
@@ -177,9 +177,9 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
             }
         }
 
-        std::cout<<"*************************************"<<std::endl;         // DEBUG -------
-        std::cout<<"PRINT (dopo): "<<this->print()<<std::endl;                        // DEBUG -------
-        std::cout<<"*************************************"<<std::endl;         // DEBUG -------
+//        std::cout<<"*************************************"<<std::endl;         // DEBUG -------
+//        std::cout<<"PRINT (dopo): "<<this->print()<<std::endl;                        // DEBUG -------
+//        std::cout<<"*************************************"<<std::endl;         // DEBUG -------
 }
 
 QVector<CRDT_Symbol>::iterator CRDT_SharedEditor::trovaPosizione(QVector<int> pos) {
