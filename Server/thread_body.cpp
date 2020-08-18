@@ -391,7 +391,7 @@ void Thread_body::newDoc(QString docName, int userId){
             mutex_docs->unlock();
 
             // Creo file fisico nel filesystem attraverso la openDoc
-            if(openDoc(username + "_" + docName, username, docId, userId, 0) == -1){
+            if(openDoc(username + "_" + docName, docId, userId, 0) == -1){
                 out << "errore";
                 socket->write(blocko);
                 socket->flush();
@@ -434,11 +434,11 @@ void Thread_body::newDoc(QString docName, int userId){
     }
 }
 
-// banana
+
 // La funzione openDoc restituisce:
 //    1 --> tutto ok
 //   -1 --> errore
-int Thread_body::openDoc(QString docName, QString username, int docId, int userId, int new_doc){
+int Thread_body::openDoc(QString docName, int docId, int userId, int new_doc){
 
     // Aggiungo la riga (docId, [userId]) alla mappa degli workingUsers
     int esito = addToWorkingUsers(docId, userId, new_doc);
@@ -819,7 +819,7 @@ void Thread_body::openDocDatoUri(QString uri, int userId){
                 int siteCounter = info[1];
                 current_siteCounter = siteCounter;
 
-                if(openDoc(docName, username, docId, userId, 1) == -1){
+                if(openDoc(docName, docId, userId, 1) == -1){
                     ritorno = "errore";
                 } else {
                     ritorno = "ok_"+QString::number(siteId)+"_"+QString::number(siteCounter)+"_"+QString::number(docId);
@@ -1150,7 +1150,7 @@ void Thread_body::openDocument(int docId, int userId){
         }
     } else {
         // L'utente e il documento esistono
-        if(openDoc(docName, username, docId, userId, 1) == -1){
+        if(openDoc(docName, docId, userId, 1) == -1){
             out << "errore";
             socket->write(blocko);
             socket->flush();

@@ -61,7 +61,7 @@ private:
     void retrieveDocName(int docId);
     void deleteDoc(int userId, int docId);
     void openDocument(int docId, int userId);
-    int openDoc(QString docName, QString username, int docId, int userId, int new_doc);
+    int openDoc(QString docName, int docId, int userId, int new_doc);
     void closeDocument(int docId, int userId);
     void getWorkingUsersGivenDoc(int docId);
     void getCollaboratorsGivenDoc(int docId);
