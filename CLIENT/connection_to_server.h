@@ -44,6 +44,7 @@ public:
     void connectEditor();
     void disconnectEditor(int userId, int docId);
     std::shared_ptr<QSet<int>> getContributors(int docId);
+    QByteArray getFileTMP();
 
 private slots:
     void displayError(int socketError, const QString &message);
@@ -63,15 +64,13 @@ signals:
 
 private:
     QString port;
-    QString ipAddress;
-    //Files file;
-    QString current;
+    QString ipAddress;  
     QTcpSocket *tcpSocket = nullptr;
+    QByteArray fileTMP;
     //GUI_Editor *editor = nullptr;
     const int Timeout = 100 * 1000;
     QByteArray readBuffer;
     qint32 readBuffer_size;
-
     bool writeData(QByteArray data);
     static QByteArray IntToArray(qint32 source);
     static qint32 ArrayToInt(QByteArray source);

@@ -3,7 +3,7 @@
 #include <sstream>
 #include <QThread>
 
-Thread_body::Thread_body(int socketDescriptor, QObject *parent) : QObject(parent), current_docId(-1), readBuffer(), readBuffer_size(0)
+Thread_body::Thread_body(int socketDescriptor, QThread* server, QObject *parent) : QObject(parent), server(server), current_docId(-1), readBuffer(), readBuffer_size(0)
 {
     auto thread_id = std::this_thread::get_id();
 
@@ -147,14 +147,14 @@ void Thread_body::executeJob(QByteArray data){
         getDocs(userId);
     }
 
-    c = "GET_DOCUMENT_DATO_URI";
+    c = "OPENDOC_DATO_URI";
     if(text.contains(c.toUtf8())){
         QString uri;
         int userId;
         in_data >> uri;
         in_data >> userId;
 
-        getDocumentDatoUri(uri, userId);
+        openDocDatoUri(uri, userId);
     }
 
     c = "GET_URI";
@@ -210,27 +210,7 @@ void Thread_body::executeJob(QByteArray data){
 
     c = "SEND";
     if(text.contains(c.toUtf8())){
-//        QByteArray action;
-//        do {
-//            CRDT_Message m;
-//            in_data >> m;
-//            std::cout << "if SEND - messaggeAction - "<<m.getAzione()<< std::endl;      // DEBUG
 
-//            emit messageToServer(m, threadId_toQString(thread_id), current_docId);
-
-//            if(!in->commitTransaction()){
-//                in_data >> action;
-//                if(action.isEmpty()){
-//                    break;
-//                }else{
-//                    std::cout << "if SEND - "<<action.toStdString()<< std::endl;        // DEBUG
-//                }
-//            }else{
-//                break;
-//            }
-//        } while (!in->commitTransaction());
-
-        //PRIMA ERA COSì:
         CRDT_Message messaggio;
         in_data >> messaggio;
 
@@ -245,14 +225,7 @@ void Thread_body::executeJob(QByteArray data){
         in_data >> docId;
         in_data >> userId;
 
-        removeFromWorkingUsers(docId, userId);
-
-        QString username = getUsername(userId);
-        QString docName = getDocname(docId);
-
-        mutex_db->lock();
-        database->aggiornaSiteCounter(docName, username, current_siteCounter);
-        mutex_db->unlock();
+        closeDocument(docId, userId);
     }
 
     //    socket->disconnectFromHost();
@@ -303,7 +276,7 @@ QString Thread_body::threadId_toQString(std::thread::id id){
 
 // NOTA: open_new è un flag che indica da dove è stata chiamata la connect
 //       0 --> NEW_DOC
-//       1 --> OPEN_DOC
+//       1 --> OPEN_DOC / OPENDOC_DATO_URI
 // RETURN:
 //       1 --> tutto ok
 //       0 --> errore
@@ -312,14 +285,13 @@ int Thread_body::addToWorkingUsers(int docId, int userId, int open_new){
     int esito = 1;
 
     if(open_new == 0){                              // arrivo da NEW_DOC
-
         // creo nuova riga in workingUsers
         QVector<int> value;
         value.append(userId);
         mutex_workingUsers->lock();
         workingUsers.insert(docId, value);
         mutex_workingUsers->unlock();
-    } else if(open_new == 1){                       // arrivo da OPEN_DOC
+    } else if(open_new == 1){                       // arrivo da OPEN_DOC / OPENDOC_DATO_URI
         CRDT_Symbol s = *new CRDT_Symbol();
         if(workingUsers.contains(docId)){
             // chiave docId presente in workingUsers
@@ -347,7 +319,7 @@ int Thread_body::addToWorkingUsers(int docId, int userId, int open_new){
 }
 
 
-void Thread_body::removeFromWorkingUsers(int docId, int userId){
+bool Thread_body::removeFromWorkingUsers(int docId, int userId){
 
     mutex_workingUsers->lock();
 
@@ -380,17 +352,21 @@ void Thread_body::removeFromWorkingUsers(int docId, int userId){
         } else if(count == 1){
             workingUsers.remove(docId);
             mutex_workingUsers->unlock();
+            return true;
         } else {
             // Nota: caso che *in teoria* non dovrebbe mai verificarsi
             mutex_workingUsers->unlock();
         }
     } else {
-        // non c'è alcuna chiave in workingUsers corrispondente al docId
+        // Non c'è alcuna chiave in workingUsers corrispondente al docId
+        // Nota: caso che *in teoria* non dovrebbe mai verificarsi
         qDebug() << "Oh no, il docId non è presente nella workingUsers... Qualcosa non va...";
         mutex_workingUsers->unlock();
     }
 
     current_docId = -1;
+
+    return false;
 }
 
 
@@ -406,22 +382,33 @@ void Thread_body::newDoc(QString docName, int userId){
         mutex_db->lock();
         if(database->creaDoc(username+"_"+docName)){
             mutex_db->unlock();
-            // Associazione username - nome_doc nella tabella utente_doc del DB
-            int id = openDoc(docName, username, -1, userId, 0);
-            if(id == -1){
+
+            // Creo nuovo docId e inserisco nella mappa dei documents
+            mutex_docs->lock();
+            int docId = documents.size();
+            docId++;
+            documents.insert(username + "_" + docName, docId);
+            mutex_docs->unlock();
+
+            // Creo file fisico nel filesystem attraverso la openDoc
+            if(openDoc(username + "_" + docName, username, docId, userId, 0) == -1){
                 out << "errore";
                 socket->write(blocko);
                 socket->flush();
             }else{
                 mutex_db->lock();
+                // Associazione username - nome_doc nella tabella utente_doc del DB
                 if(database->aggiungiPartecipante(username+"_"+docName, username) != 2){
                     std::vector<int> info = database->recuperaInfoUtenteDoc(username+"_"+docName, username);
                     mutex_db->unlock();
 
+                    // Aggiorno il docId su cui sto iniziando a lavorare
+                    current_docId = docId;
+
                     int siteId = info[0];
                     int siteCounter = info[1];
                     current_siteCounter = siteCounter;
-                    QString ritorno = "ok_"+QString::number(siteId)+"_"+QString::number(siteCounter)+"_"+QString::number(id);
+                    QString ritorno = "ok_"+QString::number(siteId)+"_"+QString::number(siteCounter)+"_"+QString::number(docId);
 
                     out << ritorno.toUtf8();
                     socket->write(blocko);
@@ -439,11 +426,6 @@ void Thread_body::newDoc(QString docName, int userId){
             socket->write(blocko);
             socket->flush();
         }
-
-        // ********************************************************************************
-        // GIULIA TODO: gestire meglio il "ritorno" e le modifiche su file -> crdt
-        // ********************************************************************************
-
     } else {
         // se username non esiste o non c'è la cartella relativa
         out << "errore";
@@ -452,18 +434,11 @@ void Thread_body::newDoc(QString docName, int userId){
     }
 }
 
-//viene passato anche il docId, nel caso possa servire per cose future. Si noti che nel caso di NewDoc
-//è -1!!!
+// banana
+// La funzione openDoc restituisce:
+//    1 --> tutto ok
+//   -1 --> errore
 int Thread_body::openDoc(QString docName, QString username, int docId, int userId, int new_doc){
-
-    if(docId == -1){
-        // Sono arrivato dalla "newDoc"
-        mutex_docs->lock();
-        docId = documents.size();
-        docId++;
-        documents.insert(username + "_" + docName, docId);
-        mutex_docs->unlock();
-    }
 
     // Aggiungo la riga (docId, [userId]) alla mappa degli workingUsers
     int esito = addToWorkingUsers(docId, userId, new_doc);
@@ -471,30 +446,41 @@ int Thread_body::openDoc(QString docName, QString username, int docId, int userI
         return -1;
     }
 
-    // Aggiorno il docId su cui sto iniziando a lavorare
-    current_docId = docId;
+    mutex_files->lock();
+    if(files.contains(docId)){
+        // Qualcuno ha già "aperto" il file (vuol dire che c'è la riga nella QMap)
+        // Salvo il puntatore allo CRDT_ServerEditor
+        crdt = files.value(docId);
+        mutex_files->unlock();
+    } else {
+        // Nessuno ha ancora "aperto" il file
+         mutex_files->unlock();
 
-    // ?????????????????????????????????????????????????????????????????????????????
-    // Creazione del file
-    QString filename = docName;
+        // Creo il percorsoFile con cui accedo al file
+        QString owner = docName.split("_")[0];
+        QString percorsoFile = path+owner+"/"+docName+".txt";
 
-    // DUBBIO SULL'ESTENSIONE DEL FILE!! Al momento li faccio txt
-    QFile file(path+username+"/"+filename+".txt");
-    if (file.open(QIODevice::WriteOnly | QIODevice::Text)){
-        //riesce ad aprire il file creato
-        QTextStream out_file(&file);
-        // ATTENZIONE: per scrivere sul file:
-        // out_file << "The magic number is: " << 49 << "\n";       // DEBUG
+//        qDebug()<<"openDoc -- docName: "<<docName<<", percorsoFile: "<<percorsoFile;          // DEBUG
 
-        // *******************************************************
-        // todo ila&paolo: gestione CRDT
-        // *******************************************************
+        // Creazione nuovo ServerEditor (=> new CRDT_ServerEditor())
+        CRDT_ServerEditor* file = new CRDT_ServerEditor(percorsoFile);
 
+        // Spostamento della proprietà dell'oggetto al master thread (Server)
+        file->moveToThread(server);
 
+        // Creazione nuova riga in files
+        mutex_files->lock();
+        files.insert(docId, file);
+        mutex_files->unlock();
+
+        // Salvo il puntatore allo CRDT_ServerEditor
+        crdt = file;
+
+        // Carico il crdt dal filesystem (o creo un file vuoto nel caso in cui non esista ancora)
+        crdt->loadFromFilesystem();
     }
-    // ?????????????????????????????????????????????????????????????????????????????
 
-    return docId;
+    return 1;
 }
 
 
@@ -800,7 +786,7 @@ void Thread_body::getDocs(int userId){
 }
 
 
-void Thread_body::getDocumentDatoUri(QString uri, int userId){
+void Thread_body::openDocDatoUri(QString uri, int userId){
     QByteArray blocko;
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
@@ -817,12 +803,53 @@ void Thread_body::getDocumentDatoUri(QString uri, int userId){
         mutex_docs->unlock();
 
         //creo sul db l'associazione documento-utente (non owner)
-        QString ritorno = associateDoc(docId, userId);
+        QString ritorno;
+
+        //cerco il nome del doc e dello user
+        QString username = getUsername(userId);
+        QString docName = getDocname(docId);
+
+        if(!username.isEmpty() && !docName.isEmpty()){
+            mutex_db->lock();
+            if(database->aggiungiPartecipante(docName,username)!=2){
+                std::vector<int> info = database->recuperaInfoUtenteDoc(docName, username);
+                mutex_db->unlock();
+
+                int siteId = info[0];
+                int siteCounter = info[1];
+                current_siteCounter = siteCounter;
+
+                if(openDoc(docName, username, docId, userId, 1) == -1){
+                    ritorno = "errore";
+                } else {
+                    ritorno = "ok_"+QString::number(siteId)+"_"+QString::number(siteCounter)+"_"+QString::number(docId);
+                }
+            } else {
+                mutex_db->unlock();
+            }
+        }
 
         if(ritorno.contains("ok")){
+            // Mando al client la stringa di "ok"
             out << ritorno.toUtf8();
+//            socket->write(blocko);
+//            socket->flush();
+
+            crdt->mutex->lock();
+
+            // Recupero il contenuto del vettore _symbols che sta all'interno del ServerEditor
+            QByteArray file = crdt->retrieveCurrentCrdt();
+
+            // Aggiorno il docId su cui sto iniziando a lavorare
+            current_docId = docId;
+
+            crdt->mutex->unlock();
+
+            // Mando al client il contenuto del il contenuto del vettore _symbols
+            out << file;
             socket->write(blocko);
             socket->flush();
+
             //segnalo agli altri contributors che ne faccio parte
             CRDT_Symbol s = *new CRDT_Symbol();
             CRDT_Message *m = new CRDT_Message("NEWCONTRIBUTOR_"+std::to_string(userId), s, userId);
@@ -840,35 +867,6 @@ void Thread_body::getDocumentDatoUri(QString uri, int userId){
     }
 }
 
-
-QString Thread_body::associateDoc(int docId, int userId){
-    //cerco il nome del doc e dello user
-    QString username = getUsername(userId);
-    QString docName = getDocname(docId);
-
-    if(!username.isEmpty() && !docName.isEmpty() && QDir(path+username).exists()){
-        mutex_db->lock();
-        if(database->aggiungiPartecipante(docName,username)!=2){
-            std::vector<int> info = database->recuperaInfoUtenteDoc(docName, username);
-            mutex_db->unlock();
-
-            int siteId = info[0];
-            int siteCounter = info[1];
-            current_siteCounter = siteCounter;
-            QString ritorno = "ok_"+QString::number(siteId)+"_"+QString::number(siteCounter)+"_"+QString::number(docId);
-
-            int id = openDoc(docName, username, docId, userId, 1);
-            if(id == -1){
-                return "errore";
-            } else {
-                return ritorno;
-            }
-        }
-        mutex_db->unlock();
-    }
-
-    return "errore";
-}
 
 void Thread_body::getUri(int docId){
 
@@ -1133,7 +1131,7 @@ void Thread_body::openDocument(int docId, int userId){
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
-    //cerco il nome del doc e dello user
+    // Cerco il nome del doc e dello user
     QString username = getUsername(userId);
     QString docName = getDocname(docId);
 
@@ -1160,15 +1158,67 @@ void Thread_body::openDocument(int docId, int userId){
             mutex_db->lock();
             std::vector<int> info = database->recuperaInfoUtenteDoc(docName, username);
             mutex_db->unlock();
+
             int siteId = info[0];
             int siteCounter = info[1];
             current_siteCounter = siteCounter;
             QString ritorno = "ok_"+QString::number(siteId)+"_"+QString::number(siteCounter);
+
             out << ritorno.toUtf8();
+//            socket->write(blocko);
+//            socket->flush();
+
+            crdt->mutex->lock();
+
+            // Recupero il contenuto del vettore _symbols che sta all'interno del ServerEditor
+            QByteArray file = crdt->retrieveCurrentCrdt();
+
+//            qDebug()<<"FILE: "<<file;           // DEBUG
+
+            // Aggiorno il docId su cui sto iniziando a lavorare
+            current_docId = docId;
+
+            crdt->mutex->unlock();
+
+            // Mando al client il contenuto del il contenuto del vettore _symbols
+            out << file;
             socket->write(blocko);
             socket->flush();
         }
     }
+}
+
+
+void Thread_body::closeDocument(int docId, int userId){
+
+    // Rimuovo l'utente dalla riga degli utenti online su un certo documento
+    bool last = removeFromWorkingUsers(docId, userId);
+
+//    qDebug()<<"**** Sono entrato nella closeDocument... last: "<<last;         // DEBUG
+
+    // Controllo se l'utente che sta chiudendo il documento è l'ultimo utente online su tale documento
+    if(last){
+        mutex_files->lock();
+        files.remove(docId);
+        mutex_files->unlock();
+
+        // Salvo il contenuto attuale del crdt nel filesystem
+        crdt->saveInFilesystem();
+
+        delete crdt;
+    }
+
+    // "Resetto" il puntatore a CRDT_ServerEditor
+    crdt = nullptr;
+
+    // Recupero il nome del documento e il nome dello user
+    QString username = getUsername(userId);
+    QString docName = getDocname(docId);
+
+    // Salvo il site_counter attuale nel DB
+    mutex_db->lock();
+    database->aggiornaSiteCounter(docName, username, current_siteCounter);
+    mutex_db->unlock();
 }
 
 
@@ -1187,6 +1237,11 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         return;
     }
     if(thread_id_string == thread_id_sender){
+
+        if(m.getAzione() == "insert" || m.getAzione() == "delete"){
+            crdt->process(m);
+        }
+
         if(m.getAzione() == "insert"){
             QString str = QString::fromStdString(m.getSimbolo().getIDunivoco());
             current_siteCounter = str.split("_")[1].toInt();

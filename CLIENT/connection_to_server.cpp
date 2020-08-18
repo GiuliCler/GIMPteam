@@ -6,7 +6,7 @@
 #include <QSet>
 #include "CRDT/crdt_message.h"
 
-connection_to_server::connection_to_server(QString port, QString ipAddress): readBuffer(), readBuffer_size(0){
+connection_to_server::connection_to_server(QString port, QString ipAddress): fileTMP(), readBuffer(), readBuffer_size(0){
     this->tcpSocket=new QTcpSocket(this);
     this->port = port;
     this->ipAddress = ipAddress;
@@ -21,6 +21,10 @@ connection_to_server::connection_to_server(QString port, QString ipAddress): rea
 QTcpSocket *connection_to_server::getSocket(){
     qDebug()<<"FUCKING GET SOCKET!!!";      // DEBUG
     return this->tcpSocket;
+}
+
+QByteArray connection_to_server::getFileTMP(){
+    return std::move(fileTMP);
 }
 
 int connection_to_server::requestTryLogOut(int userId)
@@ -205,6 +209,67 @@ std::string connection_to_server::openDoc(int userId, int docId)
     if(!writeData(buffer))
         return "errore";
 
+    QByteArray file;
+    QByteArray esito;
+    QDataStream in;
+    in.setDevice(this->tcpSocket);
+    in.setVersion(QDataStream::Qt_5_12);
+
+    do {
+        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
+            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+            return "errore";
+        }
+
+        in.startTransaction();
+        in >> esito;
+    } while (!in.commitTransaction());
+
+    QString good = "ok";
+    QString inesist = "doc-inesistente";
+    if(esito.contains(good.toUtf8())){
+
+        in >> file;
+
+        // RiempIo [ >:( ] il file temporaneo con il file attuale che sto aprendo
+        fileTMP = file;
+
+        return esito.toStdString();
+    }else if(esito.contains(inesist.toUtf8())){
+//        emit unavailableSharedDocument(docId);
+        return "errore";
+    }
+
+    return "errore";
+}
+
+
+std::string connection_to_server::requestDocDatoUri(QString uri, int userId){
+    qDebug()<<"OPENDOC_DATO_URI";      // DEBUG
+
+//    this->tcpSocket->abort();
+    if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+
+        if (!tcpSocket->waitForConnected(Timeout)) {
+            emit error(tcpSocket->error(), tcpSocket->errorString());
+            return "errore";
+        }
+    }
+    QByteArray buffer;
+    QDataStream out(&buffer, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+    QByteArray comando = "OPENDOC_DATO_URI";
+
+    out << comando;
+    out << uri;
+    out << userId;
+
+    if(!writeData(buffer))
+        return "errore";
+
+    QByteArray esito;
+    QByteArray file;
     QDataStream in;
     in.setDevice(this->tcpSocket);
     in.setVersion(QDataStream::Qt_5_12);
@@ -215,22 +280,23 @@ std::string connection_to_server::openDoc(int userId, int docId)
         }
 
         in.startTransaction();
-        in >> buffer;
+        in >> esito;
     } while (!in.commitTransaction());
 
-    QString c = "ok";
-    QString d = "doc-inesistente";
-    if(buffer.contains(c.toUtf8())){
-        return buffer.toStdString();
-    }else if(buffer.contains(d.toUtf8())){
-//        emit unavailableSharedDocument(docId);
+    QString good = "ok";
+    if(esito.contains(good.toUtf8())){
+
+        in >> file;
+
+        // Riempo il file temporaneo con il file attuale che sto aprendo
+        fileTMP = file;
+
+        return esito.toStdString();
+    }else{
         return "errore";
     }
-
-    return "errore";
-
-    //TODO: il documento viene ritornato e aperto => gestione con CRDT                  // todo ila&paolo
 }
+
 
 std::string connection_to_server::requestDocName(int docId){
 
@@ -377,53 +443,6 @@ long connection_to_server::requestUpdateAccount( int userId, QString password, Q
         return 0;
     }else{
         return -1;
-    }
-}
-
-std::string connection_to_server::requestDocDatoUri(QString uri, int userId){
-    qDebug()<<"GET_DOCUMENT_DATO_URI";      // DEBUG
-
-//    this->tcpSocket->abort();
-    if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
-        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
-
-        if (!tcpSocket->waitForConnected(Timeout)) {
-            emit error(tcpSocket->error(), tcpSocket->errorString());
-            return "errore";
-        }
-    }
-    QByteArray buffer;
-    QDataStream out(&buffer, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_12);
-    QByteArray comando = "GET_DOCUMENT_DATO_URI";
-
-    out << comando;
-    out << uri;
-    out << userId;
-
-    if(!writeData(buffer))
-        return "errore";
-
-    //ora attendo una risposta dal server, sul login al db
-    QByteArray file;
-    QDataStream in;
-    in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_5_12);
-    do {
-        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
-            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-            return "errore";
-        }
-
-        in.startTransaction();
-        in >> file;
-    } while (!in.commitTransaction());
-
-    QString c = "ok";
-    if(file.contains(c.toUtf8())){
-        return file.toStdString();
-    }else{
-        return "errore";
     }
 }
 

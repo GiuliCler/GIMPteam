@@ -9,6 +9,18 @@
 #include <cmath>
 
 CRDT_SharedEditor::CRDT_SharedEditor(CRDT_controller *parent, connection_to_server *connection, int siteId, int siteCounter): parent(parent), connection(connection), _siteId(siteId), _counter(siteCounter){
+
+        // Recupero il file da caricare nell'editor
+        int pos = 0;
+        QByteArray file = connection->getFileTMP();
+        QDataStream data(&file, QIODevice::ReadOnly);
+        data >> _symbols;
+
+        // Aggiorno lo shared editor
+        for(auto it = _symbols.begin();it<_symbols.end();it++, pos++) {
+            parent->remoteInsert(pos, it->getCarattere(), it->getFormat(), it->getAlignment());
+        }
+
         QObject::connect(connection, &connection_to_server::sigProcessMessage, this, &CRDT_SharedEditor::process);
 }
 
