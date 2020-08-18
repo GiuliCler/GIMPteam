@@ -33,6 +33,7 @@ public:
     void localErase(int index);
     int getLength();
     std::string to_string();        // FUNZIONI PER IL DEBUG
+    Qt::Alignment getAlignAt(int pos);
 
 private slots:
     void process(const CRDT_Message& m);

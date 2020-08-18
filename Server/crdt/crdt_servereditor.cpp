@@ -102,7 +102,7 @@ int CRDT_ServerEditor::confrontaPos(QVector<int> pos, QVector<int> currentPos){
 void CRDT_ServerEditor::saveInFilesystem(){
 //    qDebug()<<"**** Sono entrato nella saveInFilesystem...";           // DEBUG
     QFile file(percorsoFile);
-    if (file.open(QIODevice::WriteOnly | QIODevice::Text)){
+    if (file.open(QIODevice::WriteOnly)){
 //        qDebug()<<"**** Sono riuscito ad aprire il file...";           // DEBUG
         mutex->lock();
         QDataStream out(&file);
@@ -112,22 +112,24 @@ void CRDT_ServerEditor::saveInFilesystem(){
 //           std::cout<<"saveInFilesystem --"<<(*i).getCarattere().toLatin1()<<std::endl;              // DEBUG
 
         out << this->_symbols;
+        file.close();
         mutex->unlock();
     }
 }
 
 
 void CRDT_ServerEditor::loadFromFilesystem(){
-    qDebug()<<"**** Sono entrato nella loadFromFilesystem...";           // DEBUG
+//    qDebug()<<"**** Sono entrato nella loadFromFilesystem...";           // DEBUG
     QFile file(percorsoFile);
-    if (file.open(QIODevice::ReadWrite | QIODevice::Text)){
+    if (file.open(QIODevice::ReadWrite)){
         mutex->lock();
         QDataStream in(&file);
         in.setVersion(QDataStream::Qt_5_12);
         this->_symbols.clear();     // Svuoto il vettore di _symbols per sicurezza (Nota: non dovrebbe servire *in teoria*)
         in >> this->_symbols;
-        for(auto i=_symbols.begin(); i<_symbols.end(); i++)                                          // DEBUG
-           std::cout<<"**** loadFromFilesystem --"<<(*i).getCarattere().toLatin1()<<std::endl;              // DEBUG
+//        for(auto i=_symbols.begin(); i<_symbols.end(); i++)                                          // DEBUG
+//           std::cout<<"**** loadFromFilesystem --"<<(*i).getCarattere().toLatin1()<<std::endl;              // DEBUG
+        file.close();
         mutex->unlock();
     }
 }

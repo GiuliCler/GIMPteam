@@ -261,3 +261,9 @@ std::string CRDT_SharedEditor::print(){
 
     return posizioni;
 }
+
+
+Qt::Alignment CRDT_SharedEditor::getAlignAt(int pos){
+    return _symbols[pos].getAlignment();
+}
+

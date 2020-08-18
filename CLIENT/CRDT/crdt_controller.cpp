@@ -229,6 +229,29 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
         textEdit.setTextCursor(current);
     }
+
+//    std::cout << "At end: " << textEdit.textCursor().atEnd() << "; Alignment: " << textEdit.alignment() /* << "; crdt-al: " << crdt.getAlignAt(textEdit.textCursor().position()) */ << std::endl;
+    if(!textEdit.textCursor().atEnd() &&  textEdit.alignment() != crdt.getAlignAt(textEdit.textCursor().position())){
+//        std::cout << "At end: " << textEdit.textCursor().atEnd() << "; Alignment: " << textEdit.alignment() << "; crdt-al: " << crdt.getAlignAt(textEdit.textCursor().position()) << std::endl;
+        QTextCursor current = textEdit.textCursor();
+        pos = current.position();
+        QTextCursor tmp = current;
+        //cancello dal fondo del blocco a tmp
+        int cnt = 0;
+        tmp.movePosition(QTextCursor::EndOfBlock);
+        for(int i = tmp.position() - 1; i >= pos ; --i, ++cnt)
+            crdt.localErase(i);
+
+        tmp.setPosition(pos+1);
+        // inserisco da tmp a fondo del blocco
+        for(int i = pos; i < pos + cnt; ++i, tmp.movePosition(QTextCursor::NextCharacter)){
+            textEdit.setTextCursor(tmp);
+            //std::cout << "Cursor position: " << textEdit.textCursor().position() << std::endl; // ---- DEBUG
+            crdt.localInsert(i, textEdit.toPlainText().at(i), textEdit.currentCharFormat(), textEdit.alignment());
+        }
+//        crdt.print();
+        textEdit.setTextCursor(current);
+    }
 }
 
 void CRDT_controller::clipboardDataChanged(){
