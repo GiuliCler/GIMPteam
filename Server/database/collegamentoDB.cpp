@@ -174,13 +174,23 @@ int CollegamentoDB::creaDoc(QString nomeDOC){
     QString uri = creaURI(nomeDOC);
 
     std::string query = "INSERT INTO doc(nome_doc, uri) VALUES(:doc, :ur)";
-    QSqlQuery ris(QSqlDatabase::database(connectionName));
+    std::string query1 = "SELECT * FROM doc WHERE nome_doc=:doc";
+    QSqlQuery ris(QSqlDatabase::database(connectionName)), ris1(QSqlDatabase::database(connectionName));
     ris.prepare(QString::fromStdString(query));
+    ris1.prepare(QString::fromStdString(query1));
     ris.bindValue(":doc", nomeDOC);
     ris.bindValue(":ur", uri);
+    ris1.bindValue(":doc", nomeDOC);
 
-    if(!ris.exec())
+    ris1.exec();
+    if(ris1.size() == 0){
+        /* Tutto ok: non esiste ancora alcuna riga all'interno della tabella DOC con il nomeDOC specificato */
+        if(!ris.exec())
+            return 0;
+    } else {
+        /* Errore: esiste già una riga all'interno della tabella DOC con il nomeDOC specificato */
         return 0;
+    }
 
     return 1;
 }
