@@ -17,6 +17,7 @@ private:
     GIMPdocs *gimpDocs;
     GUI_Editor *parent;
     GUI_MyTextEdit& textEdit;
+    bool highlightUsers;
     CRDT_SharedEditor crdt;
     menuTools lastOp;
     bool rememberFormatChange;
@@ -59,6 +60,9 @@ private slots:
     void clipboardDataChanged();
     void undoAvailableChanged(bool available);
     void redoAvailableChanged(bool available);
+
+public slots:
+    void setUsersColors(bool value);
 
 signals:
     void menuSet(menuTools set);

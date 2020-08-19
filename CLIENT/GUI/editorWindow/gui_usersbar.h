@@ -38,6 +38,9 @@ private:
     inline static QString getOnlineAreaName() {return QString("onlineIconsScrollArea");}
     inline static QString getContributorsAreaName() {return QString("contributorIconsScrollArea");}
     QLabel *getUserIcon(QColor color, QString nickname, QString iconId);
+
+signals:
+    void highlightingUsers(bool value);
 };
 
 #endif // GUI_USERSBAR_H

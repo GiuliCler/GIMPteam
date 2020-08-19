@@ -1,5 +1,6 @@
 #include "crdt_controller.h"
 #include "crdt_message.h"
+#include "GUI/editorWindow/gui_usersbar.h"
 #include <QClipboard>
 #include <QMimeData>
 #include <iostream>
@@ -12,7 +13,7 @@
         rememberFormatChange = true; \
     }
 
-CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyTextEdit& textEdit, int siteId, int siteCounter): gimpDocs(gimpdocs), parent(parent), textEdit(textEdit), crdt{this, gimpDocs->getConnection(), siteId, siteCounter},
+CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyTextEdit& textEdit, int siteId, int siteCounter): gimpDocs(gimpdocs), parent(parent), textEdit(textEdit), highlightUsers(false), crdt{this, gimpDocs->getConnection(), siteId, siteCounter},
                         rememberFormatChange(false), validateSpin(true), validateFontCombo(true) {
     QObject::connect(this->parent, &GUI_Editor::menuTools_event, this, &CRDT_controller::menuCall);
     QObject::connect(this, &CRDT_controller::menuSet, parent, &GUI_Editor::setMenuToolStatus);
@@ -25,9 +26,9 @@ CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyT
     QObject::connect(QApplication::clipboard(), &QClipboard::dataChanged, this, &CRDT_controller::clipboardDataChanged);
     QObject::connect(textEdit.document(), &QTextDocument::undoAvailable, this, &CRDT_controller::undoAvailableChanged);
     QObject::connect(textEdit.document(), &QTextDocument::redoAvailable, this, &CRDT_controller::redoAvailableChanged);
+    QObject::connect(parent->childUsersBar, &GUI_UsersBar::highlightingUsers, this, &CRDT_controller::setUsersColors);
 
     parent->childToolsBar->ui->spinBox->setSpecialValueText("Default");
-
 }
 
 void CRDT_controller::setLeft(){
@@ -115,6 +116,44 @@ void CRDT_controller::setCurrentTextColor(QColor color){
     textEdit.setFocus();
 }
 
+void CRDT_controller::setUsersColors(bool value){
+
+    // Setto il valore di highlightUsers al valore di GUI_Editor->usersColors
+    highlightUsers = value;
+
+//    qDebug()<<"setUsersColors chiamata .. flag: "<< highlightUsers;     // DEBUG
+
+    bool processingMessage_prev = processingMessage;
+    processingMessage = true;
+
+    QTextCursor current = textEdit.textCursor();
+    QTextCursor tmp{textEdit.document()};
+    tmp.setPosition(0);
+
+    for(int pos=0; !tmp.atEnd(); tmp.setPosition(++pos)){
+
+        tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+        textEdit.setTextCursor(tmp);
+
+        // TODO banana (vedi riga commentata)
+        // Nota al TODO: QColor *getUserColor(int userId);  in SharedEditor.h deve diventare privata e con int siteId (Mirko)
+
+        if(highlightUsers){                 // L'utente vuole vedere il testo colorato con il colore di ogni utente
+//            textEdit.setTextBackgroundColor(parent->getUserColor(crdt.getSiteIdAt(pos)));           // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
+              textEdit.setTextBackgroundColor(QColor{0, 255, 0});       // TODO: TEMPORANEO, DA RIMUOVERE
+        } else {                            // L'utente non vuole vedere più il testo colorato con il colore di ogni utente
+            textEdit.setTextBackgroundColor(QColor{255, 255, 255});     // Setto il background color a "white"
+        }
+    }
+
+    textEdit.setTextCursor(current);
+
+    // Cancello UNDO e REDO stacks
+    textEdit.document()->clearUndoRedoStacks();
+
+    processingMessage = processingMessage_prev;
+}
+
 void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
     BACKWARD_SEL(
                 emit menuSet(tmp.charFormat().fontItalic() ? menuTools::ITALIC_ON : menuTools::ITALIC_OFF);
@@ -182,8 +221,8 @@ void CRDT_controller::cursorMoved(){
     }
 }
 void CRDT_controller::selectionChanged(){
-    if(processingMessage)
-        return;
+//    if(processingMessage)                         // TODO banana: Paolo non sa se è da togliere o no...........
+//        return;
 
     if(rememberFormatChange){
         rememberFormatChange = false;
@@ -203,13 +242,15 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     if(processingMessage)
         return;
 
+    textEdit.textCursor().joinPreviousEditBlock();
+
     if(pos + del - 1 > crdt.getLength() - 1){
         del--;
         add--;
     }
 
     //    DEBUG: get some info on what has been modified
-    std::cout << "pos: " << pos << "; add: " << add << "; del: " << del << std::endl;
+//    std::cout << "pos: " << pos << "; add: " << add << "; del: " << del << std::endl;
 
     if(del > 0){
         for(int i = pos + del - 1; i >= pos; --i)
@@ -219,6 +260,12 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     if(add > 0){
         QTextCursor current = textEdit.textCursor();
         QTextCursor tmp{textEdit.document()};
+
+        tmp.setPosition(pos);
+        tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, add);
+        textEdit.setTextCursor(tmp);
+        textEdit.setTextBackgroundColor(QColor{255, 255, 255});     // Setto il background a "white"
+
         tmp.setPosition(pos+1);
 
         for(int i = pos; i < pos + add; ++i, tmp.movePosition(QTextCursor::NextCharacter)){
@@ -230,21 +277,27 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         textEdit.setTextCursor(current);
     }
 
+    int cnt = 0;
+
 //    std::cout << "At end: " << textEdit.textCursor().atEnd() << "; Alignment: " << textEdit.alignment() /* << "; crdt-al: " << crdt.getAlignAt(textEdit.textCursor().position()) */ << std::endl;
     if(!textEdit.textCursor().atEnd() &&  textEdit.alignment() != crdt.getAlignAt(textEdit.textCursor().position())){
 //        std::cout << "At end: " << textEdit.textCursor().atEnd() << "; Alignment: " << textEdit.alignment() << "; crdt-al: " << crdt.getAlignAt(textEdit.textCursor().position()) << std::endl;
         QTextCursor current = textEdit.textCursor();
-        pos = current.position();
+        int pos1 = current.position();
         QTextCursor tmp = current;
         //cancello dal fondo del blocco a tmp
-        int cnt = 0;
         tmp.movePosition(QTextCursor::EndOfBlock);
-        for(int i = tmp.position() - 1; i >= pos ; --i, ++cnt)
+        for(int i = tmp.position() - 1; i >= pos1 ; --i, ++cnt)
             crdt.localErase(i);
 
-        tmp.setPosition(pos+1);
+        tmp.setPosition(pos1);
+        tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, cnt);
+        textEdit.setTextCursor(tmp);
+        textEdit.setTextBackgroundColor(QColor{255, 255, 255});     // Setto il background a "white"
+
+        tmp.setPosition(pos1+1);
         // inserisco da tmp a fondo del blocco
-        for(int i = pos; i < pos + cnt; ++i, tmp.movePosition(QTextCursor::NextCharacter)){
+        for(int i = pos1; i < pos1 + cnt; ++i, tmp.movePosition(QTextCursor::NextCharacter)){
             textEdit.setTextCursor(tmp);
             //std::cout << "Cursor position: " << textEdit.textCursor().position() << std::endl; // ---- DEBUG
             crdt.localInsert(i, textEdit.toPlainText().at(i), textEdit.currentCharFormat(), textEdit.alignment());
@@ -252,6 +305,19 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 //        crdt.print();
         textEdit.setTextCursor(current);
     }
+
+    if(highlightUsers){
+        QTextCursor current = textEdit.textCursor();
+        QTextCursor tmp{textEdit.document()};
+        tmp.setPosition(pos);
+        tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, add+cnt);
+        textEdit.setTextCursor(tmp);
+//        textEdit.setTextBackgroundColor(parent->getUserColor(crdt.getSiteIdAt(pos)));           // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato   banana
+        textEdit.setTextBackgroundColor(QColor{255, 0, 0});       // TODO: TEMPORANEO, DA RIMUOVERE
+        textEdit.setTextCursor(current);
+    }
+
+    textEdit.textCursor().endEditBlock();
 }
 
 void CRDT_controller::clipboardDataChanged(){
@@ -315,42 +381,60 @@ void CRDT_controller::menuCall(menuTools op){
 
 void CRDT_controller::remoteDelete(int pos){
 
-    std::cout<<"EHI! SONO NELLA REMOTE DELETE! Position: "<< pos <<std::endl;
+//    std::cout<<"EHI! SONO NELLA REMOTE DELETE! Position: "<< pos <<std::endl;
 
+    bool processingMessage_prev = processingMessage;
     processingMessage = true;
+
+    textEdit.textCursor().beginEditBlock();
+
     QTextCursor current = textEdit.textCursor();
 
     QTextCursor tmp{textEdit.document()};
     tmp.setPosition(pos);
     textEdit.setTextCursor(tmp);
 
-//    textEdit.textCursor().setPosition(pos);
     textEdit.textCursor().deleteChar();
 
     textEdit.setTextCursor(current);
-    processingMessage = false;
+
+    textEdit.textCursor().endEditBlock();
+
+    processingMessage = processingMessage_prev;
 }
 
 void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align){
 
-    std::cout<<"EHI! SONO NELLA REMOTE INSERT! Char: "<< c.toLatin1() <<std::endl;
+//    std::cout<<"EHI! SONO NELLA REMOTE INSERT! Char: "<< c.toLatin1() <<std::endl;
 
+    bool processingMessage_prev = processingMessage;
     processingMessage = true;
+
+    textEdit.textCursor().beginEditBlock();
+
     QTextCursor current = textEdit.textCursor();
 
     QTextCursor tmp{textEdit.document()};
     tmp.setPosition(pos);
     textEdit.setTextCursor(tmp);
 
-//    textEdit.textCursor().setPosition(pos);        //   VECCHIA setPosition
-//    std::cout<<"AAAA TextEdit... cursor: "<<textEdit.textCursor().position()<<", pos: "<<pos<<std::endl;        // DEBUG -----
+//    std::cout<<"AAAA TextEdit... cursor: "<<textEdit.textCursor().position()<<", pos: "<<pos<<std::endl;        // DEBUG
     QTextBlockFormat blockFmt{textEdit.textCursor().blockFormat()};
+
+    if(highlightUsers){
+//        fmt.setBackground(parent->getUserColor(crdt.getSiteIdAt(pos)));     banana
+//        qDebug()<<"highlightUsers: "<<highlightUsers<<", background color: "<<fmt.background().color();        // DEBUG
+        fmt.setBackground(Qt::blue);        // TODO: da rimuovere
+    }
+
     textEdit.textCursor().insertText(c, fmt);
     blockFmt.setAlignment(align);
     textEdit.textCursor().mergeBlockFormat(blockFmt);
-//    std::cout << "Block End: " << textEdit.textCursor().atBlockEnd() << "; Alignment: " << align << std::endl;
-
+//    std::cout << "Block End: " << textEdit.textCursor().atBlockEnd() << "; Alignment: " << align << std::endl;    // DEBUG
 
     textEdit.setTextCursor(current);
-    processingMessage = false;
+
+    textEdit.textCursor().endEditBlock();
+
+    processingMessage = processingMessage_prev;
 }

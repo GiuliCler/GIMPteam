@@ -120,6 +120,7 @@ bool GUI_UsersBar::isContributor(int userId){
 
 void GUI_UsersBar::on_showColorsPushButton_clicked(){
     editorParent->usersColors = true;
+    emit highlightingUsers(true);
 
     ui->hideColorsPushButton->show();
     ui->contributorUsersWidget->show();
@@ -128,6 +129,7 @@ void GUI_UsersBar::on_showColorsPushButton_clicked(){
 
 void GUI_UsersBar::on_hideColorsPushButton_clicked(){
     editorParent->usersColors = false;
+    emit highlightingUsers(false);
 
     ui->showColorsPushButton->show();
     ui->contributorUsersWidget->hide();

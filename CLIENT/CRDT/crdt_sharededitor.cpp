@@ -16,6 +16,9 @@ CRDT_SharedEditor::CRDT_SharedEditor(CRDT_controller *parent, connection_to_serv
         QDataStream data(&file, QIODevice::ReadOnly);
         data >> _symbols;
 
+//        if(!_symbols.isEmpty())                                                                                 // DEBUG
+//            qDebug()<<"Colore all'apertura del documento: "<< _symbols[0].getFormat().background().color();     // DEBUG
+
         // Aggiorno lo shared editor
         for(auto it = _symbols.begin();it<_symbols.end();it++, pos++) {
             parent->remoteInsert(pos, it->getCarattere(), it->getFormat(), it->getAlignment());
@@ -28,10 +31,14 @@ int CRDT_SharedEditor::getSiteId() const{
     return this->_siteId;
 }
 
+int CRDT_SharedEditor::getSiteIdAt(int pos){
+    return _symbols[pos].getSiteId();
+}
+
 void CRDT_SharedEditor::localInsert(int index, QChar value, QTextCharFormat fmt, Qt::Alignment align){
     QVector<int> posizione, posPREV, posNEXT;
 
-    std::cout << "Adding " << value.toLatin1() << " to CRDT in pos " << index << std::endl; // DEBUG
+//    std::cout << "Adding " << value.toLatin1() << " to CRDT in pos " << index << std::endl; // DEBUG
 
     if(index<0 || index>_symbols.size())
         throw std::exception();     //TODO eccezioniiii
@@ -135,7 +142,7 @@ void CRDT_SharedEditor::localErase(int index){
     /* Recupero dal vettore di simboli il simbolo da eliminare */
     CRDT_Symbol simbolo = _symbols[index];
 
-    std::cout<< "Deleting "<< simbolo.getCarattere().toLatin1() <<" -- "<<simbolo.getIDunivoco()<<std::endl;            // DEBUG ----
+//    std::cout<< "Deleting "<< simbolo.getCarattere().toLatin1() <<" -- "<<simbolo.getIDunivoco()<<std::endl;            // DEBUG ----
 
     /* Elimino il simbolo */
     auto it = _symbols.begin()+index;
