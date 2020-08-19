@@ -62,6 +62,8 @@ private slots:
 
 signals:
     void menuSet(menuTools set);
+    //MIRKO: mi servirebbe che emettessi questa
+    //void updateCursorPosition(int userId, QPoint position);
 };
 
 #endif // CRDT_CONTROLLER_H

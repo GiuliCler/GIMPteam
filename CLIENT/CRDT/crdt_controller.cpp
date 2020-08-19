@@ -4,6 +4,9 @@
 #include <QMimeData>
 #include <iostream>
 
+//MIRKO: ti servirà anche questa
+//#include <QScrollBar>
+
 #define BACKWARD_SEL(action) \
     if(textEdit.textCursor().hasSelection() && textEdit.textCursor().position() < textEdit.textCursor().anchor()){ \
         QTextCursor tmp(textEdit.textCursor()); \
@@ -327,6 +330,10 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
     textEdit.textCursor().mergeBlockFormat(blockFmt);
 //    std::cout << "Block End: " << textEdit.textCursor().atBlockEnd() << "; Alignment: " << align << std::endl;
 
+    //MIRKO: l'idea è questa. Scegli tu come lanciarlo e se fare delle modifiche
+    //QPoint position = QPoint (textEdit.cursorRect().topLeft().x(), textEdit.cursorRect().topLeft().y() + textEdit.verticalScrollBar()->value());
+    //Qui ho messo l'id sbagliato perchè non so dove reperire quello giusto. L'importante era fare un tentativo
+    //emit updateCursorPosition(gimpDocs->userid, position);
 
     textEdit.setTextCursor(current);
     processingMessage = false;

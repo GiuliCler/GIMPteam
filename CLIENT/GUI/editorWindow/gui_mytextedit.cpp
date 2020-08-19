@@ -56,5 +56,8 @@ void GUI_MyTextEdit::removeUserCursor(int userId){
 }
 
 void GUI_MyTextEdit::on_updateCursorPosition_emitted(int userId, QPoint position){
+    if(cursorsMap.find(userId) == cursorsMap.end())
+        return;
 
+    cursorsMap[userId]->updatePosition(position);
 }
