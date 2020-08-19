@@ -26,6 +26,7 @@ void GUI_MyTextEdit::setupTextEdit(){
 
     currentCharFormatChanged(this->currentCharFormat());
     cursorPositionChanged();
+    this->document()->clearUndoRedoStacks();
 }
 
 void GUI_MyTextEdit::paintEvent(QPaintEvent *event)

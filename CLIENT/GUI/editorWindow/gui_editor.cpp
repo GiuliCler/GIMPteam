@@ -104,7 +104,6 @@ void GUI_Editor::connectMenuBarActions(){
 void GUI_Editor::setUpEditor(){
     //modifico il nome della finestra
     gimpParent->setWindowTitle("GIMPdocs - " + docName);
-    usersColors = false;        // TODO banana: Mirko conferma che non viene fatta questa operazione da altre parti?
     childMyTextEdit->setupTextEdit();
 }
 
