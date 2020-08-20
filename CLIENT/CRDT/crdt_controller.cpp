@@ -4,6 +4,7 @@
 #include <QClipboard>
 #include <QMimeData>
 #include <iostream>
+#include <QScrollBar>
 
 #define BACKWARD_SEL(action) \
     if(textEdit.textCursor().hasSelection() && textEdit.textCursor().position() < textEdit.textCursor().anchor()){ \
@@ -384,7 +385,7 @@ void CRDT_controller::menuCall(menuTools op){
     }
 }
 
-void CRDT_controller::remoteDelete(int pos){
+void CRDT_controller::remoteDelete(int pos, int id_sender){
 
     std::cout<<"EHI! SONO NELLA REMOTE DELETE! Position: "<< pos <<std::endl;
 
@@ -399,6 +400,9 @@ void CRDT_controller::remoteDelete(int pos){
     tmp.setPosition(pos);
     textEdit.setTextCursor(tmp);
 
+    QPoint position = QPoint (textEdit.cursorRect().topLeft().x(), textEdit.cursorRect().topLeft().y() + textEdit.verticalScrollBar()->value());
+    emit updateCursorPosition(id_sender, position);
+
     textEdit.textCursor().deleteChar();         // ananas DA MODIFICARE: tmp al posto textEdit.textCursor()
 
     textEdit.setTextCursor(current);
@@ -408,7 +412,7 @@ void CRDT_controller::remoteDelete(int pos){
     processingMessage = processingMessage_prev;
 }
 
-void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align){
+void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align, int id_sender){
 
     std::cout<<"EHI! SONO NELLA REMOTE INSERT! Char: "<< c.toLatin1() <<std::endl;
 
@@ -439,6 +443,9 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
     }
 //    std::cout << "Block End: " << textEdit.textCursor().atBlockEnd() << "; Alignment: " << align << std::endl;
 
+
+    QPoint position = QPoint (textEdit.cursorRect().topLeft().x(), textEdit.cursorRect().topLeft().y() + textEdit.verticalScrollBar()->value());
+    emit updateCursorPosition(id_sender, position);
 
     textEdit.setTextCursor(current);                      // ananas DA TOGLIERE
 

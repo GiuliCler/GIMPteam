@@ -48,8 +48,8 @@ private:
 public:
     CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyTextEdit& textEdit, int siteId, int siteCounter);
     void setCurrentTextColor(QColor color);
-    void remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align);
-    void remoteDelete(int pos);
+    void remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align, int id_sender);
+    void remoteDelete(int pos, int id_sender);
 
 private slots:
     void menuCall(menuTools op);
@@ -66,6 +66,7 @@ public slots:
 
 signals:
     void menuSet(menuTools set);
+    void updateCursorPosition(int userId, QPoint position);
 };
 
 #endif // CRDT_CONTROLLER_H

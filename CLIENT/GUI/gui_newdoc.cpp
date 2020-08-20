@@ -46,7 +46,8 @@ void GUI_Newdoc::on_createPushButton_clicked()
     if(codedParameters.compare("errore") == 0)
         return;
 
-    int siteId = codedParameters.split("_").at(1).toInt();
+//    int siteId = codedParameters.split("_").at(1).toInt();            // VERSIONE PRECEDENTE IN CUI AVEVAMO userId != siteId
+    int siteId = gimpParent->userid;
     int siteCounter = codedParameters.split("_").at(2).toInt();
     int documentId = codedParameters.split("_").at(3).toInt();
 
@@ -70,7 +71,8 @@ void GUI_Newdoc::on_openURIPushButton_clicked()
     if(codedParameters.compare("errore") == 0)
         return;
 
-    int siteId = codedParameters.split("_").at(1).toInt();
+//    int siteId = codedParameters.split("_").at(1).toInt();            // VERSIONE PRECEDENTE IN CUI AVEVAMO userId != siteId
+    int siteId = gimpParent->userid;
     int siteCounter = codedParameters.split("_").at(2).toInt();
     int documentId = codedParameters.split("_").at(3).toInt();
 

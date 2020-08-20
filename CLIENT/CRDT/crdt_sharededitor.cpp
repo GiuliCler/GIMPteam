@@ -21,7 +21,7 @@ CRDT_SharedEditor::CRDT_SharedEditor(CRDT_controller *parent, connection_to_serv
 
         // Aggiorno lo shared editor
         for(auto it = _symbols.begin();it<_symbols.end();it++, pos++) {
-            parent->remoteInsert(pos, it->getCarattere(), it->getFormat(), it->getAlignment());
+            parent->remoteInsert(pos, it->getCarattere(), it->getFormat(), it->getAlignment(), siteId);
         }
 
         QObject::connect(connection, &connection_to_server::sigProcessMessage, this, &CRDT_SharedEditor::process);
@@ -181,7 +181,7 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
 
 //            qDebug()<<"AAAAAAA "<<count;        // DEBUG ----------
 
-            parent->remoteInsert(count, simbolo.getCarattere(), simbolo.getFormat(), simbolo.getAlignment());
+            parent->remoteInsert(count, simbolo.getCarattere(), simbolo.getFormat(), simbolo.getAlignment(), simbolo.getSiteId());
 
         } else if(azione == "delete"){           /* SIMBOLO CANCELLATO */
 //            std::cout<<"(dispatch nell'ed "<<_siteId<<"): elimino un carattere di id "<<simbolo.getIDunivoco()<<std::endl;     // DEBUG ------
@@ -190,7 +190,7 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
                 //std::cout<<s.getCarattere()<<" "<<s.getIDunivoco()<<std::endl;      // DEBUG -------------
                 if((s.getPosizione()==simbolo.getPosizione()) && (s.getIDunivoco()==simbolo.getIDunivoco())) {
                     _symbols.erase(it);
-                    parent->remoteDelete(it - _symbols.begin());
+                    parent->remoteDelete(it - _symbols.begin(), simbolo.getSiteId());
                     break;
                 }
             }
