@@ -1271,7 +1271,7 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
 
         if(m.getAzione() == "insert"){
             QString str = QString::fromStdString(m.getSimbolo().getIDunivoco());
-            current_siteCounter = str.split("_")[1].toInt();
+            current_siteCounter = str.split("_")[1].toInt() + 1;
         }
         return;
     }

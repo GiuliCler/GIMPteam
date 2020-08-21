@@ -305,7 +305,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
             //std::cout << "Cursor position: " << textEdit.textCursor().position() << std::endl;                            // DEBUG
             crdt.localInsert(i, textEdit.toPlainText().at(i), textEdit.currentCharFormat(), textEdit.alignment());
         }
-//        crdt.print();                                 // DEBUGs
+//        crdt.print();                                 // DEBUG
         textEdit.setTextCursor(current);
     }
 
@@ -313,10 +313,14 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         QTextCursor current = textEdit.textCursor();
         QTextCursor tmp{textEdit.document()};
         tmp.setPosition(pos);
-        tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, add+cnt);
-        textEdit.setTextCursor(tmp);
-        textEdit.setTextBackgroundColor(*(parent->getUserColor(crdt.getSiteIdAt(pos))));           // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
-//        textEdit.setTextBackgroundColor(QColor{255, 0, 0});       // (colore di prova) TODO: DA RIMUOVERE
+
+        if(add+cnt > 0){
+            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, add+cnt);
+            textEdit.setTextCursor(tmp);
+            textEdit.setTextBackgroundColor(*(parent->getUserColor(crdt.getSiteIdAt(pos))));           // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
+    //        textEdit.setTextBackgroundColor(QColor{255, 0, 0});       // (colore di prova) TODO: DA RIMUOVERE
+        }
+
         textEdit.setTextCursor(current);
     }
 
