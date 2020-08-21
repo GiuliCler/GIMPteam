@@ -148,6 +148,9 @@ void CRDT_controller::setUsersColors(bool value){
         tmp.mergeCharFormat(fmt);
     }
 
+    if(highlightUsers && textEdit.textCursor().charFormat().background() == QBrush(Qt::BrushStyle::NoBrush))
+        textEdit.setTextBackgroundColor(Qt::black);
+
     // Cancello UNDO e REDO stacks
     textEdit.document()->clearUndoRedoStacks();
 
@@ -382,6 +385,8 @@ void CRDT_controller::remoteDelete(int pos, int id_sender){
     bool processingMessage_prev = processingMessage;
     processingMessage = true;
 
+    int p = textEdit.textCursor().position();
+
     QTextCursor tmp{textEdit.document()};
     tmp.beginEditBlock();
     tmp.setPosition(pos);
@@ -393,6 +398,13 @@ void CRDT_controller::remoteDelete(int pos, int id_sender){
     QPoint position = QPoint (textEdit.cursorRect(tmp).topLeft().x(), textEdit.cursorRect(tmp).topLeft().y() + textEdit.verticalScrollBar()->value());
     emit updateCursorPosition(id_sender, position);
 
+
+    if(id_sender != crdt.getSiteId() && pos < p)
+        tmp.setPosition(p-1);
+    else
+        tmp.setPosition(p);
+    textEdit.setTextCursor(tmp);
+
     processingMessage = processingMessage_prev;
 }
 
@@ -402,6 +414,8 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
 
     bool processingMessage_prev = processingMessage;
     processingMessage = true;
+
+    int p = textEdit.textCursor().position();
 
     QTextCursor tmp{textEdit.document()};
     tmp.beginEditBlock();
@@ -427,6 +441,11 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
     QPoint position = QPoint (textEdit.cursorRect(tmp).topLeft().x(), textEdit.cursorRect(tmp).topLeft().y() + textEdit.verticalScrollBar()->value());
     emit updateCursorPosition(id_sender, position);
 
+    if(id_sender != crdt.getSiteId() && pos < p)
+        tmp.setPosition(p+1);
+    else
+        tmp.setPosition(p);
+    textEdit.setTextCursor(tmp);
 
     processingMessage = processingMessage_prev;
 }
