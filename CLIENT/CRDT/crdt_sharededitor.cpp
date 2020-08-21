@@ -188,7 +188,7 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
                 //std::cout<<s.getCarattere()<<" "<<s.getIDunivoco()<<std::endl;      // DEBUG -------------
                 if((s.getPosizione()==simbolo.getPosizione()) && (s.getIDunivoco()==simbolo.getIDunivoco())) {
                     _symbols.erase(it);
-                    parent->remoteDelete(it - _symbols.begin(), simbolo.getSiteId());       // TODO banana
+                    parent->remoteDelete(it - _symbols.begin(), m.getCreatore());
                     break;
                 }
             }
