@@ -15,7 +15,7 @@
     }
 
 CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyTextEdit& textEdit, int siteId, int siteCounter):
-                        gimpDocs(gimpdocs), parent(parent), textEdit(textEdit), highlightUsers(false),
+                        gimpDocs(gimpdocs), parent(parent), connection(gimpDocs->getConnection()), textEdit(textEdit), highlightUsers(false),
                         crdt{this, gimpDocs->getConnection(), siteId, siteCounter},
                         rememberFormatChange(false), validateSpin(true), validateFontCombo(true) {
     QObject::connect(this->parent, &GUI_Editor::menuTools_event, this, &CRDT_controller::menuCall);
@@ -30,6 +30,7 @@ CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyT
     QObject::connect(textEdit.document(), &QTextDocument::undoAvailable, this, &CRDT_controller::undoAvailableChanged);
     QObject::connect(textEdit.document(), &QTextDocument::redoAvailable, this, &CRDT_controller::redoAvailableChanged);
     QObject::connect(parent->childUsersBar, &GUI_UsersBar::highlightingUsers, this, &CRDT_controller::setUsersColors);
+    QObject::connect(connection, &connection_to_server::sigMoveCursor, this, &CRDT_controller::remoteMove);
 
     parent->childToolsBar->ui->spinBox->setSpecialValueText("Default");
 }
@@ -222,6 +223,7 @@ void CRDT_controller::cursorMoved(){
         rememberFormatChange = false;
         currentCharFormatChanged(textEdit.currentCharFormat());
     }
+    connection->requestSendMoved(crdt.getSiteId(), textEdit.textCursor().position());
 }
 void CRDT_controller::selectionChanged(){
     if(processingMessage)                         // TODO: Paolo non sa se è da togliere o no.....
@@ -395,10 +397,6 @@ void CRDT_controller::remoteDelete(int pos, int id_sender){
 
     tmp.endEditBlock();
 
-    QPoint position = QPoint (textEdit.cursorRect(tmp).topLeft().x(), textEdit.cursorRect(tmp).topLeft().y() + textEdit.verticalScrollBar()->value());
-    emit updateCursorPosition(id_sender, position);
-
-
     if(id_sender != crdt.getSiteId() && pos < p)
         tmp.setPosition(p-1);
     else
@@ -438,9 +436,6 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
 
     tmp.endEditBlock();
 
-    QPoint position = QPoint (textEdit.cursorRect(tmp).topLeft().x(), textEdit.cursorRect(tmp).topLeft().y() + textEdit.verticalScrollBar()->value());
-    emit updateCursorPosition(id_sender, position);
-
     if(id_sender != crdt.getSiteId() && pos < p)
         tmp.setPosition(p+1);
     else
@@ -448,4 +443,12 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
     textEdit.setTextCursor(tmp);
 
     processingMessage = processingMessage_prev;
+}
+
+void CRDT_controller::remoteMove(int userId, int pos){
+    QTextCursor tmp{textEdit.document()};
+    tmp.setPosition(pos);
+
+    QPoint position = QPoint (textEdit.cursorRect(tmp).topLeft().x(), textEdit.cursorRect(tmp).topLeft().y() + textEdit.verticalScrollBar()->value());
+    emit updateCursorPosition(userId, position);
 }

@@ -16,6 +16,7 @@ class CRDT_controller : public QObject
 private:
     GIMPdocs *gimpDocs;
     GUI_Editor *parent;
+    connection_to_server *connection;
     GUI_MyTextEdit& textEdit;
     bool highlightUsers;
     CRDT_SharedEditor crdt;
@@ -63,6 +64,7 @@ private slots:
 
 public slots:
     void setUsersColors(bool value);
+    void remoteMove(int userId, int pos);
 
 signals:
     void menuSet(menuTools set);

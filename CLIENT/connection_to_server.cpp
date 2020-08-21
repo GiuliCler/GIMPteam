@@ -969,6 +969,32 @@ void connection_to_server::requestSendMessage(CRDT_Message *messaggio){
     writeData(buffer);
 }
 
+void connection_to_server::requestSendMoved(int userId, int pos){
+    qDebug()<<"MOVE";      // DEBUG
+
+    //    this->tcpSocket->abort();
+    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+
+    if (!tcpSocket->waitForConnected(Timeout)) {
+        emit error(tcpSocket->error(), tcpSocket->errorString());
+        return;
+    }
+
+    QByteArray buffer;
+    QDataStream out(&buffer, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+    QByteArray comando = "MOVE";
+
+//    out << comando.size();
+    out << comando;
+    out << userId;
+    out << pos;
+
+    writeData(buffer);
+}
+
+
 void connection_to_server::connectEditor(){
 
     qDebug()<<"CONNECT EDITOR";      // DEBUG
@@ -1076,6 +1102,15 @@ void connection_to_server::receiveMessage(QByteArray data){
 
         //std::cout << userNewContributor << "icona: " + icona << " nickname: " + nick << std::endl;
         emit sigNewContributor(userNewContributor, nick, icona);
+    }
+
+    c = "MOVE";
+    if(action.contains(c.toUtf8())){
+        int userId, pos;
+        in_data >> userId;
+        in_data >> pos;
+        std::cout << "SLOT CLIENT receiveMessage - MOVE - user: "<< userId << "; pos: " << pos << std::endl;    //DEBUG
+        emit sigMoveCursor(userId,pos);
     }
 
     c = "CRDT";

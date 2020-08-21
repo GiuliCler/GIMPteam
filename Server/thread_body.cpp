@@ -247,6 +247,16 @@ void Thread_body::executeJob(QByteArray data){
         }
     }
 
+    c = "MOVE";
+    if(text.contains(c.toUtf8())){
+        int userId, pos;
+        in_data >> userId;
+        in_data >> pos;
+        int docId = current_docId;
+
+        moveCursor(docId, userId, pos);
+    }
+
     c = "DISCONNECT_FROM_DOC";
     if(text.contains(c.toUtf8())){
 
@@ -371,6 +381,14 @@ void Thread_body::notifyNewContributor(int userId, int docId){
     emit messageToServer(*m, threadId_toQString(thread_id), docId);
 }
 
+void Thread_body::moveCursor(int docId, int userId, int pos){
+
+    CRDT_Symbol s = *new CRDT_Symbol();
+    CRDT_Message *m = new CRDT_Message("MOVE_"+std::to_string(userId)+"_"+std::to_string(pos), s, userId);
+    auto thread_id = std::this_thread::get_id();
+
+    emit messageToServer(*m, threadId_toQString(thread_id), docId);
+}
 
 bool Thread_body::removeFromWorkingUsers(int docId, int userId){
 
@@ -1314,7 +1332,19 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
     QString strAction = QString::fromStdString(m.getAzione());
 
     /* Messaggio che NON fa parte del CRDT */
-    QString c = "OFFLINEUSER";
+    QString c = "MOVE";
+    if(strAction.contains(c.toUtf8())){
+        QStringList userIdDisconnect = strAction.split("_");
+//        qDebug() << userIdDisconnect[1];       // DEBUG
+
+        out << "MOVE";
+        out <<  userIdDisconnect[1].toInt();
+        out <<  userIdDisconnect[2].toInt();
+        writeData(blocko);
+        return;
+    }
+
+    c = "OFFLINEUSER";
     if(strAction.contains(c.toUtf8())){
         QStringList userIdDisconnect = strAction.split("_");
 //        qDebug() << userIdDisconnect[1];       // DEBUG
