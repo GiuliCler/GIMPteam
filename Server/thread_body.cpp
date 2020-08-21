@@ -215,7 +215,36 @@ void Thread_body::executeJob(QByteArray data){
         in_data >> messaggio;
 
         std::cout << "if SEND - azione: "<<messaggio.getAzione()<< std::endl;           // DEBUG
-        emit messageToServer(messaggio, threadId_toQString(thread_id), current_docId);
+        if(messaggio.getAzione() == "insert" &&
+                messaggio.getSimbolo().getFormat().background() != QColor{255,255,255} &&
+                messaggio.getSimbolo().getFormat().background() != QBrush(Qt::BrushStyle::NoBrush)){
+            qDebug() << "Background: " << messaggio.getSimbolo().getFormat().background();
+            CRDT_Message corrected_m{messaggio};
+            messaggio.setAzione("delete");
+            CRDT_Symbol sym = corrected_m.getSimbolo();
+            QTextCharFormat fmt = sym.getFormat();
+            fmt.setBackground(QColor{255,255,255});
+            sym.setFormat(fmt);
+            corrected_m.setSimbolo(sym);
+
+            QByteArray blocko;
+            QDataStream out(&blocko, QIODevice::WriteOnly);
+            out.setVersion(QDataStream::Qt_5_12);
+            out << "CRDT";
+            out << messaggio;
+            writeData(blocko);
+
+            QByteArray blocko2;
+            QDataStream out2(&blocko2, QIODevice::WriteOnly);
+            out2.setVersion(QDataStream::Qt_5_12);
+            out2 << "CRDT";
+            out2 << corrected_m;
+            writeData(blocko2);
+
+            emit messageToServer(corrected_m, threadId_toQString(thread_id), current_docId);
+        }else{
+            emit messageToServer(messaggio, threadId_toQString(thread_id), current_docId);
+        }
     }
 
     c = "DISCONNECT_FROM_DOC";
