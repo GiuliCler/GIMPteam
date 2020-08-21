@@ -7,7 +7,7 @@ Thread_body::Thread_body(int socketDescriptor, QThread* server, QObject *parent)
 {
     auto thread_id = std::this_thread::get_id();
 
-    std::cout << "---- ThreadBody constructor id: "<<thread_id<<" ---- "<< std::endl;      // DEBUG
+    std::cout << "ThreadBody constructor id: "<<thread_id<< std::endl;      // DEBUG
 
     socket = new QTcpSocket();
     if (!socket->setSocketDescriptor(socketDescriptor)) {
@@ -29,7 +29,7 @@ Thread_body::Thread_body(int socketDescriptor, QThread* server, QObject *parent)
 }
 
 Thread_body::~Thread_body(){
-    std::cout<<"STO DISTRUGGENDO IL THREAD_BODY"<<std::endl;
+    std::cout<<"STO DISTRUGGENDO IL THREAD_BODY"<<std::endl;            // DEBUG
 }
 
 void Thread_body::executeJob(QByteArray data){
@@ -39,7 +39,7 @@ void Thread_body::executeJob(QByteArray data){
 //    qDebug()<<"##############################################################";        // DEBUG
 
     auto thread_id = std::this_thread::get_id();
-    std::cout << "THREAD - executeJob; Thread: "<<thread_id<<" ---- "<< std::endl;
+    std::cout << "THREAD - executeJob (inizio); Thread_id: "<<thread_id<< std::endl;            // DEBUG
 
     QDataStream in_data(&data, QIODevice::ReadOnly);
     in_data.setVersion(QDataStream::Qt_5_12);
@@ -48,7 +48,7 @@ void Thread_body::executeJob(QByteArray data){
     QByteArray text;
     in_data >> text;
 
-    qDebug() << "THREAD - Run - Prima della verifica del comando... il comando e': "<< QString::fromStdString(text.toStdString());      // DEBUG
+    qDebug() << "THREAD - executeJob - Prima della verifica del comando... il comando e': "<< QString::fromStdString(text.toStdString());      // DEBUG
 
     QString c = "CREATE";
     if(text.contains(c.toUtf8())){
@@ -231,7 +231,7 @@ void Thread_body::executeJob(QByteArray data){
     //    socket->disconnectFromHost();
     //    socket->waitForDisconnected(3000);
 
-    qDebug() << "EXECUTE JOB finita";      // DEBUG
+    std::cout << "THREAD - executeJob (fine); Thread_id: "<<thread_id<< std::endl;            // DEBUG
 }
 
 
@@ -292,7 +292,6 @@ int Thread_body::addToWorkingUsers(int docId, int userId, int open_new){
         workingUsers.insert(docId, value);
         mutex_workingUsers->unlock();
     } else if(open_new == 1){                       // arrivo da OPEN_DOC / OPENDOC_DATO_URI
-        CRDT_Symbol s = *new CRDT_Symbol();
         if(workingUsers.contains(docId)){
             // chiave docId presente in workingUsers
             // aggiorno il vettore corrispondente alla riga con chiave docId in workingUsers
@@ -308,14 +307,39 @@ int Thread_body::addToWorkingUsers(int docId, int userId, int open_new){
             workingUsers.insert(docId, value);
             mutex_workingUsers->unlock();
         }
-        CRDT_Message *m = new CRDT_Message("ONLINEUSER_"+std::to_string(userId), s, userId);
-        auto thread_id = std::this_thread::get_id();
-        emit messageToServer(*m, threadId_toQString(thread_id), docId);
     } else {
         // open_new non è uguale nè a 0 nè a 1
         esito = 0;
     }
     return esito;
+}
+
+
+void Thread_body::notifyNewWorkingUser(int userId, int docId){
+
+    CRDT_Symbol s = *new CRDT_Symbol();
+    CRDT_Message *m = new CRDT_Message("ONLINEUSER_"+std::to_string(userId), s, userId);
+    auto thread_id = std::this_thread::get_id();
+
+    emit messageToServer(*m, threadId_toQString(thread_id), docId);
+}
+
+void Thread_body::notifyWorkingUserAway(int userId, int docId){
+
+    CRDT_Symbol s = *new CRDT_Symbol();
+    CRDT_Message *m = new CRDT_Message("OFFLINEUSER_"+std::to_string(userId), s, userId);
+    auto thread_id = std::this_thread::get_id();
+
+    emit messageToServer(*m, threadId_toQString(thread_id), docId);
+}
+
+void Thread_body::notifyNewContributor(int userId, int docId){
+
+    CRDT_Symbol s = *new CRDT_Symbol();
+    CRDT_Message *m = new CRDT_Message("NEWCONTRIBUTOR_"+std::to_string(userId), s, userId);
+    auto thread_id = std::this_thread::get_id();
+
+    emit messageToServer(*m, threadId_toQString(thread_id), docId);
 }
 
 
@@ -344,14 +368,12 @@ bool Thread_body::removeFromWorkingUsers(int docId, int userId){
             mutex_workingUsers->unlock();
 
             if(flag == 1){
-                CRDT_Symbol s = *new CRDT_Symbol();
-                CRDT_Message *m = new CRDT_Message("OFFLINEUSER_"+std::to_string(userId), s, userId);
-                auto thread_id = std::this_thread::get_id();
-                emit messageToServer(*m, threadId_toQString(thread_id), docId);
+                notifyWorkingUserAway(userId, docId);
             }
         } else if(count == 1){
             workingUsers.remove(docId);
             mutex_workingUsers->unlock();
+            current_docId = -1;
             return true;
         } else {
             // Nota: caso che *in teoria* non dovrebbe mai verificarsi
@@ -413,6 +435,9 @@ void Thread_body::newDoc(QString docName, int userId){
                     out << ritorno.toUtf8();
                     socket->write(blocko);
                     socket->flush();
+
+                    notifyNewWorkingUser(userId, docId);
+
                 }else{
                     mutex_db->unlock();
                     out << "errore";
@@ -850,11 +875,11 @@ void Thread_body::openDocDatoUri(QString uri, int userId){
             socket->write(blocko);
             socket->flush();
 
+            notifyNewWorkingUser(userId, docId);
+
             //segnalo agli altri contributors che ne faccio parte
-            CRDT_Symbol s = *new CRDT_Symbol();
-            CRDT_Message *m = new CRDT_Message("NEWCONTRIBUTOR_"+std::to_string(userId), s, userId);
-            auto thread_id = std::this_thread::get_id();
-            emit messageToServer(*m, threadId_toQString(thread_id), docId);
+            notifyNewContributor(userId, docId);
+
         }else{
             out << "errore";
             socket->write(blocko);
@@ -1060,8 +1085,7 @@ void Thread_body::getWorkingUsersGivenDoc(int docId){
         // Mando al client gli id degli utenti online che stanno lavorando sul documento al momento
         for(auto it = utenti_online.begin(); it<utenti_online.end(); it++){
             int id = (*it);
-            //            qDebug()<<"GET_WORKINGUSERS_ONADOC - Sto mandando al client ID: "<<id;
-            // Mando la QString così generata al client
+//            qDebug()<<"GET_WORKINGUSERS_ONADOC - Sto mandando al client ID: "<<id;
             out << id;
         }
 
@@ -1173,7 +1197,7 @@ void Thread_body::openDocument(int docId, int userId){
             // Recupero il contenuto del vettore _symbols che sta all'interno del ServerEditor
             QByteArray file = crdt->retrieveCurrentCrdt();
 
-//            qDebug()<<"FILE: "<<file;           // DEBUG
+//            qDebug()<<"FILE: "<<file;         // DEBUG
 
             // Aggiorno il docId su cui sto iniziando a lavorare
             current_docId = docId;
@@ -1184,6 +1208,8 @@ void Thread_body::openDocument(int docId, int userId){
             out << file;
             socket->write(blocko);
             socket->flush();
+
+            notifyNewWorkingUser(userId, docId);
         }
     }
 }
@@ -1236,6 +1262,7 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
     if(docId != current_docId){
         return;
     }
+
     if(thread_id_string == thread_id_sender){
 
         if(m.getAzione() == "insert" || m.getAzione() == "delete"){
@@ -1261,7 +1288,7 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
     QString c = "OFFLINEUSER";
     if(strAction.contains(c.toUtf8())){
         QStringList userIdDisconnect = strAction.split("_");
-        qDebug() << userIdDisconnect[1];       // DEBUG
+//        qDebug() << userIdDisconnect[1];       // DEBUG
 
         out << "OFFLINEUSER";
         out <<  userIdDisconnect[1].toInt();
@@ -1272,15 +1299,17 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
     c = "ONLINEUSER";
     if(strAction.contains(c.toUtf8())){
         QStringList userIdConnect = strAction.split("_");
-        qDebug() << userIdConnect[1];       // DEBUG
+//        qDebug() << userIdConnect[1];       // DEBUG
+
+        int userId = userIdConnect[1].toInt();
 
         //mando in uscita anche Nickname e icona
         mutex_db->lock();
-        QString nick = database->getNickname(getUsername(userIdConnect[1].toInt()));       // DEBUG
-        QString icon = database->getIconId(getUsername(userIdConnect[1].toInt()));
+        QString nick = database->getNickname(getUsername(userId));       // DEBUG
+        QString icon = database->getIconId(getUsername(userId));
         mutex_db->unlock();
         out << "ONLINEUSER";
-        out << userIdConnect[1].toInt();
+        out << userId;
         out << icon.toUtf8();
         out << nick.toUtf8();
         writeData(blocko);
@@ -1290,7 +1319,7 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
     c = "NEWCONTRIBUTOR";
     if(strAction.contains(c.toUtf8())){
         QStringList userIdContributor = strAction.split("_");
-        qDebug() << userIdContributor[1];
+//        qDebug() << userIdContributor[1];
 
         //mando in uscita anche Nickname e icona
         mutex_db->lock();
@@ -1318,7 +1347,7 @@ void Thread_body::readData(){
 
     while (socket->bytesAvailable() > 0){
 
-        qDebug()<<"readData - BytesAvailable: "<<socket->bytesAvailable();        // DEBUG
+//        qDebug()<<"readData - BytesAvailable: "<<socket->bytesAvailable();        // DEBUG
 
         readBuffer.append(socket->readAll());
 

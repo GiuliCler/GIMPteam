@@ -65,6 +65,9 @@ private:
     void closeDocument(int docId, int userId);
     void getWorkingUsersGivenDoc(int docId);
     void getCollaboratorsGivenDoc(int docId);
+    void notifyNewWorkingUser(int userId, int docId);
+    void notifyWorkingUserAway(int userId, int docId);
+    void notifyNewContributor(int userId, int docId);
     int addToWorkingUsers(int docId, int userId, int open_new);
     bool removeFromWorkingUsers(int docId, int userId);
     static qint32 ArrayToInt(QByteArray source);

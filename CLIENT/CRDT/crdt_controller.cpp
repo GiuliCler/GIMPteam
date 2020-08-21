@@ -141,12 +141,9 @@ void CRDT_controller::setUsersColors(bool value){
         tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
         textEdit.setTextCursor(tmp);
 
-        // TODO banana (vedi riga commentata)
-        // Nota al TODO: QColor *getUserColor(int userId);  in SharedEditor.h deve diventare privata e con int siteId (Mirko)
-
         if(highlightUsers){                 // L'utente vuole vedere il testo colorato con il colore di ogni utente
-//            textEdit.setTextBackgroundColor(parent->getUserColor(crdt.getSiteIdAt(pos)));           // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
-              textEdit.setTextBackgroundColor(QColor{0, 255, 0});       // TODO: TEMPORANEO, DA RIMUOVERE
+            textEdit.setTextBackgroundColor(*(parent->getUserColor(crdt.getSiteIdAt(pos))));           // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
+//              textEdit.setTextBackgroundColor(QColor{0, 255, 0});       // (colore di prova) TODO: DA RIMUOVERE
         } else {                            // L'utente non vuole vedere più il testo colorato con il colore di ogni utente
             textEdit.setTextBackgroundColor(QColor{255, 255, 255});     // Setto il background color a "white"
         }
@@ -227,7 +224,7 @@ void CRDT_controller::cursorMoved(){
     }
 }
 void CRDT_controller::selectionChanged(){
-    if(processingMessage)                         // TODO banana: Paolo non sa se è da togliere o no...........
+    if(processingMessage)                         // TODO: Paolo non sa se è da togliere o no.....
         return;
 
     if(rememberFormatChange){
@@ -318,8 +315,8 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         tmp.setPosition(pos);
         tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, add+cnt);
         textEdit.setTextCursor(tmp);
-//        textEdit.setTextBackgroundColor(parent->getUserColor(crdt.getSiteIdAt(pos)));           // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato   banana
-        textEdit.setTextBackgroundColor(QColor{255, 0, 0});       // TODO: TEMPORANEO, DA RIMUOVERE
+        textEdit.setTextBackgroundColor(*(parent->getUserColor(crdt.getSiteIdAt(pos))));           // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
+//        textEdit.setTextBackgroundColor(QColor{255, 0, 0});       // (colore di prova) TODO: DA RIMUOVERE
         textEdit.setTextCursor(current);
     }
 
@@ -387,7 +384,7 @@ void CRDT_controller::menuCall(menuTools op){
 
 void CRDT_controller::remoteDelete(int pos, int id_sender){
 
-    std::cout<<"EHI! SONO NELLA REMOTE DELETE! Position: "<< pos <<std::endl;
+//    std::cout<<"EHI! SONO NELLA REMOTE DELETE! Position: "<< pos <<std::endl;
 
     bool processingMessage_prev = processingMessage;
     processingMessage = true;
@@ -414,7 +411,7 @@ void CRDT_controller::remoteDelete(int pos, int id_sender){
 
 void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align, int id_sender){
 
-    std::cout<<"EHI! SONO NELLA REMOTE INSERT! Char: "<< c.toLatin1() <<std::endl;
+//    std::cout<<"EHI! SONO NELLA REMOTE INSERT! Char: "<< c.toLatin1() <<std::endl;
 
     bool processingMessage_prev = processingMessage;
     processingMessage = true;
@@ -431,9 +428,9 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
     QTextBlockFormat blockFmt{textEdit.textCursor().blockFormat()};
 
     if(highlightUsers){
-//        fmt.setBackground(parent->getUserColor(crdt.getSiteIdAt(pos)));     banana
+        fmt.setBackground(*(parent->getUserColor(crdt.getSiteIdAt(pos))));
 //        qDebug()<<"highlightUsers: "<<highlightUsers<<", background color: "<<fmt.background().color();        // DEBUG
-        fmt.setBackground(Qt::blue);        // TODO: da rimuovere
+//        fmt.setBackground(Qt::blue);        // (colore di prova) TODO: DA RIMUOVERE
     }
 
     textEdit.textCursor().insertText(c, fmt);

@@ -1027,14 +1027,14 @@ void connection_to_server::receiveMessage(QByteArray data){
     QByteArray action;
     in_data >> action;
 
-    std::cout << "SLOT CLIENT receiveAction - action: "<<action.toStdString() << std::endl;      // DEBUG
+    std::cout << "SLOT CLIENT receiveMessage - action ricevuta: "<<action.toStdString() << std::endl;      // DEBUG
 
     QString c = "OFFLINEUSER";
     if(action.contains(c.toUtf8())){
         //aggiorna la lista degli utenti online
         int userGetOffline;
         in_data >> userGetOffline;
-        std::cout << userGetOffline<< std::endl;        // DEBUG
+//        std::cout << userGetOffline<< std::endl;        // DEBUG
         //this->editor->removeUserFromEditorGUI(userGetOffline);
          emit sigOfflineUser(userGetOffline);
     }
@@ -1082,7 +1082,7 @@ void connection_to_server::receiveMessage(QByteArray data){
     if(action.contains(c.toUtf8())){
         CRDT_Message m;
         in_data >> m;
-        std::cout << "SLOT CLIENT messaggeAction - m.getAction(): "<<m.getAzione()<< std::endl;    //DEBUG
+        std::cout << "SLOT CLIENT receiveMessage - CRDT - m.getAction(): "<<m.getAzione()<< std::endl;    //DEBUG
         emit sigProcessMessage(m);
     }
 }
