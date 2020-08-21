@@ -397,7 +397,7 @@ void CRDT_controller::remoteDelete(int pos, int id_sender){
 
     tmp.endEditBlock();
 
-    if(id_sender != crdt.getSiteId() && pos < p)
+    if(pos < p)
         tmp.setPosition(p-1);
     else
         tmp.setPosition(p);
@@ -436,7 +436,7 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
 
     tmp.endEditBlock();
 
-    if(id_sender != crdt.getSiteId() && pos < p)
+    if(pos < p || (pos == p && id_sender == crdt.getSiteId()))
         tmp.setPosition(p+1);
     else
         tmp.setPosition(p);
