@@ -1,5 +1,4 @@
 #include "collegamentoDB.h"
-#include "sha256.h"
 #include <vector>
 #include <QCryptographicHash>
 
