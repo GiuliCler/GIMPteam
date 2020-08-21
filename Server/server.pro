@@ -15,7 +15,6 @@ SOURCES       = server.cpp \
                 crdt/crdt_servereditor.cpp \
                 crdt/crdt_symbol.cpp \
                 database/collegamentoDB.cpp \
-                database/sha256.cpp \
                 dialog.cpp \
                 main.cpp \
                 thread_body.cpp \
