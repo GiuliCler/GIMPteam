@@ -179,8 +179,6 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
 
             _symbols.insert(it, simbolo);
 
-//            qDebug()<<"AAAAAAA "<<count;        // DEBUG ----------
-
             parent->remoteInsert(count, simbolo.getCarattere(), simbolo.getFormat(), simbolo.getAlignment(), simbolo.getSiteId());
 
         } else if(azione == "delete"){           /* SIMBOLO CANCELLATO */
@@ -190,7 +188,7 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
                 //std::cout<<s.getCarattere()<<" "<<s.getIDunivoco()<<std::endl;      // DEBUG -------------
                 if((s.getPosizione()==simbolo.getPosizione()) && (s.getIDunivoco()==simbolo.getIDunivoco())) {
                     _symbols.erase(it);
-                    parent->remoteDelete(it - _symbols.begin(), simbolo.getSiteId());
+                    parent->remoteDelete(it - _symbols.begin(), simbolo.getSiteId());       // TODO banana
                     break;
                 }
             }

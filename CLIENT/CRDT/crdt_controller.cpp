@@ -132,24 +132,21 @@ void CRDT_controller::setUsersColors(bool value){
     bool processingMessage_prev = processingMessage;
     processingMessage = true;
 
-    QTextCursor current = textEdit.textCursor();
     QTextCursor tmp{textEdit.document()};
     tmp.setPosition(0);
 
     for(int pos=0; !tmp.atEnd(); tmp.setPosition(++pos)){
 
         tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
-        textEdit.setTextCursor(tmp);
 
+        QTextCharFormat fmt{tmp.charFormat()};
         if(highlightUsers){                 // L'utente vuole vedere il testo colorato con il colore di ogni utente
-            textEdit.setTextBackgroundColor(*(parent->getUserColor(crdt.getSiteIdAt(pos))));           // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
-//              textEdit.setTextBackgroundColor(QColor{0, 255, 0});       // (colore di prova) TODO: DA RIMUOVERE
+            fmt.setBackground(*(parent->getUserColor(crdt.getSiteIdAt(pos))));          // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
         } else {                            // L'utente non vuole vedere più il testo colorato con il colore di ogni utente
-            textEdit.setTextBackgroundColor(QColor{255, 255, 255});     // Setto il background color a "white"
+            fmt.setBackground(QColor{255, 255, 255});     // Setto il background color a "white"
         }
+        tmp.mergeCharFormat(fmt);
     }
-
-    textEdit.setTextCursor(current);
 
     // Cancello UNDO e REDO stacks
     textEdit.document()->clearUndoRedoStacks();
@@ -245,7 +242,8 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     if(processingMessage)
         return;
 
-    textEdit.textCursor().joinPreviousEditBlock();
+    QTextCursor tmp{textEdit.document()};
+    tmp.joinPreviousEditBlock();
 
     if(pos + del - 1 > crdt.getLength() - 1){
         del--;
@@ -261,33 +259,27 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     }
 
     if(add > 0){
-        QTextCursor current = textEdit.textCursor();
-        QTextCursor tmp{textEdit.document()};
-
         tmp.setPosition(pos);
         tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, add);
-        textEdit.setTextCursor(tmp);
-        textEdit.setTextBackgroundColor(QColor{255, 255, 255});     // Setto il background a "white"
+        QTextCharFormat fmt{tmp.charFormat()};
+        fmt.setBackground(QColor{255, 255, 255});     // Setto il background a "white"
+        tmp.mergeCharFormat(fmt);
 
         tmp.setPosition(pos+1);
 
         for(int i = pos; i < pos + add; ++i, tmp.movePosition(QTextCursor::NextCharacter)){
-            textEdit.setTextCursor(tmp);
-            //std::cout << "Cursor position: " << textEdit.textCursor().position() << std::endl;            // DEBUG
-            crdt.localInsert(i, textEdit.toPlainText().at(i), textEdit.currentCharFormat(), textEdit.alignment());
+            //std::cout << "Cursor position: " << textEdit.textCursor().position() << std::endl;                        // DEBUG
+            crdt.localInsert(i, textEdit.toPlainText().at(i), tmp.charFormat(), tmp.blockFormat().alignment());
         }
-
-        textEdit.setTextCursor(current);
     }
 
     int cnt = 0;
 
 //    std::cout << "At end: " << textEdit.textCursor().atEnd() << "; Alignment: " << textEdit.alignment() /* << "; crdt-al: " << crdt.getAlignAt(textEdit.textCursor().position()) */ << std::endl;      // DEBUG
-    if(!textEdit.textCursor().atEnd() &&  textEdit.alignment() != crdt.getAlignAt(textEdit.textCursor().position())){
+    if(!tmp.atEnd() &&  tmp.blockFormat().alignment() != crdt.getAlignAt(tmp.position())){
 //        std::cout << "At end: " << textEdit.textCursor().atEnd() << "; Alignment: " << textEdit.alignment() << "; crdt-al: " << crdt.getAlignAt(textEdit.textCursor().position()) << std::endl;        // DEBUG
-        QTextCursor current = textEdit.textCursor();
-        int pos1 = current.position();
-        QTextCursor tmp = current;
+        int pos1 = textEdit.textCursor().position();
+        tmp = textEdit.textCursor();
         //cancello dal fondo del blocco a tmp
         tmp.movePosition(QTextCursor::EndOfBlock);
         for(int i = tmp.position() - 1; i >= pos1 ; --i, ++cnt)
@@ -295,36 +287,31 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
         tmp.setPosition(pos1);
         tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, cnt);
-        textEdit.setTextCursor(tmp);
-        textEdit.setTextBackgroundColor(QColor{255, 255, 255});     // Setto il background a "white"
+        QTextCharFormat fmt{tmp.charFormat()};
+        fmt.setBackground(QColor{255, 255, 255});     // Setto il background a "white"
+        tmp.mergeCharFormat(fmt);
 
         tmp.setPosition(pos1+1);
         // inserisco da tmp a fondo del blocco
         for(int i = pos1; i < pos1 + cnt; ++i, tmp.movePosition(QTextCursor::NextCharacter)){
-            textEdit.setTextCursor(tmp);
             //std::cout << "Cursor position: " << textEdit.textCursor().position() << std::endl;                            // DEBUG
-            crdt.localInsert(i, textEdit.toPlainText().at(i), textEdit.currentCharFormat(), textEdit.alignment());
+            crdt.localInsert(i, textEdit.toPlainText().at(i), tmp.charFormat(), tmp.blockFormat().alignment());
         }
 //        crdt.print();                                 // DEBUG
-        textEdit.setTextCursor(current);
     }
 
     if(highlightUsers){
-        QTextCursor current = textEdit.textCursor();
-        QTextCursor tmp{textEdit.document()};
         tmp.setPosition(pos);
 
         if(add+cnt > 0){
             tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, add+cnt);
-            textEdit.setTextCursor(tmp);
-            textEdit.setTextBackgroundColor(*(parent->getUserColor(crdt.getSiteIdAt(pos))));           // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
-    //        textEdit.setTextBackgroundColor(QColor{255, 0, 0});       // (colore di prova) TODO: DA RIMUOVERE
+            QTextCharFormat fmt{tmp.charFormat()};
+            fmt.setBackground(*(parent->getUserColor(crdt.getSiteIdAt(pos))));           // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
+            tmp.mergeCharFormat(fmt);
         }
-
-        textEdit.setTextCursor(current);
     }
 
-    textEdit.textCursor().endEditBlock();
+    tmp.endEditBlock();
 }
 
 void CRDT_controller::clipboardDataChanged(){
@@ -393,22 +380,16 @@ void CRDT_controller::remoteDelete(int pos, int id_sender){
     bool processingMessage_prev = processingMessage;
     processingMessage = true;
 
-    textEdit.textCursor().beginEditBlock();
-
-    QTextCursor current = textEdit.textCursor();
-
     QTextCursor tmp{textEdit.document()};
+    tmp.beginEditBlock();
     tmp.setPosition(pos);
-    textEdit.setTextCursor(tmp);
 
-    QPoint position = QPoint (textEdit.cursorRect().topLeft().x(), textEdit.cursorRect().topLeft().y() + textEdit.verticalScrollBar()->value());
+    QPoint position = QPoint (textEdit.cursorRect(tmp).topLeft().x(), textEdit.cursorRect(tmp).topLeft().y() + textEdit.verticalScrollBar()->value());
     emit updateCursorPosition(id_sender, position);
 
-    textEdit.textCursor().deleteChar();         // ananas DA MODIFICARE: tmp al posto textEdit.textCursor()
+    tmp.deleteChar();
 
-    textEdit.setTextCursor(current);
-
-    textEdit.textCursor().endEditBlock();
+    tmp.endEditBlock();
 
     processingMessage = processingMessage_prev;
 }
@@ -420,37 +401,30 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
     bool processingMessage_prev = processingMessage;
     processingMessage = true;
 
-    textEdit.textCursor().beginEditBlock();
-
-    QTextCursor current = textEdit.textCursor();              // ananas DA TOGLIERE
-
     QTextCursor tmp{textEdit.document()};
+    tmp.beginEditBlock();
     tmp.setPosition(pos);
-    textEdit.setTextCursor(tmp);                              // ananas TOGLIERE
 
 //    std::cout<<"AAAA TextEdit... cursor: "<<textEdit.textCursor().position()<<", pos: "<<pos<<std::endl;        // DEBUG
-    QTextBlockFormat blockFmt{textEdit.textCursor().blockFormat()};
+    QTextBlockFormat blockFmt{tmp.blockFormat()};
 
     if(highlightUsers){
         fmt.setBackground(*(parent->getUserColor(crdt.getSiteIdAt(pos))));
 //        qDebug()<<"highlightUsers: "<<highlightUsers<<", background color: "<<fmt.background().color();        // DEBUG
-//        fmt.setBackground(Qt::blue);        // (colore di prova) TODO: DA RIMUOVERE
     }
 
-    textEdit.textCursor().insertText(c, fmt);
-    if(textEdit.alignment() != align){
+    tmp.insertText(c, fmt);
+    if(tmp.blockFormat().alignment() != align){
         blockFmt.setAlignment(align);
-        textEdit.textCursor().mergeBlockFormat(blockFmt);
+        tmp.mergeBlockFormat(blockFmt);
     }
 //    std::cout << "Block End: " << textEdit.textCursor().atBlockEnd() << "; Alignment: " << align << std::endl;
 
 
-    QPoint position = QPoint (textEdit.cursorRect().topLeft().x(), textEdit.cursorRect().topLeft().y() + textEdit.verticalScrollBar()->value());
+    QPoint position = QPoint (textEdit.cursorRect(tmp).topLeft().x(), textEdit.cursorRect(tmp).topLeft().y() + textEdit.verticalScrollBar()->value());
     emit updateCursorPosition(id_sender, position);
 
-    textEdit.setTextCursor(current);                      // ananas DA TOGLIERE
-
-    textEdit.textCursor().endEditBlock();
+    tmp.endEditBlock();
 
     processingMessage = processingMessage_prev;
 }
