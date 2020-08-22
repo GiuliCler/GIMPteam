@@ -6,7 +6,6 @@ HEADERS       = server.h \
     crdt/crdt_servereditor.h \
     crdt/crdt_symbol.h \
     database/collegamentoDB.h \
-    database/sha256.h \
     dialog.h \
     thread_body.h \
     thread_management.h
