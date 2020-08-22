@@ -421,23 +421,26 @@ void Thread_body::newDoc(QString docName, int userId){
                 mutex_db->lock();
                 // Associazione username - nome_doc nella tabella utente_doc del DB
                 if(database->aggiungiPartecipante(username+"_"+docName, username) != 2){
-                    std::vector<int> info = database->recuperaInfoUtenteDoc(username+"_"+docName, username);
+                    int siteCounter = database->recuperaSiteCounter(username+"_"+docName, username);
                     mutex_db->unlock();
 
-                    // Aggiorno il docId su cui sto iniziando a lavorare
-                    current_docId = docId;
+                    if(siteCounter == -1){
+                        out << "errore";
+                        socket->write(blocko);
+                        socket->flush();
+                    } else {
+                        // Aggiorno il docId su cui sto iniziando a lavorare
+                        current_docId = docId;
 
-                    int siteId = info[0];
-                    int siteCounter = info[1];
-                    current_siteCounter = siteCounter;
-                    QString ritorno = "ok_"+QString::number(siteId)+"_"+QString::number(siteCounter)+"_"+QString::number(docId);
+                        current_siteCounter = siteCounter;
+                        QString ritorno = "ok_"+QString::number(siteCounter)+"_"+QString::number(docId);
 
-                    out << ritorno.toUtf8();
-                    socket->write(blocko);
-                    socket->flush();
+                        out << ritorno.toUtf8();
+                        socket->write(blocko);
+                        socket->flush();
 
-                    notifyNewWorkingUser(userId, docId);
-
+                        notifyNewWorkingUser(userId, docId);
+                    }
                 }else{
                     mutex_db->unlock();
                     out << "errore";
@@ -522,7 +525,6 @@ void Thread_body::create(QString username, QString password, QString nickname, Q
         mutex_users->lock();
         int id = users.size();
         id++;
-        //qDebug()<<"STO SCRIVENDO NELLA MAPPA LA COPPIA key:"<<username<<" E value: "<<id;        // DEBUG
         users.insert(username, id);
         mutex_users->unlock();
 
@@ -724,7 +726,7 @@ void Thread_body::getNickname(int userId){
 
     if(!username.isEmpty()){
         mutex_db->lock();
-        QString nick = database->getNickname(username);       // DEBUG
+        QString nick = database->getNickname(username);
         mutex_db->unlock();
         out << nick.toUtf8();
         socket->write(blocko);
@@ -837,17 +839,19 @@ void Thread_body::openDocDatoUri(QString uri, int userId){
         if(!username.isEmpty() && !docName.isEmpty()){
             mutex_db->lock();
             if(database->aggiungiPartecipante(docName,username)!=2){
-                std::vector<int> info = database->recuperaInfoUtenteDoc(docName, username);
+                int siteCounter = database->recuperaSiteCounter(docName, username);
                 mutex_db->unlock();
 
-                int siteId = info[0];
-                int siteCounter = info[1];
-                current_siteCounter = siteCounter;
-
-                if(openDoc(docName, docId, userId, 1) == -1){
+                if(siteCounter == -1){
                     ritorno = "errore";
                 } else {
-                    ritorno = "ok_"+QString::number(siteId)+"_"+QString::number(siteCounter)+"_"+QString::number(docId);
+                    current_siteCounter = siteCounter;
+
+                    if(openDoc(docName, docId, userId, 1) == -1){
+                        ritorno = "errore";
+                    } else {
+                        ritorno = "ok_"+QString::number(siteCounter)+"_"+QString::number(docId);
+                    }
                 }
             } else {
                 mutex_db->unlock();
@@ -1079,13 +1083,13 @@ void Thread_body::getWorkingUsersGivenDoc(int docId){
 
         // Mando al client il numero di elementi/id che verranno inviati
         int num_working_users = utenti_online.size();
-        //        qDebug() << "GET_WORKINGUSERS_ONADOC - STO MANDANDO AL CLIENT num_working_users: "<<num_working_users;             // DEBUG
+//        qDebug() << "GET_WORKINGUSERS_ONADOC - STO MANDANDO AL CLIENT num_working_users: "<<num_working_users;             // DEBUG
         out << num_working_users;
 
         // Mando al client gli id degli utenti online che stanno lavorando sul documento al momento
         for(auto it = utenti_online.begin(); it<utenti_online.end(); it++){
             int id = (*it);
-//            qDebug()<<"GET_WORKINGUSERS_ONADOC - Sto mandando al client ID: "<<id;
+//            qDebug()<<"GET_WORKINGUSERS_ONADOC - Sto mandando al client ID: "<<id;                                           // DEBUG
             out << id;
         }
 
@@ -1094,6 +1098,7 @@ void Thread_body::getWorkingUsersGivenDoc(int docId){
 
     } else {
         // Documento non presente nella mappa workingUsers
+//        qDebug()<<"GET_WORKINGUSERS_ONADOC - Oh no, sono passato dall'else, quindi la mappa workingUsers NON contiene docId!!";           // DEBUG
         int no_doc = -1;
         out << no_doc;
         socket->write(blocko);
@@ -1180,36 +1185,40 @@ void Thread_body::openDocument(int docId, int userId){
             socket->flush();
         }else{
             mutex_db->lock();
-            std::vector<int> info = database->recuperaInfoUtenteDoc(docName, username);
+            int siteCounter = database->recuperaSiteCounter(docName, username);
             mutex_db->unlock();
 
-            int siteId = info[0];
-            int siteCounter = info[1];
-            current_siteCounter = siteCounter;
-            QString ritorno = "ok_"+QString::number(siteId)+"_"+QString::number(siteCounter);
+            if(siteCounter == -1){
+                out << "errore";
+                socket->write(blocko);
+                socket->flush();
+            } else {
+                current_siteCounter = siteCounter;
+                QString ritorno = "ok_"+QString::number(siteCounter);
 
-            out << ritorno.toUtf8();
+                out << ritorno.toUtf8();
 //            socket->write(blocko);
 //            socket->flush();
 
-            crdt->mutex->lock();
+                crdt->mutex->lock();
 
-            // Recupero il contenuto del vettore _symbols che sta all'interno del ServerEditor
-            QByteArray file = crdt->retrieveCurrentCrdt();
+                // Recupero il contenuto del vettore _symbols che sta all'interno del ServerEditor
+                QByteArray file = crdt->retrieveCurrentCrdt();
 
 //            qDebug()<<"FILE: "<<file;         // DEBUG
 
-            // Aggiorno il docId su cui sto iniziando a lavorare
-            current_docId = docId;
+                // Aggiorno il docId su cui sto iniziando a lavorare
+                current_docId = docId;
 
-            crdt->mutex->unlock();
+                crdt->mutex->unlock();
 
-            // Mando al client il contenuto del il contenuto del vettore _symbols
-            out << file;
-            socket->write(blocko);
-            socket->flush();
+                // Mando al client il contenuto del il contenuto del vettore _symbols
+                out << file;
+                socket->write(blocko);
+                socket->flush();
 
-            notifyNewWorkingUser(userId, docId);
+                notifyNewWorkingUser(userId, docId);
+            }
         }
     }
 }

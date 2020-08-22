@@ -178,7 +178,6 @@ std::string connection_to_server::requestCreateDocument(int userId, QString name
     }else{
         return "errore";
     }
-    //TODO: il documento viene ritornato e aperto => gestione con CRDT                  // todo ila&paolo
 }
 
 std::string connection_to_server::openDoc(int userId, int docId)
@@ -891,7 +890,6 @@ std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int d
     in.setVersion(QDataStream::Qt_5_12);
 
     int num, id;
-
 
     do {
         if (!this->tcpSocket->waitForReadyRead(Timeout)) {

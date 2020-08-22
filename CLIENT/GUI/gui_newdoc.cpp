@@ -46,10 +46,9 @@ void GUI_Newdoc::on_createPushButton_clicked()
     if(codedParameters.compare("errore") == 0)
         return;
 
-//    int siteId = codedParameters.split("_").at(1).toInt();            // VERSIONE PRECEDENTE IN CUI AVEVAMO userId != siteId
     int siteId = gimpParent->userid;
-    int siteCounter = codedParameters.split("_").at(2).toInt();
-    int documentId = codedParameters.split("_").at(3).toInt();
+    int siteCounter = codedParameters.split("_").at(1).toInt();
+    int documentId = codedParameters.split("_").at(2).toInt();
 
 
     GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId, docName, siteId, siteCounter);
@@ -71,10 +70,9 @@ void GUI_Newdoc::on_openURIPushButton_clicked()
     if(codedParameters.compare("errore") == 0)
         return;
 
-//    int siteId = codedParameters.split("_").at(1).toInt();            // VERSIONE PRECEDENTE IN CUI AVEVAMO userId != siteId
     int siteId = gimpParent->userid;
-    int siteCounter = codedParameters.split("_").at(2).toInt();
-    int documentId = codedParameters.split("_").at(3).toInt();
+    int siteCounter = codedParameters.split("_").at(1).toInt();
+    int documentId = codedParameters.split("_").at(2).toInt();
 
     QString docName = GUI_ConnectionToServerWrapper::requestDocumentNameWrapper(gimpParent, documentId);
 
