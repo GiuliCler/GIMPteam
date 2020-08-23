@@ -11,12 +11,6 @@ connection_to_server::connection_to_server(QString port, QString ipAddress): fil
     this->port = port;
     this->ipAddress = ipAddress;
     //this->editor = nullptr;
-    //richiedo i file di un dato utente al momento del login
-    //chiudo la connessione quando viene premuto X (termina il programma)
-    //connect(quitButton, SIGNAL(clicked()), this, SLOT(close())); <---------- SISTEMARE
-    //connect(&file, SIGNAL(newFile(QString)),this, SLOT(showString(QString)));
-    //connect(&file, SIGNAL(error(int,QString)),this, SLOT(displayError(int,QString)));
-
 }
 QTcpSocket *connection_to_server::getSocket(){
     qDebug()<<"FUCKING GET SOCKET!!!";      // DEBUG
@@ -51,20 +45,16 @@ int connection_to_server::requestTryLogOut(int userId)
     if(!writeData(buffer))
         return -1;
 
+    if(!this->tcpSocket->waitForReadyRead(Timeout)){
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        return -1;
+    }
+    QByteArray data = readData();
+    QDataStream in_data(&data, QIODevice::ReadOnly);
+    in_data.setVersion(QDataStream::Qt_5_12);
+
     int result;
-    QDataStream in;
-    in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_5_12);
-
-    do {
-        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
-            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-            return -1;
-        }
-
-        in.startTransaction();
-        in >> result;
-    } while (!in.commitTransaction());
+    in_data >> result;
 
     // Chiudo il socket dal lato del client
     this->tcpSocket->close();
@@ -97,38 +87,29 @@ int connection_to_server::requestTryLogin(QString username, QString password)
     if(!writeData(buffer))
         return -1;
 
-    //ora attendo una risposta dal server, sul login al db
-    QByteArray file;
-    QDataStream in;
-    QString err = "errore", c = "ok", d = "alreadyLogged";
+    if(!this->tcpSocket->waitForReadyRead(Timeout)){
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        return -1;
+    }
+    QByteArray data = readData();
+    QDataStream in_data(&data, QIODevice::ReadOnly);
+    in_data.setVersion(QDataStream::Qt_5_12);
+
+    QByteArray esito;
+    QString err = "errore", good = "ok", err2 = "alreadyLogged";
     int userId = -1;
-    in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_5_12);
-    do {
-        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
-            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-            return -1;
-        }
 
-        in.startTransaction();
-        in >> file;
+    in_data >> esito;
 
-        if(file.contains(err.toUtf8()) || file.contains(d.toUtf8())){
-            break;
-        }
-
-        in >> userId;
-
-    } while (!in.commitTransaction());
-
-    if(file.contains(c.toUtf8())){
+    if(!esito.contains(err.toUtf8()) && !esito.contains(err2.toUtf8())){
+        in_data >> userId;
         return userId;
-    }else{
-        if(file.contains(d.toUtf8())){
-            throw GUI_GenericException("Attenzione! Login già effettuato su un altro dispositivo!");
-        } else {
-            return -1;
-        }
+    }
+
+    if(esito.contains(err2.toUtf8())){
+        throw GUI_GenericException("Attenzione! Login già effettuato su un altro dispositivo!");
+    } else {
+        return -1;
     }
 }
 
@@ -137,9 +118,6 @@ std::string connection_to_server::requestCreateDocument(int userId, QString name
     qDebug()<<"NEW_DOC";      // DEBUG
 
 //    this->tcpSocket->abort();
- /*   qDebug() << this->tcpSocket->state();
-    qDebug() << this->ipAddress;
-    qDebug() << this->port;  ------------ DEBUG */
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
@@ -148,6 +126,7 @@ std::string connection_to_server::requestCreateDocument(int userId, QString name
             return "errore";
         }
     }
+
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
@@ -160,21 +139,20 @@ std::string connection_to_server::requestCreateDocument(int userId, QString name
     if(!writeData(buffer))
         return "errore";
 
-    QDataStream in;
-    in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_5_12);
-    do {
-        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
-            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-            return "errore";
-        }
+    if(!this->tcpSocket->waitForReadyRead(Timeout)){
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        return "errore";
+    }
+    QByteArray data = readData();
+    QDataStream in_data(&data, QIODevice::ReadOnly);
+    in_data.setVersion(QDataStream::Qt_5_12);
 
-        in.startTransaction();
-        in >> buffer;
-    } while (!in.commitTransaction());
-    QString c = "ok";
-    if(buffer.contains(c.toUtf8())){
-        return buffer.toStdString();
+    QByteArray esito;
+    in_data >> esito;
+
+    QString good = "ok";
+    if(esito.contains(good.toUtf8())){
+        return esito.toStdString();
     }else{
         return "errore";
     }
@@ -185,9 +163,6 @@ std::string connection_to_server::openDoc(int userId, int docId)
     qDebug()<<"OPEN_DOC";      // DEBUG
 
 //    this->tcpSocket->abort();
- /*   qDebug() << this->tcpSocket->state();
-    qDebug() << this->ipAddress;
-    qDebug() << this->port;  ------------ DEBUG */
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
@@ -196,6 +171,7 @@ std::string connection_to_server::openDoc(int userId, int docId)
             return "errore";
         }
     }
+
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
@@ -208,33 +184,25 @@ std::string connection_to_server::openDoc(int userId, int docId)
     if(!writeData(buffer))
         return "errore";
 
-    QByteArray file;
+    if(!this->tcpSocket->waitForReadyRead(Timeout)){
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        return "errore";
+    }
+    QByteArray data = readData();
+    QDataStream in_data(&data, QIODevice::ReadOnly);
+    in_data.setVersion(QDataStream::Qt_5_12);
+
     QByteArray esito;
-    QDataStream in;
-    in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_5_12);
+    in_data >> esito;
 
-    do {
-        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
-            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-            return "errore";
-        }
-
-        in.startTransaction();
-        in >> esito;
-    } while (!in.commitTransaction());
-
-    QString good = "ok";
-    QString inesist = "doc-inesistente";
+    QString good = "ok", inesist = "doc-inesistente";
     if(esito.contains(good.toUtf8())){
 
-        in >> file;
-
-        // RiempIo [ >:( ] il file temporaneo con il file attuale che sto aprendo
-        fileTMP = file;
+        readDataFile();
 
         return esito.toStdString();
-    }else if(esito.contains(inesist.toUtf8())){
+
+    } else if (esito.contains(inesist.toUtf8())){
 //        emit unavailableSharedDocument(docId);
         return "errore";
     }
@@ -255,6 +223,7 @@ std::string connection_to_server::requestDocDatoUri(QString uri, int userId){
             return "errore";
         }
     }
+
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
@@ -267,31 +236,26 @@ std::string connection_to_server::requestDocDatoUri(QString uri, int userId){
     if(!writeData(buffer))
         return "errore";
 
+    if(!this->tcpSocket->waitForReadyRead(Timeout)){
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        return "errore";
+    }
+    QByteArray data = readData();
+    QDataStream in_data(&data, QIODevice::ReadOnly);
+    in_data.setVersion(QDataStream::Qt_5_12);
+
     QByteArray esito;
+    in_data >> esito;
+
     QByteArray file;
-    QDataStream in;
-    in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_5_12);
-    do {
-        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
-            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-            return "errore";
-        }
-
-        in.startTransaction();
-        in >> esito;
-    } while (!in.commitTransaction());
-
     QString good = "ok";
     if(esito.contains(good.toUtf8())){
 
-        in >> file;
-
-        // Riempo il file temporaneo con il file attuale che sto aprendo
-        fileTMP = file;
+        readDataFile();
 
         return esito.toStdString();
-    }else{
+
+    } else {
         return "errore";
     }
 }
@@ -310,6 +274,7 @@ std::string connection_to_server::requestDocName(int docId){
             return "errore";
         }
     }
+
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
@@ -321,22 +286,19 @@ std::string connection_to_server::requestDocName(int docId){
     if(!writeData(buffer))
         return "errore";
 
-    //ora attendo una risposta dal server, sul login al db
+    if(!this->tcpSocket->waitForReadyRead(Timeout)){
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        return "errore";
+    }
+    QByteArray data = readData();
+    QDataStream in_data(&data, QIODevice::ReadOnly);
+    in_data.setVersion(QDataStream::Qt_5_12);
+
     QByteArray docName;
-    QDataStream in;
-    in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_5_12);
+    in_data >> docName;
 
-    do {
-        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
-            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-            return "errore";
-        }
+    docName.replace('\0',"");       // TODO: siamo sicuri che serva questa riga?
 
-        in.startTransaction();
-        in >> docName;
-    } while (!in.commitTransaction());
-    docName.replace('\0',"");
     return docName.toStdString();
 }
 
@@ -353,6 +315,7 @@ int connection_to_server::requestNewAccount(QString username, QString password, 
             return -1;
         }
     }
+
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
@@ -367,29 +330,23 @@ int connection_to_server::requestNewAccount(QString username, QString password, 
     if(!writeData(buffer))
         return -1;
 
+    if(!this->tcpSocket->waitForReadyRead(Timeout)){
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        return -1;
+    }
+    QByteArray data = readData();
+    QDataStream in_data(&data, QIODevice::ReadOnly);
+    in_data.setVersion(QDataStream::Qt_5_12);
+
     //ora attendo una risposta dal server, sul login al db
-    QByteArray file;
-    QString c = "errore";
+    QByteArray esito;
+    in_data >> esito;
+
+    QString err = "errore";
     int id = -1;
-
-    QDataStream in;
-    in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_5_12);
-    do {
-        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
-            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-            return -1;
-        }
-
-        in.startTransaction();
-        in >> file;
-
-        if(file.contains(c.toUtf8()))
-            break;
-
-        in >> id;
-
-    } while (!in.commitTransaction());
+    if(!esito.contains(err.toUtf8())){
+        in_data >> id;
+    }
 
     return id;
 }
@@ -422,23 +379,19 @@ long connection_to_server::requestUpdateAccount( int userId, QString password, Q
     if(!writeData(buffer))
         return -1;
 
-    //ora attendo una risposta dal server, sul login al db
-    QByteArray buff;
-    QDataStream in;
-    in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_5_12);
-    do {
-        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
-            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-            return -1;
-        }
+    if(!this->tcpSocket->waitForReadyRead(Timeout)){
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        return -1;
+    }
+    QByteArray data = readData();
+    QDataStream in_data(&data, QIODevice::ReadOnly);
+    in_data.setVersion(QDataStream::Qt_5_12);
 
-        in.startTransaction();
-        in >> buff;
-    } while (!in.commitTransaction());
+    QByteArray esito;
+    in_data >> esito;
 
-    QString c = "ok";
-    if(buff.contains(c.toUtf8())){
+    QString good = "ok";
+    if(esito.contains(good.toUtf8())){
         return 0;
     }else{
         return -1;
@@ -470,21 +423,16 @@ std::string connection_to_server::requestUri(int docId){
     if(!writeData(buffer))
         return "errore";
 
-    //ora attendo una risposta dal server, sul login al db
+    if(!this->tcpSocket->waitForReadyRead(Timeout)){
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        return "errore";
+    }
+    QByteArray data = readData();
+    QDataStream in_data(&data, QIODevice::ReadOnly);
+    in_data.setVersion(QDataStream::Qt_5_12);
+
     QString uri;
-    QDataStream in;
-    in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_5_12);
-
-    do {
-        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
-            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-            return "errore";
-        }
-
-        in.startTransaction();
-        in >> uri;
-    } while (!in.commitTransaction());
+    in_data >> uri;
 
     return uri.toStdString();
 }
@@ -503,6 +451,7 @@ std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int 
             return std::make_shared<QMap<QString, int>>(ritorno);
         }
     }
+
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
@@ -514,36 +463,31 @@ std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int 
     if(!writeData(buffer))
         throw GUI_ConnectionException();
 
+    if(!this->tcpSocket->waitForReadyRead(Timeout)){
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        throw GUI_ConnectionException();
+    }
+    QByteArray data = readData();
+    QDataStream in_data(&data, QIODevice::ReadOnly);
+    in_data.setVersion(QDataStream::Qt_5_12);
+
     int num;
+    in_data >> num;
+
+    if(num == -1){
+        // In caso di errore...
+        return std::make_shared<QMap<QString, int>>(ritorno);
+    }
+
+//    qDebug()<<"CONNECTION_TO_SERVER - num_doc RICEVUTO: "<<num;     // DEBUG
+
     QByteArray doc;
     QVector<QString> vet;
-    QDataStream in;
-    in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_5_12);
-
-    do {
-        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
-            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-            throw GUI_ConnectionException();
-        }
-
-        in.startTransaction();
-        in >> num;
-
-        if(num == -1){
-            // In caso di errore...
-            return std::make_shared<QMap<QString, int>>(ritorno);
-        }
-
-//        qDebug()<<"CONNECTION_TO_SERVER - num_doc RICEVUTO: "<<num;     // DEBUG
-
-        for(int i=0; i<num; i++){
-            in >> doc;
-//            qDebug()<<"CONNECTION_TO_SERVER - Arrivato dal server... "<<QString::fromStdString(doc.toStdString());       // DEBUG
-            vet.push_back(QString::fromStdString(doc.toStdString()));
-        }
-
-    } while (!in.commitTransaction());
+    for(int i=0; i<num; i++){
+        in_data >> doc;
+//        qDebug()<<"CONNECTION_TO_SERVER - Arrivato dal server... "<<QString::fromStdString(doc.toStdString());       // DEBUG
+        vet.push_back(QString::fromStdString(doc.toStdString()));
+    }
 
 //    qDebug()<<"CONNECTION_TO_SERVER - vet.size(): "<<vet.size();     // DEBUG
 
@@ -570,7 +514,6 @@ std::string connection_to_server::requestGetNickname(int userId){
     qDebug()<<"GET_NICKNAME";      // DEBUG
 
 //    this->tcpSocket->abort();
-// debug:    qDebug() << this->tcpSocket->state();
 
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
@@ -580,6 +523,7 @@ std::string connection_to_server::requestGetNickname(int userId){
             return "errore";
         }
     }
+
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
@@ -591,23 +535,19 @@ std::string connection_to_server::requestGetNickname(int userId){
     if(!writeData(buffer))
         return "errore";
 
-    //ora attendo una risposta dal server, sul login al db
+    if(!this->tcpSocket->waitForReadyRead(Timeout)){
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        return "errore";
+    }
+    QByteArray data = readData();
+    QDataStream in_data(&data, QIODevice::ReadOnly);
+    in_data.setVersion(QDataStream::Qt_5_12);
+
     QByteArray nickname;
-    QDataStream in;
-    in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_5_12);
+    in_data >> nickname;
 
-    do {
-        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
-            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-            return "errore";
-        }
+    nickname.replace('\0',"");      // TODO: siamo sicuri che serva questa riga?
 
-        in.startTransaction();
-        in >> nickname;
-    } while (!in.commitTransaction());
-
-    nickname.replace('\0',"");
     return nickname.toStdString();
 }
 
@@ -624,6 +564,7 @@ std::string connection_to_server::requestIconId(int userId){
             return "errore";
         }
     }
+
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
@@ -635,23 +576,19 @@ std::string connection_to_server::requestIconId(int userId){
     if(!writeData(buffer))
         return "errore";
 
-    //ora attendo una risposta dal server, sul login al db
+    if(!this->tcpSocket->waitForReadyRead(Timeout)){
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        return "errore";
+    }
+    QByteArray data = readData();
+    QDataStream in_data(&data, QIODevice::ReadOnly);
+    in_data.setVersion(QDataStream::Qt_5_12);
+
     QByteArray iconId;
-    QDataStream in;
-    in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_5_12);
+    in_data >> iconId;
 
-   do {
-        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
-            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-            return "errore";
-        }
+    iconId.replace('\0',"");            // TODO: siamo sicuri che serva questa riga?
 
-        in.startTransaction();
-        in >> iconId;
-   } while (!in.commitTransaction());
-
-    iconId.replace('\0',"");
     return iconId.toStdString();
 }
 
@@ -660,7 +597,6 @@ std::string connection_to_server::requestGetUsername(int userId){
     qDebug()<<"GET_USERNAME";      // DEBUG
 
 //    this->tcpSocket->abort();
-//    qDebug() << this->tcpSocket->state();
 
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
@@ -670,6 +606,7 @@ std::string connection_to_server::requestGetUsername(int userId){
             return "errore";
         }
     }
+
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
@@ -681,22 +618,19 @@ std::string connection_to_server::requestGetUsername(int userId){
     if(!writeData(buffer))
         return "errore";
 
-    //ora attendo una risposta dal server, sul login al db
+    if(!this->tcpSocket->waitForReadyRead(Timeout)){
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        return "errore";
+    }
+    QByteArray data = readData();
+    QDataStream in_data(&data, QIODevice::ReadOnly);
+    in_data.setVersion(QDataStream::Qt_5_12);
+
     QByteArray username;
-    QDataStream in;
-    in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_5_12);
-    do {
-        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
-            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-            return "errore";
-        }
+    in_data >> username;
 
-        in.startTransaction();
-        in >> username;
-    } while (!in.commitTransaction());
+    username.replace('\0',"");         // TODO: siamo sicuri che serva questa riga?
 
-    username.replace('\0',"");
     return username.toStdString();
 }
 
@@ -713,6 +647,7 @@ std::string connection_to_server::requestDeleteDoc(int userId,int documentId){
             return "errore";
         }
     }
+
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
@@ -725,23 +660,19 @@ std::string connection_to_server::requestDeleteDoc(int userId,int documentId){
     if(!writeData(buffer))
         return "errore";
 
-    //ora attendo una risposta dal server, sul login al db
-    QByteArray file;
-    QDataStream in;
-    in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_5_12);
-    do {
-        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
-            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-            return "errore";
-        }
+    if(!this->tcpSocket->waitForReadyRead(Timeout)){
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        return "errore";
+    }
+    QByteArray data = readData();
+    QDataStream in_data(&data, QIODevice::ReadOnly);
+    in_data.setVersion(QDataStream::Qt_5_12);
 
-        in.startTransaction();
-        in >> file;
-    } while (!in.commitTransaction());
+    QByteArray esito;
+    in_data >> esito;
 
-    QString c = "errore";
-    if(file.contains(c.toUtf8())){
+    QString err = "errore";
+    if(esito.contains(err.toUtf8())){
         return "errore";
     }else{
         return "ok";
@@ -761,6 +692,7 @@ int connection_to_server::getDocumentOwner(int docId){
             return -1;
         }
     }
+
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
@@ -772,29 +704,27 @@ int connection_to_server::getDocumentOwner(int docId){
     if(!writeData(buffer))
         return -1;
 
+    if(!this->tcpSocket->waitForReadyRead(Timeout)){
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        return -1;
+    }
+    QByteArray data = readData();
+    QDataStream in_data(&data, QIODevice::ReadOnly);
+    in_data.setVersion(QDataStream::Qt_5_12);
+
     int ownerId;
-    QDataStream in;
-    in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_5_12);
-
-    do {
-        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
-            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-            return -1;
-        }
-
-        in.startTransaction();
-        in >> ownerId;
-    } while (!in.commitTransaction());
+    in_data >> ownerId;
 
     return ownerId;
 }
 
 std::shared_ptr<QSet<int>> connection_to_server::getContributors(int docId){
+
     qDebug()<<"GET_CONTRIBUTORS_ONADOC";      // DEBUG
 
     std::shared_ptr<QSet<int>> ritorno;
     QSet<int> vet;
+
 //    this->tcpSocket->abort();
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
@@ -817,40 +747,34 @@ std::shared_ptr<QSet<int>> connection_to_server::getContributors(int docId){
     if(!writeData(buffer))
         throw GUI_ConnectionException();
 
-    QDataStream in;
-    in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_5_12);
+    if(!this->tcpSocket->waitForReadyRead(Timeout)){
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        throw GUI_ConnectionException();
+    }
+    QByteArray data = readData();
+    QDataStream in_data(&data, QIODevice::ReadOnly);
+    in_data.setVersion(QDataStream::Qt_5_12);
 
     int num, id;
+    in_data >> num;
 
-    do {
-        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
-            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-            throw GUI_ConnectionException();
+//    qDebug()<<"GET_COLLABORATORS_ONADOC - Ricevuto num_collaborators: "<<num;     // DEBUG
+
+    for(int i=0; i<num; i++){
+
+        in_data >> id;
+
+        if(id == -1){
+            break;
+        }
+        if(id == -2){
+            //errore, lo metto come userId
+            vet.insert(-1);
+            break;
         }
 
-        in.startTransaction();
-        in >> num;
-
-//        qDebug()<<"GET_COLLABORATORS_ONADOC - Ricevuto num_collaborators: "<<num;     // DEBUG
-
-        for(int i=0; i<num; i++){
-
-            in >> id;
-
-            if(id == -1){
-                break;
-            }
-            if(id == -2){
-                //errore, lo metto come userId
-                vet.insert(-1);
-                break;
-            }
-
-            vet.insert(id);
-        }
-
-    } while (!in.commitTransaction());
+        vet.insert(id);
+    }
 
 //    qDebug()<<"GET_COLLABORATORS_ONADOC - vet.size(): "<<vet.size();     // DEBUG
 
@@ -863,6 +787,7 @@ std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int d
 
     std::shared_ptr<QSet<int>> ritorno;
     QSet<int> vet;
+
 //    this->tcpSocket->abort();
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
@@ -885,36 +810,29 @@ std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int d
     if(!writeData(buffer))
         throw GUI_ConnectionException();
 
-    QDataStream in;
-    in.setDevice(this->tcpSocket);
-    in.setVersion(QDataStream::Qt_5_12);
+    if(!this->tcpSocket->waitForReadyRead(Timeout)){
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        throw GUI_ConnectionException();
+    }
+    QByteArray data = readData();
+    QDataStream in_data(&data, QIODevice::ReadOnly);
+    in_data.setVersion(QDataStream::Qt_5_12);
 
     int num, id;
+    in_data >> num;
 
-    do {
-        if (!this->tcpSocket->waitForReadyRead(Timeout)) {
-            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-            throw GUI_ConnectionException();
-        }
+//    qDebug()<<"GET_WORKINGUSERS_ONADOC - Ricevuto num_working_users: "<<num;     // DEBUG
 
-        in.startTransaction();
-        in >> num;
-
-//        qDebug()<<"GET_WORKINGUSERS_ONADOC - Ricevuto num_working_users: "<<num;     // DEBUG
-
-        // Controllo il caso di documento non risulta presente nella mappa del server workingUsers
-        if(num == -1)
-            break;
-
+    // Controllo il caso di documento non risulta presente nella mappa del server workingUsers
+    if(num != -1){
         for(int i=0; i<num; i++){
-            in >> id;
+            in_data >> id;
 //            qDebug()<<"GET_WORKINGUSERS_ONADOC - Arrivato dal server... ID:"<<id;       // DEBUG
             if(id == -1)
                 break;
             vet.insert(id);
         }
-
-    } while (!in.commitTransaction());
+    }
 
 //    qDebug()<<"GET_WORKINGUSERS_ONADOC - vet.size(): "<<vet.size();     // DEBUG
 
@@ -976,7 +894,7 @@ void connection_to_server::connectEditor(){
     //inserimenti di altri utenti o all'avvio dell'editor, se era già stato scritto qualcosa).
 
     //implementabile con una connect di readyRead sul socket
-    connect(this->tcpSocket, &QTcpSocket::readyRead, this, &connection_to_server::readData);
+    connect(this->tcpSocket, &QTcpSocket::readyRead, this, &connection_to_server::acceptData);
     connect(this, &connection_to_server::dataReceived, this, &connection_to_server::receiveMessage);
 }
 
@@ -984,7 +902,7 @@ void connection_to_server::disconnectEditor(int userId, int docId){
 
     qDebug()<<"DISCONNECT EDITOR";      // DEBUG
 
-    disconnect(this->tcpSocket, &QTcpSocket::readyRead, this, &connection_to_server::readData);
+    disconnect(this->tcpSocket, &QTcpSocket::readyRead, this, &connection_to_server::acceptData);
     disconnect(this, &connection_to_server::dataReceived, this, &connection_to_server::receiveMessage);
 
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
@@ -1115,13 +1033,17 @@ QByteArray connection_to_server::IntToArray(qint32 source)      //Use qint32 to 
 }
 
 
-void connection_to_server::readData(){
+void connection_to_server::acceptData(){
+    QByteArray data = readData();
+    emit dataReceived(data);
+}
+
+
+QByteArray connection_to_server::readData(){
 
     qint32 size = readBuffer_size;
 
     while (this->tcpSocket->bytesAvailable() > 0){
-
-        qDebug()<<"readData - BytesAvailable: "<<this->tcpSocket->bytesAvailable();        // DEBUG
 
         readBuffer.append(this->tcpSocket->readAll());
 
@@ -1139,10 +1061,95 @@ void connection_to_server::readData(){
                 readBuffer.remove(0, size);
                 size = 0;
                 readBuffer_size = size;
-                emit dataReceived(data);
+                return data;
             }
         }
     }
+
+    return "errore";
+}
+
+
+void connection_to_server::readDataFile(){
+
+    // Lettura del numero di simboli contenuti nel file
+    if(!this->tcpSocket->waitForReadyRead(Timeout)){
+        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        return;
+    }
+
+    QByteArray data = readData();
+    QDataStream in_num(&data, QIODevice::ReadOnly);
+    in_num.setVersion(QDataStream::Qt_5_12);
+
+    int num_simboli;
+    in_num >> num_simboli;
+
+    qDebug()<<"readDataFile - Ho letto num_simboli: "<<num_simboli;           // DEBUG
+
+    // Lettura dei singoli simboli del file
+    qint32 size = readBuffer_size;
+    QVector<CRDT_Symbol> simboli;
+    int i = 0;
+    while(i<num_simboli){
+
+        qDebug()<<"readDataFile - CICLO DI LETTURA i: "<<i+1<<"/"<<num_simboli;         // DEBUG
+
+        if(readBuffer.size() >= 4){
+
+            bool flag = false;
+            while ((size == 0 && readBuffer.size() >= 4) || (size > 0 && readBuffer.size() >= size))   // While can process data, process it
+            {
+                if (size == 0 && readBuffer.size() >= 4)        // If size of data has received completely, then store it on our global variable
+                {
+                    size = ArrayToInt(readBuffer.mid(0, 4));
+                    readBuffer_size = size;
+                    readBuffer.remove(0, 4);
+                }
+                if (size > 0 && readBuffer.size() >= size)      // If data has received completely, then emit our SIGNAL with the data
+                {
+                    QByteArray data1;
+                    data1.clear();
+                    QDataStream in_simb(&data1, QIODevice::ReadWrite);
+                    in_simb.setVersion(QDataStream::Qt_5_12);
+
+                    data1 = readBuffer.mid(0, size);
+                    readBuffer.remove(0, size);
+                    size = 0;
+                    readBuffer_size = size;
+
+                    CRDT_Symbol s;
+                    in_simb >> s;
+                    simboli.push_back(s);
+                    i++;
+
+                    qDebug()<<"readDataFile - Fatto il push_back del simbolo: "<<s.getCarattere().toLatin1();              // DEBUG
+
+                    flag = true;
+                    break;
+                }
+            }
+
+            if(flag)
+                continue;
+        }
+
+        if(this->tcpSocket->bytesAvailable() == 0){
+            if(!this->tcpSocket->waitForReadyRead(Timeout)){
+                emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+                return;
+            }
+        }
+
+        while (this->tcpSocket->bytesAvailable() > 0){
+            readBuffer.append(this->tcpSocket->readAll());
+        }
+    }
+
+    // Riempio il file temporaneo con il file attuale che sto aprendo
+    QDataStream a(&fileTMP, QIODevice::WriteOnly);
+    a << simboli;
+
 }
 
 

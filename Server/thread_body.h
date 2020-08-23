@@ -35,7 +35,6 @@ private:
     QThread* server;
     const int Timeout = 100 * 1000;
     CollegamentoDB* database;
-    QDataStream* in;
     int current_siteCounter;
     int current_docId;
     CRDT_ServerEditor* crdt;

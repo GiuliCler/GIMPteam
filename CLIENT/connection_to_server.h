@@ -48,7 +48,7 @@ public:
 
 private slots:
     void displayError(int socketError, const QString &message);
-    void readData();
+    void acceptData();
     void receiveMessage(QByteArray data);
 
 signals:
@@ -71,6 +71,8 @@ private:
     const int Timeout = 100 * 1000;
     QByteArray readBuffer;
     qint32 readBuffer_size;
+    QByteArray readData();
+    void readDataFile();
     bool writeData(QByteArray data);
     static QByteArray IntToArray(qint32 source);
     static qint32 ArrayToInt(QByteArray source);

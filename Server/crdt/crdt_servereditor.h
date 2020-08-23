@@ -23,7 +23,7 @@ public:
     ~CRDT_ServerEditor();
     void saveInFilesystem();
     void loadFromFilesystem();
-    QByteArray retrieveCurrentCrdt();
+    QVector<CRDT_Symbol> getSymbols();
 
 public slots:
     void process(const CRDT_Message& m);

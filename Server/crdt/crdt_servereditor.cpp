@@ -135,12 +135,6 @@ void CRDT_ServerEditor::loadFromFilesystem(){
 }
 
 
-// Nota: i mutex in questa funzione sono stati cancellati e messi fuori dalla chiamata alla funzione
-QByteArray CRDT_ServerEditor::retrieveCurrentCrdt(){
-    QByteArray a;
-    QDataStream data(&a, QIODevice::WriteOnly);
-//    mutex->lock();
-    data << _symbols;
-//    mutex->unlock();
-    return a;
+QVector<CRDT_Symbol> CRDT_ServerEditor::getSymbols(){
+    return _symbols;
 }

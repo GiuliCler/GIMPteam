@@ -20,11 +20,6 @@ Thread_body::Thread_body(int socketDescriptor, QThread* server, QObject *parent)
     database = new CollegamentoDB();
     database->connettiDB("gimpdocs_db", "conn" + threadId_toQString(thread_id));
 
-    // Ridefinisco in e out relativi alla connessione corrente
-    in = new QDataStream(socket);
-    in->setVersion(QDataStream::Qt_5_12);
-    in->startTransaction();
-
     QObject::connect(this, &Thread_body::dataReceived, this, &Thread_body::executeJob);
 }
 
@@ -415,8 +410,7 @@ void Thread_body::newDoc(QString docName, int userId){
             // Creo file fisico nel filesystem attraverso la openDoc
             if(openDoc(username + "_" + docName, docId, userId, 0) == -1){
                 out << "errore";
-                socket->write(blocko);
-                socket->flush();
+                writeData(blocko);
             }else{
                 mutex_db->lock();
                 // Associazione username - nome_doc nella tabella utente_doc del DB
@@ -426,8 +420,7 @@ void Thread_body::newDoc(QString docName, int userId){
 
                     if(siteCounter == -1){
                         out << "errore";
-                        socket->write(blocko);
-                        socket->flush();
+                        writeData(blocko);
                     } else {
                         // Aggiorno il docId su cui sto iniziando a lavorare
                         current_docId = docId;
@@ -436,29 +429,25 @@ void Thread_body::newDoc(QString docName, int userId){
                         QString ritorno = "ok_"+QString::number(siteCounter)+"_"+QString::number(docId);
 
                         out << ritorno.toUtf8();
-                        socket->write(blocko);
-                        socket->flush();
+                        writeData(blocko);
 
                         notifyNewWorkingUser(userId, docId);
                     }
                 }else{
                     mutex_db->unlock();
                     out << "errore";
-                    socket->write(blocko);
-                    socket->flush();
+                    writeData(blocko);
                 }
             }
         }else{
             mutex_db->unlock();
             out << "errore";
-            socket->write(blocko);
-            socket->flush();
+            writeData(blocko);
         }
     } else {
         // se username non esiste o non c'è la cartella relativa
         out << "errore";
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
     }
 }
 
@@ -536,22 +525,19 @@ void Thread_body::create(QString username, QString password, QString nickname, Q
         if(QDir(path+username).exists()){
             out << "ok";
             out << id;
-            socket->write(blocko);
-            socket->flush();
+            writeData(blocko);
             // Aggiungo al vettore di logged_users
             mutex_logged_users->lock();
             logged_users.push_back(username);
             mutex_logged_users->unlock();
         }else {
             out << "errore";
-            socket->write(blocko);
-            socket->flush();
+            writeData(blocko);
         }
 
     } else {
         out << "errore";
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
     }
 }
 
@@ -580,8 +566,7 @@ void Thread_body::login(QString username, QString password){
         mutex_logged_users->unlock();
 //        std::cout<<"### Utente gia' loggato"<<std::endl;                // DEBUG
         out << "alreadyLogged";
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
     } else {
         // L'utente non è ancora loggato
         mutex_logged_users->unlock();
@@ -608,12 +593,10 @@ void Thread_body::login(QString username, QString password){
 
             out << "ok";
             out << id;
-            socket->write(blocko);
-            socket->flush();
+            writeData(blocko);
         }else{
             out << "errore";
-            socket->write(blocko);
-            socket->flush();
+            writeData(blocko);
         }
     }
 
@@ -658,9 +641,7 @@ void Thread_body::logout(int userId){
 //    stampaLoggedUsers();                                                // DEBUG
 
     out << result;
-    socket->write(blocko);
-    socket->flush();
-    //socket->waitForBytesWritten(Timeout);
+    writeData(blocko);
 
     // Chiudo il socket dal lato del client
     socket->close();
@@ -682,18 +663,15 @@ void Thread_body::update(int userId, QString password, QString nickname, QString
             mutex_db->unlock();
             // orrettamente aggiornato nel db
             out << "ok";
-            socket->write(blocko);
-            socket->flush();
+            writeData(blocko);
         } else {
             mutex_db->unlock();
             out << "errore";
-            socket->write(blocko);
-            socket->flush();
+            writeData(blocko);
         }
     } else {
         out << "errore";
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
     }
 }
 
@@ -707,12 +685,10 @@ void Thread_body::retrieveUsername(int userId){
 
     if(!username.isEmpty()){
         out << username;
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
     }else{
         out << "errore";
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
     }
 }
 
@@ -729,12 +705,10 @@ void Thread_body::getNickname(int userId){
         QString nick = database->getNickname(username);
         mutex_db->unlock();
         out << nick.toUtf8();
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
     }else{
         out << "errore";
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
     }
 }
 
@@ -751,12 +725,10 @@ void Thread_body::getIcon(int userId){
         QString icon = database->getIconId(username);
         mutex_db->unlock();
         out << icon.toUtf8();
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
     }else{
         out << "errore";
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
     }
 }
 
@@ -803,12 +775,10 @@ void Thread_body::getDocs(int userId){
                 out << doc_name.toUtf8();
             }
         }
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
     }else{
         out << -1;
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
     }
 }
 
@@ -861,13 +831,12 @@ void Thread_body::openDocDatoUri(QString uri, int userId){
         if(ritorno.contains("ok")){
             // Mando al client la stringa di "ok"
             out << ritorno.toUtf8();
-//            socket->write(blocko);
-//            socket->flush();
+            writeData(blocko);
 
             crdt->mutex->lock();
 
             // Recupero il contenuto del vettore _symbols che sta all'interno del ServerEditor
-            QByteArray file = crdt->retrieveCurrentCrdt();
+            QVector<CRDT_Symbol> simboli = crdt->getSymbols();
 
             // Aggiorno il docId su cui sto iniziando a lavorare
             current_docId = docId;
@@ -875,9 +844,27 @@ void Thread_body::openDocDatoUri(QString uri, int userId){
             crdt->mutex->unlock();
 
             // Mando al client il contenuto del il contenuto del vettore _symbols
-            out << file;
-            socket->write(blocko);
-            socket->flush();
+            QByteArray blocko1;
+            QDataStream out1(&blocko1, QIODevice::WriteOnly);
+            out1.setVersion(QDataStream::Qt_5_12);
+
+            qDebug()<<"Invio file - Sto per inviare simboli.count(): "<<simboli.count();     // DEBUG
+
+            out1 << simboli.count();
+            writeData(blocko1);
+
+            int cont=1;
+            for(auto i=simboli.cbegin(); i<simboli.cend(); i++, cont++){
+
+                qDebug()<<"Invio file - CICLO DI SCRITTURA i: "<<cont<<"/"<<simboli.count()<<", simbolo che sto inviando: "<<(*i).getCarattere().toLatin1();         // DEBUG
+
+                QByteArray blocko2;
+                QDataStream out2(&blocko2, QIODevice::WriteOnly);
+                out2.setVersion(QDataStream::Qt_5_12);
+
+                out2 << (*i);
+                writeData(blocko2);
+            }
 
             notifyNewWorkingUser(userId, docId);
 
@@ -886,13 +873,11 @@ void Thread_body::openDocDatoUri(QString uri, int userId){
 
         }else{
             out << "errore";
-            socket->write(blocko);
-            socket->flush();
+            writeData(blocko);
         }
     }else{
         out << "errore";
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
     }
 }
 
@@ -909,12 +894,10 @@ void Thread_body::getUri(int docId){
         mutex_db->lock();
         out << database->recuperaURI(docName);
         mutex_db->unlock();
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
     }else{
         out << "errore";
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
     }
 }
 
@@ -940,12 +923,10 @@ void Thread_body::getOwnerId(int docId){
         mutex_users->unlock();
 
         out << ownerId;
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
     }else{
         out << -1;
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
     }
 }
 
@@ -964,8 +945,7 @@ void Thread_body::deleteDoc(int userId, int docId){
 
     if(docName.isEmpty()){
         out << "errore";
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
         return;
     }
 
@@ -974,8 +954,7 @@ void Thread_body::deleteDoc(int userId, int docId){
     QString username = getUsername(userId);
     if(username.isEmpty()){
         out << "errore";
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
         return;
     }
 
@@ -987,14 +966,12 @@ void Thread_body::deleteDoc(int userId, int docId){
         mutex_db->unlock();
         if(collaboratori.size()==0){
             out << "errore";
-            socket->write(blocko);
-            socket->flush();
+            writeData(blocko);
             return;
         }
         if(collaboratori.size()==1 && (collaboratori.at(0).at(0)=="errore")) {
             out << "errore";
-            socket->write(blocko);
-            socket->flush();
+            writeData(blocko);
             return;
         }
 
@@ -1004,8 +981,7 @@ void Thread_body::deleteDoc(int userId, int docId){
             if(database->rimuoviPartecipante(docName, i.at(0))==0){
                 mutex_db->unlock();
                 out << "errore";
-                socket->write(blocko);
-                socket->flush();
+                writeData(blocko);
                 return;
             }
             mutex_db->unlock();
@@ -1016,8 +992,7 @@ void Thread_body::deleteDoc(int userId, int docId){
         if(database->rimuoviDocumento(docName)==0){
             mutex_db->unlock();
             out << "errore";
-            socket->write(blocko);
-            socket->flush();
+            writeData(blocko);
         }else{
             mutex_db->unlock();
 
@@ -1030,8 +1005,7 @@ void Thread_body::deleteDoc(int userId, int docId){
             QFile file (path+username+"/"+docName+".txt");
             file.remove();
             out << "ok";
-            socket->write(blocko);
-            socket->flush();
+            writeData(blocko);
         }
     }else{
         // il documento rimane e viene dimenticato il documento da parte del partecipane
@@ -1039,13 +1013,11 @@ void Thread_body::deleteDoc(int userId, int docId){
         if(database->rimuoviAccesso(docName, username)==0){
             mutex_db->unlock();
             out << "errore";
-            socket->write(blocko);
-            socket->flush();
+            writeData(blocko);
         }else{
             mutex_db->unlock();
             out << "ok";
-            socket->write(blocko);
-            socket->flush();
+            writeData(blocko);
         }
     }
 }
@@ -1058,12 +1030,10 @@ void Thread_body::retrieveDocName(int docId){
     QString docName = getDocname(docId);
     if(!docName.isEmpty()){
         out << docName.split("_").at(1).toUtf8();
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
     }else{
         out << "errore";
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
     }
 }
 
@@ -1093,16 +1063,14 @@ void Thread_body::getWorkingUsersGivenDoc(int docId){
             out << id;
         }
 
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
 
     } else {
         // Documento non presente nella mappa workingUsers
 //        qDebug()<<"GET_WORKINGUSERS_ONADOC - Oh no, sono passato dall'else, quindi la mappa workingUsers NON contiene docId!!";           // DEBUG
         int no_doc = -1;
         out << no_doc;
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
     }
 
     mutex_workingUsers->unlock();
@@ -1145,13 +1113,11 @@ void Thread_body::getCollaboratorsGivenDoc(int docId){
                 }
             }
         }
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
     }else{
         out << 1;
         out << -2;
-        socket->write(blocko);
-        socket->flush();
+        writeData(blocko);
     }
 }
 
@@ -1169,20 +1135,17 @@ void Thread_body::openDocument(int docId, int userId){
         if(username.isEmpty()){
             // L'utente non esiste
             out << "errore";
-            socket->write(blocko);
-            socket->flush();
+            writeData(blocko);
         } else {
             // Il documento non esiste (vuol dire che è stato cancellato dall'owner)
             out << "doc-inesistente";
-            socket->write(blocko);
-            socket->flush();
+            writeData(blocko);
         }
     } else {
         // L'utente e il documento esistono
         if(openDoc(docName, docId, userId, 1) == -1){
             out << "errore";
-            socket->write(blocko);
-            socket->flush();
+            writeData(blocko);
         }else{
             mutex_db->lock();
             int siteCounter = database->recuperaSiteCounter(docName, username);
@@ -1190,22 +1153,18 @@ void Thread_body::openDocument(int docId, int userId){
 
             if(siteCounter == -1){
                 out << "errore";
-                socket->write(blocko);
-                socket->flush();
+                writeData(blocko);
             } else {
                 current_siteCounter = siteCounter;
                 QString ritorno = "ok_"+QString::number(siteCounter);
 
                 out << ritorno.toUtf8();
-//            socket->write(blocko);
-//            socket->flush();
+                writeData(blocko);
 
                 crdt->mutex->lock();
 
                 // Recupero il contenuto del vettore _symbols che sta all'interno del ServerEditor
-                QByteArray file = crdt->retrieveCurrentCrdt();
-
-//            qDebug()<<"FILE: "<<file;         // DEBUG
+                QVector<CRDT_Symbol> simboli = crdt->getSymbols();
 
                 // Aggiorno il docId su cui sto iniziando a lavorare
                 current_docId = docId;
@@ -1213,9 +1172,27 @@ void Thread_body::openDocument(int docId, int userId){
                 crdt->mutex->unlock();
 
                 // Mando al client il contenuto del il contenuto del vettore _symbols
-                out << file;
-                socket->write(blocko);
-                socket->flush();
+                QByteArray blocko1;
+                QDataStream out1(&blocko1, QIODevice::WriteOnly);
+                out1.setVersion(QDataStream::Qt_5_12);
+
+                qDebug()<<"Invio file - Sto per inviare simboli.count(): "<<simboli.count();     // DEBUG
+
+                out1 << simboli.count();
+                writeData(blocko1);
+
+                int cont=1;
+                for(auto i=simboli.cbegin(); i<simboli.cend(); i++, cont++){
+
+                    qDebug()<<"Invio file - CICLO DI SCRITTURA i: "<<cont<<"/"<<simboli.count()<<", simbolo che sto inviando: "<<(*i).getCarattere().toLatin1();         // DEBUG
+
+                    QByteArray blocko2;
+                    QDataStream out2(&blocko2, QIODevice::WriteOnly);
+                    out2.setVersion(QDataStream::Qt_5_12);
+
+                    out2 << (*i);
+                    writeData(blocko2);
+                }
 
                 notifyNewWorkingUser(userId, docId);
             }
@@ -1390,6 +1367,7 @@ qint32 Thread_body::ArrayToInt(QByteArray source) {
 
 
 bool Thread_body::writeData(QByteArray data){
+//    qDebug()<<"writeData - data.size(): "<<data.size();           // DEBUG
     socket->write(IntToArray(data.size()));          // ... write size of data
     socket->write(data);                             // ... write the data itself
     return socket->waitForBytesWritten(Timeout);
