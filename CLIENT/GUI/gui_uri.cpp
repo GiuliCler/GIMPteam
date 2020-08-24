@@ -12,12 +12,6 @@ GUI_URI::GUI_URI(QWidget *parent, QString uri) : QDialog(parent){
     setWindowFlag(Qt::MSWindowsFixedSizeDialogHint);
 
     ui->URILabel->setText(uri);
-
-    //style
-    QFont font = ui->URILabel->font();
-    font.setItalic(true);
-    font.setPixelSize(font.pixelSize() + 2);
-    ui->URILabel->setFont(font);
 }
 
 GUI_URI::~GUI_URI(){
@@ -27,7 +21,6 @@ GUI_URI::~GUI_URI(){
 void GUI_URI::on_copyPushButton_clicked(){
     QClipboard *clip = QApplication::clipboard();
     clip->setText(ui->URILabel->text());
-    //qDebug() << clip->text();
 }
 
 void GUI_URI::on_copyPushButton_pressed(){

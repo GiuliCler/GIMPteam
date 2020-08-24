@@ -8,8 +8,6 @@
 class GUI_Opendoc: public QWidget{
     Q_OBJECT
 public:
-    GIMPdocs *gimpParent;
-
     explicit GUI_Opendoc(QWidget *parent);
     ~GUI_Opendoc();
     static QString getObjectName() {return QString("GUI_Opendoc");}
@@ -26,6 +24,7 @@ private slots:
     void unavailableSharedDocument_emitted(int docId);
 
 private:
+    GIMPdocs *gimpParent;
     Ui::GUI_Opendoc *ui;
 
     void fillList();

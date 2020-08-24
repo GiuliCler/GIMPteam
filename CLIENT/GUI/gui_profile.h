@@ -9,8 +9,6 @@ class GUI_Profile : public QWidget
 {
     Q_OBJECT
 public:
-    GIMPdocs *gimpParent;
-
     explicit GUI_Profile(QWidget *parent);
     ~GUI_Profile();
     static QString getObjectName() {return QString("GUI_Profile");}
@@ -25,6 +23,7 @@ private slots:
     void on_backPushButton_clicked();
 
 private:
+    GIMPdocs *gimpParent;
     Ui::GUI_Profile *ui;
 
     bool checkFieldValidity(QString value, QString name);

@@ -22,6 +22,7 @@ class GIMPdocs : public QMainWindow
 
 public:
     int userid;
+    //serve per sapere se la connessione dell'editor col server è ancora attiva
     bool isEditorConnected = false;
     //mi servono public per fare delle connect
     Ui::GIMPdocs *ui1;

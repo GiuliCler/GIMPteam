@@ -14,9 +14,7 @@ public:
 
 private slots:
 
-
     void on_exitPushButton_clicked();
-
     void on_retryPushButton_clicked();
 
 private:

@@ -17,10 +17,6 @@ GUI_Login::GUI_Login(QWidget *parent) : QWidget(parent)
     connect(ui->usernameLineEdit, &QLineEdit::returnPressed, this, &GUI_Login::on_loginButton_clicked);
     connect(ui->passwordLineEdit, &QLineEdit::returnPressed, this, &GUI_Login::on_loginButton_clicked);
 
-    //style
-    QFont font = ui->titleLabel->font();
-    font.setPixelSize(font.pixelSize()+20);
-    ui->titleLabel->setFont(font);
 }
 
 GUI_Login::~GUI_Login(){
@@ -57,8 +53,8 @@ void GUI_Login::on_loginButton_clicked()
     int result = GUI_ConnectionToServerWrapper::requestLoginWrapper(gimpParent, ui->usernameLineEdit->text(), ui->passwordLineEdit->text());
     if( result == -1)
         return;
-    else
-        gimpParent->userid = result;
+
+    gimpParent->userid = result;
 
 
     GUI_Menu *widget = new GUI_Menu(gimpParent);

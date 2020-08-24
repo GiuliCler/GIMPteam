@@ -11,8 +11,6 @@ GUI_Server::GUI_Server(QWidget *parent) : QWidget(parent){
     ui = new Ui::GUI_Server;
     ui->setupUi(this);
 
-    setWindowTitle("Server connection");
-
     //la connect col pushbutton è già stata fatta di default dall'editor in maniera implicita, ma queste devo farle in maniera esplicita perchè mi collego alla stessa slot e non posso cambiarle nome per fare l'Autoconnect
     connect(ui->addressLineEdit, &QLineEdit::returnPressed, this, &GUI_Server::on_confirmPushButton_clicked);
     connect(ui->portLineEdit, &QLineEdit::returnPressed, this, &GUI_Server::on_confirmPushButton_clicked);
@@ -44,7 +42,7 @@ void GUI_Server::on_confirmPushButton_clicked(){
         return;
     }
 
-    connection = new connection_to_server(ui->portLineEdit->text(), ui->addressLineEdit->text());
+    connection_to_server * connection = new connection_to_server(ui->portLineEdit->text(), ui->addressLineEdit->text());
     gimpParent->setConnection(connection);
     GUI_Login *widget = new GUI_Login(gimpParent);
     gimpParent->setCentralWidget(widget);

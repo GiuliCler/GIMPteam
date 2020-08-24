@@ -14,8 +14,6 @@ public:
     explicit GUI_Server(QWidget *parent);
     ~GUI_Server();
 
-    connection_to_server *connection;
-
 private slots:
     void on_confirmPushButton_clicked();
     bool checkAddressValidity(QString address);
