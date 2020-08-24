@@ -209,8 +209,21 @@ void Thread_body::executeJob(QByteArray data){
         CRDT_Message messaggio;
         in_data >> messaggio;
 
+        if(current_docId == -1)
+            return;
+
         std::cout << "if SEND - azione: "<<messaggio.getAzione()<< std::endl;           // DEBUG
         emit messageToServer(messaggio, threadId_toQString(thread_id), current_docId);
+    }
+
+    c = "MOVECURSOR";
+    if(text.contains(c.toUtf8())){
+
+        int userId, pos;
+        in_data >> userId;
+        in_data >> pos;
+
+        moveCursor(userId, pos);
     }
 
     c = "DISCONNECT_FROM_DOC";
@@ -1234,6 +1247,18 @@ void Thread_body::closeDocument(int docId, int userId){
 }
 
 
+void Thread_body::moveCursor(int userId, int pos){
+    if(current_docId == -1)
+        return;
+
+    CRDT_Symbol s{};
+    CRDT_Message m{"MOVECURSOR_"+std::to_string(userId)+"_"+std::to_string(pos), s, userId};
+    auto threadId = std::this_thread::get_id();
+
+    emit messageToServer(m, threadId_toQString(threadId), current_docId);
+}
+
+
 void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int docId){
 
     qDebug() << "THREAD ID SENDER: "+thread_id_sender;                              // DEBUG
@@ -1316,6 +1341,16 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         out << userIdContributor[1].toInt();
         out << icon.toUtf8();
         out << nick.toUtf8();
+        writeData(blocko);
+        return;
+    }
+
+    c = "MOVECURSOR";
+    if(strAction.contains(c.toUtf8())){
+        QStringList str = strAction.split("_");
+        out <<  "MOVECURSOR";
+        out <<  str[1].toInt(); // userId
+        out <<  str[2].toInt(); // pos
         writeData(blocko);
         return;
     }

@@ -33,7 +33,7 @@ QMap<int, CRDT_ServerEditor*> files;
 
 QString path = "Files/";
 
-Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDescriptor) {
+Server::Server(QObject *parent): QTcpServer(parent) {
 
     qDebug()<< "Dentro al costruttore di Server";           // DEBUG
 
