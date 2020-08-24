@@ -892,11 +892,11 @@ void Thread_body::getUri(int docId){
 
     if(!docName.isEmpty()){
         mutex_db->lock();
-        out << database->recuperaURI(docName);
+        out << database->recuperaURI(docName).toUtf8();
         mutex_db->unlock();
         writeData(blocko);
     }else{
-        out << "errore";
+        out << "doc-inesistente";
         writeData(blocko);
     }
 }
@@ -944,7 +944,7 @@ void Thread_body::deleteDoc(int userId, int docId){
     QString docName = getDocname(docId);
 
     if(docName.isEmpty()){
-        out << "errore";
+        out << "doc-inesistente";
         writeData(blocko);
         return;
     }

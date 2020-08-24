@@ -203,8 +203,7 @@ std::string connection_to_server::openDoc(int userId, int docId)
         return esito.toStdString();
 
     } else if (esito.contains(inesist.toUtf8())){
-        emit unavailableSharedDocument(docId);
-//        return "errore";
+        emit unavailableSharedDocument(docId);      // TODO PER GIULIA: il messaggio di errore che deve essere lanciato in questo caso è "Attenzione! Impossibile aprire il documento selezionato. Documento cancellato dall'owner."
     }
 
     return "errore";
@@ -431,8 +430,14 @@ std::string connection_to_server::requestUri(int docId){
     QDataStream in_data(&data, QIODevice::ReadOnly);
     in_data.setVersion(QDataStream::Qt_5_12);
 
-    QString uri;
+    QByteArray uri;
     in_data >> uri;
+
+    QString inesist = "doc-inesistente";
+    if(uri.contains(inesist.toUtf8())){
+        emit unavailableSharedDocument(docId);
+        return "errore";    // TODO PER GIULIA: il messaggio di errore che deve essere lanciato in questo caso è "Attenzione! Impossibile recuperare l'URI del documento selezionato. Documento cancellato dall'owner."
+    }
 
     return uri.toStdString();
 }
@@ -671,10 +676,13 @@ std::string connection_to_server::requestDeleteDoc(int userId,int documentId){
     QByteArray esito;
     in_data >> esito;
 
-    QString err = "errore";
+    QString err = "errore", inesist = "doc-inesistente";
     if(esito.contains(err.toUtf8())){
         return "errore";
-    }else{
+    } else if (esito.contains(inesist.toUtf8())){
+        emit unavailableSharedDocument(documentId);
+        return "errore";         // TODO PER GIULIA: il messaggio di errore che deve essere lanciato in questo caso è "Attenzione! Impossibile cancellare il documento selezionato. Documento già cancellato dall'owner."
+    } else {
         return "ok";
     }
 }
@@ -964,10 +972,10 @@ void connection_to_server::receiveMessage(QByteArray data){
         in_data >> iconId;
         in_data >> nickname;
 
-        iconId.replace('\0',"");
+        iconId.replace('\0',"");                                            // TODO: siamo sicuri che serva questa riga?
         QString icona = QString::fromStdString(iconId.toStdString());
 
-        nickname.replace('\0',"");
+        nickname.replace('\0',"");                                          // TODO: siamo sicuri che serva questa riga?
         QString nick = QString::fromStdString(nickname.toStdString());
 
         //std::cout << userGetOnline << "icona: " + icona << " nickname: " + nick << std::endl;     // DEBUG
@@ -984,10 +992,10 @@ void connection_to_server::receiveMessage(QByteArray data){
         in_data >> iconId;
         in_data >> nickname;
 
-        iconId.replace('\0',"");
+        iconId.replace('\0',"");                                            // TODO: siamo sicuri che serva questa riga?
         QString icona = QString::fromStdString(iconId.toStdString());
 
-        nickname.replace('\0',"");
+        nickname.replace('\0',"");                                          // TODO: siamo sicuri che serva questa riga?
         QString nick = QString::fromStdString(nickname.toStdString());
 
         //std::cout << userNewContributor << "icona: " + icona << " nickname: " + nick << std::endl;
