@@ -28,7 +28,7 @@ GUI_Opendoc::GUI_Opendoc(QWidget *parent) : QWidget(parent)
     connect(ui->ownedDocsListWidget, &QListWidget::itemClicked, this, &GUI_Opendoc::on_ownedDocsListWidget_itemClicked);
     connect(ui->sharedDocsListWidget, &QListWidget::itemClicked, this, &GUI_Opendoc::on_sharedDocsListWidget_itemClicked);
     //questa connect è per rimuovere dall'elenco un documento appena eliminato da qualcun altro
-    connect(gimpParent->getConnection(), &connection_to_server::unavailableSharedDocument, this, &GUI_Opendoc::on_unavailableSharedDocument_emitted);
+    connect(gimpParent->getConnection(), &connection_to_server::unavailableSharedDocument, this, &GUI_Opendoc::unavailableSharedDocument_emitted);
 }
 
 GUI_Opendoc::~GUI_Opendoc(){
@@ -137,7 +137,7 @@ void GUI_Opendoc::on_sharedDocsListWidget_itemClicked(){
     ui->ownedDocsListWidget->setCurrentRow(-1);
 }
 
-void GUI_Opendoc::on_unavailableSharedDocument_emitted(int docId){
+void GUI_Opendoc::unavailableSharedDocument_emitted(int docId){
     //in pratica questa funzione fa da wrapper che fa qualche controllo. Non vedo come possa fallire, ma non si sa mai
     QListWidgetItem* currentItem = getSelectedItem();
 
