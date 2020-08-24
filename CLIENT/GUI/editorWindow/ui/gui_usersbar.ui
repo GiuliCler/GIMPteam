@@ -372,7 +372,7 @@ QPushButton:pressed,QPushButton:checked {
                </sizepolicy>
               </property>
               <property name="toolTip">
-               <string>Apply users colors</string>
+               <string>Show contributors highlighting</string>
               </property>
               <property name="text">
                <string/>
@@ -398,7 +398,7 @@ QPushButton:pressed,QPushButton:checked {
                </sizepolicy>
               </property>
               <property name="toolTip">
-               <string>Apply text colors</string>
+               <string>Hide contributors highlighting</string>
               </property>
               <property name="text">
                <string/>

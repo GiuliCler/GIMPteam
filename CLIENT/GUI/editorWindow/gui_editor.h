@@ -31,9 +31,10 @@ public:
     //indica se il testo è colorato coi colori degli utenti per identificarli
     bool usersColors;
 
-    explicit GUI_Editor(QWidget *parent, int documentId, QString docName, int siteId, int siteCounter);
+    explicit GUI_Editor(QWidget *parent, int documentId, QString docName, int siteCounter);
     ~GUI_Editor();
     inline static QString getObjectName(){ return "GUI_Editor";}
+    QColor *getUserColor(int userId);
 
     //mi serve perchè non posso fare le connect direttamente nel costruttore. Quando sono nel costruttore, la ui2 non è ancora stata caricata quindi la connect va fatta in un secondo momento
     void connectMenuBarActions();
@@ -65,8 +66,6 @@ public slots:
     void addUserToEditorGUI(int userid, QString nickname, QString iconId);
     void removeUserFromEditorGUI(int userid);
     void addContributorToCurrentDocument(int userid, QString nickname, QString iconId);
-
-    QColor *getUserColor(int userId);
 
 private:
     Ui::GUI_Editor *ui;
