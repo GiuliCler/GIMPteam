@@ -22,7 +22,6 @@ GUI_UsersBar::GUI_UsersBar(QWidget *parent) : QWidget(parent){
     GUI_MyScrollArea *contributorIconsScrollArea = new GUI_MyScrollArea(ui->contributorsIgnoredWrapper);
     contributorIconsScrollArea->setObjectName(getContributorsAreaName());
     ui->contributorsIgnoredWrapper->layout()->addWidget(contributorIconsScrollArea);
-    //static_cast<QVBoxLayout*>(ui->contributorUsersWidget->layout())->insertWidget(2, contributorIconsScrollArea);
 
     //connetto le signals dei pulsanti per fare alternare i pulsanti nella menù bar
     connect(ui->showColorsPushButton, &QPushButton::clicked, this->editorParent, &GUI_Editor::on_actionApplyUsersColors);
@@ -33,14 +32,14 @@ GUI_UsersBar::~GUI_UsersBar(){
     delete ui;
 }
 
-QLabel *GUI_UsersBar::getUserIcon(int userId, QColor color){
+QLabel *GUI_UsersBar::getUserIcon(QColor color, QString nickname, QString iconId){
     //carico l'icona e le metto uno sfondo
-    QString iconId = GUI_ConnectionToServerWrapper::requestIconIdWrapper(editorParent->gimpParent, userId);
-    if(iconId.compare("errore") == 0)
-        //non dovremmo mai entrare in questo if perchè in caso di errore di connessione si dovrebbe ricaricare il widget da capo
-        return new QLabel;
+    QString iconPath = GUI_Icons::getIconPath(iconId);
+    if(iconPath.compare("") == 0)
+        //non dovrebbe mai succedere, a meno che il server non elimini delle icone senza avvisare gli user che avevano scelto quell'icona
+        return nullptr;
 
-    QPixmap *image = new QPixmap(GUI_Icons::getIconPath(iconId));
+    QPixmap *image = new QPixmap(iconPath);
     QPixmap *background = new QPixmap(image->height(), image->width());
     background->fill(color);
     QPainter painter(background);
@@ -54,21 +53,19 @@ QLabel *GUI_UsersBar::getUserIcon(int userId, QColor color){
     label->setScaledContents(true);
     label->setMaximumSize(GUI_Icons::iconSize,GUI_Icons::iconSize);
     label->setMinimumSize(GUI_Icons::iconSize,GUI_Icons::iconSize);
-    QString tooltip = GUI_ConnectionToServerWrapper::requestGetNicknameWrapper(editorParent->gimpParent, userId);
-    if(tooltip.compare("errore") == 0)
-        //non dovremmo mai entrare in questo if perchè in caso di errore di connessione si dovrebbe ricaricare il widget da capo
-        return new QLabel;
-    label->setToolTip(tooltip);
+    label->setToolTip(nickname);
 
     return label;
 }
 
-void GUI_UsersBar::addOnlineUserIcon(int userId, QColor color){
+void GUI_UsersBar::addOnlineUserIcon(int userId, QColor color, QString nickname, QString iconId){
     //questo non dovrebbe succedere, ma non si sa mai
     if(onlineUsersIconMap.find(userId) != onlineUsersIconMap.end())
         return;
 
-    QLabel *iconLabel = getUserIcon(userId, color);
+    QLabel *iconLabel = getUserIcon(color, nickname, iconId);
+    if(iconLabel == nullptr)
+        return;
     onlineUsersIconMap.insert(userId, iconLabel);
     ui->numberOnlineUsersLabel->setNum(onlineUsersIconMap.size());
     this->findChild<GUI_MyScrollArea*>(getOnlineAreaName())->widget()->layout()->addWidget(iconLabel);
@@ -94,12 +91,14 @@ void GUI_UsersBar::removeOnlineUserIcon(int userId){
         this->findChild<GUI_MyScrollArea*>(getOnlineAreaName())->updateSize(onlineUsersIconMap.size());
 }
 
-void GUI_UsersBar::addContributorUserIcon(int userId, QColor color){
+void GUI_UsersBar::addContributorUserIcon(int userId, QColor color, QString nickname, QString iconId){
     //questo non dovrebbe succedere, ma non si sa mai
     if(contributorUsersIconMap.find(userId) != contributorUsersIconMap.end())
         return;
 
-    QLabel *iconLabel = getUserIcon(userId, color);
+    QLabel *iconLabel = getUserIcon(color, nickname, iconId);
+    if(iconLabel == nullptr)
+        return;
     contributorUsersIconMap.insert(userId, iconLabel);
     ui->numberContributorUsersLabel->setNum(contributorUsersIconMap.size());
     this->findChild<GUI_MyScrollArea*>(getContributorsAreaName())->widget()->layout()->addWidget(iconLabel);
@@ -108,17 +107,6 @@ void GUI_UsersBar::addContributorUserIcon(int userId, QColor color){
         this->findChild<GUI_MyScrollArea*>(getContributorsAreaName())->updateSize(contributorUsersIconMap.size());
 }
 
-void GUI_UsersBar::removeContributorUserIcon(int userId){
-    if(this->contributorUsersIconMap.find(userId) == contributorUsersIconMap.end())
-        return;
-
-    contributorUsersIconMap[userId]->close();
-    contributorUsersIconMap.remove(userId);
-    ui->numberContributorUsersLabel->setNum(contributorUsersIconMap.size());
-
-    if(contributorUsersIconMap.size() <= GUI_MyScrollArea::getMaxUsersIconsNumber()+1)
-        this->findChild<GUI_MyScrollArea*>(getContributorsAreaName())->updateSize(contributorUsersIconMap.size());
-}
 
 bool GUI_UsersBar::isOnline(int userId){
     return onlineUsersIconMap.find(userId) != onlineUsersIconMap.end();
@@ -132,6 +120,7 @@ bool GUI_UsersBar::isContributor(int userId){
 
 void GUI_UsersBar::on_showColorsPushButton_clicked(){
     editorParent->usersColors = true;
+    emit highlightingUsers(true);
 
     ui->hideColorsPushButton->show();
     ui->contributorUsersWidget->show();
@@ -140,29 +129,9 @@ void GUI_UsersBar::on_showColorsPushButton_clicked(){
 
 void GUI_UsersBar::on_hideColorsPushButton_clicked(){
     editorParent->usersColors = false;
+    emit highlightingUsers(false);
 
     ui->showColorsPushButton->show();
     ui->contributorUsersWidget->hide();
     ui->hideColorsPushButton->hide();
-}
-
-/**********************************DEBUG**********************************/
-
-void GUI_UsersBar::on_pushButton_clicked()
-{
-    editorParent->addUserToEditorGUI(QRandomGenerator::global()->bounded(2000));
-}
-
-void GUI_UsersBar::on_pushButton_2_clicked()
-{
-    editorParent->removeUserFromEditorGUI(onlineUsersIconMap.keys().first());
-}
-
-void GUI_UsersBar::on_pushButton_3_clicked()
-{
-    editorParent->addContributorToCurrentDocument(QRandomGenerator::global()->bounded(2000));
-}
-
-void GUI_UsersBar::on_pushButton_4_clicked(){
-    editorParent->removeContributorFromCurrentDocument(contributorUsersIconMap.keys().first());
 }

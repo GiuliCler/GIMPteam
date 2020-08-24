@@ -19,13 +19,6 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int sit
     this->setObjectName(GUI_Editor::getObjectName());
     gimpParent = static_cast<GIMPdocs*>(parent);
 
-    //Per gli online users
-    QObject::connect(gimpParent->getConnection(), &connection_to_server::sigOfflineUser, this, &GUI_Editor::removeUserFromEditorGUI);
-    QObject::connect(gimpParent->getConnection(), &connection_to_server::sigOnlineUser, this, &GUI_Editor::addUserToEditorGUI);
-
-    //per i contributors
-    QObject::connect(gimpParent->getConnection(), &connection_to_server::sigNewContributor, this, &GUI_Editor::addContributorToCurrentDocument);
-
     ui = new Ui::GUI_Editor();
     ui->setupUi(this);
 
@@ -37,33 +30,31 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int sit
     ui->toolsBarWidget->layout()->addWidget(childToolsBar);
     crdtController = new CRDT_controller(gimpParent, this, *childMyTextEdit, siteId, siteCounter);
 
+    fillOnlineUsersList();
+    fillContibutorUsersList();
 
-    //ottengo l'elenco degli utenti che al momento stanno guardando il mio stesso document e ne creo icona e cursore
-    std::shared_ptr<QSet<int>> users = GUI_ConnectionToServerWrapper::getWorkingUsersOnDocumentWrapper(gimpParent, documentId);
-    if( users == nullptr)
+    //richiedo l'uri del documento, perchè se mi chiede l'URI mentre ci lavoro non posso contattare la connection_to_server
+    QString uri = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
+    if(uri.compare("errore") == 0)
         return;
-    for (QSet<int>::iterator userId = users->begin(); userId != users->end(); userId++)
-        addUserToEditorGUI(*userId);
+    this->uri = uri;
 
-    //creo l'icona per gli user che hanno contribuito al document
-    std::shared_ptr<QSet<int>> contributors = GUI_ConnectionToServerWrapper::getContributorsUsersOnDocumentWrapper(gimpParent, documentId);
-    if( contributors == nullptr || contributors->size()==0)
+    //Per gli online users ed i contributors
+    QObject::connect(gimpParent->getConnection(), &connection_to_server::sigOnlineUser, this, &GUI_Editor::addUserToEditorGUI);
+    QObject::connect(gimpParent->getConnection(), &connection_to_server::sigOfflineUser, this, &GUI_Editor::removeUserFromEditorGUI);
+    QObject::connect(gimpParent->getConnection(), &connection_to_server::sigNewContributor, this, &GUI_Editor::addContributorToCurrentDocument);
+
+    //Per spostare i cursors
+    QObject::connect(crdtController, &CRDT_controller::updateCursorPosition, childMyTextEdit, &GUI_MyTextEdit::on_updateCursorPosition_emitted);
+
+    //avvio la connessione speciale per l'editor. D'ora in poi la connection_to_server è off-limits
+    if(GUI_ConnectionToServerWrapper::requestStartEditorConnection(gimpParent) < 0)
         return;
-    for (QSet<int>::iterator userId = contributors->begin(); userId != contributors->end(); userId++)
-        addContributorToCurrentDocument(*userId);
 
-    //richiedo l'uri del documento
-    this->uri = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
-    //avvio l'editor
-    GUI_ConnectionToServerWrapper::startEditor(gimpParent);
+    gimpParent->isEditorConnected = true;
 }
 
 GUI_Editor::~GUI_Editor(){
-
-    //int result = GUI_ConnectionToServerWrapper::closeDocumentWrapper(gimpParent, gimpParent->userid, documentId);
-    //if(result == -1)
-     //   return;
-
     delete ui;
     delete crdtController;
 }
@@ -113,20 +104,17 @@ void GUI_Editor::connectMenuBarActions(){
 
 }
 
-void GUI_Editor::changeWindowName(){
-
+void GUI_Editor::setUpEditor(){
     //modifico il nome della finestra
-    //QString documentName = GUI_ConnectionToServerWrapper::requestDocNameWrapper(gimpParent, documentId);
-    QString documentName = docName;                     // todo ila&paolo -- sistemare sto giochino bruttino
-    if(documentName.compare("errore") == 0)
-        return;
-    gimpParent->setWindowTitle("GIMPdocs - " + documentName);
+    gimpParent->setWindowTitle("GIMPdocs - " + docName);
+    childMyTextEdit->setupTextEdit();
 }
 
 void GUI_Editor::launchSetUi1(){
-    int result = GUI_ConnectionToServerWrapper::closeDocumentWrapper(gimpParent, gimpParent->userid, documentId);
-    if(result == -1)
+    if(GUI_ConnectionToServerWrapper::requestCloseDocumentWrapper(gimpParent, gimpParent->userid, documentId) == -1)
         return;
+
+    gimpParent->isEditorConnected = false;
 
     GUI_Menu *widget = new GUI_Menu(this->gimpParent);
     static_cast<GIMPdocs*>(this->gimpParent)->setUi1(widget);
@@ -335,12 +323,13 @@ void GUI_Editor::setMenuToolStatus(menuTools code){
 }
 
 
-void GUI_Editor::addUserToEditorGUI(int userid){
+void GUI_Editor::addUserToEditorGUI(int userid, QString nickname, QString iconId){
     //ottengo un colore per cursore e icona
     QColor *color = getUserColor(userid);
 
     //nota: la findChild è ricorsiva e funziona anche coi nipoti
-    findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->addOnlineUserIcon(userid, *color);
+    //questo bruttissimo passaggio di parametri di funzione in funzione anzichè reperirli direttamente a basso livello chiamando il server è perchè mentre il CRDT è aperto non posso usare la connection_to_server
+    findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->addOnlineUserIcon(userid, *color, nickname, iconId);
     GUI_MyTextEdit *son = findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName());
 
     //TODO: per ora sto mettendo delle posizioni a caso ma più avanti dovrò mettere quelle reali
@@ -356,16 +345,11 @@ void GUI_Editor::removeUserFromEditorGUI(int userid){
         forgetUserColor(userid);
 }
 
-void GUI_Editor::addContributorToCurrentDocument(int userid){
+void GUI_Editor::addContributorToCurrentDocument(int userid, QString nickname, QString iconId){
     QColor *color = getUserColor(userid);
-    findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->addContributorUserIcon(userid, *color);
+    findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->addContributorUserIcon(userid, *color, nickname, iconId);
 }
 
-void GUI_Editor::removeContributorFromCurrentDocument(int userid){
-    findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->removeContributorUserIcon(userid);
-    if(!findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->isOnline(userid))
-        forgetUserColor(userid);
-}
 
 QColor *GUI_Editor::getUserColor(int userId){
     QColor *color;
@@ -386,4 +370,50 @@ void GUI_Editor::forgetUserColor(int userId){
 
     colorsManager.returnColor(userColorMap[userId]);
     userColorMap.remove(userId);
+}
+
+void GUI_Editor::fillOnlineUsersList(){
+    //ottengo l'elenco degli utenti che al momento stanno guardando il mio stesso document e ne creo icona e cursore
+    std::shared_ptr<QSet<int>> users = GUI_ConnectionToServerWrapper::getWorkingUsersOnDocumentWrapper(gimpParent, documentId);
+    if( users == nullptr)
+        return;
+
+    for (QSet<int>::iterator userId = users->begin(); userId != users->end(); userId++){
+        //questo bruttissimo passaggio di parametri di funzione in funzione anzichè reperirli direttamente a basso livello chiamando il server è perchè mentre il CRDT è aperto non posso usare la connection_to_server
+
+        QString nickname = GUI_ConnectionToServerWrapper::requestGetNicknameWrapper(gimpParent, *userId);
+        if(nickname.compare("errore") == 0)
+            //non dovremmo mai entrare in questo if perchè in caso di errore di connessione si dovrebbe ricaricare il widget da capo
+            return;
+
+        QString iconId = GUI_ConnectionToServerWrapper::requestGetIconIdWrapper(gimpParent, *userId);
+        if(iconId.compare("errore") == 0)
+            //non dovremmo mai entrare in questo if perchè in caso di errore di connessione si dovrebbe ricaricare il widget da capo
+            return;
+
+        addUserToEditorGUI(*userId, nickname, iconId);
+    }
+}
+
+void GUI_Editor::fillContibutorUsersList(){
+    //creo l'icona per gli user che hanno contribuito al document
+    std::shared_ptr<QSet<int>> contributors = GUI_ConnectionToServerWrapper::getContributorsUsersOnDocumentWrapper(gimpParent, documentId);
+    if( contributors == nullptr || contributors->size()==0)
+        return;
+
+    for (QSet<int>::iterator userId = contributors->begin(); userId != contributors->end(); userId++){
+        //questo bruttissimo passaggio di parametri di funzione in funzione anzichè reperirli direttamente a basso livello chiamando il server è perchè mentre il CRDT è aperto non posso usare la connection_to_server
+
+        QString nickname = GUI_ConnectionToServerWrapper::requestGetNicknameWrapper(gimpParent, *userId);
+        if(nickname.compare("errore") == 0)
+            //non dovremmo mai entrare in questo if perchè in caso di errore di connessione si dovrebbe ricaricare il widget da capo
+            return;
+
+        QString iconId = GUI_ConnectionToServerWrapper::requestGetIconIdWrapper(gimpParent, *userId);
+        if(iconId.compare("errore") == 0)
+            //non dovremmo mai entrare in questo if perchè in caso di errore di connessione si dovrebbe ricaricare il widget da capo
+            return;
+
+        addContributorToCurrentDocument(*userId, nickname, iconId);
+    }
 }

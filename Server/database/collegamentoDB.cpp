@@ -1,5 +1,4 @@
 #include "collegamentoDB.h"
-#include "sha256.h"
 #include <vector>
 #include <QCryptographicHash>
 
@@ -174,13 +173,23 @@ int CollegamentoDB::creaDoc(QString nomeDOC){
     QString uri = creaURI(nomeDOC);
 
     std::string query = "INSERT INTO doc(nome_doc, uri) VALUES(:doc, :ur)";
-    QSqlQuery ris(QSqlDatabase::database(connectionName));
+    std::string query1 = "SELECT * FROM doc WHERE nome_doc=:doc";
+    QSqlQuery ris(QSqlDatabase::database(connectionName)), ris1(QSqlDatabase::database(connectionName));
     ris.prepare(QString::fromStdString(query));
+    ris1.prepare(QString::fromStdString(query1));
     ris.bindValue(":doc", nomeDOC);
     ris.bindValue(":ur", uri);
+    ris1.bindValue(":doc", nomeDOC);
 
-    if(!ris.exec())
+    ris1.exec();
+    if(ris1.size() == 0){
+        /* Tutto ok: non esiste ancora alcuna riga all'interno della tabella DOC con il nomeDOC specificato */
+        if(!ris.exec())
+            return 0;
+    } else {
+        /* Errore: esiste già una riga all'interno della tabella DOC con il nomeDOC specificato */
         return 0;
+    }
 
     return 1;
 }
@@ -256,11 +265,11 @@ int CollegamentoDB::aggiungiPartecipante(QString nomeDOC, QString username){
 
     int esito = 1;
 
-    int siteID = -1, siteCOUNTER = -1;
+    int siteCOUNTER = -1;
 
     std::string query1 = "SELECT * FROM utente_doc WHERE username=:user AND nome_doc=:doc AND accessibile=:acc";
     std::string query3 = "SELECT * FROM doc WHERE nome_doc=:doc";
-    QSqlQuery ris1(QSqlDatabase::database(connectionName)), ris2(QSqlDatabase::database(connectionName)), ris3(QSqlDatabase::database(connectionName)), ris4(QSqlDatabase::database(connectionName)), ris5(QSqlDatabase::database(connectionName));
+    QSqlQuery ris1(QSqlDatabase::database(connectionName)), ris2(QSqlDatabase::database(connectionName)), ris3(QSqlDatabase::database(connectionName)), ris4(QSqlDatabase::database(connectionName));
     ris1.prepare(QString::fromStdString(query1));
     ris3.prepare(QString::fromStdString(query3));
     ris1.bindValue(":user", username);
@@ -289,7 +298,7 @@ int CollegamentoDB::aggiungiPartecipante(QString nomeDOC, QString username){
             /* L'utente non è ancora stato abilitato alla modifica del documento */
             /* "Esiste già una riga nella tabella UTENTE_DOC corrispondente alla coppia (username,nomeDOC) con accessibile = 0 (false)?"
                   esiste --> setto accessibile = TRUE
-                  non esiste --> creo riga con siteCOUNTER = 0 e siteID = COUNT(site_id) */
+                  non esiste --> creo riga con siteCOUNTER = 0 */
             std::string query4 = "SELECT * FROM utente_doc WHERE username=:user AND nome_doc=:doc AND accessibile=:acc";
             ris4.prepare(QString::fromStdString(query4));
             ris4.bindValue(":user", username);
@@ -300,10 +309,9 @@ int CollegamentoDB::aggiungiPartecipante(QString nomeDOC, QString username){
 
             if(ris4.size() != 0){
                 /* Esiste già una riga nella tabella utente_doc*/
-                // Recupero siteID e siteCOUNTER precedenti prima di fare la delete (motivo delete+insert: la UPDATE SQL non funziona)
+                // Recupero siteCOUNTER precedente prima di fare la delete (motivo delete+insert: la UPDATE SQL non funziona)
                 while(ris4.next()){
-                    siteID = ris4.value(2).toInt();
-                    siteCOUNTER = ris4.value(3).toInt();
+                    siteCOUNTER = ris4.value(2).toInt();
                 }
 
                 QSqlQuery risDEL(QSqlDatabase::database(connectionName));
@@ -314,23 +322,12 @@ int CollegamentoDB::aggiungiPartecipante(QString nomeDOC, QString username){
             } else {
                 /* Non esiste ancora una riga nella tabella utente_doc*/
                 siteCOUNTER = 0;
-
-                std::string query5 = "SELECT COUNT(*) FROM utente_doc WHERE nome_doc=:doc";
-                ris5.prepare(QString::fromStdString(query5));
-                ris5.bindValue(":doc", nomeDOC);
-
-                ris5.exec();
-
-                while(ris5.next()){
-                    siteID = ris5.value(0).toInt();
-                }
             }
 
-            std::string query2 = "INSERT INTO utente_doc(username, nome_doc, site_id, site_counter, accessibile) VALUES(:user, :doc, :siteid, :sitecounter, :acc)";
+            std::string query2 = "INSERT INTO utente_doc(username, nome_doc, site_counter, accessibile) VALUES(:user, :doc, :sitecounter, :acc)";
             ris2.prepare(QString::fromStdString(query2));
             ris2.bindValue(":user", username);
             ris2.bindValue(":doc", nomeDOC);
-            ris2.bindValue(":siteid", siteID);
             ris2.bindValue(":sitecounter", siteCOUNTER);
             ris2.bindValue(":acc", 1);
 
@@ -384,8 +381,6 @@ std::vector<QString> CollegamentoDB::recuperaDocs(QString username){
  */
 QString CollegamentoDB::getNickname(QString username){
 
-    //qDebug()<<"SONO DENTRO LA getNickname e USERNAME E': "<<username;            // DEBUG
-
     std::string query = "SELECT nickname FROM utenti WHERE username=:user";
     QSqlQuery ris(QSqlDatabase::database(connectionName));
     ris.prepare(QString::fromStdString(query));
@@ -393,15 +388,10 @@ QString CollegamentoDB::getNickname(QString username){
 
     ris.exec();
 
-    //qDebug()<<"HO ESEGUITO LA EXEC";            // DEBUG
-
     if(ris.size() > 0){
-        //qDebug()<<"SONO NELL'IF... ris.size() vale "<<ris.size();            // DEBUG
         ris.next();
-        //qDebug()<<"STO PER MANDARE INDIETRO UNA COSA DI TIPO... "<<ris.value(0).typeName();  // DEBUG
         return QString::fromStdString(ris.value(0).toByteArray().toStdString());
     } else {
-        //qDebug()<<"SONO NELL'ELSE";            // DEBUG
         return "errore";
     }
 }
@@ -482,25 +472,24 @@ std::vector<std::vector<QString>> CollegamentoDB::recuperaCollaboratori(QString 
 }
 
 /*
- * Utilizzo: funzione che permette di recuperare dalla tabella UTENTE_DOC il site_id e il site_counter di un certo utente,
+ * Utilizzo: funzione che permette di recuperare dalla tabella UTENTE_DOC il site_counter di un certo utente,
  *           dato il suo username e il nome del documento
  * Parametri:
  *      username: utente che sta chiedendo l'accesso ad un dato documento
  *      nomeDOC: nome del documento
  * Ritorno:
- *      ok -> vettore composto da [site_id, site_counter]
- *      errore -> vettore composto dal solo valore -1
+ *      ok -> site_counter
+ *      errore -> -1
  */
-std::vector<int> CollegamentoDB::recuperaInfoUtenteDoc(QString nomeDOC, QString username){
+int CollegamentoDB::recuperaSiteCounter(QString nomeDOC, QString username){
 
-    std::vector<int> rit;
+    int rit = -1;
 
     if(nomeDOC.isEmpty() || username.isEmpty()){
-        rit.push_back(-1);
-        return rit;
+        return -1;
     }
 
-    std::string query = "SELECT site_id, site_counter FROM utente_doc WHERE username=:user AND nome_doc=:doc";
+    std::string query = "SELECT site_counter FROM utente_doc WHERE username=:user AND nome_doc=:doc";
     QSqlQuery ris(QSqlDatabase::database(connectionName));
     ris.prepare(QString::fromStdString(query));
     ris.bindValue(":user", username);
@@ -510,13 +499,11 @@ std::vector<int> CollegamentoDB::recuperaInfoUtenteDoc(QString nomeDOC, QString 
 
     if(ris.size() == 1){
         while(ris.next()){
-            int id = ris.value(0).toInt();
-            int counter = ris.value(1).toInt();
-            rit.push_back(id);
-            rit.push_back(counter);
+            int counter = ris.value(0).toInt();
+            rit = counter;
         }
     } else {
-        rit.push_back(-1);
+        return -1;
     }
 
     return rit;
@@ -582,7 +569,7 @@ int CollegamentoDB::rimuoviAccesso(QString nomeDOC, QString username){
     if(nomeDOC.isEmpty() || username.isEmpty())
         return 0;
 
-    int esito = 1, siteID = -1, siteCOUNTER = -1;
+    int esito = 1, siteCOUNTER = -1;
 
     std::string query1 = "SELECT * FROM utente_doc WHERE username=:user AND nome_doc=:doc";
     QSqlQuery ris1(QSqlDatabase::database(connectionName)), ris2(QSqlDatabase::database(connectionName)), ris3(QSqlDatabase::database(connectionName)), ris4(QSqlDatabase::database(connectionName));
@@ -600,21 +587,19 @@ int CollegamentoDB::rimuoviAccesso(QString nomeDOC, QString username){
 
     } else {
 
-        // Recupero siteID e siteCOUNTER precedenti prima di fare la delete (motivo delete+insert: la UPDATE SQL non funziona)
+        // Recupero siteCOUNTER precedenti prima di fare la delete (motivo delete+insert: la UPDATE SQL non funziona)
         while(ris1.next()){
-            siteID = ris1.value(2).toInt();
-            siteCOUNTER = ris1.value(3).toInt();
+            siteCOUNTER = ris1.value(2).toInt();
         }
 
         std::string query2 = "DELETE FROM utente_doc WHERE username=:user AND nome_doc=:doc";
-        std::string query3 = "INSERT INTO utente_doc(username, nome_doc, site_id, site_counter, accessibile) VALUES(:user, :doc, :siteid, :sitecounter, :acc)";
+        std::string query3 = "INSERT INTO utente_doc(username, nome_doc, site_counter, accessibile) VALUES(:user, :doc, :sitecounter, :acc)";
         ris2.prepare(QString::fromStdString(query2));
         ris3.prepare(QString::fromStdString(query3));
         ris2.bindValue(":user", username);
         ris2.bindValue(":doc", nomeDOC);
         ris3.bindValue(":user", username);
         ris3.bindValue(":doc", nomeDOC);
-        ris3.bindValue(":siteid", siteID);
         ris3.bindValue(":sitecounter", siteCOUNTER);
         ris3.bindValue(":acc", 0);
 
@@ -655,10 +640,9 @@ int CollegamentoDB::aggiornaSiteCounter(QString nomeDOC, QString username, int s
     if(ris0.exec()){
         if(ris0.size() == 1){
 
-            int id = -1, access = -1;
+            int access = -1;
             while(ris0.next()){
-                id = ris0.value(2).toInt();
-                access = ris0.value(4).toInt();
+                access = ris0.value(3).toInt();
             }
 
             QSqlQuery risDEL(QSqlDatabase::database(connectionName));
@@ -667,12 +651,11 @@ int CollegamentoDB::aggiornaSiteCounter(QString nomeDOC, QString username, int s
             risDEL.bindValue(":doc", nomeDOC);
             risDEL.exec();
 
-            std::string query = "INSERT INTO utente_doc(username, nome_doc, site_id, site_counter, accessibile) VALUES(:user, :doc, :siteid, :sitecounter, :acc)";
+            std::string query = "INSERT INTO utente_doc(username, nome_doc, site_counter, accessibile) VALUES(:user, :doc, :sitecounter, :acc)";
             QSqlQuery ris(QSqlDatabase::database(connectionName));
             ris.prepare(QString::fromStdString(query));
             ris.bindValue(":user", username);
             ris.bindValue(":doc", nomeDOC);
-            ris.bindValue(":siteid", id);
             ris.bindValue(":sitecounter", siteCount);
             ris.bindValue(":acc", access);
 

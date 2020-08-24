@@ -23,15 +23,13 @@ int Stub::requestTryLoginTemporary(connection_to_server *connection, QString use
     return result;
 }
 
-int Stub::requestTryLogOutTemporary(connection_to_server *connection, int userId){
+void Stub::requestTryLogOutTemporary(connection_to_server *connection, int userId){
     int result = connection->requestTryLogOut(userId);
 
     if(result < 0)
         //per ora ne tiro una a caso, ma la funzione requestTryLogin dovrà tirare quella appropriata
         //throw GUI_ConnectionException();
         throw GUI_GenericException("Houston, abbiamo un problema");
-
-    return result;
 }
 
 int Stub::requestNewAccountTemporary(connection_to_server *connection, QString username, QString password, QString nickname, QString iconId){
@@ -44,14 +42,12 @@ int Stub::requestNewAccountTemporary(connection_to_server *connection, QString u
     return result;
 }
 
-int Stub::requestUpdateAccountTemporary(connection_to_server *connection, int userId, QString password, QString nickname, QString icon){
+void Stub::requestUpdateAccountTemporary(connection_to_server *connection, int userId, QString password, QString nickname, QString icon){
     int result = connection->requestUpdateAccount(userId, password, nickname, icon);
 
     if(result < 0)
         //throw GUI_ConnectionException();
         throw GUI_GenericException("Houston, abbiamo un problema");
-
-    return result;
 }
 
 QString Stub::requestGetNicknameTemporary(connection_to_server *connection, int userId){
@@ -89,24 +85,6 @@ QString Stub::requestIconIdTemporary(connection_to_server *connection, int userI
 
 
 /*DOCUMENT*/
-QString Stub::requestCreateDocumentTemporary(connection_to_server *connection, int userId, QString name){
-    QString result = QString::fromStdString(connection->requestCreateDocument(userId, name));
-
-    if(result.compare("errore") == 0)
-        //throw GUI_ConnectionException();
-        throw GUI_GenericException("Houston, abbiamo un problema");
-
-    return result;
-}
-
-void Stub::forgetKnownDocumentTemporary(connection_to_server *connection, int userId, int documentId){
-    std::string result = connection->requestDeleteDoc(userId, documentId);
-
-    if(result.compare("errore") == 0)
-        //throw GUI_ConnectionException();
-        throw GUI_GenericException("Houston, abbiamo un problema");
-}
-
 std::shared_ptr<QMap<QString, int>> Stub::getKnownDocumentsTemporary(connection_to_server *connection, int userId){
     std::shared_ptr<QMap<QString, int>> vpointer = connection->getKnownDocuments(userId);
 
@@ -117,11 +95,42 @@ std::shared_ptr<QMap<QString, int>> Stub::getKnownDocumentsTemporary(connection_
     return vpointer;
 }
 
-QString Stub::requestDocDatoUri(connection_to_server *connection, int userId, QString uri){
-    //come al solito è solo per togleire i warning
-    int n = userId;
-    userId = n;
+QString Stub::requestCreateDocumentTemporary(connection_to_server *connection, int userId, QString name){
+    //credo di stare ricevendo un malloppo di parametri stringati tutti assieme
+    QString result = QString::fromStdString(connection->requestCreateDocument(userId, name));
 
+    if(result.compare("errore") == 0)
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
+
+    return result;
+}
+
+void Stub::requestDeleteDocTemporary(connection_to_server *connection, int userId, int documentId){
+    std::string result = connection->requestDeleteDoc(userId, documentId);
+
+    if(result.compare("errore") == 0)
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
+}
+
+QString Stub::openDocTemporary(connection_to_server *connection, int userId, int documentId){
+    //anche qui sto ricevendo un malloppo di parametri stringati assieme
+    QString name = QString::fromStdString(connection->openDoc(userId, documentId));
+
+    if(name.compare("errore") == 0)
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
+
+    return name;
+}
+
+void Stub::closeDocumentTemporary(connection_to_server *connection, int userId, int docId){
+    connection->disconnectEditor(userId, docId);
+}
+
+QString Stub::requestDocDatoUriTemporary(connection_to_server *connection, int userId, QString uri){
+    //anche qui sto ricevendo un malloppo di parametri stringati assieme
     QString result = QString::fromStdString(connection->requestDocDatoUri(uri, userId));
 
     if(result.compare("errore") == 0)
@@ -130,6 +139,9 @@ QString Stub::requestDocDatoUri(connection_to_server *connection, int userId, QS
 
     return result;
 }
+
+
+/*DOCUMENT PROPERTIES*/
 
 QString Stub::requestUriTemporary(connection_to_server *connection, int docId){
     QString result = QString::fromStdString(connection->requestUri(docId));
@@ -161,10 +173,15 @@ std::shared_ptr<QTextDocument> Stub::getDocumentText(int docId){
     return docpointer;
 }
 
-int Stub::requestDocumentOwner(connection_to_server *connection, int docId){
-    int userId = connection->getDocumentOwner(docId);
-    // NOTA: ritorna userId = -1 in caso di errore
-    return userId;
+int Stub::getDocumentOwnerTemporary(connection_to_server *connection, int docId){
+    int result = connection->getDocumentOwner(docId);
+
+    if(result < 0)
+        //per ora ne tiro una a caso, ma la funzione requestTryLogin dovrà tirare quella appropriata
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
+
+    return result;
 }
 
 
@@ -174,32 +191,23 @@ int Stub::requestDocumentOwner(connection_to_server *connection, int docId){
 std::shared_ptr<QSet<int>> Stub::getWorkingUsersOnDocumentTemporary(connection_to_server *connection, int docId){
     std::shared_ptr<QSet<int>> vpointer = connection->getWorkingUsersOnDocument(docId);
 
-    return vpointer;
-}
-
-std::shared_ptr<QSet<int>> Stub::getContributorsUsersOnDocument(connection_to_server *connection, int docId){
-    int n = docId;
-    docId = n;
-
-    std::shared_ptr<QSet<int>> vpointer(new QSet<int>());
-    vpointer = connection->getContributors(docId);
-    return vpointer;
-}
-
-void Stub::Editor(connection_to_server *connection){
-    connection->connectEditor();
-}
-
-void Stub::closeDocument(connection_to_server *connection, int userId, int docId){
-    connection->disconnectEditor(userId, docId);
-}
-
-QString Stub::openKnownDocument(connection_to_server *connection, int userId, int documentId){
-    QString name = QString::fromStdString(connection->openDoc(userId, documentId));
-
-    if(name.compare("errore") == 0)
+    if(vpointer == nullptr)
         //throw GUI_ConnectionException();
         throw GUI_GenericException("Houston, abbiamo un problema");
 
-    return name;
+    return vpointer;
+}
+
+std::shared_ptr<QSet<int>> Stub::getContributorsTemporary(connection_to_server *connection, int docId){
+    std::shared_ptr<QSet<int>> vpointer = connection->getContributors(docId);
+
+    if(vpointer == nullptr)
+        //throw GUI_ConnectionException();
+        throw GUI_GenericException("Houston, abbiamo un problema");
+
+    return vpointer;
+}
+
+void Stub::startEditorConnectionTemporary(connection_to_server *connection){
+    connection->connectEditor();
 }

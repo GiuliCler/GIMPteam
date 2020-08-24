@@ -38,8 +38,7 @@ public:
     //mi serve perchè non posso fare le connect direttamente nel costruttore. Quando sono nel costruttore, la ui2 non è ancora stata caricata quindi la connect va fatta in un secondo momento
     void connectMenuBarActions();
     //non posso falro nel costruttore perchè quando costruisco il widget, il cambio di window deve ancora avvenire
-    void changeWindowName();
-    void removeContributorFromCurrentDocument(int userid);
+    void setUpEditor();
 
 public slots:
     void launchSetUi1();
@@ -63,16 +62,19 @@ public slots:
     void setMenuToolStatus(menuTools code);
     //lo scopo di queste 2 funzioni è di venire chiamate da un più basso livello quando viene aggiunto o rimosso un nuovo utente che sta lavorando allo stesso document
     //si occupano sia del cursore che dell'icona che del colore
-    void addUserToEditorGUI(int userid);
+    void addUserToEditorGUI(int userid, QString nickname, QString iconId);
     void removeUserFromEditorGUI(int userid);
-     void addContributorToCurrentDocument(int userid);
+    void addContributorToCurrentDocument(int userid, QString nickname, QString iconId);
+
+    QColor *getUserColor(int userId);
 
 private:
     Ui::GUI_Editor *ui;
     GUI_ColorsManager colorsManager;
 
-    QColor *getUserColor(int userId);
     void forgetUserColor(int userId);
+    void fillOnlineUsersList();
+    void fillContibutorUsersList();
 
 signals:
     void menuTools_event(menuTools code);

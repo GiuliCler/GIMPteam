@@ -58,7 +58,7 @@ void GUI_Profile::on_savePushButton_clicked()
     if(!checkFieldValidity(ui->repeatLineEdit->text(), "Repeat password"))
         return;
 
-    if(!checkPasswordSecurity(ui->passwordLineEdit->text()))
+    if(!checkPasswordSecurity(ui->passwordLineEdit->text(), ui->repeatLineEdit->text()))
         return;
 
     //creo un nuovo utente o aggiorno quello vecchio
@@ -98,11 +98,17 @@ void GUI_Profile::fillForm(){
     if(gimpParent->userid < 0)
         return;
 
-    QString iconId = GUI_ConnectionToServerWrapper::requestIconIdWrapper(gimpParent, gimpParent->userid);
+    QString iconId = GUI_ConnectionToServerWrapper::requestGetIconIdWrapper(gimpParent, gimpParent->userid);
     if(iconId.compare("errore") == 0)
         return;
-    int boxIndex = ui->iconComboBox->findData(iconId);
-    ui->iconComboBox->setCurrentIndex(boxIndex);
+
+    QString iconPath = GUI_Icons::getIconPath(iconId);
+    //non dovrebbe mai dare problemi, a meno che il server non elimini delle icone senza avvisare gli user che avevano scelto quell'icona
+    if(iconPath.compare("") != 0){
+        int boxIndex = ui->iconComboBox->findData(iconId);
+        ui->iconComboBox->setCurrentIndex(boxIndex);
+    }
+
 
     QString nickname = GUI_ConnectionToServerWrapper::requestGetNicknameWrapper(gimpParent, gimpParent->userid);
     if(nickname.compare("errore") == 0)
@@ -113,8 +119,6 @@ void GUI_Profile::fillForm(){
 
     ui->nicknameLineEdit->setText(nickname);
     ui->usernameLabelReadonly->setText(username);
-    //ui->passwordLineEdit->setText("");
-    //ui->repeatLineEdit->setText("");
 }
 
 void GUI_Profile::loadIcons(){
@@ -136,8 +140,13 @@ bool GUI_Profile::checkFieldValidity(QString value, QString fieldName){
     return true;
 }
 
-bool GUI_Profile::checkPasswordSecurity(QString password){
+bool GUI_Profile::checkPasswordSecurity(QString password, QString repeatPassword){
     int minLength = 4;
+
+    if(password.compare(repeatPassword) != 0){
+        QMessageBox::information(this, "", "Password and repeated password must be equal");
+        return false;
+    }
 
     if(password.length() < minLength){
         QMessageBox::information(this, "", "Password should be at least " + QString::number(minLength) + " characters long");

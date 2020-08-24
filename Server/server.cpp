@@ -1,6 +1,7 @@
 #include "server.h"
 #include "thread_management.h"
 #include "crdt/crdt_message.h"
+#include "crdt/crdt_servereditor.h"
 #include <stdlib.h>
 #include <QThreadPool>
 #include <QRunnable>
@@ -8,23 +9,18 @@
 #include <QTreeView>
 #include <QMutex>
 #include <QPair>
-#include <QWaitCondition>
 #include <queue>
-
-// CODICE DI PROVA - CONDITION VARIABLES
-//QVector<QPair<QString, int>> jobs;
-//QWaitCondition* cv_jobs = new QWaitCondition();
-//QMutex* mutex_jobs = new QMutex();
 
 QMutex* mutex_users = new QMutex();
 QMutex* mutex_docs = new QMutex();
 QMutex* mutex_workingUsers = new QMutex();
 QMutex* mutex_db = new QMutex();
+QMutex* mutex_logged_users = new QMutex();
+QMutex* mutex_files = new QMutex();
 
 QMap<QString, int> users;
 QMap<QString, int> documents;
-
-QString path = "Files/";
+QVector<QString> logged_users;
 
 // QMap formata da coppie (docId, [userId1, userId2, userId3, ...])
 // NOTA: workingUsers può contenere righe di documenti CON ALMENO UNO USER ONLINE E ATTIVO
@@ -32,8 +28,10 @@ QString path = "Files/";
 //       --> tale riga verrà ricreata non appena un altro utente (o anche lo stesso) si ricollegherà/aprirà di nuovo tale documento
 QMap<int, QVector<int>> workingUsers;
 
-// Coda formata da coppie (messaggio, contatore)
-std::queue<QPair<CRDT_Message, int>> codaMessaggi;
+// QMap formata da coppie (docId, CRDT_ServerEditor*)
+QMap<int, CRDT_ServerEditor*> files;
+
+QString path = "Files/";
 
 Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDescriptor) {
 
@@ -73,15 +71,6 @@ Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDesc
     }
     mutex_docs->unlock();
 
-//    CODICE DI PROVA - PRODUTTORE
-//    mutex_jobs->lock();
-//    qDebug()<<"SERVER - Prima della prepend: "<<jobs.first();
-//    jobs.prepend(2);
-//    qDebug()<<"SERVER - Dopo la prepend: "<<jobs.first();
-//    mutex_jobs->unlock();
-//    std::this_thread::sleep_for(std::chrono::seconds(3));
-//    cv_jobs->wakeAll();     // non fa un tubo
-
     qDebug()<<"Fine costruttore di Server";          // DEBUG
 
 }
@@ -89,9 +78,6 @@ Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDesc
 Server::~Server(){
 
     qDebug()<<"Dentro al distruttore di Server";         // DEBUG
-
-    // Sveglio il thread_management addormentato nella wait
-//     cv_jobs->wakeAll();
 
     // Distruggo thread_management
 //    NOTA: faccio magari un vettore in cui mantengo tutti i puntatori ai thread
@@ -118,7 +104,7 @@ void Server::incomingConnection(qintptr socketDescriptor) {
     Thread_management* thread_mgm = new Thread_management(socketDescriptor, this);
     connect(thread_mgm, SIGNAL(finished()), thread_mgm, SLOT(deleteLater()));
 
-    // Faccio partire thread_management (mod. detach)
+    // Faccio partire thread_management (mod. detach)    
     thread_mgm->start();
 
     qDebug()<< "SERVER - Fine incomingConnection";      // DEBUG

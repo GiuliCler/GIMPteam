@@ -43,12 +43,13 @@ public:
     void requestSendMessage(CRDT_Message *messaggio);
     void connectEditor();
     void disconnectEditor(int userId, int docId);
-    void receiveMessage();
     std::shared_ptr<QSet<int>> getContributors(int docId);
+    QByteArray getFileTMP();
 
 private slots:
-    void showFile(const QString &file);
     void displayError(int socketError, const QString &message);
+    void acceptData();
+    void receiveMessage(QByteArray data);
 
 signals:
     void error(int socketError, const QString &message);
@@ -56,18 +57,25 @@ signals:
     void newFile(const QString &fortune);
     void sigProcessMessage(const CRDT_Message& m);
     void sigOfflineUser(int userId);
-    void sigOnlineUser(int userId);
-    void sigNewContributor(int userId);
+    void sigOnlineUser(int userid, QString nickname, QString iconId);
+    void sigNewContributor(int userid, QString nickname, QString iconId);
+    void unavailableSharedDocument(int docId);
+    void dataReceived(QByteArray data);
 
 private:
     QString port;
-    QString ipAddress;
-    //Files file;
-    QString current;
+    QString ipAddress;  
     QTcpSocket *tcpSocket = nullptr;
+    QByteArray fileTMP;
     //GUI_Editor *editor = nullptr;
     const int Timeout = 100 * 1000;
-
+    QByteArray readBuffer;
+    qint32 readBuffer_size;
+    QByteArray readData();
+    void readDataFile();
+    bool writeData(QByteArray data);
+    static QByteArray IntToArray(qint32 source);
+    static qint32 ArrayToInt(QByteArray source);
 
     //QNetworkSession *networkSession = nullptr;
 };

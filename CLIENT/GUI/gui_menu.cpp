@@ -28,10 +28,16 @@ void GUI_Menu::setProfileArea(){
         return;
     ui->nicknameLabel->setText(nickname);
 
-    QString iconId = GUI_ConnectionToServerWrapper::requestIconIdWrapper(gimpParent, gimpParent->userid);
+    QString iconId = GUI_ConnectionToServerWrapper::requestGetIconIdWrapper(gimpParent, gimpParent->userid);
     if(iconId.compare("errore") == 0)
         return;
-    QPixmap image = QPixmap(GUI_Icons::getIconPath(iconId));
+
+    QString iconPath = GUI_Icons::getIconPath(iconId);
+    if(iconPath.compare("") == 0)
+        //non dovrebbe mai succedere, a meno che il server non elimini delle icone senza avvisare gli user che avevano scelto quell'icona
+        return;
+
+    QPixmap image = QPixmap(iconPath);
     ui->iconLabel->setPixmap(image);
 }
 
@@ -48,11 +54,9 @@ void GUI_Menu::on_editPushButton_clicked(){
 }
 
 void GUI_Menu::on_logoutPushButton_clicked(){
-    GUI_Login *widget = new GUI_Login(gimpParent);
-    long value = GUI_ConnectionToServerWrapper::requestLogOutWrapper(gimpParent, gimpParent->userid);
-    if(value == -1){
-        //ERRORE NEL LOGOUT => GESTIRE
+    if(GUI_ConnectionToServerWrapper::requestLogoutWrapper(gimpParent, gimpParent->userid) == -1)
         return;
-    }
+
+    GUI_Login *widget = new GUI_Login(gimpParent);
     gimpParent->setCentralWidget(widget);
 }

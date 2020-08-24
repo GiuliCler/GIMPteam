@@ -148,7 +148,7 @@ QLineEdit:focus{
    <item row="4" column="2">
     <widget class="QLineEdit" name="portLineEdit">
      <property name="text">
-      <string>50102</string>
+      <string/>
      </property>
     </widget>
    </item>

@@ -23,6 +23,8 @@ private slots:
     void on_ownedDocsListWidget_itemClicked();
     void on_sharedDocsListWidget_itemClicked();
 
+    void on_unavailableSharedDocument_emitted(int docId);
+
 private:
     Ui::GUI_Opendoc *ui;
 
