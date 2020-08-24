@@ -332,9 +332,10 @@ void GUI_Editor::addUserToEditorGUI(int userid, QString nickname, QString iconId
     findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->addOnlineUserIcon(userid, *color, nickname, iconId);
     GUI_MyTextEdit *son = findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName());
 
-    //TODO: per ora sto mettendo delle posizioni a caso ma più avanti dovrò mettere quelle reali
-    QPoint p = QPoint (son->cursorRect().topLeft().x(), son->cursorRect().topLeft().y() + son->verticalScrollBar()->value());
-    findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->addUserCursor(userid, p, *color);
+    if(userid != gimpParent->userid){
+        QPoint p = QPoint (son->cursorRect().topLeft().x(), son->cursorRect().topLeft().y() + son->verticalScrollBar()->value());
+        findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->addUserCursor(userid, p, *color);
+    }
 }
 
 void GUI_Editor::removeUserFromEditorGUI(int userid){
