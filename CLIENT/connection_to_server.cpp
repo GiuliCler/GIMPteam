@@ -56,6 +56,9 @@ int connection_to_server::requestTryLogOut(int userId)
     int result;
     in_data >> result;
 
+    if(result == -1){
+        throw GUI_GenericException("Errore nell'eseguire il logout.");
+    }
     // Chiudo il socket dal lato del client
     this->tcpSocket->close();
 
@@ -96,7 +99,7 @@ int connection_to_server::requestTryLogin(QString username, QString password)
     in_data.setVersion(QDataStream::Qt_5_12);
 
     QByteArray esito;
-    QString err = "errore", good = "ok", err2 = "alreadyLogged";
+    QString err = "erroreLogin", good = "ok", err2 = "alreadyLogged";
     int userId = -1;
 
     in_data >> esito;
@@ -109,7 +112,8 @@ int connection_to_server::requestTryLogin(QString username, QString password)
     if(esito.contains(err2.toUtf8())){
         throw GUI_GenericException("Attenzione! Login già effettuato su un altro dispositivo!");
     } else {
-        return -1;
+        throw GUI_GenericException("Errore durante l'operazione di Login");
+        //return -1;
     }
 }
 
@@ -298,6 +302,11 @@ std::string connection_to_server::requestDocName(int docId){
 
     docName.replace('\0',"");       // TODO: siamo sicuri che serva questa riga?
 
+    QString err = "erroreRetrieveDocName";
+    if(docName.contains(err.toUtf8())){
+        throw GUI_GenericException("Errore nell'ottenere il nome del documento.");
+    }
+
     return docName.toStdString();
 }
 
@@ -341,10 +350,12 @@ int connection_to_server::requestNewAccount(QString username, QString password, 
     QByteArray esito;
     in_data >> esito;
 
-    QString err = "errore";
+    QString err = "erroreNellaCreazioneDelProfilo";
     int id = -1;
     if(!esito.contains(err.toUtf8())){
         in_data >> id;
+    }else{
+        throw GUI_GenericException("Errore Nella Creazione del Profilo.");
     }
 
     return id;
@@ -393,7 +404,7 @@ long connection_to_server::requestUpdateAccount( int userId, QString password, Q
     if(esito.contains(good.toUtf8())){
         return 0;
     }else{
-        return -1;
+        throw GUI_GenericException("Errore durante l'operazione di Update dell'account");
     }
 }
 
@@ -553,6 +564,11 @@ std::string connection_to_server::requestGetNickname(int userId){
 
     nickname.replace('\0',"");      // TODO: siamo sicuri che serva questa riga?
 
+    QString err = "erroreGetNickname";
+    if(nickname.contains(err.toUtf8())){
+        throw GUI_GenericException("Errore nell'ottenere il nickname dell'utente.");
+    }
+
     return nickname.toStdString();
 }
 
@@ -593,6 +609,11 @@ std::string connection_to_server::requestIconId(int userId){
     in_data >> iconId;
 
     iconId.replace('\0',"");            // TODO: siamo sicuri che serva questa riga?
+
+    QString err = "erroreGetIcon";
+    if(iconId.contains(err.toUtf8())){
+        throw GUI_GenericException("Errore nell'ottenere l'icona dell'utente.");
+    }
 
     return iconId.toStdString();
 }
@@ -636,6 +657,11 @@ std::string connection_to_server::requestGetUsername(int userId){
 
     username.replace('\0',"");         // TODO: siamo sicuri che serva questa riga?
 
+    QString err = "erroreGetUsername";
+    if(username.contains(err.toUtf8())){
+        throw GUI_GenericException("Errore nell'ottenere lo username dell'utente.");
+    }
+
     return username.toStdString();
 }
 
@@ -676,12 +702,13 @@ std::string connection_to_server::requestDeleteDoc(int userId,int documentId){
     QByteArray esito;
     in_data >> esito;
 
-    QString err = "errore", inesist = "doc-inesistente";
+    QString err = "erroreDeleteDoc", inesist = "doc-inesistente";
     if(esito.contains(err.toUtf8())){
-        return "errore";
+        throw GUI_GenericException("Errore nell'eliminazione del documento selezionato.");
     } else if (esito.contains(inesist.toUtf8())){
         emit unavailableSharedDocument(documentId);
-        return "errore";         // TODO PER GIULIA: il messaggio di errore che deve essere lanciato in questo caso è "Attenzione! Impossibile cancellare il documento selezionato. Documento già cancellato dall'owner."
+        throw GUI_GenericException("Attenzione! Impossibile cancellare il documento selezionato. Documento già cancellato dall'owner.");
+        //return "errore";         // TODO PER GIULIA: il messaggio di errore che deve essere lanciato in questo caso è "Attenzione! Impossibile cancellare il documento selezionato. Documento già cancellato dall'owner."
     } else {
         return "ok";
     }

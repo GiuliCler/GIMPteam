@@ -531,12 +531,12 @@ void Thread_body::create(QString username, QString password, QString nickname, Q
             logged_users.push_back(username);
             mutex_logged_users->unlock();
         }else {
-            out << "errore";
+            out << "erroreNellaCreazioneDelProfilo";
             writeData(blocko);
         }
 
     } else {
-        out << "errore";
+        out << "erroreNellaCreazioneDelProfilo";
         writeData(blocko);
     }
 }
@@ -595,7 +595,7 @@ void Thread_body::login(QString username, QString password){
             out << id;
             writeData(blocko);
         }else{
-            out << "errore";
+            out << "erroreLogin";
             writeData(blocko);
         }
     }
@@ -666,11 +666,11 @@ void Thread_body::update(int userId, QString password, QString nickname, QString
             writeData(blocko);
         } else {
             mutex_db->unlock();
-            out << "errore";
+            out << "erroreUpdate";
             writeData(blocko);
         }
     } else {
-        out << "errore";
+        out << "erroreUpdate";
         writeData(blocko);
     }
 }
@@ -687,7 +687,7 @@ void Thread_body::retrieveUsername(int userId){
         out << username;
         writeData(blocko);
     }else{
-        out << "errore";
+        out << "erroreGetUsername";
         writeData(blocko);
     }
 }
@@ -707,7 +707,7 @@ void Thread_body::getNickname(int userId){
         out << nick.toUtf8();
         writeData(blocko);
     }else{
-        out << "errore";
+        out << "erroreGetNickname";
         writeData(blocko);
     }
 }
@@ -727,7 +727,7 @@ void Thread_body::getIcon(int userId){
         out << icon.toUtf8();
         writeData(blocko);
     }else{
-        out << "errore";
+        out << "erroreGetIcon";
         writeData(blocko);
     }
 }
@@ -953,7 +953,7 @@ void Thread_body::deleteDoc(int userId, int docId){
     //la verifica sul fatto che sia l'owner o meno
     QString username = getUsername(userId);
     if(username.isEmpty()){
-        out << "errore";
+        out << "erroreDeleteDoc";
         writeData(blocko);
         return;
     }
@@ -965,12 +965,12 @@ void Thread_body::deleteDoc(int userId, int docId){
         std::vector<std::vector<QString>> collaboratori = database->recuperaCollaboratori(docName);
         mutex_db->unlock();
         if(collaboratori.size()==0){
-            out << "errore";
+            out << "erroreDeleteDoc";
             writeData(blocko);
             return;
         }
         if(collaboratori.size()==1 && (collaboratori.at(0).at(0)=="errore")) {
-            out << "errore";
+            out << "erroreDeleteDoc";
             writeData(blocko);
             return;
         }
@@ -980,7 +980,7 @@ void Thread_body::deleteDoc(int userId, int docId){
             mutex_db->lock();
             if(database->rimuoviPartecipante(docName, i.at(0))==0){
                 mutex_db->unlock();
-                out << "errore";
+                out << "erroreDeleteDoc";
                 writeData(blocko);
                 return;
             }
@@ -991,7 +991,7 @@ void Thread_body::deleteDoc(int userId, int docId){
         mutex_db->lock();
         if(database->rimuoviDocumento(docName)==0){
             mutex_db->unlock();
-            out << "errore";
+            out << "erroreDeleteDoc";
             writeData(blocko);
         }else{
             mutex_db->unlock();
@@ -1012,7 +1012,7 @@ void Thread_body::deleteDoc(int userId, int docId){
         mutex_db->lock();
         if(database->rimuoviAccesso(docName, username)==0){
             mutex_db->unlock();
-            out << "errore";
+            out << "erroreDeleteDoc";
             writeData(blocko);
         }else{
             mutex_db->unlock();
@@ -1032,7 +1032,7 @@ void Thread_body::retrieveDocName(int docId){
         out << docName.split("_").at(1).toUtf8();
         writeData(blocko);
     }else{
-        out << "errore";
+        out << "erroreRetrieveDocName";
         writeData(blocko);
     }
 }
