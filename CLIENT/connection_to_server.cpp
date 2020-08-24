@@ -203,8 +203,8 @@ std::string connection_to_server::openDoc(int userId, int docId)
         return esito.toStdString();
 
     } else if (esito.contains(inesist.toUtf8())){
-//        emit unavailableSharedDocument(docId);
-        return "errore";
+        emit unavailableSharedDocument(docId);
+//        return "errore";
     }
 
     return "errore";
@@ -1034,8 +1034,31 @@ QByteArray connection_to_server::IntToArray(qint32 source)      //Use qint32 to 
 
 
 void connection_to_server::acceptData(){
-    QByteArray data = readData();
-    emit dataReceived(data);
+
+    qint32 size = readBuffer_size;
+
+    while (this->tcpSocket->bytesAvailable() > 0){
+
+        readBuffer.append(this->tcpSocket->readAll());
+
+        while ((size == 0 && readBuffer.size() >= 4) || (size > 0 && readBuffer.size() >= size))   // While can process data, process it
+        {
+            if (size == 0 && readBuffer.size() >= 4)        // If size of data has received completely, then store it on our global variable
+            {
+                size = ArrayToInt(readBuffer.mid(0, 4));
+                readBuffer_size = size;
+                readBuffer.remove(0, 4);
+            }
+            if (size > 0 && readBuffer.size() >= size)      // If data has received completely, then emit our SIGNAL with the data
+            {
+                QByteArray data = readBuffer.mid(0, size);
+                readBuffer.remove(0, size);
+                size = 0;
+                readBuffer_size = size;
+                emit dataReceived(data);
+            }
+        }
+    }
 }
 
 
