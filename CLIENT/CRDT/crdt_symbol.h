@@ -5,6 +5,7 @@
 #include <QTextCharFormat>
 #include <QVector>
 #include <string>
+#include <QString>
 
 class CRDT_Symbol
 {
@@ -25,7 +26,8 @@ public:
     QChar getCarattere() const;
     QTextCharFormat getFormat() const;
     Qt::Alignment getAlignment() const;
-    std::string getIDunivoco()const;
+    std::string getIDunivoco() const;
+    int getSiteId() const;
     QVector<int> getPosizione() const;
     void setCarattere(QChar c);
     void setFormat(QTextCharFormat fmt);

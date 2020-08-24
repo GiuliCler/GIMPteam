@@ -27,7 +27,7 @@ public:
     QString getNickname(QString username);
     QString getIconId(QString username);
     std::vector<std::vector<QString>> recuperaCollaboratori(QString nomeDOC);
-    std::vector<int> recuperaInfoUtenteDoc(QString nomeDOC, QString username);
+    int recuperaSiteCounter(QString nomeDOC, QString username);
     int rimuoviPartecipante(QString nomeDOC, QString username);
     int rimuoviAccesso(QString nomeDOC, QString username);
     int aggiornaSiteCounter(QString nomeDOC, QString username, int siteCount);

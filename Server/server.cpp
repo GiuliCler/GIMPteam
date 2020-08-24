@@ -1,6 +1,7 @@
 #include "server.h"
 #include "thread_management.h"
 #include "crdt/crdt_message.h"
+#include "crdt/crdt_servereditor.h"
 #include <stdlib.h>
 #include <QThreadPool>
 #include <QRunnable>
@@ -15,12 +16,11 @@ QMutex* mutex_docs = new QMutex();
 QMutex* mutex_workingUsers = new QMutex();
 QMutex* mutex_db = new QMutex();
 QMutex* mutex_logged_users = new QMutex();
+QMutex* mutex_files = new QMutex();
 
 QMap<QString, int> users;
 QMap<QString, int> documents;
 QVector<QString> logged_users;
-
-QString path = "Files/";
 
 // QMap formata da coppie (docId, [userId1, userId2, userId3, ...])
 // NOTA: workingUsers può contenere righe di documenti CON ALMENO UNO USER ONLINE E ATTIVO
@@ -28,8 +28,10 @@ QString path = "Files/";
 //       --> tale riga verrà ricreata non appena un altro utente (o anche lo stesso) si ricollegherà/aprirà di nuovo tale documento
 QMap<int, QVector<int>> workingUsers;
 
-// Coda formata da coppie (messaggio, contatore)
-std::queue<QPair<CRDT_Message, int>> codaMessaggi;
+// QMap formata da coppie (docId, CRDT_ServerEditor*)
+QMap<int, CRDT_ServerEditor*> files;
+
+QString path = "Files/";
 
 Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDescriptor) {
 

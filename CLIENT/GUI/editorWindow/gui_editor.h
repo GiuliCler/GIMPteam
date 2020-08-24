@@ -66,11 +66,12 @@ public slots:
     void removeUserFromEditorGUI(int userid);
     void addContributorToCurrentDocument(int userid, QString nickname, QString iconId);
 
+    QColor *getUserColor(int userId);
+
 private:
     Ui::GUI_Editor *ui;
     GUI_ColorsManager colorsManager;
 
-    QColor *getUserColor(int userId);
     void forgetUserColor(int userId);
     void fillOnlineUsersList();
     void fillContibutorUsersList();

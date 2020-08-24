@@ -3,6 +3,7 @@
 
 #include "database/collegamentoDB.h"
 #include "thread_body.h"
+#include "crdt/crdt_servereditor.h"
 #include <QThread>
 #include <QMutex>
 #include <QWaitCondition>
@@ -14,12 +15,15 @@ extern QMutex* mutex_docs;
 extern QMutex* mutex_workingUsers;
 extern QMutex* mutex_db;
 extern QMutex* mutex_logged_users;
+extern QMutex* mutex_files;
 
 extern QMap<QString, int> users;
 extern QMap<QString, int> documents;
 extern QVector<QString> logged_users;
 extern QMap<int, QVector<int>> workingUsers;
+extern QMap<int, CRDT_ServerEditor*> files;
 extern QString path;
+
 
 class Thread_management : public QThread {
     Q_OBJECT

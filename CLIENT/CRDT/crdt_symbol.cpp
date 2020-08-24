@@ -22,6 +22,11 @@ std::string CRDT_Symbol::getIDunivoco() const{
     return this->id;
 }
 
+int CRDT_Symbol::getSiteId() const{
+    QString siteId_str = QString::fromStdString(this->id).split("_")[0];
+    return siteId_str.toInt();
+}
+
 QVector<int> CRDT_Symbol::getPosizione() const{
     return this->posizione;
 }

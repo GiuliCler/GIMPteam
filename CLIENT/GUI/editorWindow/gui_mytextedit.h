@@ -22,7 +22,6 @@ public:
 protected:
     virtual void paintEvent(QPaintEvent *pEvent) override;
 
-
 signals:
     void updateCursorPosition(int userId, QPoint position);
 
