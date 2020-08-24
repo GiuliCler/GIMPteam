@@ -325,29 +325,29 @@ int Thread_body::addToWorkingUsers(int docId, int userId, int open_new){
 
 void Thread_body::notifyNewWorkingUser(int userId, int docId){
 
-    CRDT_Symbol s = *new CRDT_Symbol();
-    CRDT_Message *m = new CRDT_Message("ONLINEUSER_"+std::to_string(userId), s, userId);
+    CRDT_Symbol s{};
+    CRDT_Message m{"ONLINEUSER_"+std::to_string(userId), s, userId};
     auto thread_id = std::this_thread::get_id();
 
-    emit messageToServer(*m, threadId_toQString(thread_id), docId);
+    emit messageToServer(m, threadId_toQString(thread_id), docId);
 }
 
 void Thread_body::notifyWorkingUserAway(int userId, int docId){
 
-    CRDT_Symbol s = *new CRDT_Symbol();
-    CRDT_Message *m = new CRDT_Message("OFFLINEUSER_"+std::to_string(userId), s, userId);
+    CRDT_Symbol s{};
+    CRDT_Message m{"OFFLINEUSER_"+std::to_string(userId), s, userId};
     auto thread_id = std::this_thread::get_id();
 
-    emit messageToServer(*m, threadId_toQString(thread_id), docId);
+    emit messageToServer(m, threadId_toQString(thread_id), docId);
 }
 
 void Thread_body::notifyNewContributor(int userId, int docId){
 
-    CRDT_Symbol s = *new CRDT_Symbol();
-    CRDT_Message *m = new CRDT_Message("NEWCONTRIBUTOR_"+std::to_string(userId), s, userId);
+    CRDT_Symbol s{};
+    CRDT_Message m{"NEWCONTRIBUTOR_"+std::to_string(userId), s, userId};
     auto thread_id = std::this_thread::get_id();
 
-    emit messageToServer(*m, threadId_toQString(thread_id), docId);
+    emit messageToServer(m, threadId_toQString(thread_id), docId);
 }
 
 
