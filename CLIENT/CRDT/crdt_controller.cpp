@@ -143,10 +143,16 @@ void CRDT_controller::setUsersColors(bool value){
         if(highlightUsers){                 // L'utente vuole vedere il testo colorato con il colore di ogni utente
             fmt.setBackground(*(parent->getUserColor(crdt.getSiteIdAt(pos))));          // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
         } else {                            // L'utente non vuole vedere più il testo colorato con il colore di ogni utente
-            fmt.setBackground(QColor{255, 255, 255});     // Setto il background color a "white"
+            fmt.setBackground(Qt::BrushStyle::NoBrush);     // Setto il background color a "white"
         }
         tmp.mergeCharFormat(fmt);
     }
+
+    if(highlightUsers && textEdit.textBackgroundColor() == Qt::BrushStyle::NoBrush)
+        textEdit.setTextBackgroundColor(*(parent->getUserColor(crdt.getSiteId())));
+
+    if(!highlightUsers && textEdit.textBackgroundColor() != Qt::BrushStyle::NoBrush)
+        textEdit.setTextBackgroundColor(Qt::BrushStyle::NoBrush);
 
     // Cancello UNDO e REDO stacks
     textEdit.document()->clearUndoRedoStacks();
@@ -243,7 +249,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         return;
 
     QTextCursor tmp{textEdit.document()};
-    tmp.joinPreviousEditBlock();
+    bool mustClearStacks = false;
 
     if(pos + del - 1 > crdt.getLength() - 1){
         del--;
@@ -260,10 +266,15 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
     if(add > 0){
         tmp.setPosition(pos);
-        tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, add);
-        QTextCharFormat fmt{tmp.charFormat()};
-        fmt.setBackground(QColor{255, 255, 255});     // Setto il background a "white"
-        tmp.mergeCharFormat(fmt);
+        for(int i = pos; i < pos + add; tmp.setPosition(++i)){
+            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+            if(tmp.charFormat().background() != Qt::BrushStyle::NoBrush){
+                QTextCharFormat fmt{tmp.charFormat()};
+                fmt.setBackground(Qt::BrushStyle::NoBrush);
+                tmp.mergeCharFormat(fmt);
+                mustClearStacks = true;
+            }
+        }
 
         tmp.setPosition(pos+1);
 
@@ -286,10 +297,15 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
             crdt.localErase(i);
 
         tmp.setPosition(pos1);
-        tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, cnt);
-        QTextCharFormat fmt{tmp.charFormat()};
-        fmt.setBackground(QColor{255, 255, 255});     // Setto il background a "white"
-        tmp.mergeCharFormat(fmt);
+        for(int i = pos1; i < pos1 + cnt; tmp.setPosition(++i)){
+            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+            if(tmp.charFormat().background() != Qt::BrushStyle::NoBrush){
+                QTextCharFormat fmt{tmp.charFormat()};
+                fmt.setBackground(Qt::BrushStyle::NoBrush);
+                tmp.mergeCharFormat(fmt);
+                mustClearStacks = true;
+            }
+        }
 
         tmp.setPosition(pos1+1);
         // inserisco da tmp a fondo del blocco
@@ -301,17 +317,21 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     }
 
     if(highlightUsers){
+        mustClearStacks = true;
         tmp.setPosition(pos);
 
         if(add+cnt > 0){
-            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, add+cnt);
-            QTextCharFormat fmt{tmp.charFormat()};
-            fmt.setBackground(*(parent->getUserColor(crdt.getSiteIdAt(pos))));           // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
-            tmp.mergeCharFormat(fmt);
+            for(int i = pos; i < pos + add + cnt; tmp.setPosition(++i)){
+                tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+                QTextCharFormat fmt{tmp.charFormat()};
+                fmt.setBackground(*(parent->getUserColor(crdt.getSiteIdAt(pos))));           // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
+                tmp.mergeCharFormat(fmt);
+            }
         }
     }
 
-    tmp.endEditBlock();
+    if(mustClearStacks)
+        textEdit.document()->clearUndoRedoStacks();
 }
 
 void CRDT_controller::clipboardDataChanged(){
@@ -384,12 +404,15 @@ void CRDT_controller::remoteDelete(int pos, int id_sender){
     tmp.beginEditBlock();
     tmp.setPosition(pos);
 
-    QPoint position = QPoint (textEdit.cursorRect(tmp).topLeft().x(), textEdit.cursorRect(tmp).topLeft().y() + textEdit.verticalScrollBar()->value());
-    emit updateCursorPosition(id_sender, position);
-
     tmp.deleteChar();
 
     tmp.endEditBlock();
+
+    if(highlightUsers)
+        textEdit.document()->clearUndoRedoStacks();
+
+    QPoint position = QPoint (textEdit.cursorRect(tmp).topLeft().x(), textEdit.cursorRect(tmp).topLeft().y() + textEdit.verticalScrollBar()->value());
+    emit updateCursorPosition(id_sender, position);
 
     processingMessage = processingMessage_prev;
 }
@@ -420,11 +443,14 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
     }
 //    std::cout << "Block End: " << textEdit.textCursor().atBlockEnd() << "; Alignment: " << align << std::endl;
 
+    tmp.endEditBlock();
+
+    if(highlightUsers)
+        textEdit.document()->clearUndoRedoStacks();
 
     QPoint position = QPoint (textEdit.cursorRect(tmp).topLeft().x(), textEdit.cursorRect(tmp).topLeft().y() + textEdit.verticalScrollBar()->value());
     emit updateCursorPosition(id_sender, position);
 
-    tmp.endEditBlock();
 
     processingMessage = processingMessage_prev;
 }
