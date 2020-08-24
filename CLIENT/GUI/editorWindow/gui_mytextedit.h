@@ -26,7 +26,6 @@ signals:
     void updateCursorPosition(int userId, QPoint position);
 
 public slots:
-    //DEBUG: il campo position è poi da togliere
     void addUserCursor(int userId, QPoint position, QColor color);
     void removeUserCursor(int userId);
     void on_updateCursorPosition_emitted(int userId, QPoint position);

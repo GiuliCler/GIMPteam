@@ -24,7 +24,7 @@ void GUI_ColoredCursor::paint(){
      * la "x" è leggermente spostata a sx, così mi metto in mezzo a 2 lettere e non copro troppo quella di DX
      * la "y" deve tener conto deldisplacement della scrollbar, altrimenti mi mette tutte le coordinate in funzione della sola viewport ed i cursori poi non scrollano più
      * la width è doppia altrimenti non si riescono a vedere
-     * la height è ridotta così se si sovrappone al vero cirsore non lo copre del tutto, anche se dovrebbero essere trasparenti
+     * la height è ridotta così se si sovrappone al vero cursore non lo copre del tutto, anche se dovrebbero essere trasparenti
      * */
     const QRect rect(cursorPosition.x() - modelRect.width()/2, cursorPosition.y() - textEditParent->verticalScrollBar()->value(), modelRect.width()*2, modelRect.height()*3/4);
     QPainter painter(textEditParent->viewport());

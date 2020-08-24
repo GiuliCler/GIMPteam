@@ -47,6 +47,11 @@ background-color: rgb(203, 240, 251);
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
         <widget class="QLabel" name="newDocumentTitleLabel">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="cursor">
           <cursorShape>IBeamCursor</cursorShape>
          </property>
@@ -84,20 +89,7 @@ background-color: rgb(203, 240, 251);
       </spacer>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QLabel" name="label">
-         <property name="cursor">
-          <cursorShape>IBeamCursor</cursorShape>
-         </property>
-         <property name="text">
-          <string>Document name</string>
-         </property>
-         <property name="textInteractionFlags">
-          <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-         </property>
-        </widget>
-       </item>
+      <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,0,0,0">
        <item>
         <widget class="QLineEdit" name="nameLineEdit">
          <property name="sizePolicy">
@@ -114,6 +106,9 @@ background-color: rgb(203, 240, 251);
          </property>
          <property name="text">
           <string>Default</string>
+         </property>
+         <property name="placeholderText">
+          <string>Insert new document name</string>
          </property>
         </widget>
        </item>
@@ -323,11 +318,16 @@ background-color: rgb(203, 240, 251);
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
         <widget class="QLabel" name="uriDocumentTitleLabel">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="cursor">
           <cursorShape>IBeamCursor</cursorShape>
          </property>
          <property name="text">
-          <string>Access existing document with URI</string>
+          <string>Access an existing document with URI</string>
          </property>
         </widget>
        </item>

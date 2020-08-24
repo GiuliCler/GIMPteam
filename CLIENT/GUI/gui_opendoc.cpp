@@ -51,10 +51,9 @@ void GUI_Opendoc::on_openDocsPushButton_clicked(){
     if(codedParameters.compare("errore") == 0)
         return;
 
-    int siteId = gimpParent->userid;
     int siteCounter = codedParameters.split("_").at(1).toInt();
 
-    GUI_Editor *widget = new GUI_Editor(gimpParent, docId, docName, siteId, siteCounter);
+    GUI_Editor *widget = new GUI_Editor(gimpParent, docId, docName, siteCounter);
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
 }
 

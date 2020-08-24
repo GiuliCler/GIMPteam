@@ -119,6 +119,12 @@ QPushButton:pressed,QPushButton:checked {
         </item>
         <item>
          <widget class="QLabel" name="URILabel">
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+            <italic>true</italic>
+           </font>
+          </property>
           <property name="cursor">
            <cursorShape>IBeamCursor</cursorShape>
           </property>

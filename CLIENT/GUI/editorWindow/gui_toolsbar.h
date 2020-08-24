@@ -16,8 +16,8 @@ public:
     explicit GUI_ToolsBar(QWidget *parent);
     ~GUI_ToolsBar();
 
-    void setFontComboBoxText(QFont font);
-    void setSpinBoxValue(int size);
+    //void setFontComboBoxText(QFont font);
+    //void setSpinBoxValue(int size);
     void setTextColorIconColor(const QColor color);
 
 private slots:

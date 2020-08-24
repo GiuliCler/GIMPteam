@@ -3,8 +3,6 @@
 #include "gui_myscrollarea.h"
 #include <QPainter>
 #include <QScrollBar>
-//debug purpose
-#include <QRandomGenerator>
 
 GUI_UsersBar::GUI_UsersBar(QWidget *parent) : QWidget(parent){
     this->setObjectName(GUI_UsersBar::getObjectName());

@@ -23,13 +23,11 @@ GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
 
     //qui controllo se sto creando un nuovo utente o se ne sto modificando uno già loggato
     if(gimpParent->userid > -1){
-        //ui->backPushButton->hide();
         ui->usernameLineEdit->hide();
         fillForm();
     }
     else
         ui->usernameLabelReadonly->hide();
-
 
 
     //faccio le connect così premendo Enter prova a salvare
@@ -43,8 +41,7 @@ GUI_Profile::~GUI_Profile(){
     delete ui;
 }
 
-void GUI_Profile::on_savePushButton_clicked()
-{
+void GUI_Profile::on_savePushButton_clicked(){
     //controllo che tutti i campi siano compilati
     if(!checkFieldValidity(ui->nicknameLineEdit->text(), "Nickname"))
         return;
@@ -67,8 +64,8 @@ void GUI_Profile::on_savePushButton_clicked()
         int result = GUI_ConnectionToServerWrapper::requestNewAccountWrapper(gimpParent, ui->usernameLineEdit->text(), ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData()));
         if(result == -1)
             return;
-        else
-            gimpParent->userid = result;
+
+        gimpParent->userid = result;
     }else{
         //faccio l'update del vecchio user
         if(GUI_ConnectionToServerWrapper::requestUpdateAccountWrapper(gimpParent, gimpParent->userid, ui->passwordLineEdit->text(), ui->nicknameLineEdit->text(), qvariant_cast<QString>(ui->iconComboBox->currentData())) == -1)
@@ -79,8 +76,7 @@ void GUI_Profile::on_savePushButton_clicked()
     gimpParent->setCentralWidget(widget);
 }
 
-void GUI_Profile::on_backPushButton_clicked()
-{
+void GUI_Profile::on_backPushButton_clicked(){
 
     if(gimpParent->userid < 0){
         GUI_Login *widget = new GUI_Login(gimpParent);
@@ -111,14 +107,12 @@ void GUI_Profile::fillForm(){
 
 
     QString nickname = GUI_ConnectionToServerWrapper::requestGetNicknameWrapper(gimpParent, gimpParent->userid);
-    if(nickname.compare("errore") == 0)
-        return;
-    QString username = GUI_ConnectionToServerWrapper::requestGetUsernameWrapper(gimpParent, gimpParent->userid);
-    if(username.compare("errore") == 0)
-        return;
+    if(nickname.compare("errore") != 0)
+        ui->nicknameLineEdit->setText(nickname);
 
-    ui->nicknameLineEdit->setText(nickname);
-    ui->usernameLabelReadonly->setText(username);
+    QString username = GUI_ConnectionToServerWrapper::requestGetUsernameWrapper(gimpParent, gimpParent->userid);
+    if(username.compare("errore") != 0)
+        ui->usernameLabelReadonly->setText(username);
 }
 
 void GUI_Profile::loadIcons(){
