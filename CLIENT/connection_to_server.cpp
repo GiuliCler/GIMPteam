@@ -57,7 +57,7 @@ int connection_to_server::requestTryLogOut(int userId)
     in_data >> result;
 
     if(result == -1){
-        throw GUI_GenericException("Errore nell'eseguire il logout.");
+        throw GUI_GenericException("Logout Operation Error.");
     }
     // Chiudo il socket dal lato del client
     this->tcpSocket->close();
@@ -110,9 +110,9 @@ int connection_to_server::requestTryLogin(QString username, QString password)
     }
 
     if(esito.contains(err2.toUtf8())){
-        throw GUI_GenericException("Attenzione! Login già effettuato su un altro dispositivo!");
+        throw GUI_GenericException("Warning! Login already done in another device!");
     } else {
-        throw GUI_GenericException("Errore durante l'operazione di Login");
+        throw GUI_GenericException("Login Error. Incorrect Password or Username.");
         //return -1;
     }
 }
@@ -158,7 +158,7 @@ std::string connection_to_server::requestCreateDocument(int userId, QString name
     if(esito.contains(good.toUtf8())){
         return esito.toStdString();
     }else{
-        return "errore";
+        throw GUI_GenericException("Create Document Error.");
     }
 }
 
@@ -207,10 +207,11 @@ std::string connection_to_server::openDoc(int userId, int docId)
         return esito.toStdString();
 
     } else if (esito.contains(inesist.toUtf8())){
-        emit unavailableSharedDocument(docId);      // TODO PER GIULIA: il messaggio di errore che deve essere lanciato in questo caso è "Attenzione! Impossibile aprire il documento selezionato. Documento cancellato dall'owner."
+        emit unavailableSharedDocument(docId);
+        throw GUI_GenericException("Warning! Impossible to open the selected document. The owner deleted it.");
     }
 
-    return "errore";
+    throw GUI_GenericException("Open Document Error.");
 }
 
 
@@ -259,7 +260,7 @@ std::string connection_to_server::requestDocDatoUri(QString uri, int userId){
         return esito.toStdString();
 
     } else {
-        return "errore";
+        throw GUI_GenericException("Open Document Error.");
     }
 }
 
@@ -304,7 +305,7 @@ std::string connection_to_server::requestDocName(int docId){
 
     QString err = "erroreRetrieveDocName";
     if(docName.contains(err.toUtf8())){
-        throw GUI_GenericException("Errore nell'ottenere il nome del documento.");
+        throw GUI_GenericException("Error: impossible to retrieve the document name");
     }
 
     return docName.toStdString();
@@ -354,11 +355,9 @@ int connection_to_server::requestNewAccount(QString username, QString password, 
     int id = -1;
     if(!esito.contains(err.toUtf8())){
         in_data >> id;
-    }else{
-        throw GUI_GenericException("Errore Nella Creazione del Profilo.");
+        return id;
     }
-
-    return id;
+    throw GUI_GenericException("New Account Creation Error.");
 }
 
 long connection_to_server::requestUpdateAccount( int userId, QString password, QString nickname, QString icon)
@@ -404,7 +403,7 @@ long connection_to_server::requestUpdateAccount( int userId, QString password, Q
     if(esito.contains(good.toUtf8())){
         return 0;
     }else{
-        throw GUI_GenericException("Errore durante l'operazione di Update dell'account");
+        throw GUI_GenericException("Account Update Error.");
     }
 }
 
@@ -447,7 +446,7 @@ std::string connection_to_server::requestUri(int docId){
     QString inesist = "doc-inesistente";
     if(uri.contains(inesist.toUtf8())){
         emit unavailableSharedDocument(docId);
-        return "errore";    // TODO PER GIULIA: il messaggio di errore che deve essere lanciato in questo caso è "Attenzione! Impossibile recuperare l'URI del documento selezionato. Documento cancellato dall'owner."
+        throw GUI_GenericException("Warning! Impossible to retrive the document Uri. The owner deleted it.");
     }
 
     return uri.toStdString();
@@ -492,7 +491,8 @@ std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int 
 
     if(num == -1){
         // In caso di errore...
-        return std::make_shared<QMap<QString, int>>(ritorno);
+        throw GUI_GenericException("Error: Impossible to retrieve the user's documents.");
+        //return std::make_shared<QMap<QString, int>>(ritorno);
     }
 
 //    qDebug()<<"CONNECTION_TO_SERVER - num_doc RICEVUTO: "<<num;     // DEBUG
@@ -566,7 +566,7 @@ std::string connection_to_server::requestGetNickname(int userId){
 
     QString err = "erroreGetNickname";
     if(nickname.contains(err.toUtf8())){
-        throw GUI_GenericException("Errore nell'ottenere il nickname dell'utente.");
+        throw GUI_GenericException("Error: impossible to retrieve the user's nickname.");
     }
 
     return nickname.toStdString();
@@ -612,7 +612,7 @@ std::string connection_to_server::requestIconId(int userId){
 
     QString err = "erroreGetIcon";
     if(iconId.contains(err.toUtf8())){
-        throw GUI_GenericException("Errore nell'ottenere l'icona dell'utente.");
+        throw GUI_GenericException("Error: Impossible to retrieve the user's icon.");
     }
 
     return iconId.toStdString();
@@ -659,7 +659,7 @@ std::string connection_to_server::requestGetUsername(int userId){
 
     QString err = "erroreGetUsername";
     if(username.contains(err.toUtf8())){
-        throw GUI_GenericException("Errore nell'ottenere lo username dell'utente.");
+        throw GUI_GenericException("Error: impossible to retrieve the user's username.");
     }
 
     return username.toStdString();
@@ -704,12 +704,11 @@ std::string connection_to_server::requestDeleteDoc(int userId,int documentId){
 
     QString err = "erroreDeleteDoc", inesist = "doc-inesistente";
     if(esito.contains(err.toUtf8())){
-        throw GUI_GenericException("Errore nell'eliminazione del documento selezionato.");
+        throw GUI_GenericException("Delete Document Error.");
     } else if (esito.contains(inesist.toUtf8())){
         emit unavailableSharedDocument(documentId);
-        throw GUI_GenericException("Attenzione! Impossibile cancellare il documento selezionato. Documento già cancellato dall'owner.");
-        //return "errore";         // TODO PER GIULIA: il messaggio di errore che deve essere lanciato in questo caso è "Attenzione! Impossibile cancellare il documento selezionato. Documento già cancellato dall'owner."
-    } else {
+        throw GUI_GenericException("Warning! Impossible to delete the selected document. The owner deleted it.");
+        } else {
         return "ok";
     }
 }
@@ -750,6 +749,9 @@ int connection_to_server::getDocumentOwner(int docId){
     int ownerId;
     in_data >> ownerId;
 
+    if(ownerId == -1){
+         throw GUI_GenericException("Error: impossible to retrieve the document owner's id.");
+    }
     return ownerId;
 }
 
@@ -804,8 +806,9 @@ std::shared_ptr<QSet<int>> connection_to_server::getContributors(int docId){
         }
         if(id == -2){
             //errore, lo metto come userId
-            vet.insert(-1);
-            break;
+            //vet.insert(-1);
+            //break;
+            throw GUI_GenericException("Error: impossible to retrieve the document contributors.");
         }
 
         vet.insert(id);
@@ -867,11 +870,11 @@ std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int d
                 break;
             vet.insert(id);
         }
+        //    qDebug()<<"GET_WORKINGUSERS_ONADOC - vet.size(): "<<vet.size();     // DEBUG
+
+            return std::make_shared<QSet<int>>(vet);
     }
-
-//    qDebug()<<"GET_WORKINGUSERS_ONADOC - vet.size(): "<<vet.size();     // DEBUG
-
-    return std::make_shared<QSet<int>>(vet);
+    throw GUI_GenericException("Error: impossible to retrieve the working users on the document.");
 }
 
 void connection_to_server::displayError(int socketError, const QString &message) {

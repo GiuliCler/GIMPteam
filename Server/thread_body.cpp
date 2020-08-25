@@ -813,12 +813,12 @@ void Thread_body::openDocDatoUri(QString uri, int userId){
                 mutex_db->unlock();
 
                 if(siteCounter == -1){
-                    ritorno = "errore";
+                    ritorno = "erroreOpenDocUri";
                 } else {
                     current_siteCounter = siteCounter;
 
                     if(openDoc(docName, docId, userId, 1) == -1){
-                        ritorno = "errore";
+                        ritorno = "erroreOpenDocUri";
                     } else {
                         ritorno = "ok_"+QString::number(siteCounter)+"_"+QString::number(docId);
                     }
@@ -872,11 +872,11 @@ void Thread_body::openDocDatoUri(QString uri, int userId){
             notifyNewContributor(userId, docId);
 
         }else{
-            out << "errore";
+            out << "erroreOpenDocUri";
             writeData(blocko);
         }
     }else{
-        out << "errore";
+        out << "erroreOpenDocUri";
         writeData(blocko);
     }
 }
