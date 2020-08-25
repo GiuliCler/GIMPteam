@@ -87,6 +87,15 @@ void Thread_body::executeJob(QByteArray data){
         deleteDoc(userId, docId);
     }
 
+    c = "GET_DOC_TEXT";
+    if(text.contains(c.toUtf8())){
+        int docId, userId;
+        in_data >> docId;
+        in_data >> userId;
+
+        getDocText(docId, userId);
+    }
+
     c = "UPDATE";
     if(text.contains(c.toUtf8())){
         //        qDebug()<<"SONO DENTRO LA UPDATE";          // DEBUG
@@ -1125,6 +1134,71 @@ void Thread_body::getCollaboratorsGivenDoc(int docId){
         out << -2;
         writeData(blocko);
     }
+}
+
+void Thread_body::getDocText(int docId, int userId){
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
+    QString docName = getDocname(docId);
+    QString username = getUsername(userId);
+
+    if(docName.isEmpty()){
+        // Il documento non esiste (vuol dire che è stato cancellato dall'owner)
+        out << "doc-inesistente";
+        writeData(blocko);
+    } else {
+        // Il documento esiste
+        if(openDoc(docName, docId, userId, 1) == -1){
+            out << "errore";
+            writeData(blocko);
+        }else{
+            mutex_db->lock();
+            int siteCounter = database->recuperaSiteCounter(docName, username);
+            mutex_db->unlock();
+
+            if(siteCounter == -1){
+                out << "errore";
+                writeData(blocko);
+            }else{
+                current_siteCounter = siteCounter;
+                QString ritorno = "ok_"+QString::number(siteCounter);
+
+                out << ritorno.toUtf8();
+                writeData(blocko);
+
+                // Recupero il contenuto del vettore _symbols che sta all'interno del ServerEditor
+                QVector<CRDT_Symbol> simboli = crdt->getSymbols();
+
+                //crdt->mutex->unlock();
+
+                // Mando al client il contenuto del il contenuto del vettore _symbols
+                QByteArray blocko1;
+                QDataStream out1(&blocko1, QIODevice::WriteOnly);
+                out1.setVersion(QDataStream::Qt_5_12);
+
+                qDebug()<<"Invio file - Sto per inviare simboli.count(): "<<simboli.count();     // DEBUG
+
+                out1 << simboli.count();
+                writeData(blocko1);
+
+                int cont=1;
+                for(auto i=simboli.cbegin(); i<simboli.cend(); i++, cont++){
+
+                    qDebug()<<"Invio file - CICLO DI SCRITTURA i: "<<cont<<"/"<<simboli.count()<<", simbolo che sto inviando: "<<(*i).getCarattere().toLatin1();         // DEBUG
+
+                    QByteArray blocko2;
+                    QDataStream out2(&blocko2, QIODevice::WriteOnly);
+                    out2.setVersion(QDataStream::Qt_5_12);
+
+                    out2 << (*i);
+                    writeData(blocko2);
+                }
+            }
+        }
+    }
+
 }
 
 void Thread_body::openDocument(int docId, int userId){

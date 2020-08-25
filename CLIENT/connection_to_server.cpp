@@ -331,6 +331,69 @@ std::string connection_to_server::requestDocName(int docId){
     return docName.toStdString();
 }
 
+std::shared_ptr<QTextDocument> connection_to_server::requestDocumentText(int docId, int userId){
+    qDebug()<<"GET_DOC_TEXT";      // DEBUG
+
+    this->tcpSocket->abort();
+    if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+
+        if (!tcpSocket->waitForConnected(Timeout)) {
+            throw GUI_ConnectionException("Timeout Expired.");
+        }
+    }
+
+    QByteArray buffer;
+    QDataStream out(&buffer, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+    QByteArray comando = "GET_DOC_TEXT";
+
+    out << comando;
+    out << docId;
+    out << userId;
+
+    if(!writeData(buffer))
+        throw GUI_ConnectionException("writeData ERROR. Server not connected.");
+
+    if(!this->tcpSocket->waitForReadyRead(Timeout)){
+        throw GUI_ConnectionException("Timeout Expired.");
+    }
+
+    QByteArray data = readData();
+    QDataStream in_data(&data, QIODevice::ReadOnly);
+    in_data.setVersion(QDataStream::Qt_5_12);
+
+    //ora attendo una risposta dal server
+    QByteArray esito;
+    in_data >> esito;
+
+    QString good = "ok", inesist = "doc-inesistente";
+    if(esito.contains(good.toUtf8())){
+
+        readDataFile();
+        QByteArray file = this->getFileTMP();
+        QDataStream data(&file, QIODevice::ReadOnly);
+        QVector<CRDT_Symbol> simboli;
+        data >> simboli;
+
+        QTextEdit documento;
+        for(auto it = simboli.begin(); it<simboli.end(); it++) {
+            documento.append(it->getCarattere());
+            documento.setAlignment(it->getAlignment());
+            documento.setFont(it->getFormat().font());
+           //parent->remoteInsert(pos, it->getCarattere(), it->getFormat(), it->getAlignment(), siteId);
+        }
+        std::shared_ptr<QTextDocument> *doc = new std::shared_ptr<QTextDocument>(documento.document());
+        return *doc;
+
+    } else if (esito.contains(inesist.toUtf8())){
+        emit unavailableSharedDocument(docId);
+        throw GUI_GenericException("Warning! Impossible to export to pdf the selected document. The owner has deleted it.");
+    }
+
+    throw GUI_GenericException("Export to PDF ERROR.");
+}
+
 int connection_to_server::requestNewAccount(QString username, QString password, QString nickname, QString icon)
 {
     qDebug()<<"CREATE";      // DEBUG

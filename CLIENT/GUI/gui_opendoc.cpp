@@ -94,7 +94,7 @@ void GUI_Opendoc::on_exportPDFPushButton_clicked(){
 
 
     int docId = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
-    std::shared_ptr<QTextDocument> docp = GUI_ConnectionToServerWrapper::getDocumentTextWrapper(gimpParent, docId);
+    std::shared_ptr<QTextDocument> docp = GUI_ConnectionToServerWrapper::getDocumentTextWrapper(gimpParent, docId, gimpParent->userid);
     if( docp == nullptr)
         return;
 

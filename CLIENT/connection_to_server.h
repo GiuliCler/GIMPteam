@@ -45,6 +45,7 @@ public:
     void disconnectEditor(int userId, int docId);
     std::shared_ptr<QSet<int>> getContributors(int docId);
     QByteArray getFileTMP();
+    std::shared_ptr<QTextDocument> requestDocumentText(int docId, int userId);
 
 private slots:
     void displayError(int socketError, const QString &message);
