@@ -15,9 +15,6 @@ public:
     void raise() const override { throw *this; }
     GUI_GenericException *clone() const override { return new GUI_GenericException(*this); }
 
-private:
-
-
 };
 
 #endif // GUI_GENERICEXCEPTION_H

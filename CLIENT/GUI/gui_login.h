@@ -8,9 +8,8 @@
 class GUI_Login : public QWidget
 {
     Q_OBJECT
-public:
-    GIMPdocs *gimpParent;
 
+public:
     explicit GUI_Login(QWidget *parent);
     ~GUI_Login();
     //faccio una funzione statica anzichè una normale stringa perchè non posso assegnare qui il valore alla stringa
@@ -21,6 +20,7 @@ private slots:
     void on_loginButton_clicked();
 
 private:
+    GIMPdocs *gimpParent;
     Ui::GUI_Login *ui;
 };
 

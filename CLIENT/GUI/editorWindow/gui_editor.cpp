@@ -13,9 +13,8 @@
 #include <QFileDialog>
 #include <QFileInfo>
 
-GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int siteId, int siteCounter) : QWidget(parent), documentId(documentId), docName(docName)
+GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int siteCounter) : QWidget(parent), documentId(documentId), docName(docName)
 {
-
     this->setObjectName(GUI_Editor::getObjectName());
     gimpParent = static_cast<GIMPdocs*>(parent);
 
@@ -28,16 +27,15 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int sit
     ui->usersBarWidget->layout()->addWidget(childUsersBar);
     childToolsBar = new GUI_ToolsBar(this);
     ui->toolsBarWidget->layout()->addWidget(childToolsBar);
-    crdtController = new CRDT_controller(gimpParent, this, *childMyTextEdit, siteId, siteCounter);
+    crdtController = new CRDT_controller(gimpParent, this, *childMyTextEdit, gimpParent->userid, siteCounter);
 
     fillOnlineUsersList();
     fillContibutorUsersList();
 
     //richiedo l'uri del documento, perchè se mi chiede l'URI mentre ci lavoro non posso contattare la connection_to_server
     QString uri = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
-    if(uri.compare("errore") == 0)
-        return;
-    this->uri = uri;
+    if(uri.compare("errore") != 0)
+        this->uri = uri;
 
     //Per gli online users ed i contributors
     QObject::connect(gimpParent->getConnection(), &connection_to_server::sigOnlineUser, this, &GUI_Editor::addUserToEditorGUI);
@@ -160,20 +158,11 @@ void GUI_Editor::on_actionItalic(){
 }
 
 void GUI_Editor::on_actionUnderlined(){
-
     menuTools_event(UNDERLINED_ON);
 }
 
 void GUI_Editor::on_actionStrikethrough(){
-
     menuTools_event(STRIKETHROUGH_ON);
-
-    //questo serve a counterare il fatto che in caso di click il button cambia automaticamente stato da chechek ad unchechek e viceversa, ma voglio essere io a decidere quando cambiare stato
-    //childToolsBar->ui->strikethroughPushButton->setChecked(!childToolsBar->ui->boldPushButton->isChecked());
-
-    //non so se devo cambiare lo stato di checked o no, quindi lo chiedo al text editor
-    //childToolsBar->ui->strikethroughPushButton->setChecked(Stub::isGenericFontAttributeActivated(childToolsBar->ui->boldPushButton->isChecked()));
-    //setMenuToolStatus(UNDERLINED_OFF);
 }
 
 void GUI_Editor::on_actionLeft(){
@@ -332,17 +321,18 @@ void GUI_Editor::addUserToEditorGUI(int userid, QString nickname, QString iconId
     findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->addOnlineUserIcon(userid, *color, nickname, iconId);
     GUI_MyTextEdit *son = findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName());
 
-    //TODO: per ora sto mettendo delle posizioni a caso ma più avanti dovrò mettere quelle reali
-    QPoint p = QPoint (son->cursorRect().topLeft().x(), son->cursorRect().topLeft().y() + son->verticalScrollBar()->value());
-    findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->addUserCursor(userid, p, *color);
+    if(userid != gimpParent->userid){
+        QPoint p = QPoint (son->cursorRect().topLeft().x(), son->cursorRect().topLeft().y() + son->verticalScrollBar()->value());
+        findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->addUserCursor(userid, p, *color);
+    }
 }
 
 void GUI_Editor::removeUserFromEditorGUI(int userid){
     findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->removeUserCursor(userid);
     findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->removeOnlineUserIcon(userid);
     //se l'utente non è un contributor e non è più online gli tolgo il colore associato per poterlo assegnare a qualcun altro
-    if(!findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->isContributor(userid))
-        forgetUserColor(userid);
+    /*if(!findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->isContributor(userid))
+        forgetUserColor(userid);*/
 }
 
 void GUI_Editor::addContributorToCurrentDocument(int userid, QString nickname, QString iconId){
@@ -355,7 +345,7 @@ QColor *GUI_Editor::getUserColor(int userId){
     QColor *color;
     //controllo che l'user non abbia già un colore assegnato, o perchè si è disconnesso e riconnesso o perchè è già presente fra i contributors
     if(userColorMap.find(userId) == userColorMap.end() ){
-        color = colorsManager.takeColor();
+        color = colorsManager.newColor();
         userColorMap.insert(userId, color);
     }
     else
@@ -364,18 +354,17 @@ QColor *GUI_Editor::getUserColor(int userId){
     return color;
 }
 
-void GUI_Editor::forgetUserColor(int userId){
+/*void GUI_Editor::forgetUserColor(int userId){
     if(userColorMap.find(userId) == userColorMap.end())
         return;
 
-    colorsManager.returnColor(userColorMap[userId]);
     userColorMap.remove(userId);
-}
+}*/
 
 void GUI_Editor::fillOnlineUsersList(){
     //ottengo l'elenco degli utenti che al momento stanno guardando il mio stesso document e ne creo icona e cursore
     std::shared_ptr<QSet<int>> users = GUI_ConnectionToServerWrapper::getWorkingUsersOnDocumentWrapper(gimpParent, documentId);
-    if( users == nullptr)
+    if(users == nullptr)
         return;
 
     for (QSet<int>::iterator userId = users->begin(); userId != users->end(); userId++){
@@ -398,7 +387,7 @@ void GUI_Editor::fillOnlineUsersList(){
 void GUI_Editor::fillContibutorUsersList(){
     //creo l'icona per gli user che hanno contribuito al document
     std::shared_ptr<QSet<int>> contributors = GUI_ConnectionToServerWrapper::getContributorsUsersOnDocumentWrapper(gimpParent, documentId);
-    if( contributors == nullptr || contributors->size()==0)
+    if(contributors == nullptr || contributors->size()==0)
         return;
 
     for (QSet<int>::iterator userId = contributors->begin(); userId != contributors->end(); userId++){

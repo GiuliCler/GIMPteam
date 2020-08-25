@@ -8,7 +8,7 @@ GUI_ColorsManager::GUI_ColorsManager(){
     vFlag = 1;
 }
 
-QColor *GUI_ColorsManager::takeColor(){
+/*QColor *GUI_ColorsManager::takeColor(){
     //se qualcuno ha restituito dei colori creati in precedenza gli do uno di quelli, altrimenti ne creo uno nuovo
     if(availableColors.size() != 0){
         QColor *color = availableColors.top();
@@ -21,7 +21,7 @@ QColor *GUI_ColorsManager::takeColor(){
 
 void GUI_ColorsManager::returnColor(QColor *color){
     availableColors.push_back(color);
-}
+}*/
 
 QColor *GUI_ColorsManager::newColor(){
     QColor *color = new QColor();

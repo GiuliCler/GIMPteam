@@ -158,6 +158,11 @@ QLineEdit:focus{
      </item>
      <item>
       <widget class="QLabel" name="titleLabel">
+       <property name="font">
+        <font>
+         <pointsize>22</pointsize>
+        </font>
+       </property>
        <property name="cursor">
         <cursorShape>IBeamCursor</cursorShape>
        </property>

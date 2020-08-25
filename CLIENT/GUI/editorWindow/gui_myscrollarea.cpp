@@ -1,11 +1,8 @@
 #include "gui_myscrollarea.h"
 #include "gui_usersbar.h"
 #include <QHBoxLayout>
-//#include <QStyle>
 #include <QScrollBar>
 #include <QPalette>
-
-//TODO: se non ho niente da fare potrei trasformare questa classe in modo da includere anche il QWidget che contiene l'Ignored, così non obbligo il parent ad inserirlo
 
 //ho bisogno che il parent sia il widget vuoto checonterrà l'ignored
 GUI_MyScrollArea::GUI_MyScrollArea(QWidget *parent) : QScrollArea(parent){

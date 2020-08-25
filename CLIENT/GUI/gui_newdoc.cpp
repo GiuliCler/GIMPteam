@@ -15,15 +15,6 @@ GUI_Newdoc::GUI_Newdoc(QWidget *parent) : QWidget(parent)
     //imposto la connect per premere invio
     connect(ui->nameLineEdit, &QLineEdit::returnPressed, this, &GUI_Newdoc::on_createPushButton_clicked);
     connect(ui->URILineEdit, &QLineEdit::returnPressed, this, &GUI_Newdoc::on_openURIPushButton_clicked);
-
-    //style
-    QFont font = ui->newDocumentTitleLabel->font();
-    font.setPixelSize(font.pixelSize() + 3);
-    ui->newDocumentTitleLabel->setFont(font);
-
-    font = ui->uriDocumentTitleLabel->font();
-    font.setPixelSize(font.pixelSize() + 3);
-    ui->uriDocumentTitleLabel->setFont(font);
 }
 
 GUI_Newdoc::~GUI_Newdoc(){
@@ -41,17 +32,15 @@ void GUI_Newdoc::on_createPushButton_clicked()
         return;
     }
     QString docName = ui->nameLineEdit->text();
-    //qui mi arriva una serie di parametri codificati in qualche modo in unìunica stringa
+    //qui mi arriva una serie di parametri codificati in qualche modo in un'unica stringa
     QString codedParameters = GUI_ConnectionToServerWrapper::requestCreateDocumentWrapper(gimpParent, static_cast<GIMPdocs*>(gimpParent)->userid, docName);
     if(codedParameters.compare("errore") == 0)
         return;
 
-    int siteId = gimpParent->userid;
     int siteCounter = codedParameters.split("_").at(1).toInt();
     int documentId = codedParameters.split("_").at(2).toInt();
 
-
-    GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId, docName, siteId, siteCounter);
+    GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId, docName, siteCounter);
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
 }
 
@@ -70,12 +59,11 @@ void GUI_Newdoc::on_openURIPushButton_clicked()
     if(codedParameters.compare("errore") == 0)
         return;
 
-    int siteId = gimpParent->userid;
     int siteCounter = codedParameters.split("_").at(1).toInt();
     int documentId = codedParameters.split("_").at(2).toInt();
 
     QString docName = GUI_ConnectionToServerWrapper::requestDocumentNameWrapper(gimpParent, documentId);
 
-    GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId, docName, siteId, siteCounter);
+    GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId, docName, siteCounter);
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
 }

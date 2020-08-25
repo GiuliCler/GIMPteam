@@ -24,21 +24,19 @@ GUI_Menu::~GUI_Menu(){
 void GUI_Menu::setProfileArea(){
     //carico nickname e icona dell'utente
     QString nickname = GUI_ConnectionToServerWrapper::requestGetNicknameWrapper(gimpParent, gimpParent->userid);
-    if(nickname.compare("errore") == 0)
-        return;
-    ui->nicknameLabel->setText(nickname);
+    if(nickname.compare("errore") != 0)
+        ui->nicknameLabel->setText(nickname);
 
     QString iconId = GUI_ConnectionToServerWrapper::requestGetIconIdWrapper(gimpParent, gimpParent->userid);
-    if(iconId.compare("errore") == 0)
-        return;
+    if(iconId.compare("errore") != 0){
+        QString iconPath = GUI_Icons::getIconPath(iconId);
+        if(iconPath.compare("") == 0)
+            //non dovrebbe mai succedere, a meno che il server non elimini delle icone senza avvisare gli user che avevano scelto quell'icona
+            return;
 
-    QString iconPath = GUI_Icons::getIconPath(iconId);
-    if(iconPath.compare("") == 0)
-        //non dovrebbe mai succedere, a meno che il server non elimini delle icone senza avvisare gli user che avevano scelto quell'icona
-        return;
-
-    QPixmap image = QPixmap(iconPath);
-    ui->iconLabel->setPixmap(image);
+        QPixmap image = QPixmap(iconPath);
+        ui->iconLabel->setPixmap(image);
+    }
 }
 
 void GUI_Menu::setDocumentArea(){
