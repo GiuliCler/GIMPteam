@@ -20,8 +20,8 @@ public:
     void removeOnlineUserIcon(int userId);
     void addContributorUserIcon(int userId, QColor color, QString nickname, QString iconId);
 
-    bool isOnline(int userId);
-    bool isContributor(int userId);
+    //bool isOnline(int userId);
+    //bool isContributor(int userId);
 
 public slots:
     //questi 2 metodi non servono solo per la users bar, ma anche per attivare il comando che cambia colore al testo
