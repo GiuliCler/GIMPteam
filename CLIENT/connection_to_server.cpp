@@ -110,10 +110,9 @@ int connection_to_server::requestTryLogin(QString username, QString password)
     }
 
     if(esito.contains(err2.toUtf8())){
-        throw GUI_GenericException("Warning! Login already done in another device!");
+        throw GUI_GenericException("Warning! Already logged on another device!");
     } else {
         throw GUI_GenericException("Login Error. Incorrect Password or Username.");
-        //return -1;
     }
 }
 
@@ -154,9 +153,11 @@ std::string connection_to_server::requestCreateDocument(int userId, QString name
     QByteArray esito;
     in_data >> esito;
 
-    QString good = "ok";
+    QString good = "ok", err = "erroreGiaCreato";
     if(esito.contains(good.toUtf8())){
         return esito.toStdString();
+    }else if(esito.contains(err.toUtf8())){
+        throw GUI_GenericException("Create Document Error. Document name already taken.");
     }else{
         throw GUI_GenericException("Create Document Error.");
     }
@@ -708,7 +709,7 @@ std::string connection_to_server::requestDeleteDoc(int userId,int documentId){
     } else if (esito.contains(inesist.toUtf8())){
         emit unavailableSharedDocument(documentId);
         throw GUI_GenericException("Warning! Impossible to delete the selected document. The owner deleted it.");
-        } else {
+    } else {
         return "ok";
     }
 }

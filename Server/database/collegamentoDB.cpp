@@ -163,7 +163,8 @@ void CollegamentoDB::gen_random(char *s, const int len) {
  *      nomeDOC: nome del nuovo documento da inserire nella tabella DOC del database
  * Ritorno:
  *      1 -> tutto ok
- *      0 -> errore
+ *      0 -> errore generico
+ *      2 -> errore, esiste già una riga all'interno della tabella DOC con il nomeDOC specificato
  */
 int CollegamentoDB::creaDoc(QString nomeDOC){
 
@@ -188,7 +189,7 @@ int CollegamentoDB::creaDoc(QString nomeDOC){
             return 0;
     } else {
         /* Errore: esiste già una riga all'interno della tabella DOC con il nomeDOC specificato */
-        return 0;
+        return 2;
     }
 
     return 1;

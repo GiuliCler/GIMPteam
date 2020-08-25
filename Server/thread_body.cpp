@@ -397,7 +397,9 @@ void Thread_body::newDoc(QString docName, int userId){
     //controllo che ci sia la cartella del dato utente
     if(!username.isEmpty() && QDir(path+username).exists()){
         mutex_db->lock();
-        if(database->creaDoc(username+"_"+docName)){
+        int esito = database->creaDoc(username+"_"+docName);
+        if(esito == 1){
+            // Riga creata correttamente nella tabella doc del DB
             mutex_db->unlock();
 
             // Creo nuovo docId e inserisco nella mappa dei documents
@@ -439,6 +441,11 @@ void Thread_body::newDoc(QString docName, int userId){
                     writeData(blocko);
                 }
             }
+        }else if(esito == 2){
+            // Riga già esistente nella tabella doc del DB
+            mutex_db->unlock();
+            out << "erroreGiaCreato";
+            writeData(blocko);
         }else{
             mutex_db->unlock();
             out << "errore";
@@ -770,7 +777,6 @@ void Thread_body::getDocs(int userId){
 
                 // Mando la QString così generata al client
                 out << doc.toUtf8();
-
             }else{
                 out << doc_name.toUtf8();
             }
