@@ -999,6 +999,12 @@ void connection_to_server::receiveMessage(QByteArray data){
 
     c = "FORCECLOSING";
     if(action.contains(c.toUtf8())){
+
+        qDebug()<<"FORCED DISCONNECT EDITOR";      // DEBUG
+
+        disconnect(this->tcpSocket, &QTcpSocket::readyRead, this, &connection_to_server::acceptData);
+        disconnect(this, &connection_to_server::dataReceived, this, &connection_to_server::receiveMessage);
+
         emit forceCloseEditor();
     }
 

@@ -381,7 +381,6 @@ bool Thread_body::removeFromWorkingUsers(int docId, int userId){
     return false;
 }
 
-
 void Thread_body::newDoc(QString docName, int userId){
     QByteArray blocko;
     QDataStream out(&blocko, QIODevice::WriteOnly);
@@ -1021,10 +1020,28 @@ void Thread_body::deleteDoc(int userId, int docId){
             mutex_workingUsers->lock();
             if(workingUsers.contains(docId)){
 
-                // ... Dato il docId, elimino nella mappa la riga corrispondente a tale chiave, cioè il (docId, vettore di working users)
-                workingUsers.remove(docId);
+                // ... Dato il docId, "butto fuori" ciascun utente
+                int count = workingUsers[docId].size(), last = 1;
+                for(auto it = workingUsers[docId].begin(); it < workingUsers[docId].end(); it++, last++){
 
-                // ... segnalo agli utenti che devono essere "buttati fuori" dall'editor
+                    // ... Rimuovo l'utente dalla riga degli utenti online su un certo documento
+                    workingUsers[docId].erase(it);
+
+                    // ... Controllo se l'utente che sta chiudendo il documento è l'ultimo utente online su tale documento
+                    if(last == count){
+
+                        // ... Elimino la riga in workingUsers
+                        workingUsers.remove(docId);
+
+                        mutex_files->lock();
+                        files.remove(docId);
+                        mutex_files->unlock();
+
+                        delete crdt;
+                    }
+                }
+
+                // ... Segnalo agli utenti che devono essere "buttati fuori" dall'editor
                 forceCloseDocument(docId);
             }
             mutex_workingUsers->unlock();
@@ -1356,6 +1373,12 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
 
     c = "FORCECLOSING";
     if(strAction.contains(c.toUtf8())){
+
+        current_docId = -1;
+
+        // "Resetto" il puntatore a CRDT_ServerEditor
+        crdt = nullptr;
+
         out << "FORCECLOSING";
         writeData(blocko);
         return;
