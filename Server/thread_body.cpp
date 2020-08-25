@@ -333,7 +333,6 @@ void Thread_body::notifyNewContributor(int userId, int docId){
     emit messageToServer(*m, threadId_toQString(thread_id), docId);
 }
 
-
 bool Thread_body::removeFromWorkingUsers(int docId, int userId){
 
     mutex_workingUsers->lock();
@@ -961,7 +960,7 @@ void Thread_body::deleteDoc(int userId, int docId){
     }
 
     //cerco lo username dell'utente che ha chiesto l'eliminazione (per fare
-    //la verifica sul fatto che sia l'owner o meno
+    //la verifica sul fatto che sia l'owner o meno)
     QString username = getUsername(userId);
     if(username.isEmpty()){
         out << "errore";
@@ -998,7 +997,7 @@ void Thread_body::deleteDoc(int userId, int docId){
             mutex_db->unlock();
         }
 
-        //elimino il documento in doc
+        //elimino il documento nella tabella doc del DB
         mutex_db->lock();
         if(database->rimuoviDocumento(docName)==0){
             mutex_db->unlock();
@@ -1015,6 +1014,21 @@ void Thread_body::deleteDoc(int userId, int docId){
             //elimino il documento nel file system
             QFile file (path+username+"/"+docName+".txt");
             file.remove();
+
+            // "Butto fuori" gli utenti online che hanno aperto il doc nel proprio editor...
+            // ... Controllo che nella mappa workingUsers sia presente il documento docId
+            //     Nota: se non c'è, significa che non c'è alcun utente online e quindi non devo "buttare fuori" nessuno
+            mutex_workingUsers->lock();
+            if(workingUsers.contains(docId)){
+
+                // ... Dato il docId, elimino nella mappa la riga corrispondente a tale chiave, cioè il (docId, vettore di working users)
+                workingUsers.remove(docId);
+
+                // ... segnalo agli utenti che devono essere "buttati fuori" dall'editor
+                forceCloseDocument(docId);
+            }
+            mutex_workingUsers->unlock();
+
             out << "ok";
             writeData(blocko);
         }
@@ -1031,6 +1045,15 @@ void Thread_body::deleteDoc(int userId, int docId){
             writeData(blocko);
         }
     }
+}
+
+void Thread_body::forceCloseDocument(int docId_deleted){
+    // "Io, user con id = current_userId, voglio buttare fuori tutti quelli che hanno aperto il doc con id = docId_deleted"
+    CRDT_Symbol s{};
+    CRDT_Message m{"FORCECLOSING", s, current_userId};
+    auto thread_id = std::this_thread::get_id();
+
+    emit messageToServer(m, threadId_toQString(thread_id), docId_deleted);
 }
 
 void Thread_body::retrieveDocName(int docId){
@@ -1327,6 +1350,13 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         out << userIdContributor[1].toInt();
         out << icon.toUtf8();
         out << nick.toUtf8();
+        writeData(blocko);
+        return;
+    }
+
+    c = "FORCECLOSING";
+    if(strAction.contains(c.toUtf8())){
+        out << "FORCECLOSING";
         writeData(blocko);
         return;
     }

@@ -940,11 +940,6 @@ void connection_to_server::disconnectEditor(int userId, int docId){
 
 void connection_to_server::receiveMessage(QByteArray data){
 
-//    qDebug()<<"##############################################################";        // DEBUG
-//    qDebug()<<data;                                                                    // DEBUG
-//    qDebug()<<"##############################################################";        // DEBUG
-
-
     QDataStream in_data(&data, QIODevice::ReadOnly);
     in_data.setVersion(QDataStream::Qt_5_12);
 
@@ -1000,6 +995,11 @@ void connection_to_server::receiveMessage(QByteArray data){
 
         //std::cout << userNewContributor << "icona: " + icona << " nickname: " + nick << std::endl;
         emit sigNewContributor(userNewContributor, nick, icona);
+    }
+
+    c = "FORCECLOSING";
+    if(action.contains(c.toUtf8())){
+        emit forceCloseEditor();
     }
 
     c = "CRDT";

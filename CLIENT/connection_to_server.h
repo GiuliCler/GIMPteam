@@ -61,6 +61,7 @@ signals:
     void sigNewContributor(int userid, QString nickname, QString iconId);
     void unavailableSharedDocument(int docId);
     void dataReceived(QByteArray data);
+    void forceCloseEditor();
 
 private:
     QString port;
