@@ -71,6 +71,9 @@ Server::Server(QObject *parent): QTcpServer(parent), socketDescriptor(socketDesc
     }
     mutex_docs->unlock();
 
+    // Faccio partire il timer associato al check client connessi/crashati (chiamato ogni 5 minuti)
+    startTimer(std::chrono::minutes(5));
+
     qDebug()<<"Fine costruttore di Server";          // DEBUG
 
 }
@@ -112,4 +115,17 @@ void Server::incomingConnection(qintptr socketDescriptor) {
 
 void Server::runServer() {
     qDebug()<< "SERVER - Sono nella runServer";      // DEBUG
+}
+
+
+void Server::timerEvent(QTimerEvent *event){
+
+    qDebug() << "** checkPeriodicoClientConnessiSlot - Server - Timer ID: "<<event->timerId()<<" **";           // DEBUG
+
+    // Server(thread principale) emette un segnale che arriva a tutti i thread_body di thread_management che son stati creati finora
+    // I thread_body eseguono un certo slot associato a tale segnale
+    // In tale slot i thread_management si chiedono "il mio socket è ancora nello stato connectedState?"
+    // - il socket è ancora in connectedState --> non succede nulla (return)
+    // - il socket non è in connectedState --> client crashato, chiudo l'eventuale doc aperto, cancello lo user dai logged_users e faccio suicidare il thread_management
+    emit checkPeriodicoClientConnessi();
 }

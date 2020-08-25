@@ -22,10 +22,12 @@ public:
 
 protected:
     void incomingConnection(qintptr socketDescriptor) override;
+    void timerEvent(QTimerEvent *event) override;
 
 signals:
     void error(QTcpSocket::SocketError socketError);
     void dispatchMessage(CRDT_Message m, QString thread_id_sender, int docId);
+    void checkPeriodicoClientConnessi();
 
 public slots:
     void runServer();

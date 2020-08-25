@@ -37,6 +37,7 @@ private:
     CollegamentoDB* database;
     int current_siteCounter;
     int current_docId;
+    int current_userId;
     CRDT_ServerEditor* crdt;
     QByteArray readBuffer;
     qint32 readBuffer_size;
@@ -83,6 +84,7 @@ public slots:
     void readData();
     void executeJob(QByteArray data);
     void processMessage(CRDT_Message m, QString thread_id_sender, int docId);
+    void checkPeriodicoClientConnessiSlot();
 
 };
 

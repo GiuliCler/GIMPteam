@@ -3,7 +3,7 @@
 #include <sstream>
 #include <QThread>
 
-Thread_body::Thread_body(int socketDescriptor, QThread* server, QObject *parent) : QObject(parent), server(server), current_docId(-1), readBuffer(), readBuffer_size(0)
+Thread_body::Thread_body(int socketDescriptor, QThread* server, QObject *parent) : QObject(parent), server(server), current_docId(-1), current_userId(-1), readBuffer(), readBuffer_size(0)
 {
     auto thread_id = std::this_thread::get_id();
 
@@ -28,10 +28,6 @@ Thread_body::~Thread_body(){
 }
 
 void Thread_body::executeJob(QByteArray data){
-
-//    qDebug()<<"##############################################################";        // DEBUG
-//    qDebug()<<data;                                                                    // DEBUG
-//    qDebug()<<"##############################################################";        // DEBUG
 
     auto thread_id = std::this_thread::get_id();
     std::cout << "THREAD - executeJob (inizio); Thread_id: "<<thread_id<< std::endl;            // DEBUG
@@ -511,6 +507,7 @@ void Thread_body::create(QString username, QString password, QString nickname, Q
     mutex_db->unlock();
     if(ret == 1){
         // Dati correttamente inseriti nel DB
+        // Aggiungo al vettore di users
         mutex_users->lock();
         int id = users.size();
         id++;
@@ -523,18 +520,23 @@ void Thread_body::create(QString username, QString password, QString nickname, Q
 
         //verifico sia stata correttamente creata
         if(QDir(path+username).exists()){
-            out << "ok";
-            out << id;
-            writeData(blocko);
+
+            // Salvo lo userId corrente
+            current_userId = id;
+
             // Aggiungo al vettore di logged_users
             mutex_logged_users->lock();
             logged_users.push_back(username);
             mutex_logged_users->unlock();
+
+            out << "ok";
+            out << id;
+            writeData(blocko);
+
         }else {
             out << "errore";
             writeData(blocko);
         }
-
     } else {
         out << "errore";
         writeData(blocko);
@@ -561,17 +563,18 @@ void Thread_body::login(QString username, QString password){
 
     // Controllo se l'utente ha già effettuato il login ed è attualmente loggato
     mutex_logged_users->lock();
-    if(logged_users.contains(username)){
-        // L'utente ha già effettuato il login ed è attualmente loggato
+    if(logged_users.contains(username)){            // L'utente ha già effettuato il login ed è attualmente loggato
         mutex_logged_users->unlock();
+
 //        std::cout<<"### Utente gia' loggato"<<std::endl;                // DEBUG
+
         out << "alreadyLogged";
         writeData(blocko);
-    } else {
-        // L'utente non è ancora loggato
+    } else {                                        // L'utente non è ancora loggato
         mutex_logged_users->unlock();
 
 //        std::cout<<"### Utente non ancora loggato"<<std::endl;          // DEBUG
+
         mutex_db->lock();
         std::vector<QString> v = database->login(username, password);
         mutex_db->unlock();
@@ -585,6 +588,9 @@ void Thread_body::login(QString username, QString password){
                 users.insert(username, id);
             }
             mutex_users->unlock();
+
+            // Salvo lo userId corrente
+            current_userId = id;
 
             // Aggiungo al vettore di logged_users
             mutex_logged_users->lock();
@@ -630,6 +636,10 @@ void Thread_body::logout(int userId){
         }
         mutex_logged_users->unlock();
 
+
+        // Resetto lo userId corrente (nota: inutile, ma messo "per simmetria")
+        current_userId = -1;
+
 //        std::cout<<"### Utente rimosso"<<std::endl;                     // DEBUG
 
         if(!flag){
@@ -643,9 +653,10 @@ void Thread_body::logout(int userId){
     out << result;
     writeData(blocko);
 
-    // Chiudo il socket dal lato del client
+    // Chiudo il socket
     socket->close();
 
+    // Faccio morire il thread
     emit finished();
 }
 
@@ -1381,4 +1392,50 @@ QByteArray Thread_body::IntToArray(qint32 source)      //Use qint32 to ensure th
     QDataStream data(&temp, QIODevice::ReadWrite);
     data << source;
     return temp;
+}
+
+
+void Thread_body::checkPeriodicoClientConnessiSlot(){
+
+    auto thread_id = std::this_thread::get_id();
+    std::cout<< "** checkPeriodicoClientConnessiSlot - thread_id: "<<thread_id<<" - socket->state(): "<<socket->state()<<" **"<<std::endl;           // DEBUG
+
+    // Check su socket connectedState
+    // connesso -> tutto ok
+    //             => return
+    // no connesso -> faccio finta che si sia disconnesso
+    //                => salvo il file nel caso in cui sia l'ultimo utente collegato (DISCONNECT_FROM_DOC)
+    //                => tolgo da logged_users (LOGOUT)
+    //                => chiudo socket
+    //                => emit finished()
+
+    // Controllo lo stato del socket
+    if(socket->state() != QTcpSocket::ConnectedState){
+
+        // Il socket NON è in stato ConnectedState => client crashato
+
+        // Controllo se l'utente aveva l'editor aperto e stava modificando un documento (simulo DISCONNECT_FROM_DOC)
+        if(current_docId != -1){
+            closeDocument(current_docId, current_userId);
+        }
+
+        // Tolgo l'utente dagli logged users (simulo LOGOUT)
+        QString username = getUsername(current_userId);
+        if(!username.isEmpty()){
+            mutex_logged_users->lock();
+            for(auto it=logged_users.begin(); it<logged_users.end(); it++){
+                if((*it) == username){
+                    logged_users.erase(it);
+                    break;
+                }
+            }
+            mutex_logged_users->unlock();
+        }
+
+        // Chiudo il socket
+        socket->close();
+
+        // Faccio morire il thread
+        emit finished();
+    }
 }
