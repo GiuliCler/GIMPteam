@@ -106,13 +106,13 @@ void GUI_UsersBar::addContributorUserIcon(int userId, QColor color, QString nick
 }
 
 
-bool GUI_UsersBar::isOnline(int userId){
+/*bool GUI_UsersBar::isOnline(int userId){
     return onlineUsersIconMap.find(userId) != onlineUsersIconMap.end();
 }
 
 bool GUI_UsersBar::isContributor(int userId){
     return contributorUsersIconMap.find(userId) != contributorUsersIconMap.end();
-}
+}*/
 
 /******************SLOTS**************************************/
 

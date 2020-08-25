@@ -21,7 +21,7 @@ GUI_ToolsBar::GUI_ToolsBar(QWidget *parent) : QWidget(parent){
     connect(ui->alignRightPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionRight);
     connect(ui->alignJustifiedPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionJustified);
 
-    connect(ui->closePushButton, &QPushButton::clicked, editorParent, &GUI_Editor::launchSetUi1);
+    connect(ui->closePushButton, &QPushButton::clicked, editorParent, &GUI_Editor::closeDocument);
 }
 
 GUI_ToolsBar::~GUI_ToolsBar(){

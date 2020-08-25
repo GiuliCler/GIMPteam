@@ -40,6 +40,8 @@ public:
     void setUpEditor();
 
 public slots:
+    void closeDocument();
+    void forcedCloseDocument();
     void launchSetUi1();
     void on_actionApplyUsersColors();
     void on_actionApplyTextColors();

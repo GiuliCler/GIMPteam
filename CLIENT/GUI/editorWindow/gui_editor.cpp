@@ -60,7 +60,9 @@ GUI_Editor::~GUI_Editor(){
 /*************ACTIONS*********************************/
 
 void GUI_Editor::connectMenuBarActions(){
-    connect(this->gimpParent->ui2->closeDocumentAction, &QAction::triggered, this, &GUI_Editor::launchSetUi1);
+    connect(this->gimpParent->ui2->closeDocumentAction, &QAction::triggered, this, &GUI_Editor::closeDocument);
+    //per la chiusura forzata
+    connect(gimpParent->getConnection(), &connection_to_server::forceCloseEditor, this, &GUI_Editor::forcedCloseDocument);
     connect(gimpParent->ui2->getURIAction, &QAction::triggered, [this](){
         GUI_URI *box = new GUI_URI(this, this->uri);
         box->setVisible(true);
@@ -108,10 +110,21 @@ void GUI_Editor::setUpEditor(){
     childMyTextEdit->setupTextEdit();
 }
 
-void GUI_Editor::launchSetUi1(){
+void GUI_Editor::closeDocument(){
     if(GUI_ConnectionToServerWrapper::requestCloseDocumentWrapper(gimpParent, gimpParent->userid, documentId) == -1)
         return;
 
+    launchSetUi1();
+}
+
+void GUI_Editor::forcedCloseDocument(){
+    QMessageBox::warning(this, "", "This file has been deleted by its owner.\nIt no longer exists.");
+
+    launchSetUi1();
+}
+
+//questo serve ad essere chiamato direttamente quando faccio la chiusura forzata
+void GUI_Editor::launchSetUi1(){
     gimpParent->isEditorConnected = false;
 
     GUI_Menu *widget = new GUI_Menu(this->gimpParent);
