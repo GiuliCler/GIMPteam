@@ -69,6 +69,8 @@ public slots:
 signals:
     void menuSet(menuTools set);
     void updateCursorPosition(int userId, QPoint position);
+    //MIRKO: questa serve per mostrare il messaggio di undo stack compromesso. L'ho messa in questa classe, ma non so se la preferisci mettere in un'altra
+    //void notifyDeletedStack();
 };
 
 #endif // CRDT_CONTROLLER_H

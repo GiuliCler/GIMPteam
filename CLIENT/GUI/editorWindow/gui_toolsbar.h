@@ -6,6 +6,8 @@
 #include <QWidget>
 #include "gui_editor.h"
 
+#include <QPropertyAnimation>
+
 class GUI_ToolsBar : public QWidget
 {
     Q_OBJECT
@@ -15,13 +17,21 @@ public:
 
     explicit GUI_ToolsBar(QWidget *parent);
     ~GUI_ToolsBar();
+    static QString getObjectName() {return QString("GUI_ToolsBar");}
 
     void setFontComboBoxText(QFont font);
     void setSpinBoxValue(int size);
     void setTextColorIconColor(const QColor color);
+    void startFadingText(QString text);
 
-private slots:
+
+private:
+    QPropertyAnimation *fadingLabelAnimation;
+    void fadingLabelSetUp();
+
+public slots:
     void on_colorPushButton_clicked();
+    void compromisedUndoStack();
 };
 
 #endif // GUI_TOOLSBAR_H

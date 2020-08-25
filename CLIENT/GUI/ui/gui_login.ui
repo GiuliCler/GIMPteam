@@ -89,7 +89,7 @@ QLineEdit:focus{
       </size>
      </property>
      <property name="text">
-      <string/>
+      <string>I'm</string>
      </property>
      <property name="placeholderText">
       <string>username</string>
@@ -105,7 +105,7 @@ QLineEdit:focus{
       </size>
      </property>
      <property name="text">
-      <string/>
+      <string>lazy</string>
      </property>
      <property name="echoMode">
       <enum>QLineEdit::Password</enum>

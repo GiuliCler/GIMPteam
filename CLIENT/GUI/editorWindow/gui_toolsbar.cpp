@@ -1,8 +1,11 @@
 #include "gui_toolsbar.h"
 #include "../../CRDT/crdt_controller.h"
 #include <QColorDialog>
+#include <QGraphicsOpacityEffect>
+
 
 GUI_ToolsBar::GUI_ToolsBar(QWidget *parent) : QWidget(parent){
+    this->setObjectName(GUI_ToolsBar::getObjectName());
     editorParent = static_cast<GUI_Editor*>(parent);
     ui = new Ui::GUI_ToolsBar();
     ui->setupUi(this);
@@ -24,6 +27,10 @@ GUI_ToolsBar::GUI_ToolsBar(QWidget *parent) : QWidget(parent){
     connect(ui->alignJustifiedPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionJustified);
 
     connect(ui->closePushButton, &QPushButton::clicked, editorParent, &GUI_Editor::launchSetUi1);
+
+    fadingLabelSetUp();
+
+    //connect()
 }
 
 GUI_ToolsBar::~GUI_ToolsBar(){
@@ -33,6 +40,8 @@ GUI_ToolsBar::~GUI_ToolsBar(){
 void GUI_ToolsBar::on_colorPushButton_clicked(){
     QColor chosenColor = QColorDialog::getColor(); //return the color chosen by user
     editorParent->crdtController->setCurrentTextColor(chosenColor);
+
+    compromisedUndoStack();
 }
 
 void GUI_ToolsBar::setFontComboBoxText(QFont font){
@@ -50,9 +59,34 @@ void GUI_ToolsBar::setSpinBoxValue(int size){
     ui->spinBox->blockSignals(false);
 }
 
+void GUI_ToolsBar::startFadingText(QString text){
+    ui->bewareLabel->setText(text);
+    fadingLabelAnimation->start();
+}
+
+
+void GUI_ToolsBar::fadingLabelSetUp(){
+    QGraphicsOpacityEffect *fadingLabelEffect;
+    QLabel *label = ui->bewareLabel;
+
+    fadingLabelEffect = new QGraphicsOpacityEffect();
+    fadingLabelEffect->setOpacity(0.0f);
+    label->setGraphicsEffect(fadingLabelEffect);
+    fadingLabelAnimation = new QPropertyAnimation(fadingLabelEffect, "opacity");
+    fadingLabelAnimation->setStartValue(1.0f);
+    fadingLabelAnimation->setEndValue(0.0f);
+
+    fadingLabelAnimation->setDuration(4000);
+    fadingLabelAnimation->setKeyValueAt(0.75, 1.0f);
+}
+
 void GUI_ToolsBar::setTextColorIconColor(const QColor color){
     QPixmap p(16,16);
     p.fill(color);
     const QIcon ic(p);
     ui->colorPushButton->setIcon(ic);
+}
+
+void GUI_ToolsBar::compromisedUndoStack(){
+    startFadingText("Beware: this operation compromized undo chronology");
 }
