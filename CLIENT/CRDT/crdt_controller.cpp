@@ -337,8 +337,15 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         }
     }
 
-    if(mustClearStacks)
+    if(mustClearStacks){
+        if(!highlightUsers){
+            QTextCharFormat fmt{textEdit.currentCharFormat()};
+            fmt.setBackground(Qt::BrushStyle::NoBrush);
+            textEdit.mergeCurrentCharFormat(fmt);
+            emit notifyDeletedStack();
+        }
         textEdit.document()->clearUndoRedoStacks();
+    }
 }
 
 void CRDT_controller::clipboardDataChanged(){
