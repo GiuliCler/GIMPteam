@@ -891,7 +891,7 @@ void Thread_body::openDocDatoUri(QString uri, int userId){
             writeData(blocko);
         }
     }else{
-        out << "erroreOpenDocUri";
+        out << "erroreUriInesistente";
         writeData(blocko);
     }
 }

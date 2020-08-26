@@ -4,6 +4,7 @@
 #include <QtWidgets>
 #include <iostream>
 #include <QSet>
+#include <QPrinter>
 #include "CRDT/crdt_message.h"
 
 connection_to_server::connection_to_server(QString port, QString ipAddress): fileTMP(), readBuffer(), readBuffer_size(0){
@@ -270,6 +271,11 @@ std::string connection_to_server::requestDocDatoUri(QString uri, int userId){
 
     QByteArray file;
     QString good = "ok";
+    QString inesistente = "erroreUriInesistente";
+    if(esito.contains(inesistente.toUtf8())){
+        throw GUI_GenericException("Open document given uri ERROR: The URI provided does not exist.");
+    }
+
     if(esito.contains(good.toUtf8())){
 
         readDataFile();
@@ -376,15 +382,30 @@ std::shared_ptr<QTextDocument> connection_to_server::requestDocumentText(int doc
         QVector<CRDT_Symbol> simboli;
         data >> simboli;
 
-        QTextEdit documento;
-        for(auto it = simboli.begin(); it<simboli.end(); it++) {
+        std::shared_ptr<QTextEdit> documento;
+        QString text = "";
+        int pos = -1;
+
+        for(auto it = simboli.begin();it<simboli.end();it++, pos++) {
+            this->insert(pos, it->getCarattere(), it->getFormat(), it->getAlignment(), documento);
+        }
+
+        /*for(auto it = simboli.begin(); it<simboli.end(); it++) {
+            //text = text + it->getCarattere();
             documento.append(it->getCarattere());
             documento.setAlignment(it->getAlignment());
             documento.setFont(it->getFormat().font());
-           //parent->remoteInsert(pos, it->getCarattere(), it->getFormat(), it->getAlignment(), siteId);
-        }
-        std::shared_ptr<QTextDocument> *doc = new std::shared_ptr<QTextDocument>(documento.document());
-        return *doc;
+*/
+        //documento.setText(text);
+
+        //prova
+        QPrinter printer(QPrinter::HighResolution);
+        printer.setOutputFormat(QPrinter::PdfFormat);
+        printer.setOutputFileName("output.pdf");
+        documento->print(&printer);
+
+        std::shared_ptr<QTextDocument> *doc = new std::shared_ptr<QTextDocument>(documento->document());
+        //return *doc;
 
     } else if (esito.contains(inesist.toUtf8())){
         emit unavailableSharedDocument(docId);
@@ -393,6 +414,25 @@ std::shared_ptr<QTextDocument> connection_to_server::requestDocumentText(int doc
 
     throw GUI_GenericException("Export to PDF ERROR.");
 }
+
+void connection_to_server::insert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align, std::shared_ptr<QTextEdit> textEdit){
+
+    QTextCursor tmp{textEdit->document()};
+    tmp.beginEditBlock();
+    tmp.setPosition(pos);
+
+    QTextBlockFormat blockFmt{tmp.blockFormat()};
+
+    tmp.insertText(c, fmt);
+    if(tmp.blockFormat().alignment() != align){
+        blockFmt.setAlignment(align);
+        tmp.mergeBlockFormat(blockFmt);
+    }
+
+    tmp.endEditBlock();
+
+}
+
 
 int connection_to_server::requestNewAccount(QString username, QString password, QString nickname, QString icon)
 {

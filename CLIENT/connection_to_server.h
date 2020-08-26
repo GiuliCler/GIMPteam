@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QtNetwork/QTcpSocket>
+#include <QTextEdit>
 #include <memory>
 #include "GUI/connection/gui_connectionException.h"
 #include "GUI/connection/gui_genericException.h"
@@ -46,6 +47,8 @@ public:
     std::shared_ptr<QSet<int>> getContributors(int docId);
     QByteArray getFileTMP();
     std::shared_ptr<QTextDocument> requestDocumentText(int docId, int userId);
+    void insert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align, std::shared_ptr<QTextEdit> textEdit);
+
 
 private slots:
     void displayError(int socketError, const QString &message);
