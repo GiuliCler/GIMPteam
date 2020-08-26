@@ -1,14 +1,16 @@
 #include "gui_toolsbar.h"
+#include "gui_fadinglabel.h"
 #include "../../CRDT/crdt_controller.h"
 #include <QColorDialog>
-#include <QGraphicsOpacityEffect>
-
 
 GUI_ToolsBar::GUI_ToolsBar(QWidget *parent) : QWidget(parent){
     this->setObjectName(GUI_ToolsBar::getObjectName());
     editorParent = static_cast<GUI_Editor*>(parent);
     ui = new Ui::GUI_ToolsBar();
     ui->setupUi(this);
+
+    fadingLabel = new GUI_FadingLabel(this);
+    ui->bewareLabelWidget->layout()->addWidget(fadingLabel);
 
     // setTextColorIconColor(QColor(0,0,0)); //TODO:capire se è utile
 
@@ -28,9 +30,7 @@ GUI_ToolsBar::GUI_ToolsBar(QWidget *parent) : QWidget(parent){
 
     connect(ui->closePushButton, &QPushButton::clicked, editorParent, &GUI_Editor::launchSetUi1);
 
-    fadingLabelSetUp();
-
-    //connect()
+    fadingLabel->fadingLabelSetUp("Beware: this operation has compromized undo chronology", 4000, 0.75f);
 }
 
 GUI_ToolsBar::~GUI_ToolsBar(){
@@ -59,26 +59,15 @@ void GUI_ToolsBar::setSpinBoxValue(int size){
     ui->spinBox->blockSignals(false);
 }
 
-void GUI_ToolsBar::startFadingText(QString text){
-    ui->bewareLabel->setText(text);
-    fadingLabelAnimation->start();
+void GUI_ToolsBar::enterCompromizedModeUndoStack(){
+    fadingLabel->setPermanentText("Beware: undo chronology is compromized in contributors mode");
+}
+
+void GUI_ToolsBar::exitCompromizedModeUndoStack(){
+    fadingLabel->removePermanentText();
 }
 
 
-void GUI_ToolsBar::fadingLabelSetUp(){
-    QGraphicsOpacityEffect *fadingLabelEffect;
-    QLabel *label = ui->bewareLabel;
-
-    fadingLabelEffect = new QGraphicsOpacityEffect();
-    fadingLabelEffect->setOpacity(0.0f);
-    label->setGraphicsEffect(fadingLabelEffect);
-    fadingLabelAnimation = new QPropertyAnimation(fadingLabelEffect, "opacity");
-    fadingLabelAnimation->setStartValue(1.0f);
-    fadingLabelAnimation->setEndValue(0.0f);
-
-    fadingLabelAnimation->setDuration(4000);
-    fadingLabelAnimation->setKeyValueAt(0.75, 1.0f);
-}
 
 void GUI_ToolsBar::setTextColorIconColor(const QColor color){
     QPixmap p(16,16);
@@ -88,5 +77,5 @@ void GUI_ToolsBar::setTextColorIconColor(const QColor color){
 }
 
 void GUI_ToolsBar::compromisedUndoStack(){
-    startFadingText("Beware: this operation compromized undo chronology");
+    fadingLabel->startFadingText("Beware: this operation has compromized undo chronology");
 }

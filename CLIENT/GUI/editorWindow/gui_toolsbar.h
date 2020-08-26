@@ -6,7 +6,7 @@
 #include <QWidget>
 #include "gui_editor.h"
 
-#include <QPropertyAnimation>
+class GUI_FadingLabel;
 
 class GUI_ToolsBar : public QWidget
 {
@@ -22,12 +22,11 @@ public:
     void setFontComboBoxText(QFont font);
     void setSpinBoxValue(int size);
     void setTextColorIconColor(const QColor color);
-    void startFadingText(QString text);
-
+    void enterCompromizedModeUndoStack();
+    void exitCompromizedModeUndoStack();
 
 private:
-    QPropertyAnimation *fadingLabelAnimation;
-    void fadingLabelSetUp();
+    GUI_FadingLabel *fadingLabel;
 
 public slots:
     void on_colorPushButton_clicked();
