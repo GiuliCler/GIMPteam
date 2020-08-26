@@ -337,7 +337,7 @@ std::string connection_to_server::requestDocName(int docId){
     return docName.toStdString();
 }
 
-std::shared_ptr<QTextDocument> connection_to_server::requestDocumentText(int docId, int userId){
+std::shared_ptr<QTextEdit> connection_to_server::requestDocumentText(int docId, int userId){
     qDebug()<<"GET_DOC_TEXT";      // DEBUG
 
     this->tcpSocket->abort();
@@ -382,30 +382,25 @@ std::shared_ptr<QTextDocument> connection_to_server::requestDocumentText(int doc
         QVector<CRDT_Symbol> simboli;
         data >> simboli;
 
-        std::shared_ptr<QTextEdit> documento;
-        QString text = "";
-        int pos = -1;
+        std::shared_ptr<QTextEdit> documento (new QTextEdit());
+        int pos = 0;
 
         for(auto it = simboli.begin();it<simboli.end();it++, pos++) {
-            this->insert(pos, it->getCarattere(), it->getFormat(), it->getAlignment(), documento);
-        }
+            QTextCursor tmp{documento->document()};
+            tmp.beginEditBlock();
+            tmp.setPosition(pos);
 
-        /*for(auto it = simboli.begin(); it<simboli.end(); it++) {
-            //text = text + it->getCarattere();
-            documento.append(it->getCarattere());
-            documento.setAlignment(it->getAlignment());
-            documento.setFont(it->getFormat().font());
-*/
-        //documento.setText(text);
+            QTextBlockFormat blockFmt{tmp.blockFormat()};
 
-        //prova
-        QPrinter printer(QPrinter::HighResolution);
-        printer.setOutputFormat(QPrinter::PdfFormat);
-        printer.setOutputFileName("output.pdf");
-        documento->print(&printer);
+            tmp.insertText(it->getCarattere(), it->getFormat());
+            if(tmp.blockFormat().alignment() != it->getAlignment()){
+                blockFmt.setAlignment(it->getAlignment());
+                tmp.mergeBlockFormat(blockFmt);
+            }
 
-        std::shared_ptr<QTextDocument> *doc = new std::shared_ptr<QTextDocument>(documento->document());
-        //return *doc;
+            tmp.endEditBlock();
+         }
+        return documento;
 
     } else if (esito.contains(inesist.toUtf8())){
         emit unavailableSharedDocument(docId);
@@ -415,23 +410,6 @@ std::shared_ptr<QTextDocument> connection_to_server::requestDocumentText(int doc
     throw GUI_GenericException("Export to PDF ERROR.");
 }
 
-void connection_to_server::insert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align, std::shared_ptr<QTextEdit> textEdit){
-
-    QTextCursor tmp{textEdit->document()};
-    tmp.beginEditBlock();
-    tmp.setPosition(pos);
-
-    QTextBlockFormat blockFmt{tmp.blockFormat()};
-
-    tmp.insertText(c, fmt);
-    if(tmp.blockFormat().alignment() != align){
-        blockFmt.setAlignment(align);
-        tmp.mergeBlockFormat(blockFmt);
-    }
-
-    tmp.endEditBlock();
-
-}
 
 
 int connection_to_server::requestNewAccount(QString username, QString password, QString nickname, QString icon)

@@ -39,8 +39,7 @@ public:
     static QString requestDocumentNameWrapper(GIMPdocs *gimpdocs, int docId);
     static QString requestUriWrapper(GIMPdocs *gimpdocs, int docId);
     static int requestDocumentOwnerWrapper(GIMPdocs *gimpdocs, int docId);
-    static std::shared_ptr<QTextDocument> getDocumentTextWrapper(GIMPdocs *gimpdocs, int docId, int userId);
-
+    static std::shared_ptr<QTextEdit> getDocumentTextWrapper(GIMPdocs *gimpdocs, int docId, int userId);
 
     /*EDITOR*/
     static std::shared_ptr<QSet<int>> getWorkingUsersOnDocumentWrapper(GIMPdocs *gimpdocs, int docId);

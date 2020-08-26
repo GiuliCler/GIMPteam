@@ -160,14 +160,10 @@ QString Stub::requestDocNameTemporary(connection_to_server *connection,int docId
     return name;
 }
 
-std::shared_ptr<QTextDocument> Stub::getDocumentText(connection_to_server *connection, int docId, int userId){
+std::shared_ptr<QTextEdit> Stub::getDocumentText(connection_to_server *connection, int docId, int userId){
     int n = docId;
     docId = n;
-
-    //std::shared_ptr<QTextDocument> docpointer(new QTextDocument());
-    //docpointer->setHtml("<h1>Hello, World!</h1>\n<p>Sopra la panca la capra studia. Sotto la panca la capra studia</p>");
-    std::shared_ptr<QTextDocument> docpointer = connection->requestDocumentText(docId, userId);
-    return docpointer;
+    return connection->requestDocumentText(docId, userId);
 }
 
 int Stub::getDocumentOwnerTemporary(connection_to_server *connection, int docId){

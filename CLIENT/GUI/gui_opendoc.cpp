@@ -94,11 +94,11 @@ void GUI_Opendoc::on_exportPDFPushButton_clicked(){
 
 
     int docId = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
-    std::shared_ptr<QTextDocument> docp = GUI_ConnectionToServerWrapper::getDocumentTextWrapper(gimpParent, docId, gimpParent->userid);
+    std::shared_ptr<QTextEdit> docp = GUI_ConnectionToServerWrapper::getDocumentTextWrapper(gimpParent, docId, gimpParent->userid);
+
     if( docp == nullptr)
         return;
-
-    docp->setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
+    docp->document()->setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
     docp->print(&printer);
 }
 
