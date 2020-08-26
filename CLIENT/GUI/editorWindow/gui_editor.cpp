@@ -127,12 +127,13 @@ void GUI_Editor::launchSetUi1(){
 void GUI_Editor::on_actionApplyUsersColors(){
     this->gimpParent->ui2->actionApplyTextColors->setEnabled(true);
     this->gimpParent->ui2->actionApplyUsersColors->setEnabled(false);
-    findChild<GUI_ToolsBar*>(GUI_ToolsBar::getObjectName())->compromisedUndoStack();
+    findChild<GUI_ToolsBar*>(GUI_ToolsBar::getObjectName())->enterCompromizedModeUndoStack();
 }
 
 void GUI_Editor::on_actionApplyTextColors(){
     this->gimpParent->ui2->actionApplyUsersColors->setEnabled(true);
     this->gimpParent->ui2->actionApplyTextColors->setEnabled(false);
+    findChild<GUI_ToolsBar*>(GUI_ToolsBar::getObjectName())->exitCompromizedModeUndoStack();
 }
 
 
