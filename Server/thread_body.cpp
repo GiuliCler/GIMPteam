@@ -522,38 +522,45 @@ void Thread_body::create(QString username, QString password, QString nickname, Q
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
-    mutex_db->lock();
-    int ret = database->signup(username, password, nickname, icon);
-    mutex_db->unlock();
-    if(ret == 1){
-        // Dati correttamente inseriti nel DB
-        mutex_users->lock();
-        int id = users.size();
-        id++;
-        users.insert(username, id);
-        mutex_users->unlock();
+    //controllo che lo username non sia già stato usato
+    if(users.contains(username)){
+        out << "usernameEsistente";
+        writeData(blocko);
+    }else{
 
-        //creo la cartella sul file system per l'utente
-        QDir dir = QDir::current();
-        dir.mkpath(path+username);
+        mutex_db->lock();
+        int ret = database->signup(username, password, nickname, icon);
+        mutex_db->unlock();
+        if(ret == 1){
+            // Dati correttamente inseriti nel DB
+            mutex_users->lock();
+            int id = users.size();
+            id++;
+            users.insert(username, id);
+            mutex_users->unlock();
 
-        //verifico sia stata correttamente creata
-        if(QDir(path+username).exists()){
-            out << "ok";
-            out << id;
-            writeData(blocko);
-            // Aggiungo al vettore di logged_users
-            mutex_logged_users->lock();
-            logged_users.push_back(username);
-            mutex_logged_users->unlock();
-        }else {
+            //creo la cartella sul file system per l'utente
+            QDir dir = QDir::current();
+            dir.mkpath(path+username);
+
+            //verifico sia stata correttamente creata
+            if(QDir(path+username).exists()){
+                out << "ok";
+                out << id;
+                writeData(blocko);
+                // Aggiungo al vettore di logged_users
+                mutex_logged_users->lock();
+                logged_users.push_back(username);
+                mutex_logged_users->unlock();
+            }else {
+                out << "erroreNellaCreazioneDelProfilo";
+                writeData(blocko);
+            }
+
+        } else {
             out << "erroreNellaCreazioneDelProfilo";
             writeData(blocko);
         }
-
-    } else {
-        out << "erroreNellaCreazioneDelProfilo";
-        writeData(blocko);
     }
 }
 

@@ -478,12 +478,19 @@ int connection_to_server::requestNewAccount(QString username, QString password, 
     in_data >> esito;
 
     QString err = "erroreNellaCreazioneDelProfilo";
-    int id = -1;
-    if(!esito.contains(err.toUtf8())){
-        in_data >> id;
-        return id;
+    QString err2 = "usernameEsistente";
+
+    if(esito.contains(err2.toUtf8())){
+       throw GUI_GenericException("The chosen username already exists. Please, select another one.");
     }
-    throw GUI_GenericException("New account ERROR.");
+
+    if(esito.contains(err.toUtf8())){
+        throw GUI_GenericException("New account ERROR.");
+    }
+
+    int id;
+    in_data >> id;
+    return id;
 }
 
 long connection_to_server::requestUpdateAccount( int userId, QString password, QString nickname, QString icon)
