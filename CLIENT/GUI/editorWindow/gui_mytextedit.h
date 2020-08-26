@@ -22,9 +22,6 @@ public:
 protected:
     virtual void paintEvent(QPaintEvent *pEvent) override;
 
-signals:
-    void updateCursorPosition(int userId, QPoint position);
-
 public slots:
     void addUserCursor(int userId, QPoint position, QColor color);
     void removeUserCursor(int userId);

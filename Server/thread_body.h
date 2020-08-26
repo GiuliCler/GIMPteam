@@ -71,9 +71,11 @@ private:
     int addToWorkingUsers(int docId, int userId, int open_new);
     bool removeFromWorkingUsers(int docId, int userId);
     void forceCloseDocument(int docId_deleted);
+    void moveCursor(int userId, int pos);
     static qint32 ArrayToInt(QByteArray source);
     bool writeData(QByteArray data);
     static QByteArray IntToArray(qint32 source);
+
 
 signals:
     void error(QTcpSocket::SocketError socketError);

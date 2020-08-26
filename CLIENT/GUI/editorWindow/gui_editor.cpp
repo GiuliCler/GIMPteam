@@ -38,12 +38,14 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int sit
         this->uri = uri;
 
     //Per gli online users ed i contributors
-    QObject::connect(gimpParent->getConnection(), &connection_to_server::sigOnlineUser, this, &GUI_Editor::addUserToEditorGUI);
-    QObject::connect(gimpParent->getConnection(), &connection_to_server::sigOfflineUser, this, &GUI_Editor::removeUserFromEditorGUI);
-    QObject::connect(gimpParent->getConnection(), &connection_to_server::sigNewContributor, this, &GUI_Editor::addContributorToCurrentDocument);
+    connect(gimpParent->getConnection(), &connection_to_server::sigOnlineUser, this, &GUI_Editor::addUserToEditorGUI);
+    connect(gimpParent->getConnection(), &connection_to_server::sigOfflineUser, this, &GUI_Editor::removeUserFromEditorGUI);
+    connect(gimpParent->getConnection(), &connection_to_server::sigNewContributor, this, &GUI_Editor::addContributorToCurrentDocument);
 
     //Per spostare i cursors
     QObject::connect(crdtController, &CRDT_controller::updateCursorPosition, childMyTextEdit, &GUI_MyTextEdit::on_updateCursorPosition_emitted);
+    //Per mostrare la fading label
+    connect(crdtController, &CRDT_controller::notifyDeletedStack, childToolsBar, &GUI_ToolsBar::compromisedUndoStack);
 
     //avvio la connessione speciale per l'editor. D'ora in poi la connection_to_server è off-limits
     if(GUI_ConnectionToServerWrapper::requestStartEditorConnection(gimpParent) < 0)
@@ -87,6 +89,8 @@ void GUI_Editor::connectMenuBarActions(){
     connect(gimpParent->ui2->actionApplyUsersColors, &QAction::triggered, findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName()), &GUI_UsersBar::on_showColorsPushButton_clicked);
     connect(gimpParent->ui2->actionApplyTextColors, &QAction::triggered, this, &GUI_Editor::on_actionApplyTextColors);
     connect(gimpParent->ui2->actionApplyTextColors, &QAction::triggered, findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName()), &GUI_UsersBar::on_hideColorsPushButton_clicked);
+
+
 
     connect(gimpParent->ui2->actionUndo, &QAction::triggered, this, &GUI_Editor::on_actionUndo);
     connect(gimpParent->ui2->actionRedo, &QAction::triggered, this, &GUI_Editor::on_actionRedo);
@@ -134,11 +138,13 @@ void GUI_Editor::launchSetUi1(){
 void GUI_Editor::on_actionApplyUsersColors(){
     this->gimpParent->ui2->actionApplyTextColors->setEnabled(true);
     this->gimpParent->ui2->actionApplyUsersColors->setEnabled(false);
+    findChild<GUI_ToolsBar*>(GUI_ToolsBar::getObjectName())->enterCompromizedModeUndoStack();
 }
 
 void GUI_Editor::on_actionApplyTextColors(){
     this->gimpParent->ui2->actionApplyUsersColors->setEnabled(true);
     this->gimpParent->ui2->actionApplyTextColors->setEnabled(false);
+    findChild<GUI_ToolsBar*>(GUI_ToolsBar::getObjectName())->exitCompromizedModeUndoStack();
 }
 
 

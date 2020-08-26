@@ -1,11 +1,18 @@
 #include "gui_toolsbar.h"
+#include "gui_fadinglabel.h"
 #include "../../CRDT/crdt_controller.h"
 #include <QColorDialog>
 
 GUI_ToolsBar::GUI_ToolsBar(QWidget *parent) : QWidget(parent){
+    this->setObjectName(GUI_ToolsBar::getObjectName());
     editorParent = static_cast<GUI_Editor*>(parent);
     ui = new Ui::GUI_ToolsBar();
     ui->setupUi(this);
+
+    fadingLabel = new GUI_FadingLabel(this);
+    ui->bewareLabelWidget->layout()->addWidget(fadingLabel);
+
+    // setTextColorIconColor(QColor(0,0,0)); //TODO:capire se è utile
 
     connect(ui->undoPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionUndo);
     connect(ui->redoPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionRedo);
@@ -22,6 +29,8 @@ GUI_ToolsBar::GUI_ToolsBar(QWidget *parent) : QWidget(parent){
     connect(ui->alignJustifiedPushButton, &QPushButton::clicked, editorParent, &GUI_Editor::on_actionJustified);
 
     connect(ui->closePushButton, &QPushButton::clicked, editorParent, &GUI_Editor::closeDocument);
+
+    fadingLabel->fadingLabelSetUp("Beware: this operation has compromized undo chronology", 4000, 0.75f);
 }
 
 GUI_ToolsBar::~GUI_ToolsBar(){
@@ -31,6 +40,8 @@ GUI_ToolsBar::~GUI_ToolsBar(){
 void GUI_ToolsBar::on_colorPushButton_clicked(){
     QColor chosenColor = QColorDialog::getColor(); //return the color chosen by user
     editorParent->crdtController->setCurrentTextColor(chosenColor);
+
+    compromisedUndoStack();
 }
 
 /*void GUI_ToolsBar::setFontComboBoxText(QFont font){
@@ -48,9 +59,23 @@ void GUI_ToolsBar::setSpinBoxValue(int size){
     ui->spinBox->blockSignals(false);
 }*/
 
+void GUI_ToolsBar::enterCompromizedModeUndoStack(){
+    fadingLabel->setPermanentText("Beware: undo chronology is compromized in contributors mode");
+}
+
+void GUI_ToolsBar::exitCompromizedModeUndoStack(){
+    fadingLabel->removePermanentText();
+}
+
+
+
 void GUI_ToolsBar::setTextColorIconColor(const QColor color){
     QPixmap p(16,16);
     p.fill(color);
     const QIcon ic(p);
     ui->colorPushButton->setIcon(ic);
+}
+
+void GUI_ToolsBar::compromisedUndoStack(){
+    fadingLabel->startFadingText("Beware: this operation has compromized undo chronology");
 }

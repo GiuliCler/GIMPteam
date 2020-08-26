@@ -205,8 +205,21 @@ void Thread_body::executeJob(QByteArray data){
         CRDT_Message messaggio;
         in_data >> messaggio;
 
+        if(current_docId == -1)
+            return;
+
         std::cout << "if SEND - azione: "<<messaggio.getAzione()<< std::endl;           // DEBUG
         emit messageToServer(messaggio, threadId_toQString(thread_id), current_docId);
+    }
+
+    c = "MOVECURSOR";
+    if(text.contains(c.toUtf8())){
+
+        int userId, pos;
+        in_data >> userId;
+        in_data >> pos;
+
+        moveCursor(userId, pos);
     }
 
     c = "DISCONNECT_FROM_DOC";
@@ -308,29 +321,29 @@ int Thread_body::addToWorkingUsers(int docId, int userId, int open_new){
 
 void Thread_body::notifyNewWorkingUser(int userId, int docId){
 
-    CRDT_Symbol s = *new CRDT_Symbol();
-    CRDT_Message *m = new CRDT_Message("ONLINEUSER_"+std::to_string(userId), s, userId);
+    CRDT_Symbol s{};
+    CRDT_Message m{"ONLINEUSER_"+std::to_string(userId), s, userId};
     auto thread_id = std::this_thread::get_id();
 
-    emit messageToServer(*m, threadId_toQString(thread_id), docId);
+    emit messageToServer(m, threadId_toQString(thread_id), docId);
 }
 
 void Thread_body::notifyWorkingUserAway(int userId, int docId){
 
-    CRDT_Symbol s = *new CRDT_Symbol();
-    CRDT_Message *m = new CRDT_Message("OFFLINEUSER_"+std::to_string(userId), s, userId);
+    CRDT_Symbol s{};
+    CRDT_Message m{"OFFLINEUSER_"+std::to_string(userId), s, userId};
     auto thread_id = std::this_thread::get_id();
 
-    emit messageToServer(*m, threadId_toQString(thread_id), docId);
+    emit messageToServer(m, threadId_toQString(thread_id), docId);
 }
 
 void Thread_body::notifyNewContributor(int userId, int docId){
 
-    CRDT_Symbol s = *new CRDT_Symbol();
-    CRDT_Message *m = new CRDT_Message("NEWCONTRIBUTOR_"+std::to_string(userId), s, userId);
+    CRDT_Symbol s{};
+    CRDT_Message m{"NEWCONTRIBUTOR_"+std::to_string(userId), s, userId};
     auto thread_id = std::this_thread::get_id();
 
-    emit messageToServer(*m, threadId_toQString(thread_id), docId);
+    emit messageToServer(m, threadId_toQString(thread_id), docId);
 }
 
 bool Thread_body::removeFromWorkingUsers(int docId, int userId){
@@ -1285,6 +1298,18 @@ void Thread_body::closeDocument(int docId, int userId){
 }
 
 
+void Thread_body::moveCursor(int userId, int pos){
+    if(current_docId == -1)
+        return;
+
+    CRDT_Symbol s{};
+    CRDT_Message m{"MOVECURSOR_"+std::to_string(userId)+"_"+std::to_string(pos), s, userId};
+    auto threadId = std::this_thread::get_id();
+
+    emit messageToServer(m, threadId_toQString(threadId), current_docId);
+}
+
+
 void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int docId){
 
     qDebug() << "THREAD ID SENDER: "+thread_id_sender;                              // DEBUG
@@ -1380,6 +1405,16 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         crdt = nullptr;
 
         out << "FORCECLOSING";
+        writeData(blocko);
+        return;
+    }
+
+    c = "MOVECURSOR";
+    if(strAction.contains(c.toUtf8())){
+        QStringList str = strAction.split("_");
+        out <<  "MOVECURSOR";
+        out <<  str[1].toInt(); // userId
+        out <<  str[2].toInt(); // pos
         writeData(blocko);
         return;
     }

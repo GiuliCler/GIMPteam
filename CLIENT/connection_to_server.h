@@ -41,6 +41,7 @@ public:
     int getDocumentOwner(int docId);
     std::string openDoc(int userId, int docId);
     void requestSendMessage(CRDT_Message *messaggio);
+    void requestSendMovedCursor(int userId, int pos);
     void connectEditor();
     void disconnectEditor(int userId, int docId);
     std::shared_ptr<QSet<int>> getContributors(int docId);
@@ -56,6 +57,7 @@ signals:
     void error(QTcpSocket::SocketError socketError);
     void newFile(const QString &fortune);
     void sigProcessMessage(const CRDT_Message& m);
+    void sigMoveCursor(const int userId, const int pos);
     void sigOfflineUser(int userId);
     void sigOnlineUser(int userid, QString nickname, QString iconId);
     void sigNewContributor(int userid, QString nickname, QString iconId);

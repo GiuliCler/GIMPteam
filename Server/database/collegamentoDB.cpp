@@ -479,7 +479,7 @@ std::vector<std::vector<QString>> CollegamentoDB::recuperaCollaboratori(QString 
  *      nomeDOC: nome del documento
  * Ritorno:
  *      ok -> site_counter
- *      errore -> -1
+ *      errore -> NULL
  */
 int CollegamentoDB::recuperaSiteCounter(QString nomeDOC, QString username){
 

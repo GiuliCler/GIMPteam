@@ -886,12 +886,38 @@ void connection_to_server::requestSendMessage(CRDT_Message *messaggio){
     out.setVersion(QDataStream::Qt_5_12);
     QByteArray comando = "SEND";
 
-//    out << comando.size();
     out << comando;
     out << *messaggio;
 
     writeData(buffer);
 }
+
+
+void connection_to_server::requestSendMovedCursor(int userId, int pos){
+
+    qDebug()<<"MOVECURSOR";      // DEBUG
+
+    //    this->tcpSocket->abort();
+    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+
+    if (!tcpSocket->waitForConnected(Timeout)) {
+        emit error(tcpSocket->error(), tcpSocket->errorString());
+        return;
+    }
+
+    QByteArray buffer;
+    QDataStream out(&buffer, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+    QByteArray comando = "MOVECURSOR";
+
+    out << comando;
+    out << userId;
+    out << pos;
+
+    writeData(buffer);
+}
+
 
 void connection_to_server::connectEditor(){
 
@@ -1006,6 +1032,15 @@ void connection_to_server::receiveMessage(QByteArray data){
         disconnect(this, &connection_to_server::dataReceived, this, &connection_to_server::receiveMessage);
 
         emit forceCloseEditor();
+    }
+
+    c = "MOVECURSOR";
+    if(action.contains(c.toUtf8())){
+        int userId, pos;
+        in_data >> userId;
+        in_data >> pos;
+        std::cout << "SLOT CLIENT receiveMessage - MOVE - user: "<< userId << "; pos: " << pos << std::endl;    //DEBUG
+        emit sigMoveCursor(userId,pos);
     }
 
     c = "CRDT";

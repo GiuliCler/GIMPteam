@@ -18,7 +18,7 @@
     }
 
 CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyTextEdit& textEdit, int siteId, int siteCounter):
-                        gimpDocs(gimpdocs), parent(parent), textEdit(textEdit), highlightUsers(false),
+                        gimpDocs(gimpdocs), parent(parent), connection(gimpDocs->getConnection()), textEdit(textEdit), highlightUsers(false),
                         crdt{this, gimpDocs->getConnection(), siteId, siteCounter},
                         rememberFormatChange(false), validateSpin(true), validateFontCombo(true) {
     QObject::connect(this->parent, &GUI_Editor::menuTools_event, this, &CRDT_controller::menuCall);
@@ -33,6 +33,7 @@ CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyT
     QObject::connect(textEdit.document(), &QTextDocument::undoAvailable, this, &CRDT_controller::undoAvailableChanged);
     QObject::connect(textEdit.document(), &QTextDocument::redoAvailable, this, &CRDT_controller::redoAvailableChanged);
     QObject::connect(parent->childUsersBar, &GUI_UsersBar::highlightingUsers, this, &CRDT_controller::setUsersColors);
+    QObject::connect(connection, &connection_to_server::sigMoveCursor, this, &CRDT_controller::remoteMove);
 
     parent->childToolsBar->ui->spinBox->setSpecialValueText("Default");
 }
@@ -40,18 +41,22 @@ CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyT
 void CRDT_controller::setLeft(){
     textEdit.setAlignment(Qt::AlignLeft);
     emit menuSet(menuTools::A_LEFT);
+    cursorMoved();
 }
 void CRDT_controller::setCenter(){
     textEdit.setAlignment(Qt::AlignCenter);
     emit menuSet(menuTools::A_CENTER);
+    cursorMoved();
 }
 void CRDT_controller::setRight(){
     textEdit.setAlignment(Qt::AlignRight);
     emit menuSet(menuTools::A_RIGHT);
+    cursorMoved();
 }
 void CRDT_controller::setJustified(){
     textEdit.setAlignment(Qt::AlignJustify);
     emit menuSet(menuTools::A_JUSTIFIED);
+    cursorMoved();
 }
 
 void CRDT_controller::setBold(){
@@ -146,10 +151,16 @@ void CRDT_controller::setUsersColors(bool value){
         if(highlightUsers){                 // L'utente vuole vedere il testo colorato con il colore di ogni utente
             fmt.setBackground(*(parent->getUserColor(crdt.getSiteIdAt(pos))));          // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
         } else {                            // L'utente non vuole vedere più il testo colorato con il colore di ogni utente
-            fmt.setBackground(QColor{255, 255, 255});     // Setto il background color a "white"
+            fmt.setBackground(Qt::BrushStyle::NoBrush);     // Setto il background color a "white"
         }
         tmp.mergeCharFormat(fmt);
     }
+
+    if(highlightUsers && textEdit.textBackgroundColor() == Qt::BrushStyle::NoBrush)
+        textEdit.setTextBackgroundColor(*(parent->getUserColor(crdt.getSiteId())));
+
+    if(!highlightUsers && textEdit.textBackgroundColor() != Qt::BrushStyle::NoBrush)
+        textEdit.setTextBackgroundColor(Qt::BrushStyle::NoBrush);
 
     // Cancello UNDO e REDO stacks
     textEdit.document()->clearUndoRedoStacks();
@@ -222,6 +233,8 @@ void CRDT_controller::cursorMoved(){
         rememberFormatChange = false;
         currentCharFormatChanged(textEdit.currentCharFormat());
     }
+
+    connection->requestSendMovedCursor(crdt.getSiteId(), textEdit.textCursor().position());
 }
 void CRDT_controller::selectionChanged(){
     if(processingMessage)                         // TODO: Paolo non sa se è da togliere o no.....
@@ -246,7 +259,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         return;
 
     QTextCursor tmp{textEdit.document()};
-    tmp.joinPreviousEditBlock();
+    bool mustClearStacks = false;
 
     if(pos + del - 1 > crdt.getLength() - 1){
         del--;
@@ -263,10 +276,15 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
     if(add > 0){
         tmp.setPosition(pos);
-        tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, add);
-        QTextCharFormat fmt{tmp.charFormat()};
-        fmt.setBackground(QColor{255, 255, 255});     // Setto il background a "white"
-        tmp.mergeCharFormat(fmt);
+        for(int i = pos; i < pos + add; tmp.setPosition(++i)){
+            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+            if(tmp.charFormat().background() != Qt::BrushStyle::NoBrush){
+                QTextCharFormat fmt{tmp.charFormat()};
+                fmt.setBackground(Qt::BrushStyle::NoBrush);
+                tmp.mergeCharFormat(fmt);
+                mustClearStacks = true;
+            }
+        }
 
         tmp.setPosition(pos+1);
 
@@ -289,10 +307,15 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
             crdt.localErase(i);
 
         tmp.setPosition(pos1);
-        tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, cnt);
-        QTextCharFormat fmt{tmp.charFormat()};
-        fmt.setBackground(QColor{255, 255, 255});     // Setto il background a "white"
-        tmp.mergeCharFormat(fmt);
+        for(int i = pos1; i < pos1 + cnt; tmp.setPosition(++i)){
+            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+            if(tmp.charFormat().background() != Qt::BrushStyle::NoBrush){
+                QTextCharFormat fmt{tmp.charFormat()};
+                fmt.setBackground(Qt::BrushStyle::NoBrush);
+                tmp.mergeCharFormat(fmt);
+                mustClearStacks = true;
+            }
+        }
 
         tmp.setPosition(pos1+1);
         // inserisco da tmp a fondo del blocco
@@ -304,17 +327,28 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     }
 
     if(highlightUsers){
+        mustClearStacks = true;
         tmp.setPosition(pos);
 
         if(add+cnt > 0){
-            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, add+cnt);
-            QTextCharFormat fmt{tmp.charFormat()};
-            fmt.setBackground(*(parent->getUserColor(crdt.getSiteIdAt(pos))));           // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
-            tmp.mergeCharFormat(fmt);
+            for(int i = pos; i < pos + add + cnt; tmp.setPosition(++i)){
+                tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+                QTextCharFormat fmt{tmp.charFormat()};
+                fmt.setBackground(*(parent->getUserColor(crdt.getSiteIdAt(pos))));           // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
+                tmp.mergeCharFormat(fmt);
+            }
         }
     }
 
-    tmp.endEditBlock();
+    if(mustClearStacks){
+        if(!highlightUsers){
+            QTextCharFormat fmt{textEdit.currentCharFormat()};
+            fmt.setBackground(Qt::BrushStyle::NoBrush);
+            textEdit.mergeCurrentCharFormat(fmt);
+            emit notifyDeletedStack();
+        }
+        textEdit.document()->clearUndoRedoStacks();
+    }
 }
 
 void CRDT_controller::clipboardDataChanged(){
@@ -376,34 +410,41 @@ void CRDT_controller::menuCall(menuTools op){
     }
 }
 
-void CRDT_controller::remoteDelete(int pos, int id_sender){
+void CRDT_controller::remoteDelete(int pos){
 
 //    std::cout<<"EHI! SONO NELLA REMOTE DELETE! Position: "<< pos <<std::endl;
 
     bool processingMessage_prev = processingMessage;
     processingMessage = true;
 
+    int pos_prev = textEdit.textCursor().position();
     QTextCursor tmp{textEdit.document()};
     tmp.beginEditBlock();
     tmp.setPosition(pos);
-
-    QPoint position = QPoint (textEdit.cursorRect(tmp).topLeft().x(), textEdit.cursorRect(tmp).topLeft().y() + textEdit.verticalScrollBar()->value());
-    emit updateCursorPosition(id_sender, position);
 
     tmp.deleteChar();
 
     tmp.endEditBlock();
 
+    tmp.setPosition(pos_prev <= pos ? pos_prev : pos_prev-1);
+    textEdit.setTextCursor(tmp);
+    if(textEdit.alignment() != Qt::AlignLeft)
+        cursorMoved();
+
+    if(highlightUsers)
+        textEdit.document()->clearUndoRedoStacks();
+
     processingMessage = processingMessage_prev;
 }
 
-void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align, int id_sender){
+void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align){
 
 //    std::cout<<"EHI! SONO NELLA REMOTE INSERT! Char: "<< c.toLatin1() <<std::endl;
 
     bool processingMessage_prev = processingMessage;
     processingMessage = true;
 
+    int pos_prev = textEdit.textCursor().position();
     QTextCursor tmp{textEdit.document()};
     tmp.beginEditBlock();
     tmp.setPosition(pos);
@@ -423,15 +464,24 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
     }
 //    std::cout << "Block End: " << textEdit.textCursor().atBlockEnd() << "; Alignment: " << align << std::endl;
 
-    //MIRKO: l'idea è questa. Scegli tu come lanciarlo e se fare delle modifiche
-    //QPoint position = QPoint (textEdit.cursorRect().topLeft().x(), textEdit.cursorRect().topLeft().y() + textEdit.verticalScrollBar()->value());
-    //Qui ho messo l'id sbagliato perchè non so dove reperire quello giusto. L'importante era fare un tentativo
-    //emit updateCursorPosition(gimpDocs->userid, position);
-
-    QPoint position = QPoint (textEdit.cursorRect(tmp).topLeft().x(), textEdit.cursorRect(tmp).topLeft().y() + textEdit.verticalScrollBar()->value());
-    emit updateCursorPosition(id_sender, position);
-
     tmp.endEditBlock();
 
+    tmp.setPosition(pos_prev <= pos ? pos_prev : pos_prev+1);
+    textEdit.setTextCursor(tmp);
+
+    if(textEdit.alignment() != Qt::AlignLeft)
+        cursorMoved();
+
+    if(highlightUsers)
+        textEdit.document()->clearUndoRedoStacks();
+
     processingMessage = processingMessage_prev;
+}
+
+void CRDT_controller::remoteMove(int userId, int pos){
+    QTextCursor tmp{textEdit.document()};
+    tmp.setPosition(pos);
+
+    QPoint position = QPoint (textEdit.cursorRect(tmp).topLeft().x(), textEdit.cursorRect(tmp).topLeft().y() + textEdit.verticalScrollBar()->value());
+    emit updateCursorPosition(userId, position);
 }
