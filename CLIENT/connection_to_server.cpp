@@ -364,7 +364,6 @@ std::shared_ptr<QTextEdit> connection_to_server::requestDocumentText(int docId, 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
         throw GUI_ConnectionException("Timeout Expired.");
     }
-
     QByteArray data = readData();
     QDataStream in_data(&data, QIODevice::ReadOnly);
     in_data.setVersion(QDataStream::Qt_5_12);
@@ -377,7 +376,9 @@ std::shared_ptr<QTextEdit> connection_to_server::requestDocumentText(int docId, 
     if(esito.contains(good.toUtf8())){
 
         readDataFile();
+
         QByteArray file = this->getFileTMP();
+
         QDataStream data(&file, QIODevice::ReadOnly);
         QVector<CRDT_Symbol> simboli;
         data >> simboli;
@@ -393,6 +394,7 @@ std::shared_ptr<QTextEdit> connection_to_server::requestDocumentText(int docId, 
             QTextBlockFormat blockFmt{tmp.blockFormat()};
 
             tmp.insertText(it->getCarattere(), it->getFormat());
+
             if(tmp.blockFormat().alignment() != it->getAlignment()){
                 blockFmt.setAlignment(it->getAlignment());
                 tmp.mergeBlockFormat(blockFmt);
@@ -400,6 +402,7 @@ std::shared_ptr<QTextEdit> connection_to_server::requestDocumentText(int docId, 
 
             tmp.endEditBlock();
          }
+
         return documento;
 
     } else if (esito.contains(inesist.toUtf8())){
