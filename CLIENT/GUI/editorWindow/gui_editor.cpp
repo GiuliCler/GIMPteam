@@ -36,6 +36,8 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int sit
     QString uri = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
     if(uri.compare("errore") != 0)
         this->uri = uri;
+    else
+        this->uri = "Error, URI unavailable";
 
     //Per gli online users ed i contributors
     connect(gimpParent->getConnection(), &connection_to_server::sigOnlineUser, this, &GUI_Editor::addUserToEditorGUI);
@@ -43,13 +45,14 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int sit
     connect(gimpParent->getConnection(), &connection_to_server::sigNewContributor, this, &GUI_Editor::addContributorToCurrentDocument);
 
     //Per spostare i cursors
-    QObject::connect(crdtController, &CRDT_controller::updateCursorPosition, childMyTextEdit, &GUI_MyTextEdit::on_updateCursorPosition_emitted);
+    connect(crdtController, &CRDT_controller::updateCursorPosition, childMyTextEdit, &GUI_MyTextEdit::on_updateCursorPosition_emitted);
     //Per mostrare la fading label
     connect(crdtController, &CRDT_controller::notifyDeletedStack, childToolsBar, &GUI_ToolsBar::compromisedUndoStack);
 
     //avvio la connessione speciale per l'editor. D'ora in poi la connection_to_server è off-limits
     if(GUI_ConnectionToServerWrapper::requestStartEditorConnection(gimpParent) < 0)
-        return;
+        //se non riesco a far partire l'editor devo chiudere tutto
+        launchSetUi1();
 
     gimpParent->isEditorConnected = true;
 }
@@ -390,16 +393,9 @@ void GUI_Editor::fillOnlineUsersList(){
         //questo bruttissimo passaggio di parametri di funzione in funzione anzichè reperirli direttamente a basso livello chiamando il server è perchè mentre il CRDT è aperto non posso usare la connection_to_server
 
         QString nickname = GUI_ConnectionToServerWrapper::requestGetNicknameWrapper(gimpParent, *userId);
-        if(nickname.compare("errore") == 0)
-            //non dovremmo mai entrare in questo if perchè in caso di errore di connessione si dovrebbe ricaricare il widget da capo
-            return;
-
         QString iconId = GUI_ConnectionToServerWrapper::requestGetIconIdWrapper(gimpParent, *userId);
-        if(iconId.compare("errore") == 0)
-            //non dovremmo mai entrare in questo if perchè in caso di errore di connessione si dovrebbe ricaricare il widget da capo
-            return;
-
-        addUserToEditorGUI(*userId, nickname, iconId);
+        if(nickname.compare("errore") != 0 && iconId.compare("errore") != 0)
+            addUserToEditorGUI(*userId, nickname, iconId);
     }
 }
 
@@ -413,15 +409,8 @@ void GUI_Editor::fillContibutorUsersList(){
         //questo bruttissimo passaggio di parametri di funzione in funzione anzichè reperirli direttamente a basso livello chiamando il server è perchè mentre il CRDT è aperto non posso usare la connection_to_server
 
         QString nickname = GUI_ConnectionToServerWrapper::requestGetNicknameWrapper(gimpParent, *userId);
-        if(nickname.compare("errore") == 0)
-            //non dovremmo mai entrare in questo if perchè in caso di errore di connessione si dovrebbe ricaricare il widget da capo
-            return;
-
         QString iconId = GUI_ConnectionToServerWrapper::requestGetIconIdWrapper(gimpParent, *userId);
-        if(iconId.compare("errore") == 0)
-            //non dovremmo mai entrare in questo if perchè in caso di errore di connessione si dovrebbe ricaricare il widget da capo
-            return;
-
-        addContributorToCurrentDocument(*userId, nickname, iconId);
+        if(nickname.compare("errore") != 0 && iconId.compare("errore") != 0)
+            addContributorToCurrentDocument(*userId, nickname, iconId);
     }
 }

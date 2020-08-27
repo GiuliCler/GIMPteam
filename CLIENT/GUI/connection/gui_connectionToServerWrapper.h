@@ -19,6 +19,8 @@ public:
     /*USERS*/
     static int requestLoginWrapper(GIMPdocs *gimpdocs, QString username, QString password);
     static int requestLogoutWrapper(GIMPdocs *gimpdocs, int userId);
+    //è per quando chiudo direttamente GIMPdocs
+    static int requestDefinitiveLogoutWrapper(GIMPdocs *gimpdocs, int userId);
     static int requestNewAccountWrapper(GIMPdocs *gimpdocs, QString username, QString password, QString nickname, QString icon);
     static int requestUpdateAccountWrapper(GIMPdocs *gimpdocs, int userId, QString password, QString nickname, QString icon);
     static QString requestGetNicknameWrapper(GIMPdocs *gimpdocs, int userId);
