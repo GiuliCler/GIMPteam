@@ -384,23 +384,11 @@ std::shared_ptr<QTextEdit> connection_to_server::requestDocumentText(int docId, 
         data >> simboli;
 
         std::shared_ptr<QTextEdit> documento (new QTextEdit());
-        int pos = 0;
 
-        for(auto it = simboli.begin();it<simboli.end();it++, pos++) {
-            QTextCursor tmp{documento->document()};
-            tmp.beginEditBlock();
-            tmp.setPosition(pos);
-
-            QTextBlockFormat blockFmt{tmp.blockFormat()};
-
-            tmp.insertText(it->getCarattere(), it->getFormat());
-
-            if(tmp.blockFormat().alignment() != it->getAlignment()){
-                blockFmt.setAlignment(it->getAlignment());
-                tmp.mergeBlockFormat(blockFmt);
-            }
-
-            tmp.endEditBlock();
+        for(auto it = simboli.begin();it<simboli.end();it++) {
+            documento->textCursor().insertText(it->getCarattere(), it->getFormat());
+            if(documento->alignment() != it->getAlignment())
+                documento->setAlignment(it->getAlignment());
          }
 
         return documento;
