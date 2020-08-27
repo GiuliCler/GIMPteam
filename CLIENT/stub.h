@@ -32,7 +32,7 @@ public:
 
 
     /*DOCUMENTS*/
-    static std::shared_ptr<QMap<QString, int>> getKnownDocumentsTemporary(connection_to_server *connection, int userId);
+    static std::shared_ptr<QMap<int, QString>> getKnownDocumentsTemporary(connection_to_server *connection, int userId);
     static QString requestCreateDocumentTemporary(connection_to_server *connection, int userId, QString name);
     static void requestDeleteDocTemporary(connection_to_server *connection, int userId, int documentId);
     static QString openDocTemporary(connection_to_server *connection, int userId, int documentId);

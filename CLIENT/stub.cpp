@@ -85,8 +85,8 @@ QString Stub::requestIconIdTemporary(connection_to_server *connection, int userI
 
 
 /*DOCUMENT*/
-std::shared_ptr<QMap<QString, int>> Stub::getKnownDocumentsTemporary(connection_to_server *connection, int userId){
-    std::shared_ptr<QMap<QString, int>> vpointer = connection->getKnownDocuments(userId);
+std::shared_ptr<QMap<int, QString>> Stub::getKnownDocumentsTemporary(connection_to_server *connection, int userId){
+    std::shared_ptr<QMap<int, QString>> vpointer = connection->getKnownDocuments(userId);
 
     if(vpointer == nullptr)
         //throw GUI_ConnectionException();
