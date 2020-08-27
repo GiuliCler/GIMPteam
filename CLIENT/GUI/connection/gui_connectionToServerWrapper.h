@@ -29,7 +29,7 @@ public:
 
 
     /*DOCUMENTS*/
-    static std::shared_ptr<QMap<QString, int>> requestGetKnownDocumentsWrapper(GIMPdocs *gimpdocs, int userId);
+    static std::shared_ptr<QMap<int, QString>> requestGetKnownDocumentsWrapper(GIMPdocs *gimpdocs, int userId);
     static QString requestCreateDocumentWrapper(GIMPdocs *gimpdocs, int userId, QString name);
     static int requestDeleteDocumentWrapper(GIMPdocs *gimpdocs, int userId, int documentId);
     static QString requestOpenDocumentWrapper(GIMPdocs *gimpdocs, int userId, int documentId);

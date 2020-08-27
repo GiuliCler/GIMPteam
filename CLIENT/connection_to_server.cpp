@@ -442,18 +442,18 @@ std::string connection_to_server::requestUri(int docId){
     return uri.toStdString();
 }
 
-std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int userId){
+std::shared_ptr<QMap<int, QString>> connection_to_server::getKnownDocuments(int userId){
 
     qDebug()<<"GET_DOCS";      // DEBUG
 
-    QMap<QString, int> ritorno;
+    QMap<int, QString> ritorno;
 //    this->tcpSocket->abort();
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
             emit error(tcpSocket->error(), tcpSocket->errorString());
-            return std::make_shared<QMap<QString, int>>(ritorno);
+            return std::make_shared<QMap<int, QString>>(ritorno);
         }
     }
 
@@ -481,7 +481,7 @@ std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int 
 
     if(num == -1){
         // In caso di errore...
-        return std::make_shared<QMap<QString, int>>(ritorno);
+        return std::make_shared<QMap<int, QString>>(ritorno);
     }
 
 //    qDebug()<<"CONNECTION_TO_SERVER - num_doc RICEVUTO: "<<num;     // DEBUG
@@ -496,7 +496,7 @@ std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int 
 
 //    qDebug()<<"CONNECTION_TO_SERVER - vet.size(): "<<vet.size();     // DEBUG
 
-    // Conversione del QVector<QString> in <QMap<QString, int>>
+    // Conversione del QVector<QString> in <QMap<int, QString>>
     for(auto it=vet.begin(); it<vet.end(); it++){
         QString stringa = (*it);
 
@@ -507,11 +507,11 @@ std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int 
         QString doc_name = list.at(0);
         int docId = list.at(1).toInt();
 
-        ritorno.insert(doc_name, docId);
+        ritorno.insert(docId, doc_name);
 //        qDebug()<<"CONNECTION_TO_SERVER - Salvo la coppia (doc_name, docId): ("<<doc_name<<","<<docId<<")";       // DEBUG
     }
 
-    return std::make_shared<QMap<QString, int>>(ritorno);
+    return std::make_shared<QMap<int, QString>>(ritorno);
 }
 
 std::string connection_to_server::requestGetNickname(int userId){

@@ -171,8 +171,8 @@ QString GUI_ConnectionToServerWrapper::requestGetIconIdWrapper(GIMPdocs *gimpdoc
 
 /*DOCUMENTS*/
 
-std::shared_ptr<QMap<QString, int>> GUI_ConnectionToServerWrapper::requestGetKnownDocumentsWrapper(GIMPdocs *gimpdocs, int userId){
-    std::shared_ptr<QMap<QString, int>> mpointer = nullptr;
+std::shared_ptr<QMap<int, QString>> GUI_ConnectionToServerWrapper::requestGetKnownDocumentsWrapper(GIMPdocs *gimpdocs, int userId){
+    std::shared_ptr<QMap<int, QString>> mpointer = nullptr;
 
     try {
         gimpdocs->setCursor(Qt::WaitCursor);

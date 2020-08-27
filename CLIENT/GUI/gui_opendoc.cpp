@@ -46,7 +46,7 @@ void GUI_Opendoc::on_openDocsPushButton_clicked(){
         return;
     }
     int docId = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
-    QString docName = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCNAME).toString();
+    QString docName = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCNAME).toString().split("(")[0];
     QString codedParameters = GUI_ConnectionToServerWrapper::requestOpenDocumentWrapper(gimpParent, gimpParent->userid, docId);
     if(codedParameters.compare("errore") == 0)
         return;
@@ -155,22 +155,31 @@ void GUI_Opendoc::unavailableSharedDocument_emitted(int docId){
 
 
 void GUI_Opendoc::fillList(){
-    std::shared_ptr<QMap<QString, int>> vp = GUI_ConnectionToServerWrapper::requestGetKnownDocumentsWrapper(gimpParent, gimpParent->userid);
+    std::shared_ptr<QMap<int, QString>> vp = GUI_ConnectionToServerWrapper::requestGetKnownDocumentsWrapper(gimpParent, gimpParent->userid);
     if(vp == nullptr)
         return;
 
     for(auto pair = vp->begin(); pair != vp->end(); pair++){
         //lo inizializzo per togliere il warning
         QListWidgetItem* item = new QListWidgetItem;
-        item->setData(GUI_OPENDOC_WIDGETLIST_DOCNAME, pair.key());
-        item->setData(GUI_OPENDOC_WIDGETLIST_DOCID, pair.value());
+        item->setData(GUI_OPENDOC_WIDGETLIST_DOCNAME, pair.value());
+        item->setData(GUI_OPENDOC_WIDGETLIST_DOCID, pair.key());
 
-        int ownerId = GUI_ConnectionToServerWrapper::requestDocumentOwnerWrapper(gimpParent, pair.value());
+        int ownerId = GUI_ConnectionToServerWrapper::requestDocumentOwnerWrapper(gimpParent, item->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt());
         if(ownerId != -1){
             if(gimpParent->userid == ownerId)
                 ui->ownedDocsListWidget->addItem(item);
-            else
+            else{
+                QString docName = item->data(GUI_OPENDOC_WIDGETLIST_DOCNAME).toString();
+                docName.append("(");
+                QString result = GUI_ConnectionToServerWrapper::requestGetNicknameWrapper(gimpParent, ownerId);
+                if(result.compare("errore") != 0)
+                    docName.append(result);
+                docName.append(")");
+
+                item->setData(GUI_OPENDOC_WIDGETLIST_DOCNAME, docName);
                 ui->sharedDocsListWidget->addItem(item);
+            }
         }
     }
 }
