@@ -273,7 +273,7 @@ std::string connection_to_server::requestDocDatoUri(QString uri, int userId){
     QString good = "ok";
     QString inesistente = "erroreUriInesistente";
     if(esito.contains(inesistente.toUtf8())){
-        throw GUI_GenericException("Open document given uri ERROR: The URI provided does not exist.");
+        throw GUI_GenericException("ERROR: no document with the provided URI exists.");
     }
 
     if(esito.contains(good.toUtf8())){
@@ -340,7 +340,7 @@ std::string connection_to_server::requestDocName(int docId){
 std::shared_ptr<QTextEdit> connection_to_server::requestDocumentText(int docId, int userId){
     qDebug()<<"GET_DOC_TEXT";      // DEBUG
 
-    this->tcpSocket->abort();
+//    this->tcpSocket->abort();
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
@@ -459,7 +459,7 @@ int connection_to_server::requestNewAccount(QString username, QString password, 
     QString err2 = "usernameEsistente";
 
     if(esito.contains(err2.toUtf8())){
-       throw GUI_GenericException("The chosen username already exists. Please, select another one.");
+       throw GUI_GenericException("ERROR: the chosen username already exists. Please, select another one.");
     }
 
     if(esito.contains(err.toUtf8())){

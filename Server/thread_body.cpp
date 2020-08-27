@@ -523,10 +523,13 @@ void Thread_body::create(QString username, QString password, QString nickname, Q
     out.setVersion(QDataStream::Qt_5_12);
 
     //controllo che lo username non sia già stato usato
+    mutex_users->lock();
     if(users.contains(username)){
+        mutex_users->unlock();
         out << "usernameEsistente";
         writeData(blocko);
     }else{
+        mutex_users->unlock();
 
         mutex_db->lock();
         int ret = database->signup(username, password, nickname, icon);
@@ -1151,10 +1154,16 @@ void Thread_body::getDocText(int docId, int userId){
     QString docName = getDocname(docId);
     QString username = getUsername(userId);
 
-    if(docName.isEmpty()){
-        // Il documento non esiste (vuol dire che è stato cancellato dall'owner)
-        out << "doc-inesistente";
-        writeData(blocko);
+    if(docName.isEmpty() || username.isEmpty()){
+        if(username.isEmpty()){
+            // L'utente non esiste
+            out << "errore";
+            writeData(blocko);
+        } else {
+            // Il documento non esiste (vuol dire che è stato cancellato dall'owner)
+            out << "doc-inesistente";
+            writeData(blocko);
+        }
     } else {
         // Il documento esiste
         if(openDoc(docName, docId, userId, 1) == -1){
@@ -1175,10 +1184,12 @@ void Thread_body::getDocText(int docId, int userId){
                 out << ritorno.toUtf8();
                 writeData(blocko);
 
+                crdt->mutex->lock();
+
                 // Recupero il contenuto del vettore _symbols che sta all'interno del ServerEditor
                 QVector<CRDT_Symbol> simboli = crdt->getSymbols();
 
-                //crdt->mutex->unlock();
+                crdt->mutex->unlock();
 
                 // Mando al client il contenuto del il contenuto del vettore _symbols
                 QByteArray blocko1;
