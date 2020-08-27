@@ -116,9 +116,12 @@ int CollegamentoDB::signup(QString username, QString password, QString nickname,
     QString pass_salata = password + sale_qt;
     QString pass_crypt = QString(QCryptographicHash::hash((pass_salata.toUtf8()),QCryptographicHash::Sha256));
 
+    std::string query0 = "SELECT * FROM utenti WHERE username=:user";
     std::string query = "INSERT INTO utenti(username, password, sale, nickname, icona) VALUES(:user, :pssw, :salt, :nick, :icon)";
-    QSqlQuery ris(QSqlDatabase::database(connectionName));
+    QSqlQuery ris0(QSqlDatabase::database(connectionName)), ris(QSqlDatabase::database(connectionName));
+    ris0.prepare(QString::fromStdString(query0));
     ris.prepare(QString::fromStdString(query));
+    ris0.bindValue(":user", username);
     ris.bindValue(":user", username);
     ris.bindValue(":pssw", pass_crypt);
     ris.bindValue(":salt", sale_qt);
@@ -129,10 +132,17 @@ int CollegamentoDB::signup(QString username, QString password, QString nickname,
     else
         ris.bindValue(":icon", "NULL");
 
-    if(ris.exec())
-        return 1;
-    else
+    ris0.exec();
+    if(ris0.size() == 0){
+        /* Tutto ok: non esiste ancora alcuna riga all'interno della tabella UTENTI con l'username specificato */
+        if(ris.exec())
+            return 1;
+        else
+            return 0;
+    } else {
+        /* Errore: esiste già una riga all'interno della tabella UTENTI con l'username specificato */
         return 0;
+    }
 }
 
 /*
@@ -255,12 +265,12 @@ QString CollegamentoDB::recuperaDocDatoURI(QString uri){
  *           aggiornato (settato a 1)
  *      0 -> L'utente è già stato abilitato alla modifica del documento, ovvero è già presente una riga
  *           con (username,nomeDOC) e accessibile = 1 nella tabella UTENTE_DOC
- *      2 -> Il documento di cui è stato fornito il nome non esiste nella tabella DOC oppure è stata fornita
- *           una stringa vuota
+ *      2 -> Il documento di cui è stato fornito il nome non esiste nella tabella DOC oppure l'username non esiste nella tabella UTENTI
+ *           oppure è stata fornita una stringa vuota (nomeDOC oppure username)
  */
 int CollegamentoDB::aggiungiPartecipante(QString nomeDOC, QString username){
 
-    if(nomeDOC.isEmpty())
+    if(nomeDOC.isEmpty() || username.isEmpty())
         return 2;
 
     int esito = 1;
@@ -269,20 +279,26 @@ int CollegamentoDB::aggiungiPartecipante(QString nomeDOC, QString username){
 
     std::string query1 = "SELECT * FROM utente_doc WHERE username=:user AND nome_doc=:doc AND accessibile=:acc";
     std::string query3 = "SELECT * FROM doc WHERE nome_doc=:doc";
-    QSqlQuery ris1(QSqlDatabase::database(connectionName)), ris2(QSqlDatabase::database(connectionName)), ris3(QSqlDatabase::database(connectionName)), ris4(QSqlDatabase::database(connectionName));
+    std::string query0 = "SELECT * FROM utenti WHERE username=:user";
+    QSqlQuery ris0(QSqlDatabase::database(connectionName)), ris1(QSqlDatabase::database(connectionName)), ris2(QSqlDatabase::database(connectionName)), ris3(QSqlDatabase::database(connectionName)), ris4(QSqlDatabase::database(connectionName));
     ris1.prepare(QString::fromStdString(query1));
     ris3.prepare(QString::fromStdString(query3));
+    ris0.prepare(QString::fromStdString(query0));
     ris1.bindValue(":user", username);
     ris1.bindValue(":doc", nomeDOC);
     ris1.bindValue(":acc", 1);
     ris3.bindValue(":doc", nomeDOC);
+    ris0.bindValue(":user", username);
 
     QSqlDatabase::database().transaction();
 
     ris3.exec();
-    if(ris3.size() == 0){
+    ris0.exec();
+    if(ris3.size() == 0 || ris0.size() == 0){
 
-        /* Non esiste alcuna riga all'interno della tabella DOC con il nomeDOC specificato */
+        /* Non esiste alcuna riga all'interno della tabella DOC con il nomeDOC specificato
+         * oppure
+         * non esiste alcuna riga all'interno della tabella UTENTI con l'username specificato*/
         esito = 2;
 
     } else {
@@ -479,7 +495,7 @@ std::vector<std::vector<QString>> CollegamentoDB::recuperaCollaboratori(QString 
  *      nomeDOC: nome del documento
  * Ritorno:
  *      ok -> site_counter
- *      errore -> NULL
+ *      errore -> -1
  */
 int CollegamentoDB::recuperaSiteCounter(QString nomeDOC, QString username){
 
