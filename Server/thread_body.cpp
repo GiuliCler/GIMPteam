@@ -1034,25 +1034,18 @@ void Thread_body::deleteDoc(int userId, int docId){
             if(workingUsers.contains(docId)){
 
                 // ... Dato il docId, "butto fuori" ciascun utente
-                int count = workingUsers[docId].size(), last = 1;
-                for(auto it = workingUsers[docId].begin(); it < workingUsers[docId].end(); it++, last++){
-
+                for(auto it = workingUsers[docId].begin(); it < workingUsers[docId].end(); it++)
                     // ... Rimuovo l'utente dalla riga degli utenti online su un certo documento
                     workingUsers[docId].erase(it);
 
-                    // ... Controllo se l'utente che sta chiudendo il documento è l'ultimo utente online su tale documento
-                    if(last == count){
+                // ... Elimino la riga in workingUsers
+                workingUsers.remove(docId);
 
-                        // ... Elimino la riga in workingUsers
-                        workingUsers.remove(docId);
+                mutex_files->lock();
+                files.remove(docId);
+                mutex_files->unlock();
 
-                        mutex_files->lock();
-                        files.remove(docId);
-                        mutex_files->unlock();
-
-                        delete crdt;
-                    }
-                }
+                delete crdt;
 
                 // ... Segnalo agli utenti che devono essere "buttati fuori" dall'editor
                 forceCloseDocument(docId);

@@ -44,12 +44,9 @@ void GIMPdocs::closeEvent (QCloseEvent *event){
     }
 
     if (userid != -1){
-        if(GUI_ConnectionToServerWrapper::requestLogoutWrapper(this, userid) == -1){
-            qDebug() << "Logout fallita";
+        if(GUI_ConnectionToServerWrapper::requestDefinitiveLogoutWrapper(this, userid) == -1){
             event->ignore();
             return;
-        } else {
-            qDebug() << "Logout eseguita";
         }
     }
 

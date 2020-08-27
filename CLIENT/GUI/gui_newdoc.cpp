@@ -63,6 +63,9 @@ void GUI_Newdoc::on_openURIPushButton_clicked()
     int documentId = codedParameters.split("_").at(2).toInt();
 
     QString docName = GUI_ConnectionToServerWrapper::requestDocumentNameWrapper(gimpParent, documentId);
+    if(docName.compare("errore") == 0)
+        docName = "document_name_error";
+    //se la request docName fallisce non posso fare una return perchè ho appena aperto il document
 
     GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId, docName, siteCounter);
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);

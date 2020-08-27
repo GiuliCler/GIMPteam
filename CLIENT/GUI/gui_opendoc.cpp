@@ -166,10 +166,12 @@ void GUI_Opendoc::fillList(){
         item->setData(GUI_OPENDOC_WIDGETLIST_DOCID, pair.value());
 
         int ownerId = GUI_ConnectionToServerWrapper::requestDocumentOwnerWrapper(gimpParent, pair.value());
-        if(gimpParent->userid == ownerId)
-            ui->ownedDocsListWidget->addItem(item);
-        else
-            ui->sharedDocsListWidget->addItem(item);
+        if(ownerId != -1){
+            if(gimpParent->userid == ownerId)
+                ui->ownedDocsListWidget->addItem(item);
+            else
+                ui->sharedDocsListWidget->addItem(item);
+        }
     }
 }
 
