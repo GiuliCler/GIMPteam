@@ -131,7 +131,7 @@ void Stub::closeDocumentTemporary(connection_to_server *connection, int userId, 
 
 QString Stub::requestDocDatoUriTemporary(connection_to_server *connection, int userId, QString uri){
     //anche qui sto ricevendo un malloppo di parametri stringati assieme
-    QString result = QString::fromStdString(connection->requestDocDatoUri(uri, userId));
+    QString result = QString::fromStdString(connection->requestDocIdDatoUri(uri, userId));
 
     if(result.compare("errore") == 0)
         //throw GUI_ConnectionException();

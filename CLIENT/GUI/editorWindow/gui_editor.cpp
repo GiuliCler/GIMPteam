@@ -13,7 +13,7 @@
 #include <QFileDialog>
 #include <QFileInfo>
 
-GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int siteCounter) : QWidget(parent), documentId(documentId), docName(docName)
+GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int siteCounter, int up) : QWidget(parent), documentId(documentId), docName(docName)
 {
     this->setObjectName(GUI_Editor::getObjectName());
     gimpParent = static_cast<GIMPdocs*>(parent);
@@ -27,7 +27,6 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int sit
     ui->usersBarWidget->layout()->addWidget(childUsersBar);
     childToolsBar = new GUI_ToolsBar(this);
     ui->toolsBarWidget->layout()->addWidget(childToolsBar);
-    crdtController = new CRDT_controller(gimpParent, this, *childMyTextEdit, gimpParent->userid, siteCounter);
 
     fillOnlineUsersList();
     fillContibutorUsersList();
@@ -44,17 +43,40 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int sit
     connect(gimpParent->getConnection(), &connection_to_server::sigOfflineUser, this, &GUI_Editor::removeUserFromEditorGUI);
     connect(gimpParent->getConnection(), &connection_to_server::sigNewContributor, this, &GUI_Editor::addContributorToCurrentDocument);
 
-    //Per spostare i cursors
-    connect(crdtController, &CRDT_controller::updateCursorPosition, childMyTextEdit, &GUI_MyTextEdit::on_updateCursorPosition_emitted);
-    //Per mostrare la fading label
-    connect(crdtController, &CRDT_controller::notifyDeletedStack, childToolsBar, &GUI_ToolsBar::compromisedUndoStack);
+    /* up è un flag che indica la funzione superiore in cui è stato creata la GUI_Editor
+       up = 0 => gui_opendoc.cpp (OPEN DOC)
+       up = 1 => gui_newdoc.cpp  (OPEN DOC DATO URI)
+       up = 2 => gui_newdoc.cpp  (NEW DOC)
+    */
+    int counter = -1;
+    if(up == 0 || up == 1){
+        QString codedParameters = GUI_ConnectionToServerWrapper::requestOpenDocumentWrapper(gimpParent, gimpParent->userid, documentId);
+        if(codedParameters.compare("errore") == 0){
+            this->problemaApertura = true;
+        } else {
+            this->problemaApertura = false;
+            counter = codedParameters.split("_").at(1).toInt();
+        }
+    } else {
+        this->problemaApertura = false;
+        counter = siteCounter;
+    }
 
-    //avvio la connessione speciale per l'editor. D'ora in poi la connection_to_server è off-limits
-    if(GUI_ConnectionToServerWrapper::requestStartEditorConnection(gimpParent) < 0)
-        //se non riesco a far partire l'editor devo chiudere tutto
-        launchSetUi1();
+    if(!this->problemaApertura){
+        crdtController = new CRDT_controller(gimpParent, this, *childMyTextEdit, gimpParent->userid, counter);
 
-    gimpParent->isEditorConnected = true;
+        //Per spostare i cursors
+        connect(crdtController, &CRDT_controller::updateCursorPosition, childMyTextEdit, &GUI_MyTextEdit::on_updateCursorPosition_emitted);
+        //Per mostrare la fading label
+        connect(crdtController, &CRDT_controller::notifyDeletedStack, childToolsBar, &GUI_ToolsBar::compromisedUndoStack);
+
+        //avvio la connessione speciale per l'editor. D'ora in poi la connection_to_server è off-limits
+        if(GUI_ConnectionToServerWrapper::requestStartEditorConnection(gimpParent) < 0)
+            //se non riesco a far partire l'editor devo chiudere tutto
+            launchSetUi1();
+
+        gimpParent->isEditorConnected = true;
+    }
 }
 
 GUI_Editor::~GUI_Editor(){

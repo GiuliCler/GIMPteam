@@ -55,7 +55,7 @@ private:
     void getIcon(int userId);
     void getDocs(int userId);
     void newDoc(QString docName, int userId);
-    void openDocDatoUri(QString uri, int userId);
+    void getDocIdDatoUri(QString uri, int userId);
     void getUri(int docId);
     void getOwnerId(int docId);
     void retrieveDocName(int docId);

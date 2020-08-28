@@ -26,8 +26,8 @@ void Thread_management::run(){
     body = new Thread_body(socketDescriptor, babbo->thread());
 
     QObject::connect(body->socket, &QTcpSocket::readyRead, body, &Thread_body::readData);
-    QObject::connect(body, &Thread_body::messageToServer, babbo, &Server::dispatchMessage);
-    QObject::connect(babbo, &Server::dispatchMessage, body, &Thread_body::processMessage);
+    QObject::connect(body, &Thread_body::messageToServer, babbo, &Server::dispatchMessage, Qt::QueuedConnection);
+    QObject::connect(babbo, &Server::dispatchMessage, body, &Thread_body::processMessage, Qt::QueuedConnection);
 
     QObject::connect(babbo, &Server::checkPeriodicoClientConnessi, body, &Thread_body::checkPeriodicoClientConnessiSlot);
 
