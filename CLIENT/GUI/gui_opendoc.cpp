@@ -171,7 +171,7 @@ void GUI_Opendoc::fillList(){
                 ui->ownedDocsListWidget->addItem(item);
             else{
                 QString docName = item->data(GUI_OPENDOC_WIDGETLIST_DOCNAME).toString();
-                docName.append("(");
+                docName.append(" (");
                 QString result = GUI_ConnectionToServerWrapper::requestGetNicknameWrapper(gimpParent, ownerId);
                 if(result.compare("errore") != 0)
                     docName.append(result);
