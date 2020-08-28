@@ -920,10 +920,10 @@ void connection_to_server::requestSendMovedCursor(int userId, int pos){
 
 void connection_to_server::connectEditor(){
 
-    qDebug()<<"CONNECT EDITOR - Lettura residui da readBuffer";      // DEBUG
+    qDebug()<<"CONNECT EDITOR - Lettura residui da readBuffer. Size: " << readBuffer.size();      // DEBUG
 
     if(readBuffer.size() > 0){
-        qDebug()<<"---- sono passato da qui 0";           // DEBUG
+//        qDebug()<<"---- sono passato da qui 0";           // DEBUG
         // Mentre ricevevo il file, mi è arrivato anche qualcos'altro che ho messo nel buffer ma che non ho ancora processato
         qint32 size = 0;
         while ((size == 0 && readBuffer.size() >= 4) || (size > 0 && readBuffer.size() >= size))
@@ -936,12 +936,12 @@ void connection_to_server::connectEditor(){
             }
             if (size > 0 && readBuffer.size() >= size)
             {
-                qDebug()<<"---- sono passato da qui 1";           // DEBUG
+//                qDebug()<<"---- sono passato da qui 1";           // DEBUG
                 QByteArray data = readBuffer.mid(0, size);
                 readBuffer.remove(0, size);
                 size = 0;
                 readBuffer_size = size;
-                emit dataReceived(data);
+                receiveMessage(data);
             }
         }
     }
@@ -954,7 +954,7 @@ void connection_to_server::connectEditor(){
     qDebug()<<"CONNECT EDITOR - Lettura residui tcpSocket->bytesAvailable";      // DEBUG
 
     if(this->tcpSocket->bytesAvailable() > 0){
-        qDebug()<<"---- sono passato da qui 3";           // DEBUG
+//        qDebug()<<"---- sono passato da qui 3";           // DEBUG
         // Dopo aver ricevuto il file e svuotato eventualmente il buffer di cose residue, mi è arrivato qualcosa di non ancora letto
         acceptData();
     }
