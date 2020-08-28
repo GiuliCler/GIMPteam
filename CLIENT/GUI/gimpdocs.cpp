@@ -1,5 +1,4 @@
 #include "gimpdocs.h"
-#include "connection/gui_server.h"
 #include "editorWindow/gui_editor.h"
 #include "gui_login.h"
 
@@ -10,15 +9,11 @@ GIMPdocs::GIMPdocs(QWidget *parent) : QMainWindow(parent), userid(-1)
     ui1 = new Ui::GIMPdocs;
     ui2 = new Ui::GUI_EditWindow;
 
-    QFont font("Calisto MT");
-    font.setPixelSize(14);
-    //font.setStyleHint(QFont::Monospace);
-    QApplication::setFont(font);
-
     regularWindowSize = this->size();
     alreadyMaximized = false;
 
-    this->setConnection(new connection_to_server("56529", "192.168.56.1"));
+    setupConnection();
+
     setUi1(new GUI_Login(this));
 }
 
@@ -99,7 +94,7 @@ connection_to_server *GIMPdocs::getConnection(){
    return c;
 }
 
-void GIMPdocs::setConnection(connection_to_server *connection){
-    c = connection;
+void GIMPdocs::setupConnection(){
+    c = new connection_to_server(GIMPdocs::port, GIMPdocs::ipAddress);
 }
 

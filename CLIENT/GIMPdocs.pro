@@ -29,7 +29,6 @@ SOURCES += \
         GUI/connection/gui_connecting.cpp \
         GUI/connection/gui_connectionToServerWrapper.cpp \
         GUI/connection/gui_reconnection.cpp \
-        GUI/connection/gui_server.cpp \
         CRDT/crdt_controller.cpp \
         CRDT/crdt_message.cpp \
         CRDT/crdt_sharededitor.cpp \
@@ -60,7 +59,6 @@ HEADERS += \
         GUI/connection/gui_connectionToServerWrapper.h \
         GUI/connection/gui_genericException.h \
         GUI/connection/gui_reconnection.h \
-        GUI/connection/gui_server.h \
         CRDT/crdt_controller.h \
         CRDT/crdt_message.h \
         CRDT/crdt_sharededitor.h \
@@ -87,7 +85,6 @@ HEADERS += \
 FORMS += \
     GUI/connection/ui/gui_connecting.ui \
     GUI/connection/ui/gui_reconnection.ui \
-    GUI/connection/ui/gui_server.ui \
     GUI/editorWindow/ui/gui_toolsbar.ui \
     GUI/editorWindow/ui/gui_usersbar.ui \
     GUI/ui/gimpdocs.ui \

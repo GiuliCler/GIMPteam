@@ -12,7 +12,7 @@ class GUI_Connecting : public QDialog
 public:
 
     //ne chiamo il costruttore (e subito dopo il distruttore) da qui perchè vorrei fargli lanciare la close() dal costruttore ma non posso
-    static void GUI_ConnectingWrapper(QWidget *parent, GIMPdocs *gimpdocs);
+    static void GUI_ConnectingWrapper(QWidget *parent);
 
     ~GUI_Connecting();
 

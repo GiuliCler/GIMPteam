@@ -21,6 +21,9 @@ class GIMPdocs : public QMainWindow
     Q_OBJECT
 
 public:
+    const QString ipAddress = "192.168.1.9";
+    const QString port = "56529";
+
     int userid;
     //serve per sapere se la connessione dell'editor col server è ancora attiva
     bool isEditorConnected = false;
@@ -35,7 +38,7 @@ public:
     //servono a cambiare l'ui attiva. Widget è il central widget da caricare
     void setUi1(QWidget *widget);
     void setUi2(QWidget *widget);
-    void setConnection(connection_to_server *connection);
+    void setupConnection();
     connection_to_server *getConnection();
 
 private:
