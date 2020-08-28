@@ -15,7 +15,7 @@ int GUI_ConnectionToServerWrapper::requestLoginWrapper(GIMPdocs *gimpdocs, QStri
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
         //provo a ristabilire la connessione
-        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
+        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs, gimpdocs);
         return -1;
     } catch(GUI_GenericException &exception){
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -34,7 +34,7 @@ int GUI_ConnectionToServerWrapper::requestLogoutWrapper(GIMPdocs *gimpdocs, int 
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
         //provo a ristabilire la connessione
-        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
+        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs, gimpdocs);
         return -1;
     } catch(GUI_GenericException &exception){
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -74,7 +74,7 @@ int GUI_ConnectionToServerWrapper::requestNewAccountWrapper(GIMPdocs *gimpdocs, 
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
         //provo a ristabilire la connessione
-        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
+        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs, gimpdocs);
         return -1;
     } catch(GUI_GenericException &exception){
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -93,7 +93,7 @@ int GUI_ConnectionToServerWrapper::requestUpdateAccountWrapper(GIMPdocs *gimpdoc
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
         //provo a ristabilire la connessione
-        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
+        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs, gimpdocs);
         return -1;
     } catch(GUI_GenericException &exception){
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -114,7 +114,7 @@ QString GUI_ConnectionToServerWrapper::requestGetNicknameWrapper(GIMPdocs *gimpd
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
         //provo a ristabilire la connessione
-        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
+        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs, gimpdocs);
         return "errore";
     } catch(GUI_GenericException &exception){
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -135,7 +135,7 @@ QString GUI_ConnectionToServerWrapper::requestGetUsernameWrapper(GIMPdocs *gimpd
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
         //provo a ristabilire la connessione
-        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
+        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs, gimpdocs);
         return "errore";
     } catch(GUI_GenericException &exception){
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -156,7 +156,7 @@ QString GUI_ConnectionToServerWrapper::requestGetIconIdWrapper(GIMPdocs *gimpdoc
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
         //provo a ristabilire la connessione
-        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
+        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs, gimpdocs);
         return "errore";
     } catch(GUI_GenericException &exception){
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -181,7 +181,7 @@ std::shared_ptr<QMap<int, QString>> GUI_ConnectionToServerWrapper::requestGetKno
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
         //provo a ristabilire la connessione
-        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
+        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs, gimpdocs);
         return nullptr;
     } catch(GUI_GenericException &exception){
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -202,7 +202,7 @@ QString GUI_ConnectionToServerWrapper::requestCreateDocumentWrapper(GIMPdocs *gi
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
         //provo a ristabilire la connessione
-        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
+        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs, gimpdocs);
         return "errore";
     } catch(GUI_GenericException &exception){
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -222,7 +222,7 @@ int GUI_ConnectionToServerWrapper::requestDeleteDocumentWrapper(GIMPdocs *gimpdo
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
         //provo a ristabilire la connessione
-        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
+        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs, gimpdocs);
         return -1;
     }  catch(GUI_GenericException &exception){
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -243,7 +243,7 @@ QString GUI_ConnectionToServerWrapper::requestOpenDocumentWrapper(GIMPdocs *gimp
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
         //provo a ristabilire la connessione
-        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
+        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs, gimpdocs);
         return "errore";
     } catch(GUI_GenericException &exception){
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -262,7 +262,7 @@ int GUI_ConnectionToServerWrapper::requestCloseDocumentWrapper(GIMPdocs *gimpdoc
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
         //provo a ristabilire la connessione
-        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
+        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs, gimpdocs);
         return -1;
     } catch(GUI_GenericException &exception){
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -285,7 +285,7 @@ QString GUI_ConnectionToServerWrapper::requestDocumentDatoUriWrapper(GIMPdocs *g
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
         //provo a ristabilire la connessione
-        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
+        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs, gimpdocs);
         return "errore";
     } catch(GUI_GenericException &exception){
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -309,7 +309,7 @@ QString GUI_ConnectionToServerWrapper::requestUriWrapper(GIMPdocs *gimpdocs, int
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
         //provo a ristabilire la connessione
-        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
+        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs, gimpdocs);
         return "errore";
     } catch(GUI_GenericException &exception){
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -330,7 +330,7 @@ QString GUI_ConnectionToServerWrapper::requestDocumentNameWrapper(GIMPdocs *gimp
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
         //provo a ristabilire la connessione
-        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
+        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs, gimpdocs);
         return "errore";
     } catch(GUI_GenericException &exception){
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -351,7 +351,7 @@ int GUI_ConnectionToServerWrapper::requestDocumentOwnerWrapper(GIMPdocs *gimpdoc
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
         //provo a ristabilire la connessione
-        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
+        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs, gimpdocs);
         return -1;
     } catch(GUI_GenericException &exception){
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -362,17 +362,19 @@ int GUI_ConnectionToServerWrapper::requestDocumentOwnerWrapper(GIMPdocs *gimpdoc
     return returnValue;
 }
 
-std::shared_ptr<QTextDocument> GUI_ConnectionToServerWrapper::getDocumentTextWrapper(GIMPdocs *gimpdocs, int docId){
-    std::shared_ptr<QTextDocument> docpointer;
+std::shared_ptr<QTextEdit> GUI_ConnectionToServerWrapper::getDocumentTextWrapper(GIMPdocs *gimpdocs, int docId, int userId){
+
+    std::shared_ptr<QTextEdit> docpointer;
 
     try {
         gimpdocs->setCursor(Qt::WaitCursor);
-        docpointer = Stub::getDocumentText(docId);
+        docpointer = Stub::getDocumentText(gimpdocs->getConnection(), docId, userId);
+        //Stub::getDocumentText(gimpdocs->getConnection(), docId, userId, filename);
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
         //provo a ristabilire la connessione
-        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
+        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs, gimpdocs);
         return nullptr;
     } catch(GUI_GenericException &exception){
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -396,7 +398,7 @@ std::shared_ptr<QSet<int>> GUI_ConnectionToServerWrapper::getWorkingUsersOnDocum
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
         //provo a ristabilire la connessione
-        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
+        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs, gimpdocs);
         return nullptr;
     } catch(GUI_GenericException &exception){
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -417,7 +419,7 @@ std::shared_ptr<QSet<int>> GUI_ConnectionToServerWrapper::getContributorsUsersOn
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
         //provo a ristabilire la connessione
-        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
+        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs, gimpdocs);
         return nullptr;
     } catch(GUI_GenericException &exception){
         gimpdocs->setCursor(Qt::ArrowCursor);
@@ -436,7 +438,7 @@ int GUI_ConnectionToServerWrapper::requestStartEditorConnection(GIMPdocs *gimpdo
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
         //provo a ristabilire la connessione
-        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs);
+        GUI_Connecting::GUI_ConnectingWrapper(gimpdocs, gimpdocs);
         return -1;
     } catch(GUI_GenericException &exception){
         gimpdocs->setCursor(Qt::ArrowCursor);
