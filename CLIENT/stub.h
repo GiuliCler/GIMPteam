@@ -18,7 +18,7 @@ class Stub : public QObject
 public:
     explicit Stub(QObject *parent = nullptr);
 
-    static bool isConnectionWorking();
+    static bool isConnectionWorking(connection_to_server *connection);
 
     /*USERS*/
     //La login restituisce l'Id dello user, come anche la new account

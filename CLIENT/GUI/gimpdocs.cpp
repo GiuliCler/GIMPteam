@@ -1,6 +1,7 @@
 #include "gimpdocs.h"
 #include "connection/gui_server.h"
 #include "editorWindow/gui_editor.h"
+#include "gui_login.h"
 
 #include <QMessageBox>
 
@@ -17,7 +18,8 @@ GIMPdocs::GIMPdocs(QWidget *parent) : QMainWindow(parent), userid(-1)
     regularWindowSize = this->size();
     alreadyMaximized = false;
 
-    setUi1(new GUI_Server(this));
+    this->setConnection(new connection_to_server("56529", "192.168.56.1"));
+    setUi1(new GUI_Login(this));
 }
 
 GIMPdocs::~GIMPdocs(){

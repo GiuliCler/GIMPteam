@@ -11,8 +11,9 @@ connection_to_server::connection_to_server(QString port, QString ipAddress): fil
     this->tcpSocket=new QTcpSocket(this);
     this->port = port;
     this->ipAddress = ipAddress;
-    //this->editor = nullptr;
+    connect(this, &connection_to_server::error, this, &connection_to_server::displayError);
 }
+
 QTcpSocket *connection_to_server::getSocket(){
     qDebug()<<"FUCKING GET SOCKET!!!";      // DEBUG
     return this->tcpSocket;
@@ -1048,6 +1049,22 @@ void connection_to_server::requestSendMessage(CRDT_Message *messaggio){
 
     writeData(buffer);
 }
+
+bool connection_to_server::pingServer(){
+
+    qDebug()<<"PING";      // DEBUG
+
+      if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
+          this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+
+          if (!tcpSocket->waitForConnected(Timeout)) {
+              return false;
+          }else{
+              return true;
+          }
+      }
+}
+
 
 void connection_to_server::connectEditor(){
 

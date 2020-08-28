@@ -7,8 +7,8 @@ Stub::Stub(QObject *parent) : QObject(parent)
 
 }
 
-bool Stub::isConnectionWorking(){
-    return false;
+bool Stub::isConnectionWorking(connection_to_server *connection){
+    return connection->pingServer();
 }
 
 /*USERS*/
