@@ -255,7 +255,6 @@ QString Thread_body::getUsername(int userId){
     return username;
 }
 
-
 QString Thread_body::getDocname(int docId){
     QString docName = "";
     mutex_docs->lock();
@@ -272,68 +271,12 @@ QString Thread_body::getDocname(int docId){
     return docName;
 }
 
-
 QString Thread_body::threadId_toQString(std::thread::id id){
     std::stringstream ss;
     ss << id;
     std::string str = ss.str();
     return QString::fromStdString(str);
 }
-
-
-void Thread_body::stampaLoggedUsers(){          // Funzione per il DEBUG
-    std::cout<<"### LOGGED USERS: ";
-    mutex_logged_users->lock();
-    for(auto it=logged_users.begin(); it<logged_users.end(); it++){
-        std::cout<<(*it).toStdString()<<" ";
-    }
-    mutex_logged_users->unlock();
-    std::cout<<"###"<<std::endl;
-}
-
-
-void Thread_body::stampaWorkingUsers(int docId){          // Funzione per il DEBUG
-    std::cout<<"### WORKING USERS: ";
-    mutex_workingUsers->lock();
-    for(auto it=workingUsers[docId].begin(); it<workingUsers[docId].end(); it++){
-        int userId = (*it);
-        QString username = getUsername(userId);
-        std::cout<<username.toStdString()<<" ";
-    }
-    mutex_workingUsers->unlock();
-    std::cout<<"###"<<std::endl;
-}
-
-
-void Thread_body::notifyNewWorkingUser(int userId, int docId){
-
-    CRDT_Symbol s = *new CRDT_Symbol();
-    CRDT_Message *m = new CRDT_Message("ONLINEUSER_"+std::to_string(userId), s, userId);
-    auto thread_id = std::this_thread::get_id();
-
-    emit messageToServer(*m, threadId_toQString(thread_id), docId);
-}
-
-
-void Thread_body::notifyWorkingUserAway(int userId, int docId){
-
-    CRDT_Symbol s = *new CRDT_Symbol();
-    CRDT_Message *m = new CRDT_Message("OFFLINEUSER_"+std::to_string(userId), s, userId);
-    auto thread_id = std::this_thread::get_id();
-
-    emit messageToServer(*m, threadId_toQString(thread_id), docId);
-}
-
-
-void Thread_body::notifyNewContributor(int userId, int docId){
-
-    CRDT_Symbol s = *new CRDT_Symbol();
-    CRDT_Message *m = new CRDT_Message("NEWCONTRIBUTOR_"+std::to_string(userId), s, userId);
-    auto thread_id = std::this_thread::get_id();
-
-    emit messageToServer(*m, threadId_toQString(thread_id), docId);
-}
-
 
 // NOTA: open_new è un flag che indica da dove è stata chiamata la connect
 //       0 --> NEW_DOC
@@ -342,10 +285,6 @@ void Thread_body::notifyNewContributor(int userId, int docId){
 //       1 --> tutto ok
 //       0 --> errore
 int Thread_body::addToWorkingUsers(int docId, int userId, int open_new){
-
-//    QString username = getUsername(userId);                                              // DEBUG
-//    std::cout<<"### AddToWorkingUsers di: "<<username.toStdString()<<std::endl;          // DEBUG
-//    stampaWorkingUsers(docId);                                                           // DEBUG
 
     int esito = 1;
 
@@ -376,18 +315,39 @@ int Thread_body::addToWorkingUsers(int docId, int userId, int open_new){
         // open_new non è uguale nè a 0 nè a 1
         esito = 0;
     }
-
-//    stampaWorkingUsers(docId);                                                           // DEBUG
-
     return esito;
 }
 
 
-bool Thread_body::removeFromWorkingUsers(int docId, int userId){
+void Thread_body::notifyNewWorkingUser(int userId, int docId){
 
-    QString username = getUsername(userId);                                              // DEBUG
-    std::cout<<"### RemoveFromWorkingUsers di: "<<username.toStdString()<<std::endl;     // DEBUG
-//    stampaWorkingUsers(docId);                                                           // DEBUG
+    CRDT_Symbol s = *new CRDT_Symbol();
+    CRDT_Message *m = new CRDT_Message("ONLINEUSER_"+std::to_string(userId), s, userId);
+    auto thread_id = std::this_thread::get_id();
+
+    emit messageToServer(*m, threadId_toQString(thread_id), docId);
+}
+
+void Thread_body::notifyWorkingUserAway(int userId, int docId){
+
+    CRDT_Symbol s = *new CRDT_Symbol();
+    CRDT_Message *m = new CRDT_Message("OFFLINEUSER_"+std::to_string(userId), s, userId);
+    auto thread_id = std::this_thread::get_id();
+
+    emit messageToServer(*m, threadId_toQString(thread_id), docId);
+}
+
+void Thread_body::notifyNewContributor(int userId, int docId){
+
+    CRDT_Symbol s = *new CRDT_Symbol();
+    CRDT_Message *m = new CRDT_Message("NEWCONTRIBUTOR_"+std::to_string(userId), s, userId);
+    auto thread_id = std::this_thread::get_id();
+
+    emit messageToServer(*m, threadId_toQString(thread_id), docId);
+}
+
+
+bool Thread_body::removeFromWorkingUsers(int docId, int userId){
 
     mutex_workingUsers->lock();
 
@@ -417,11 +377,7 @@ bool Thread_body::removeFromWorkingUsers(int docId, int userId){
         } else if(count == 1){
             workingUsers.remove(docId);
             mutex_workingUsers->unlock();
-
             current_docId = -1;
-
-//            stampaWorkingUsers(docId);                                                           // DEBUG
-
             return true;
         } else {
             // Nota: caso che *in teoria* non dovrebbe mai verificarsi
@@ -435,8 +391,6 @@ bool Thread_body::removeFromWorkingUsers(int docId, int userId){
     }
 
     current_docId = -1;
-
-//    stampaWorkingUsers(docId);                                                           // DEBUG
 
     return false;
 }
@@ -613,6 +567,15 @@ void Thread_body::create(QString username, QString password, QString nickname, Q
     }
 }
 
+void Thread_body::stampaLoggedUsers(){          // Funzione per il DEBUG
+    std::cout<<"### LOGGED USERS: ";
+    mutex_logged_users->lock();
+    for(auto it=logged_users.begin(); it<logged_users.end(); it++){
+        std::cout<<(*it).toStdString()<<" ";
+    }
+    mutex_logged_users->unlock();
+    std::cout<<"###"<<std::endl;
+}
 
 void Thread_body::login(QString username, QString password){
     QByteArray blocko;
@@ -1103,8 +1066,6 @@ void Thread_body::getWorkingUsersGivenDoc(int docId){
     QByteArray blocko;
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
-
-//    stampaWorkingUsers(docId);                                                           // DEBUG
 
     mutex_workingUsers->lock();
 
