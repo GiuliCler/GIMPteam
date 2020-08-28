@@ -120,7 +120,7 @@ int connection_to_server::requestTryLogin(QString username, QString password)
     if(esito.contains(err2.toUtf8())){
         throw GUI_GenericException("Warning! Already logged on another device!");
     } else {
-        throw GUI_GenericException("Login ERROR. Incorrect password or username.");
+        throw GUI_GenericException("Login ERROR: incorrect password or username.");
     }
 }
 
@@ -168,7 +168,7 @@ std::string connection_to_server::requestCreateDocument(int userId, QString name
     if(esito.contains(good.toUtf8())){
         return esito.toStdString();
     }else if(esito.contains(err.toUtf8())){
-        throw GUI_GenericException("ERROR. Document name already taken.");
+        throw GUI_GenericException("ERROR: document name already taken.");
     }else{
         throw GUI_GenericException("Create document ERROR.");
     }
@@ -331,7 +331,7 @@ std::string connection_to_server::requestDocName(int docId){
 
     QString err = "erroreRetrieveDocName";
     if(docName.contains(err.toUtf8())){
-        throw GUI_GenericException("ERROR. Impossible to retrieve the document name.");
+        throw GUI_GenericException("ERROR: impossible to retrieve the document name.");
     }
 
     return docName.toStdString();
@@ -600,7 +600,7 @@ std::shared_ptr<QMap<QString, int>> connection_to_server::getKnownDocuments(int 
 
     if(num == -1){
         // In caso di errore...
-        throw GUI_GenericException("ERROR. Impossible to retrieve the user's documents.");
+        throw GUI_GenericException("ERROR: impossible to retrieve the user's documents.");
         //return std::make_shared<QMap<QString, int>>(ritorno);
     }
 
@@ -678,7 +678,7 @@ std::string connection_to_server::requestGetNickname(int userId){
 
     QString err = "erroreGetNickname";
     if(nickname.contains(err.toUtf8())){
-        throw GUI_GenericException("ERROR. Impossible to retrieve the user's nickname.");
+        throw GUI_GenericException("ERROR: impossible to retrieve the user's nickname.");
     }
 
     return nickname.toStdString();
@@ -727,7 +727,7 @@ std::string connection_to_server::requestIconId(int userId){
 
     QString err = "erroreGetIcon";
     if(iconId.contains(err.toUtf8())){
-        throw GUI_GenericException("ERROR. Impossible to retrieve the user's icon.");
+        throw GUI_GenericException("ERROR: impossible to retrieve the user's icon.");
     }
 
     return iconId.toStdString();
@@ -777,7 +777,7 @@ std::string connection_to_server::requestGetUsername(int userId){
 
     QString err = "erroreGetUsername";
     if(username.contains(err.toUtf8())){
-        throw GUI_GenericException("ERROR. Impossible to retrieve the user's username.");
+        throw GUI_GenericException("ERROR: impossible to retrieve the user's username.");
     }
 
     return username.toStdString();
@@ -874,7 +874,7 @@ int connection_to_server::getDocumentOwner(int docId){
     in_data >> ownerId;
 
     if(ownerId == -1){
-         throw GUI_GenericException("ERROR. Impossible to retrieve the owner's id.");
+         throw GUI_GenericException("ERROR: impossible to retrieve the owner's id.");
     }
     return ownerId;
 }
@@ -933,7 +933,7 @@ std::shared_ptr<QSet<int>> connection_to_server::getContributors(int docId){
             //errore, lo metto come userId
             //vet.insert(-1);
             //break;
-            throw GUI_GenericException("ERROR. Impossible to retrieve the document contributors.");
+            throw GUI_GenericException("ERROR: impossible to retrieve the document contributors.");
         }
 
         vet.insert(id);
@@ -1000,7 +1000,7 @@ std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int d
 
             return std::make_shared<QSet<int>>(vet);
     }
-    throw GUI_GenericException("ERROR. Impossible to retrieve the working users on the document.");
+    throw GUI_GenericException("ERROR: impossible to retrieve the working users on the document.");
 }
 
 void connection_to_server::displayError(int socketError, const QString &message) {
