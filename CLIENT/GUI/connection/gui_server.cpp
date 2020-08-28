@@ -8,12 +8,12 @@
 GUI_Server::GUI_Server(QWidget *parent) : QWidget(parent){
 
     //gimpParent = static_cast<GIMPdocs*>(parent);
-
+/*
     connection = new connection_to_server("56529", "192.168.56.1");
     gimpParent->setConnection(connection);
     GUI_Login *widget = new GUI_Login(gimpParent);
     gimpParent->setCentralWidget(widget);
-
+*/
    /* ui = new Ui::GUI_Server;
     ui->setupUi(this);
 
