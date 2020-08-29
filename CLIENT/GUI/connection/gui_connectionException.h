@@ -1,6 +1,7 @@
 #ifndef GUI_CONNECTIONEXCEPTION_H
 #define GUI_CONNECTIONEXCEPTION_H
 
+#include "gui_reconnection.h"
 #include "gui_connecting.h"
 #include <QException>
 

@@ -1,9 +1,11 @@
 #ifndef GUI_RECONNECTION_H
 #define GUI_RECONNECTION_H
 
-#include "../gimpdocs.h"
+//#include "../gimpdocs.h"
 #include "ui_gui_reconnection.h"
 #include <QDialog>
+
+class GIMPdocs;
 
 class GUI_Reconnection : public QDialog
 {
