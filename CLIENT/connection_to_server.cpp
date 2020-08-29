@@ -923,20 +923,21 @@ void connection_to_server::connectEditor(){
     qDebug()<<"CONNECT EDITOR - Lettura residui da readBuffer. Size: " << readBuffer.size();      // DEBUG
 
     if(readBuffer.size() > 0){
-//        qDebug()<<"---- sono passato da qui 0";           // DEBUG
         // Mentre ricevevo il file, mi è arrivato anche qualcos'altro che ho messo nel buffer ma che non ho ancora processato
         qint32 size = 0;
         while ((size == 0 && readBuffer.size() >= 4) || (size > 0 && readBuffer.size() >= size))
         {
-            if (size == 0 && readBuffer.size() >= 4)
-            {
+            if(this->tcpSocket->bytesAvailable() > 0){
+                // Mentre sto processando ciò che stava ancora nel buffer, mi sono arrivate altre cose
+                readBuffer.append(this->tcpSocket->readAll());
+            }
+
+            if (size == 0 && readBuffer.size() >= 4){
                 size = ArrayToInt(readBuffer.mid(0, 4));
                 readBuffer_size = size;
                 readBuffer.remove(0, 4);
             }
-            if (size > 0 && readBuffer.size() >= size)
-            {
-//                qDebug()<<"---- sono passato da qui 1";           // DEBUG
+            if (size > 0 && readBuffer.size() >= size){
                 QByteArray data = readBuffer.mid(0, size);
                 readBuffer.remove(0, size);
                 size = 0;
@@ -954,7 +955,6 @@ void connection_to_server::connectEditor(){
     qDebug()<<"CONNECT EDITOR - Lettura residui tcpSocket->bytesAvailable";      // DEBUG
 
     if(this->tcpSocket->bytesAvailable() > 0){
-//        qDebug()<<"---- sono passato da qui 3";           // DEBUG
         // Dopo aver ricevuto il file e svuotato eventualmente il buffer di cose residue, mi è arrivato qualcosa di non ancora letto
         acceptData();
     }

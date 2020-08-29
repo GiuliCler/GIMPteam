@@ -1334,7 +1334,8 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         QStringList userIdDisconnect = strAction.split("_");
 //        qDebug() << userIdDisconnect[1];       // DEBUG
 
-        out << "OFFLINEUSER";
+        QString s = "OFFLINEUSER";
+        out << s.toUtf8();
         out <<  userIdDisconnect[1].toInt();
         writeData(blocko);
         return;
@@ -1352,7 +1353,8 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         QString nick = database->getNickname(getUsername(userId));
         QString icon = database->getIconId(getUsername(userId));
         mutex_db->unlock();
-        out << "ONLINEUSER";
+        QString s = "ONLINEUSER";
+        out << s.toUtf8();
         out << userId;
         out << icon.toUtf8();
         out << nick.toUtf8();
@@ -1370,7 +1372,8 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         QString nick = database->getNickname(getUsername(userIdContributor[1].toInt()));
         QString icon = database->getIconId(getUsername(userIdContributor[1].toInt()));
         mutex_db->unlock();
-        out << "NEWCONTRIBUTOR";
+        QString s = "NEWCONTRIBUTOR";
+        out << s.toUtf8();
         out << userIdContributor[1].toInt();
         out << icon.toUtf8();
         out << nick.toUtf8();
@@ -1385,8 +1388,8 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
 
         // "Resetto" il puntatore a CRDT_ServerEditor
         crdt = nullptr;
-
-        out << "FORCECLOSING";
+        QString s = "FORCECLOSING";
+        out << s.toUtf8();
         writeData(blocko);
         return;
     }
@@ -1394,7 +1397,8 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
     c = "MOVECURSOR";
     if(strAction.contains(c.toUtf8())){
         QStringList str = strAction.split("_");
-        out <<  "MOVECURSOR";
+        QString s = "MOVECURSOR";
+        out << s.toUtf8();
         out <<  str[1].toInt(); // userId
         out <<  str[2].toInt(); // pos
         writeData(blocko);
@@ -1402,7 +1406,9 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
     }
 
     /* Messaggio che fa parte del CRDT */
-    out << "CRDT";
+
+    QString s = "CRDT";
+    out << s.toUtf8();
     out << m;
     writeData(blocko);
 }
