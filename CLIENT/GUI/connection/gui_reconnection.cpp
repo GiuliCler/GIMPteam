@@ -22,7 +22,7 @@ void GUI_Reconnection::on_exitPushButton_clicked(){
 }
 
 void GUI_Reconnection::on_retryPushButton_clicked(){
-    GUI_Connecting::GUI_ConnectingWrapper(static_cast<GIMPdocs*>(parent()));
+    GUI_Connecting::GUI_ConnectingWrapper(static_cast<GIMPdocs*>(parent()), static_cast<GIMPdocs*>(parent()));
 
     this->close();
 }
