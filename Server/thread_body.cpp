@@ -436,7 +436,7 @@ void Thread_body::newDoc(QString docName, int userId){
                         out << ritorno.toUtf8();
                         writeData(blocko);
 
-                        notifyNewWorkingUser(userId, docId);
+//                        notifyNewWorkingUser(userId, docId);
                     }
                 }else{
                     mutex_db->unlock();
