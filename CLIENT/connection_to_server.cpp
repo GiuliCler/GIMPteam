@@ -4,14 +4,16 @@
 #include <QtWidgets>
 #include <iostream>
 #include <QSet>
+#include <QPrinter>
 #include "CRDT/crdt_message.h"
 
 connection_to_server::connection_to_server(QString port, QString ipAddress): fileTMP(), readBuffer(), readBuffer_size(0){
     this->tcpSocket=new QTcpSocket(this);
     this->port = port;
     this->ipAddress = ipAddress;
-    //this->editor = nullptr;
+    connect(this, &connection_to_server::error, this, &connection_to_server::displayError);
 }
+
 QTcpSocket *connection_to_server::getSocket(){
     qDebug()<<"FUCKING GET SOCKET!!!";      // DEBUG
     return this->tcpSocket;
@@ -29,8 +31,9 @@ int connection_to_server::requestTryLogOut(int userId)
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
-            emit error(tcpSocket->error(), tcpSocket->errorString());
-            return -1;
+            //emit error(tcpSocket->error(), tcpSocket->errorString());
+            throw GUI_ConnectionException("Timeout Expired.");
+            //return -1;
         }
     }
 
@@ -43,11 +46,13 @@ int connection_to_server::requestTryLogOut(int userId)
     out << userId;
 
     if(!writeData(buffer))
-        return -1;
+        throw GUI_ConnectionException("writeData ERROR. Server not connected.");
+        //return -1;
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-        return -1;
+        //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        throw GUI_ConnectionException("Timeout Expired.");
+        //return -1;
     }
     QByteArray data = readData();
     QDataStream in_data(&data, QIODevice::ReadOnly);
@@ -55,6 +60,10 @@ int connection_to_server::requestTryLogOut(int userId)
 
     int result;
     in_data >> result;
+
+    if(result == -1){
+        throw GUI_GenericException("Logout ERROR.");
+    }
 
     // Chiudo il socket dal lato del client
     this->tcpSocket->close();
@@ -71,8 +80,9 @@ int connection_to_server::requestTryLogin(QString username, QString password)
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
-            emit error(tcpSocket->error(), tcpSocket->errorString());
-            return -1;
+            //emit error(tcpSocket->error(), tcpSocket->errorString());
+            throw GUI_ConnectionException("Timeout Expired.");
+            //return -1;
         }
     }
     QByteArray buffer;
@@ -85,18 +95,20 @@ int connection_to_server::requestTryLogin(QString username, QString password)
     out << password;
 
     if(!writeData(buffer))
-        return -1;
+        throw GUI_ConnectionException("writeData ERROR. Server not connected.");
+        //return -1;
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-        return -1;
+        //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        throw GUI_ConnectionException("Timeout Expired.");
+        //return -1;
     }
     QByteArray data = readData();
     QDataStream in_data(&data, QIODevice::ReadOnly);
     in_data.setVersion(QDataStream::Qt_5_12);
 
     QByteArray esito;
-    QString err = "errore", good = "ok", err2 = "alreadyLogged";
+    QString err = "erroreLogin", good = "ok", err2 = "alreadyLogged";
     int userId = -1;
 
     in_data >> esito;
@@ -107,9 +119,9 @@ int connection_to_server::requestTryLogin(QString username, QString password)
     }
 
     if(esito.contains(err2.toUtf8())){
-        throw GUI_GenericException("Attenzione! Login già effettuato su un altro dispositivo!");
+        throw GUI_GenericException("Warning! Already logged on another device!");
     } else {
-        return -1;
+        throw GUI_GenericException("Login ERROR. Incorrect password or username.");
     }
 }
 
@@ -122,8 +134,9 @@ std::string connection_to_server::requestCreateDocument(int userId, QString name
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
-            emit error(tcpSocket->error(), tcpSocket->errorString());
-            return "errore";
+            //emit error(tcpSocket->error(), tcpSocket->errorString());
+            throw GUI_ConnectionException("Timeout Expired.");
+            //return "errore";
         }
     }
 
@@ -137,11 +150,13 @@ std::string connection_to_server::requestCreateDocument(int userId, QString name
     out << userId;
 
     if(!writeData(buffer))
-        return "errore";
+        throw GUI_ConnectionException("writeData ERROR. Server not connected.");
+        //return "errore";
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-        return "errore";
+        //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        throw GUI_ConnectionException("Timeout Expired.");
+        //return "errore";
     }
     QByteArray data = readData();
     QDataStream in_data(&data, QIODevice::ReadOnly);
@@ -150,11 +165,13 @@ std::string connection_to_server::requestCreateDocument(int userId, QString name
     QByteArray esito;
     in_data >> esito;
 
-    QString good = "ok";
+    QString good = "ok", err = "erroreGiaCreato";
     if(esito.contains(good.toUtf8())){
         return esito.toStdString();
+    }else if(esito.contains(err.toUtf8())){
+        throw GUI_GenericException("ERROR. Document name already taken.");
     }else{
-        return "errore";
+        throw GUI_GenericException("Create document ERROR.");
     }
 }
 
@@ -167,8 +184,9 @@ std::string connection_to_server::openDoc(int userId, int docId)
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
-            emit error(tcpSocket->error(), tcpSocket->errorString());
-            return "errore";
+            //emit error(tcpSocket->error(), tcpSocket->errorString());
+            throw GUI_ConnectionException("Timeout Expired.");
+            //return "errore";
         }
     }
 
@@ -182,11 +200,13 @@ std::string connection_to_server::openDoc(int userId, int docId)
     out << userId;
 
     if(!writeData(buffer))
-        return "errore";
+        throw GUI_ConnectionException("writeData ERROR. Server not connected.");
+        //return "errore";
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-        return "errore";
+        //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        throw GUI_ConnectionException("Timeout Expired.");
+        //return "errore";
     }
     QByteArray data = readData();
     QDataStream in_data(&data, QIODevice::ReadOnly);
@@ -203,10 +223,11 @@ std::string connection_to_server::openDoc(int userId, int docId)
         return esito.toStdString();
 
     } else if (esito.contains(inesist.toUtf8())){
-        emit unavailableSharedDocument(docId);      // TODO PER GIULIA: il messaggio di errore che deve essere lanciato in questo caso è "Attenzione! Impossibile aprire il documento selezionato. Documento cancellato dall'owner."
+        emit unavailableSharedDocument(docId);
+        throw GUI_GenericException("Warning! Impossible to open the selected document. The owner has deleted it.");
     }
 
-    return "errore";
+    throw GUI_GenericException("Open document ERROR.");
 }
 
 
@@ -218,8 +239,9 @@ std::string connection_to_server::requestDocDatoUri(QString uri, int userId){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
-            emit error(tcpSocket->error(), tcpSocket->errorString());
-            return "errore";
+            //emit error(tcpSocket->error(), tcpSocket->errorString());
+            throw GUI_ConnectionException("Timeout Expired.");
+            //return "errore";
         }
     }
 
@@ -233,11 +255,13 @@ std::string connection_to_server::requestDocDatoUri(QString uri, int userId){
     out << userId;
 
     if(!writeData(buffer))
-        return "errore";
+        throw GUI_ConnectionException("writeData ERROR. Server not connected.");
+        //return "errore";
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-        return "errore";
+        //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        throw GUI_ConnectionException("Timeout Expired.");
+        //return "errore";
     }
     QByteArray data = readData();
     QDataStream in_data(&data, QIODevice::ReadOnly);
@@ -248,6 +272,11 @@ std::string connection_to_server::requestDocDatoUri(QString uri, int userId){
 
     QByteArray file;
     QString good = "ok";
+    QString inesistente = "erroreUriInesistente";
+    if(esito.contains(inesistente.toUtf8())){
+        throw GUI_GenericException("ERROR: no document with the provided URI exists.");
+    }
+
     if(esito.contains(good.toUtf8())){
 
         readDataFile();
@@ -255,7 +284,7 @@ std::string connection_to_server::requestDocDatoUri(QString uri, int userId){
         return esito.toStdString();
 
     } else {
-        return "errore";
+        throw GUI_GenericException("Open document given uri ERROR.");
     }
 }
 
@@ -269,8 +298,9 @@ std::string connection_to_server::requestDocName(int docId){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
-            emit error(tcpSocket->error(), tcpSocket->errorString());
-            return "errore";
+            //emit error(tcpSocket->error(), tcpSocket->errorString());
+            throw GUI_ConnectionException("Timeout Expired.");
+            //return "errore";
         }
     }
 
@@ -283,11 +313,13 @@ std::string connection_to_server::requestDocName(int docId){
     out << docId;
 
     if(!writeData(buffer))
-        return "errore";
+        throw GUI_ConnectionException("writeData ERROR. Server not connected.");
+        //return "errore";
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-        return "errore";
+        //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        throw GUI_ConnectionException("Timeout Expired.");
+        //return "errore";
     }
     QByteArray data = readData();
     QDataStream in_data(&data, QIODevice::ReadOnly);
@@ -298,8 +330,79 @@ std::string connection_to_server::requestDocName(int docId){
 
     docName.replace('\0',"");       // TODO: siamo sicuri che serva questa riga?
 
+    QString err = "erroreRetrieveDocName";
+    if(docName.contains(err.toUtf8())){
+        throw GUI_GenericException("ERROR. Impossible to retrieve the document name.");
+    }
+
     return docName.toStdString();
 }
+
+std::shared_ptr<QTextEdit> connection_to_server::requestDocumentText(int docId, int userId){
+    qDebug()<<"GET_DOC_TEXT";      // DEBUG
+
+//    this->tcpSocket->abort();
+    if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+
+        if (!tcpSocket->waitForConnected(Timeout)) {
+            throw GUI_ConnectionException("Timeout Expired.");
+        }
+    }
+
+    QByteArray buffer;
+    QDataStream out(&buffer, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+    QByteArray comando = "GET_DOC_TEXT";
+
+    out << comando;
+    out << docId;
+    out << userId;
+
+    if(!writeData(buffer))
+        throw GUI_ConnectionException("writeData ERROR. Server not connected.");
+
+    if(!this->tcpSocket->waitForReadyRead(Timeout)){
+        throw GUI_ConnectionException("Timeout Expired.");
+    }
+    QByteArray data = readData();
+    QDataStream in_data(&data, QIODevice::ReadOnly);
+    in_data.setVersion(QDataStream::Qt_5_12);
+
+    //ora attendo una risposta dal server
+    QByteArray esito;
+    in_data >> esito;
+
+    QString good = "ok", inesist = "doc-inesistente";
+    if(esito.contains(good.toUtf8())){
+
+        readDataFile();
+
+        QByteArray file = this->getFileTMP();
+
+        QDataStream data(&file, QIODevice::ReadOnly);
+        QVector<CRDT_Symbol> simboli;
+        data >> simboli;
+
+        std::shared_ptr<QTextEdit> documento (new QTextEdit());
+
+        for(auto it = simboli.begin();it<simboli.end();it++) {
+            documento->textCursor().insertText(it->getCarattere(), it->getFormat());
+            if(documento->alignment() != it->getAlignment())
+                documento->setAlignment(it->getAlignment());
+         }
+
+        return documento;
+
+    } else if (esito.contains(inesist.toUtf8())){
+        emit unavailableSharedDocument(docId);
+        throw GUI_GenericException("Warning! Impossible to export to pdf the selected document. The owner has deleted it.");
+    }
+
+    throw GUI_GenericException("Export to PDF ERROR.");
+}
+
+
 
 int connection_to_server::requestNewAccount(QString username, QString password, QString nickname, QString icon)
 {
@@ -310,8 +413,9 @@ int connection_to_server::requestNewAccount(QString username, QString password, 
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
-            emit error(tcpSocket->error(), tcpSocket->errorString());
-            return -1;
+            //emit error(tcpSocket->error(), tcpSocket->errorString());
+            throw GUI_ConnectionException("Timeout Expired.");
+            //return -1;
         }
     }
 
@@ -327,11 +431,13 @@ int connection_to_server::requestNewAccount(QString username, QString password, 
     out << icon;
 
     if(!writeData(buffer))
-        return -1;
+        throw GUI_ConnectionException("writeData ERROR. Server not connected.");
+        //return -1;
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-        return -1;
+        //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        throw GUI_ConnectionException("Timeout Expired.");
+        //return -1;
     }
     QByteArray data = readData();
     QDataStream in_data(&data, QIODevice::ReadOnly);
@@ -341,12 +447,19 @@ int connection_to_server::requestNewAccount(QString username, QString password, 
     QByteArray esito;
     in_data >> esito;
 
-    QString err = "errore";
-    int id = -1;
-    if(!esito.contains(err.toUtf8())){
-        in_data >> id;
+    QString err = "erroreNellaCreazioneDelProfilo";
+    QString err2 = "usernameEsistente";
+
+    if(esito.contains(err2.toUtf8())){
+       throw GUI_GenericException("ERROR: the chosen username already exists. Please, select another one.");
     }
 
+    if(esito.contains(err.toUtf8())){
+        throw GUI_GenericException("New account ERROR.");
+    }
+
+    int id;
+    in_data >> id;
     return id;
 }
 
@@ -359,8 +472,9 @@ long connection_to_server::requestUpdateAccount( int userId, QString password, Q
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
-            emit error(tcpSocket->error(), tcpSocket->errorString());
-            return -1;
+           //emit error(tcpSocket->error(), tcpSocket->errorString());
+            throw GUI_ConnectionException("Timeout Expired.");
+            //return -1;
         }
     }
 
@@ -376,11 +490,13 @@ long connection_to_server::requestUpdateAccount( int userId, QString password, Q
     out << icon;
 
     if(!writeData(buffer))
-        return -1;
+        throw GUI_ConnectionException("writeData ERROR. Server not connected.");
+        //return -1;
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-        return -1;
+        //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        throw GUI_ConnectionException("Timeout Expired.");
+        //return -1;
     }
     QByteArray data = readData();
     QDataStream in_data(&data, QIODevice::ReadOnly);
@@ -393,7 +509,7 @@ long connection_to_server::requestUpdateAccount( int userId, QString password, Q
     if(esito.contains(good.toUtf8())){
         return 0;
     }else{
-        return -1;
+        throw GUI_GenericException("Update account ERROR.");
     }
 }
 
@@ -406,8 +522,9 @@ std::string connection_to_server::requestUri(int docId){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
-            emit error(tcpSocket->error(), tcpSocket->errorString());
-            return "errore";
+            //emit error(tcpSocket->error(), tcpSocket->errorString());
+            throw GUI_ConnectionException("Timeout Expired.");
+            //return "errore";
         }
     }
 
@@ -420,11 +537,13 @@ std::string connection_to_server::requestUri(int docId){
     out << docId;
 
     if(!writeData(buffer))
-        return "errore";
+        throw GUI_ConnectionException("writeData ERROR. Server not connected.");
+        //return "errore";
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-        return "errore";
+        //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        throw GUI_ConnectionException("Timeout Expired.");
+        //return "errore";
     }
     QByteArray data = readData();
     QDataStream in_data(&data, QIODevice::ReadOnly);
@@ -436,7 +555,7 @@ std::string connection_to_server::requestUri(int docId){
     QString inesist = "doc-inesistente";
     if(uri.contains(inesist.toUtf8())){
         emit unavailableSharedDocument(docId);
-        return "errore";    // TODO PER GIULIA: il messaggio di errore che deve essere lanciato in questo caso è "Attenzione! Impossibile recuperare l'URI del documento selezionato. Documento cancellato dall'owner."
+        throw GUI_GenericException("Warning! Impossible to retrive the URI of the selected document. The owner has deleted it.");
     }
 
     return uri.toStdString();
@@ -452,8 +571,9 @@ std::shared_ptr<QMap<int, QString>> connection_to_server::getKnownDocuments(int 
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
-            emit error(tcpSocket->error(), tcpSocket->errorString());
-            return std::make_shared<QMap<int, QString>>(ritorno);
+            //emit error(tcpSocket->error(), tcpSocket->errorString());
+            throw GUI_ConnectionException("Timeout Expired.");
+            //return std::make_shared<QMap<QString, int>>(ritorno);
         }
     }
 
@@ -466,11 +586,11 @@ std::shared_ptr<QMap<int, QString>> connection_to_server::getKnownDocuments(int 
     out << userId;
 
     if(!writeData(buffer))
-        throw GUI_ConnectionException();
+        throw GUI_ConnectionException("writeData ERROR. Server not connected.");
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-        throw GUI_ConnectionException();
+        //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        throw GUI_ConnectionException("Timeout Expired.");
     }
     QByteArray data = readData();
     QDataStream in_data(&data, QIODevice::ReadOnly);
@@ -481,7 +601,8 @@ std::shared_ptr<QMap<int, QString>> connection_to_server::getKnownDocuments(int 
 
     if(num == -1){
         // In caso di errore...
-        return std::make_shared<QMap<int, QString>>(ritorno);
+        throw GUI_GenericException("ERROR. Impossible to retrieve the user's documents.");
+        //return std::make_shared<QMap<QString, int>>(ritorno);
     }
 
 //    qDebug()<<"CONNECTION_TO_SERVER - num_doc RICEVUTO: "<<num;     // DEBUG
@@ -524,8 +645,9 @@ std::string connection_to_server::requestGetNickname(int userId){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
-            emit error(tcpSocket->error(), tcpSocket->errorString());
-            return "errore";
+            //emit error(tcpSocket->error(), tcpSocket->errorString());
+            throw GUI_ConnectionException("Timeout Expired.");
+            //return "errore";
         }
     }
 
@@ -538,11 +660,13 @@ std::string connection_to_server::requestGetNickname(int userId){
     out << userId;
 
     if(!writeData(buffer))
-        return "errore";
+        throw GUI_ConnectionException("writeData ERROR. Server not connected.");
+        //return "errore";
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-        return "errore";
+        throw GUI_ConnectionException("Timeout Expired.");
+        //return "errore";
     }
     QByteArray data = readData();
     QDataStream in_data(&data, QIODevice::ReadOnly);
@@ -552,6 +676,11 @@ std::string connection_to_server::requestGetNickname(int userId){
     in_data >> nickname;
 
     nickname.replace('\0',"");      // TODO: siamo sicuri che serva questa riga?
+
+    QString err = "erroreGetNickname";
+    if(nickname.contains(err.toUtf8())){
+        throw GUI_GenericException("ERROR. Impossible to retrieve the user's nickname.");
+    }
 
     return nickname.toStdString();
 }
@@ -565,8 +694,9 @@ std::string connection_to_server::requestIconId(int userId){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
-            emit error(tcpSocket->error(), tcpSocket->errorString());
-            return "errore";
+            //emit error(tcpSocket->error(), tcpSocket->errorString());
+            throw GUI_ConnectionException("Timeout Expired.");
+            //return "errore";
         }
     }
 
@@ -579,11 +709,13 @@ std::string connection_to_server::requestIconId(int userId){
     out << userId;
 
     if(!writeData(buffer))
-        return "errore";
+        throw GUI_ConnectionException("writeData ERROR. Server not connected.");
+        //return "errore";
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-        return "errore";
+        throw GUI_ConnectionException("Timeout Expired.");
+        //return "errore";
     }
     QByteArray data = readData();
     QDataStream in_data(&data, QIODevice::ReadOnly);
@@ -593,6 +725,11 @@ std::string connection_to_server::requestIconId(int userId){
     in_data >> iconId;
 
     iconId.replace('\0',"");            // TODO: siamo sicuri che serva questa riga?
+
+    QString err = "erroreGetIcon";
+    if(iconId.contains(err.toUtf8())){
+        throw GUI_GenericException("ERROR. Impossible to retrieve the user's icon.");
+    }
 
     return iconId.toStdString();
 }
@@ -607,8 +744,9 @@ std::string connection_to_server::requestGetUsername(int userId){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
-            emit error(tcpSocket->error(), tcpSocket->errorString());
-            return "errore";
+            //emit error(tcpSocket->error(), tcpSocket->errorString());
+            throw GUI_ConnectionException("Timeout Expired.");
+            //return "errore";
         }
     }
 
@@ -621,11 +759,13 @@ std::string connection_to_server::requestGetUsername(int userId){
     out << userId;
 
     if(!writeData(buffer))
-        return "errore";
+        throw GUI_ConnectionException("writeData ERROR. Server not connected.");
+        //return "errore";
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-        return "errore";
+        throw GUI_ConnectionException("Timeout Expired.");
+        //return "errore";
     }
     QByteArray data = readData();
     QDataStream in_data(&data, QIODevice::ReadOnly);
@@ -635,6 +775,11 @@ std::string connection_to_server::requestGetUsername(int userId){
     in_data >> username;
 
     username.replace('\0',"");         // TODO: siamo sicuri che serva questa riga?
+
+    QString err = "erroreGetUsername";
+    if(username.contains(err.toUtf8())){
+        throw GUI_GenericException("ERROR. Impossible to retrieve the user's username.");
+    }
 
     return username.toStdString();
 }
@@ -648,8 +793,9 @@ std::string connection_to_server::requestDeleteDoc(int userId,int documentId){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
-            emit error(tcpSocket->error(), tcpSocket->errorString());
-            return "errore";
+            //emit error(tcpSocket->error(), tcpSocket->errorString());
+            throw GUI_ConnectionException("Timeout Expired.");
+            //return "errore";
         }
     }
 
@@ -663,11 +809,13 @@ std::string connection_to_server::requestDeleteDoc(int userId,int documentId){
     out << documentId;
 
     if(!writeData(buffer))
-        return "errore";
+        throw GUI_ConnectionException("writeData ERROR. Server not connected.");
+        //return "errore";
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-        return "errore";
+        throw GUI_ConnectionException("Timeout Expired.");
+        //return "errore";
     }
     QByteArray data = readData();
     QDataStream in_data(&data, QIODevice::ReadOnly);
@@ -676,12 +824,12 @@ std::string connection_to_server::requestDeleteDoc(int userId,int documentId){
     QByteArray esito;
     in_data >> esito;
 
-    QString err = "errore", inesist = "doc-inesistente";
+    QString err = "erroreDeleteDoc", inesist = "doc-inesistente";
     if(esito.contains(err.toUtf8())){
-        return "errore";
+        throw GUI_GenericException("Delete document ERROR.");
     } else if (esito.contains(inesist.toUtf8())){
         emit unavailableSharedDocument(documentId);
-        return "errore";         // TODO PER GIULIA: il messaggio di errore che deve essere lanciato in questo caso è "Attenzione! Impossibile cancellare il documento selezionato. Documento già cancellato dall'owner."
+        throw GUI_GenericException("Warning! Impossible to delete the selected document. The owner has already deleted it.");
     } else {
         return "ok";
     }
@@ -696,8 +844,9 @@ int connection_to_server::getDocumentOwner(int docId){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
-            emit error(tcpSocket->error(), tcpSocket->errorString());
-            return -1;
+            //emit error(tcpSocket->error(), tcpSocket->errorString());
+            throw GUI_ConnectionException("Timeout Expired.");
+            //return -1;
         }
     }
 
@@ -710,11 +859,13 @@ int connection_to_server::getDocumentOwner(int docId){
     out << docId;
 
     if(!writeData(buffer))
-        return -1;
+        throw GUI_ConnectionException("writeData ERROR. Server not connected.");
+        //return -1;
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-        return -1;
+        throw GUI_ConnectionException("Timeout Expired.");
+        //return -1;
     }
     QByteArray data = readData();
     QDataStream in_data(&data, QIODevice::ReadOnly);
@@ -723,6 +874,9 @@ int connection_to_server::getDocumentOwner(int docId){
     int ownerId;
     in_data >> ownerId;
 
+    if(ownerId == -1){
+         throw GUI_GenericException("ERROR. Impossible to retrieve the owner's id.");
+    }
     return ownerId;
 }
 
@@ -738,9 +892,10 @@ std::shared_ptr<QSet<int>> connection_to_server::getContributors(int docId){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
-            emit error(tcpSocket->error(), tcpSocket->errorString());
-            vet.insert(-1);
-            return std::make_shared<QSet<int>>(vet);
+            //emit error(tcpSocket->error(), tcpSocket->errorString());
+            throw GUI_ConnectionException("Timeout Expired.");
+            //vet.insert(-1);
+            //return std::make_shared<QSet<int>>(vet);
         }
     }
 
@@ -753,11 +908,11 @@ std::shared_ptr<QSet<int>> connection_to_server::getContributors(int docId){
     out << docId;
 
     if(!writeData(buffer))
-        throw GUI_ConnectionException();
+        throw GUI_ConnectionException("writeData ERROR. Server not connected.");
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-        throw GUI_ConnectionException();
+        throw GUI_ConnectionException("Timeout Expired.");
     }
     QByteArray data = readData();
     QDataStream in_data(&data, QIODevice::ReadOnly);
@@ -777,8 +932,9 @@ std::shared_ptr<QSet<int>> connection_to_server::getContributors(int docId){
         }
         if(id == -2){
             //errore, lo metto come userId
-            vet.insert(-1);
-            break;
+            //vet.insert(-1);
+            //break;
+            throw GUI_GenericException("ERROR. Impossible to retrieve the document contributors.");
         }
 
         vet.insert(id);
@@ -801,9 +957,10 @@ std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int d
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
-            emit error(tcpSocket->error(), tcpSocket->errorString());
-            vet.insert(-1);
-            return std::make_shared<QSet<int>>(vet);
+            //emit error(tcpSocket->error(), tcpSocket->errorString());
+            //vet.insert(-1);
+            //return std::make_shared<QSet<int>>(vet);
+            throw GUI_ConnectionException("Timeout Expired.");
         }
     }
 
@@ -816,11 +973,11 @@ std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int d
     out << docId;
 
     if(!writeData(buffer))
-        throw GUI_ConnectionException();
+        throw GUI_ConnectionException("writeData ERROR. Server not connected.");
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
         emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-        throw GUI_ConnectionException();
+        throw GUI_ConnectionException("Timeout Expired.");
     }
     QByteArray data = readData();
     QDataStream in_data(&data, QIODevice::ReadOnly);
@@ -840,11 +997,11 @@ std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int d
                 break;
             vet.insert(id);
         }
+        //    qDebug()<<"GET_WORKINGUSERS_ONADOC - vet.size(): "<<vet.size();     // DEBUG
+
+            return std::make_shared<QSet<int>>(vet);
     }
-
-//    qDebug()<<"GET_WORKINGUSERS_ONADOC - vet.size(): "<<vet.size();     // DEBUG
-
-    return std::make_shared<QSet<int>>(vet);
+    throw GUI_GenericException("ERROR. Impossible to retrieve the working users on the document.");
 }
 
 void connection_to_server::displayError(int socketError, const QString &message) {
@@ -877,7 +1034,7 @@ void connection_to_server::requestSendMessage(CRDT_Message *messaggio){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
     if (!tcpSocket->waitForConnected(Timeout)) {
-        emit error(tcpSocket->error(), tcpSocket->errorString());
+        //emit error(tcpSocket->error(), tcpSocket->errorString());
         return;
     }
 
@@ -891,6 +1048,22 @@ void connection_to_server::requestSendMessage(CRDT_Message *messaggio){
 
     writeData(buffer);
 }
+
+bool connection_to_server::pingServer(){
+
+    qDebug()<<"PING";      // DEBUG
+
+      if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
+          this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+
+          if (!tcpSocket->waitForConnected(Timeout)) {
+              return false;
+          }else{
+              return true;
+          }
+      }
+}
+
 
 
 void connection_to_server::requestSendMovedCursor(int userId, int pos){
@@ -923,11 +1096,7 @@ void connection_to_server::connectEditor(){
 
     qDebug()<<"CONNECT EDITOR";      // DEBUG
     //this->editor = editor;
-    // TODO
-    //qui possiamo verificare se ci sono messaggi da parte del server (riguardo
-    //inserimenti di altri utenti o all'avvio dell'editor, se era già stato scritto qualcosa).
 
-    //implementabile con una connect di readyRead sul socket
     connect(this->tcpSocket, &QTcpSocket::readyRead, this, &connection_to_server::acceptData);
     connect(this, &connection_to_server::dataReceived, this, &connection_to_server::receiveMessage);
 }
@@ -943,7 +1112,7 @@ void connection_to_server::disconnectEditor(int userId, int docId){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
-            emit error(tcpSocket->error(), tcpSocket->errorString());
+            //emit error(tcpSocket->error(), tcpSocket->errorString());
             return;
         }
     }
@@ -958,7 +1127,7 @@ void connection_to_server::disconnectEditor(int userId, int docId){
     out << userId;
 
     if(!writeData(buffer))
-        throw GUI_ConnectionException();
+        throw GUI_ConnectionException("writeData ERROR. Server not connected.");
 
     //this->editor = nullptr;
 }
@@ -1062,10 +1231,12 @@ bool connection_to_server::writeData(QByteArray data){
 
         if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
             emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-            return false;
+            throw GUI_ConnectionException("Timeout Expired.");
+            //return false;
         }
 
         return true;
+
     } else {
         return false;
     }

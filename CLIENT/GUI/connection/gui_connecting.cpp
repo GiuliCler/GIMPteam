@@ -7,12 +7,12 @@
 #include "../gui_menu.h"
 #include <QMovie>
 
-void GUI_Connecting::GUI_ConnectingWrapper(QWidget *parent){
+void GUI_Connecting::GUI_ConnectingWrapper(QWidget *parent, GIMPdocs *gimpdocs){
     GUI_Connecting *box = new GUI_Connecting(parent);
     box->setVisible(true);
 
     //pingo il server
-    if(!Stub::isConnectionWorking()){
+    if(!Stub::isConnectionWorking(gimpdocs->getConnection())){
         GUI_Reconnection *box2 = new GUI_Reconnection(static_cast<GIMPdocs*>(parent));
         box2->setVisible(true);
     }

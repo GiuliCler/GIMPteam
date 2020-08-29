@@ -48,6 +48,7 @@ private:
     void stampaLoggedUsers();
     void create(QString username, QString password, QString nickname, QString icon);
     void login(QString username, QString password);
+    void getDocText(int docId, int userId);
     void logout(int userId);
     void update(int userId, QString password, QString nickname, QString icon);
     void retrieveUsername(int userId);

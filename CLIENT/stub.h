@@ -18,7 +18,7 @@ class Stub : public QObject
 public:
     explicit Stub(QObject *parent = nullptr);
 
-    static bool isConnectionWorking();
+    static bool isConnectionWorking(connection_to_server *connection);
 
     /*USERS*/
     //La login restituisce l'Id dello user, come anche la new account
@@ -46,8 +46,7 @@ public:
     static QString requestDocNameTemporary(connection_to_server *connection,int docId);
     static int getDocumentOwnerTemporary(connection_to_server *connection, int docId);
     //mi serve per l'export PDF da parte del server perchè i document sono ancora tutti chiusi (quindi non è per te Paul, credo)
-    static std::shared_ptr<QTextDocument> getDocumentText(int docId);               // ?????
-
+    static std::shared_ptr<QTextEdit> getDocumentText(connection_to_server *connection, int docId, int userId);
 
     /*EDITOR*/
     //ritorna un set con un vettore di userId

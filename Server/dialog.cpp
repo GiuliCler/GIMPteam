@@ -14,7 +14,9 @@ Dialog::Dialog(QWidget *parent)
     quitButton = new QPushButton(tr("Quit"));
     quitButton->setAutoDefault(false);
 
-    if (!server.listen()) {
+    QString ipAddress;
+    ipAddress = "192.168.56.1";
+    if (!server.listen(QHostAddress::Any,56529)) {
         QMessageBox::critical(this, tr("Threaded Server"),
                               tr("Unable to start the server: %1.")
                               .arg(server.errorString()));
@@ -22,8 +24,7 @@ Dialog::Dialog(QWidget *parent)
         return;
     }
 
-    QString ipAddress;
-    QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
+    /*QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
     // use the first non-localhost IPv4 address
     for (int i = 0; i < ipAddressesList.size(); ++i) {
         if (ipAddressesList.at(i) != QHostAddress::LocalHost &&
@@ -34,7 +35,8 @@ Dialog::Dialog(QWidget *parent)
     }
     // if we did not find one, use IPv4 localhost
     if (ipAddress.isEmpty())
-        ipAddress = QHostAddress(QHostAddress::LocalHost).toString();
+        ipAddress = QHostAddress(QHostAddress::LocalHost).toString();*/
+
     statusLabel->setText(tr("The server is running on\n\nIP: %1\nport: %2\n\n"
                             "Run the Client now.")
                          .arg(ipAddress).arg(server.serverPort()));
