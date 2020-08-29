@@ -10,18 +10,17 @@ class GUI_Reconnection : public QDialog
 {
     Q_OBJECT
 
-    enum Reconnection_Results {Success, Failure};
-    //typedef Reconnection_Results Reconnection_Results;
-
 public:
-    static void GUI_ReconnectionWrapper(QWidget *parent);
+    enum Reconnection_Results {Success, Failure, KillApplication};
+
+    static Reconnection_Results GUI_ReconnectionWrapper(QWidget *parent);
 
     ~GUI_Reconnection();
 
 private slots:
 
     void on_exitPushButton_clicked();
-    Reconnection_Results on_retryPushButton_clicked();
+    void on_retryPushButton_clicked();
 
 public:
     Ui::GUI_Reconnection *ui;
