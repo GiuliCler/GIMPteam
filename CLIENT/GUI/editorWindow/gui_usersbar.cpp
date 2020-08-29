@@ -105,15 +105,6 @@ void GUI_UsersBar::addContributorUserIcon(int userId, QColor color, QString nick
         this->findChild<GUI_MyScrollArea*>(getContributorsAreaName())->updateSize(contributorUsersIconMap.size());
 }
 
-
-/*bool GUI_UsersBar::isOnline(int userId){
-    return onlineUsersIconMap.find(userId) != onlineUsersIconMap.end();
-}
-
-bool GUI_UsersBar::isContributor(int userId){
-    return contributorUsersIconMap.find(userId) != contributorUsersIconMap.end();
-}*/
-
 /******************SLOTS**************************************/
 
 void GUI_UsersBar::on_showColorsPushButton_clicked(){

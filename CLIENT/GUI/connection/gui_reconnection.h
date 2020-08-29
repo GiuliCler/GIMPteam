@@ -13,7 +13,7 @@ class GUI_Reconnection : public QDialog
 public:
     enum Reconnection_Results {Success, Failure, KillApplication};
 
-    static Reconnection_Results GUI_ReconnectionWrapper(QWidget *parent);
+    static void GUI_ReconnectionWrapper(QWidget *parent);
 
     ~GUI_Reconnection();
 

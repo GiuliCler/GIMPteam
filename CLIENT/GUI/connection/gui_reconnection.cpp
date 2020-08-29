@@ -3,6 +3,7 @@
 #include "../gui_menu.h"
 
 #include <QMessageBox>
+#include <QWidget>
 
 /*
 if(static_cast<GIMPdocs*>(parent)->userid < 0){
@@ -17,28 +18,18 @@ else{
     static_cast<GIMPdocs*>(static_cast<GIMPdocs*>(parent))->setUi1(widget);
 }*/
 
-GUI_Reconnection::Reconnection_Results GUI_Reconnection::GUI_ReconnectionWrapper(QWidget *parent){
-    GUI_Reconnection box(parent);
-    //box->setVisible(true);
-
-
-    /*QMessageBox msgBox;
-    msgBox.setText("Confirm?");
-    QAbstractButton* pButtonYes = msgBox.addButton(tr("Yeah!"), QMessageBox::YesRole);
-    msgBox.addButton(tr("Nope"), QMessageBox::NoRole);
-    msgBox.exec();*/
+void GUI_Reconnection::GUI_ReconnectionWrapper(QWidget *parent){
+    //GUI_Reconnection box(parent);
 
     int result = Reconnection_Results::Failure;
-    while (result == Reconnection_Results::Failure) {
-        result = box.exec();
-        qDebug() << result;
-    }
+    while (result == Reconnection_Results::Failure)
+        result = GUI_Reconnection(parent).exec(); //box.exec();
 
     if(result == Reconnection_Results::KillApplication)
         //non uso il QCoreApplication::quit perchè qui non funziona; probabilmente perchè questa è una funzione static
         exit(EXIT_SUCCESS);
 
-    return Reconnection_Results::Success;
+    return;
 }
 
 GUI_Reconnection::GUI_Reconnection(QWidget *parent) : QDialog(parent){
@@ -51,20 +42,22 @@ GUI_Reconnection::GUI_Reconnection(QWidget *parent) : QDialog(parent){
     setWindowFlag(Qt::Dialog);
     setWindowFlag(Qt::MSWindowsFixedSizeDialogHint);
 
+    ui->connectingLabel->setHidden(true);
 }
 
 GUI_Reconnection::~GUI_Reconnection(){
     delete ui;
-    qDebug() << "WAKANDA";
 }
 
 void GUI_Reconnection::on_exitPushButton_clicked(){
     GUI_Reconnection::done(Reconnection_Results::KillApplication);
-    //QCoreApplication::quit();
 }
 
 void GUI_Reconnection::on_retryPushButton_clicked(){
-    //mostra una label, e disabilita il pulsante "retry" prima che l'utente infuriato richieda mille reconnect!!
+    ui->connectingLabel->setHidden(false);
+    ui->retryPushButton->setEnabled(false);
+    repaint();
+
     bool result = Stub::isConnectionWorking(static_cast<GIMPdocs*>(this->parent())->getConnection());
 
     if(!result)

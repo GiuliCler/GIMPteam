@@ -14,10 +14,9 @@ int GUI_ConnectionToServerWrapper::requestLoginWrapper(GIMPdocs *gimpdocs, QStri
         gimpdocs->setCursor(Qt::ArrowCursor);
     } catch (GUI_ConnectionException &exception) {
         gimpdocs->setCursor(Qt::ArrowCursor);
-        //provo a ristabilire la connessione
-        if(GUI_Reconnection::GUI_ReconnectionWrapper(gimpdocs) == GUI_Reconnection::Reconnection_Results::Success)
-            return requestLoginWrapper(gimpdocs, username, password);
-        return -1;
+        //provo a ristabilire la connessione, e se non ci riesco ci riprovo finchè non ci riesco, o finchè l'utente non si arrende
+        GUI_Reconnection::GUI_ReconnectionWrapper(gimpdocs);
+        return requestLoginWrapper(gimpdocs, username, password);
     } catch(GUI_GenericException &exception){
         gimpdocs->setCursor(Qt::ArrowCursor);
         QMessageBox::information(gimpdocs, "", exception.message);
