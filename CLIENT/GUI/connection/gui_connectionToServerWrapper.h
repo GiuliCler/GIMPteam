@@ -48,6 +48,9 @@ public:
     static std::shared_ptr<QSet<int>> getContributorsUsersOnDocumentWrapper(GIMPdocs *gimpdocs, int docId);
     static int requestStartEditorConnection(GIMPdocs *gimpdocs);
 
+private:
+    static void handleReconnection(GIMPdocs *gimpdocs);
+
 };
 
 #endif // GUI_CONNECTIONTOSERVERWRAPPER_H

@@ -3,6 +3,7 @@
 #include "gui_login.h"
 
 #include <QMessageBox>
+#include <QProcess>
 
 GIMPdocs::GIMPdocs(QWidget *parent) : QMainWindow(parent), userid(-1)
 {
@@ -96,5 +97,15 @@ connection_to_server *GIMPdocs::getConnection(){
 
 void GIMPdocs::setupConnection(){
     c = new connection_to_server(GIMPdocs::port, GIMPdocs::ipAddress);
+}
+
+//questa funzione viene chiamata se la connessione viene persa. Devo tenere in conto che se il server è morto e risorto è lecito che la logout ritorni errore
+void GIMPdocs::returnToLogin(){
+    GUI_ConnectionToServerWrapper::requestDefinitiveLogoutWrapper(this, userid);
+
+    //QCoreApplication* app = QApplication::instance();
+    QProcess::startDetached(qApp->arguments()[0], qApp->arguments());
+    //qApp->exit(0);
+    exit(EXIT_SUCCESS);
 }
 

@@ -26,7 +26,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-        GUI/connection/gui_connecting.cpp \
         GUI/connection/gui_connectionToServerWrapper.cpp \
         GUI/connection/gui_reconnection.cpp \
         CRDT/crdt_controller.cpp \
@@ -54,7 +53,6 @@ SOURCES += \
         stub.cpp
 
 HEADERS += \
-        GUI/connection/gui_connecting.h \
         GUI/connection/gui_connectionException.h \
         GUI/connection/gui_connectionToServerWrapper.h \
         GUI/connection/gui_genericException.h \

@@ -40,6 +40,7 @@ public:
     void setUi2(QWidget *widget);
     void setupConnection();
     connection_to_server *getConnection();
+    void returnToLogin();
 
 private:
     QSize regularWindowSize;
