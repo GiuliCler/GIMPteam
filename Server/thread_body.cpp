@@ -1130,8 +1130,7 @@ void Thread_body::getWorkingUsersGivenDoc(int docId){
 
     } else {
         // Documento non presente nella mappa workingUsers
-//        qDebug()<<"GET_WORKINGUSERS_ONADOC - Oh no, sono passato dall'else, quindi la mappa workingUsers NON contiene docId!!";           // DEBUG
-        int no_doc = -1;
+        int no_doc = 0;
         out << no_doc;
         writeData(blocko);
     }

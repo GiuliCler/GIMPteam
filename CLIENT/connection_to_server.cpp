@@ -988,7 +988,7 @@ std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int d
 //    qDebug()<<"GET_WORKINGUSERS_ONADOC - Ricevuto num_working_users: "<<num;     // DEBUG
 
     // Controllo il caso di documento non risulta presente nella mappa del server workingUsers
-    if(num != -1){
+    if(num >= 0){
         for(int i=0; i<num; i++){
             in_data >> id;
 //            qDebug()<<"GET_WORKINGUSERS_ONADOC - Arrivato dal server... ID:"<<id;       // DEBUG
