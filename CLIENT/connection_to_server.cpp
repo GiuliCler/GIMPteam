@@ -14,6 +14,11 @@ connection_to_server::connection_to_server(QString port, QString ipAddress): fil
     //per sapere la versione di OpenSSL da installare:
     qDebug() << QSslSocket::supportsSsl() << QSslSocket::sslLibraryBuildVersionString();
 
+    this->tcpSocket->addCaCertificates("certificates/key.pem");
+    this->tcpSocket->setPrivateKey("certificates/client_key.key");
+    this->tcpSocket->setLocalCertificate("certificates/client_key.pem");
+    this->tcpSocket->setPeerVerifyMode(QSslSocket::VerifyPeer);
+
     connect(this, &connection_to_server::error, this, &connection_to_server::displayError);
 }
 

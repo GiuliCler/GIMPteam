@@ -110,4 +110,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 win32:RC_ICONS += GUI/images/logo/gimpLogo.ico
 
+DISTFILES += \
+    certificates/client_key.key \
+    certificates/client_key.pem \
+    certificates/key.key \
+    certificates/key.pem
+
 

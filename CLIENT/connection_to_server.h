@@ -5,6 +5,8 @@
 #include <QtNetwork/QTcpSocket>
 #include <QSslSocket>
 #include <QTextEdit>
+#include <QSslKey>
+#include <QSslCertificate>
 #include <memory>
 #include "GUI/connection/gui_connectionException.h"
 #include "GUI/connection/gui_genericException.h"

@@ -14,6 +14,16 @@ Dialog::Dialog(QWidget *parent)
     quitButton = new QPushButton(tr("Quit"));
     quitButton->setAutoDefault(false);
 
+    QFile keyFile("certificates/key.key");
+    keyFile.open(QIODevice::ReadOnly);
+    key = QSslKey(keyFile.readAll(), QSsl::Rsa);
+    keyFile.close();
+
+    QFile certFile("certificates/key.pem");
+    certFile.open(QIODevice::ReadOnly);
+    cert = QSslCertificate(certFile.readAll());
+    certFile.close();
+
     QString ipAddress;
     ipAddress = "192.168.56.1";
     if (!server.listen(QHostAddress::Any,56529)) {

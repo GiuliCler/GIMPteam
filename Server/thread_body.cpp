@@ -2,6 +2,9 @@
 #include <iostream>
 #include <sstream>
 #include <QThread>
+#include <QSslKey>
+#include <QSslCertificate>
+#include <QTcpServer>
 
 Thread_body::Thread_body(int socketDescriptor, QThread* server, QObject *parent) : QObject(parent), server(server), current_docId(-1), current_userId(-1), readBuffer(), readBuffer_size(0)
 {
@@ -9,12 +12,23 @@ Thread_body::Thread_body(int socketDescriptor, QThread* server, QObject *parent)
 
     std::cout << "ThreadBody constructor id: "<<thread_id<< std::endl;      // DEBUG
 
-    this->socket = new QSslSocket();
+    this->socket = new QSslSocket(this);
     if (!socket->setSocketDescriptor(socketDescriptor)) {
         socket->disconnectFromHost();       //altrimenti non accetta più connessioni da altri client...
         emit error(socket->error());
         return;
     }
+    QFile keyFile("certificates/key.key");
+    keyFile.open(QIODevice::ReadOnly);
+    this->socket->setPrivateKey(QSslKey(keyFile.readAll(), QSsl::Rsa));
+    keyFile.close();
+    QFile certFile("certificates/key.pem");
+    certFile.open(QIODevice::ReadOnly);
+    this->socket->setLocalCertificate(QSslCertificate(certFile.readAll()));
+    certFile.close();
+    this->socket->addCaCertificates("certificates/client_key.pem");
+    this->socket->setPeerVerifyMode(QSslSocket::VerifyPeer);
+    this->socket->startServerEncryption();
 
     // Creo nel thread un collegamento al DB, mettendo come nome univoco di connessione "connSOCKETDESCRIPTOR"
     database = new CollegamentoDB();
@@ -28,6 +42,10 @@ Thread_body::~Thread_body(){
 }
 
 void Thread_body::executeJob(QByteArray data){
+
+    QTcpSocket *clientSocket;
+
+    clientSocket = nextPendingConnection();
 
     auto thread_id = std::this_thread::get_id();
     std::cout << "THREAD - executeJob (inizio); Thread_id: "<<thread_id<< std::endl;            // DEBUG

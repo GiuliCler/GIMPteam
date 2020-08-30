@@ -3,6 +3,9 @@
 
 #include <QObject>
 #include <QSslSocket>
+#include <QTcpServer>
+#include <QSslKey>
+#include <QSslCertificate>
 #include "database/collegamentoDB.h"
 #include <QMutex>
 #include "crdt/crdt_message.h"
@@ -29,7 +32,7 @@ class Thread_body : public QObject
 public:
     explicit Thread_body(int socketDescriptor, QThread* server, QObject *parent = nullptr);
     ~Thread_body();
-    QTcpSocket* socket;
+    QSslSocket* socket;
 
 private:
     QThread* server;

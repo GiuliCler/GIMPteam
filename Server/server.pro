@@ -24,6 +24,12 @@ target.path = $$[QT_INSTALL_EXAMPLES]/network/fortuneserver
 INSTALLS += target
 
 DISTFILES += \
+    ../../../../../../OpenSSL-Win64/bin/key.key \
+    ../../../../../../OpenSSL-Win64/bin/key.pem \
+    certificates/client_key.key \
+    certificates/client_key.pem \
+    certificates/key.key \
+    certificates/key.pem \
     database/CMakeLists.txt \
     database/README.md
 

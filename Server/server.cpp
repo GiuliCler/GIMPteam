@@ -70,13 +70,10 @@ Server::Server(QObject *parent): QTcpServer(parent) {
         documents.insert(QString::fromStdString((*i).toStdString()), cont++);
     }
     mutex_docs->unlock();
-<<<<<<< Updated upstream
 
     // Faccio partire il timer associato al check client connessi/crashati (chiamato ogni 5 minuti)
     startTimer(std::chrono::minutes(5));
 
-=======
->>>>>>> Stashed changes
     qDebug()<<"Fine costruttore di Server";          // DEBUG
 
 }
@@ -105,6 +102,7 @@ void Server::incomingConnection(qintptr socketDescriptor) {
 
     qDebug()<< "SERVER - Sono nella incomingConnection";       // DEBUG
     std::cout << "SERVER incomingConnection id: " << std::this_thread::get_id()<< std::endl;       // DEBUG
+
     // Creo thread_management
     Thread_management* thread_mgm = new Thread_management(socketDescriptor, this);
     connect(thread_mgm, SIGNAL(finished()), thread_mgm, SLOT(deleteLater()));
@@ -113,6 +111,7 @@ void Server::incomingConnection(qintptr socketDescriptor) {
     thread_mgm->start();
 
     qDebug()<< "SERVER - Fine incomingConnection";      // DEBUG
+
 }
 
 void Server::runServer() {

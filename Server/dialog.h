@@ -15,6 +15,8 @@ class Dialog : public QWidget
 
 public:
     Dialog(QWidget *parent = 0);
+    QSslKey key;
+    QSslCertificate cert;
 
 private:
     QLabel *statusLabel;

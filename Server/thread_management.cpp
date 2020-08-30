@@ -14,7 +14,7 @@ Thread_management::~Thread_management(){
 }
 
 void Thread_management::run(){
-    this->socket->startServerEncryption();
+
     qDebug() << "THREAD - run iniziata";           // DEBUG
 
     auto thread_id = std::this_thread::get_id();
