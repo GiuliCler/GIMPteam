@@ -231,8 +231,8 @@ std::string connection_to_server::openDoc(int userId, int docId)
 }
 
 
-std::string connection_to_server::requestDocDatoUri(QString uri, int userId){
-    qDebug()<<"OPENDOC_DATO_URI";      // DEBUG
+std::string connection_to_server::requestDocIdDatoUri(QString uri, int userId){
+    qDebug()<<"GET_DOCID_DATO_URI";      // DEBUG
 
 //    this->tcpSocket->abort();
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
@@ -248,7 +248,7 @@ std::string connection_to_server::requestDocDatoUri(QString uri, int userId){
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
-    QByteArray comando = "OPENDOC_DATO_URI";
+    QByteArray comando = "GET_DOCID_DATO_URI";
 
     out << comando;
     out << uri;
@@ -270,7 +270,6 @@ std::string connection_to_server::requestDocDatoUri(QString uri, int userId){
     QByteArray esito;
     in_data >> esito;
 
-    QByteArray file;
     QString good = "ok";
     QString inesistente = "erroreUriInesistente";
     if(esito.contains(inesistente.toUtf8())){
@@ -279,7 +278,7 @@ std::string connection_to_server::requestDocDatoUri(QString uri, int userId){
 
     if(esito.contains(good.toUtf8())){
 
-        readDataFile();
+//        readDataFile();
 
         return esito.toStdString();
 
@@ -1094,11 +1093,44 @@ void connection_to_server::requestSendMovedCursor(int userId, int pos){
 
 void connection_to_server::connectEditor(){
 
-    qDebug()<<"CONNECT EDITOR";      // DEBUG
-    //this->editor = editor;
+    qDebug()<<"CONNECT EDITOR - Lettura residui da readBuffer. Size: " << readBuffer.size();      // DEBUG
+
+    if(readBuffer.size() > 0){
+        // Mentre ricevevo il file, mi è arrivato anche qualcos'altro che ho messo nel buffer ma che non ho ancora processato
+        qint32 size = 0;
+        while ((size == 0 && readBuffer.size() >= 4) || (size > 0 && readBuffer.size() >= size))
+        {
+            if(this->tcpSocket->bytesAvailable() > 0){
+                // Mentre sto processando ciò che stava ancora nel buffer, mi sono arrivate altre cose
+                readBuffer.append(this->tcpSocket->readAll());
+            }
+
+            if (size == 0 && readBuffer.size() >= 4){
+                size = ArrayToInt(readBuffer.mid(0, 4));
+                readBuffer_size = size;
+                readBuffer.remove(0, 4);
+            }
+            if (size > 0 && readBuffer.size() >= size){
+                QByteArray data = readBuffer.mid(0, size);
+                readBuffer.remove(0, size);
+                size = 0;
+                readBuffer_size = size;
+                receiveMessage(data);
+            }
+        }
+    }
+
+    qDebug()<<"CONNECT EDITOR - Connect";      // DEBUG
 
     connect(this->tcpSocket, &QTcpSocket::readyRead, this, &connection_to_server::acceptData);
     connect(this, &connection_to_server::dataReceived, this, &connection_to_server::receiveMessage);
+
+    qDebug()<<"CONNECT EDITOR - Lettura residui tcpSocket->bytesAvailable";      // DEBUG
+
+    if(this->tcpSocket->bytesAvailable() > 0){
+        // Dopo aver ricevuto il file e svuotato eventualmente il buffer di cose residue, mi è arrivato qualcosa di non ancora letto
+        acceptData();
+    }
 }
 
 void connection_to_server::disconnectEditor(int userId, int docId){
@@ -1141,7 +1173,7 @@ void connection_to_server::receiveMessage(QByteArray data){
     QByteArray action;
     in_data >> action;
 
-    std::cout << "SLOT CLIENT receiveMessage - action ricevuta: "<<action.toStdString() << std::endl;      // DEBUG
+    qDebug() << "SLOT CLIENT receiveMessage - action ricevuta: "<<QString::fromStdString(action.toStdString());      // DEBUG
 
     QString c = "OFFLINEUSER";
     if(action.contains(c.toUtf8())){
@@ -1208,7 +1240,7 @@ void connection_to_server::receiveMessage(QByteArray data){
         int userId, pos;
         in_data >> userId;
         in_data >> pos;
-        std::cout << "SLOT CLIENT receiveMessage - MOVE - user: "<< userId << "; pos: " << pos << std::endl;    //DEBUG
+        qDebug() << "SLOT CLIENT receiveMessage - MOVE - user: "<< userId << "; pos: " << pos;    //DEBUG
         emit sigMoveCursor(userId,pos);
     }
 
@@ -1216,7 +1248,7 @@ void connection_to_server::receiveMessage(QByteArray data){
     if(action.contains(c.toUtf8())){
         CRDT_Message m;
         in_data >> m;
-        std::cout << "SLOT CLIENT receiveMessage - CRDT - m.getAction(): "<<m.getAzione()<< std::endl;    //DEBUG
+        qDebug() << "SLOT CLIENT receiveMessage - CRDT - m.getAction(): "<<QString::fromStdString(m.getAzione());    //DEBUG
         emit sigProcessMessage(m);
     }
 }

@@ -278,7 +278,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         tmp.setPosition(pos);
         for(int i = pos; i < pos + add; tmp.setPosition(++i)){
             tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
-            if(tmp.charFormat().background() != Qt::BrushStyle::NoBrush){
+            if(tmp.charFormat().background() != Qt::BrushStyle::NoBrush && tmp.charFormat().background() != Qt::white){
                 QTextCharFormat fmt{tmp.charFormat()};
                 fmt.setBackground(Qt::BrushStyle::NoBrush);
                 tmp.mergeCharFormat(fmt);
@@ -309,7 +309,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         tmp.setPosition(pos1);
         for(int i = pos1; i < pos1 + cnt; tmp.setPosition(++i)){
             tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
-            if(tmp.charFormat().background() != Qt::BrushStyle::NoBrush){
+            if(tmp.charFormat().background() != Qt::BrushStyle::NoBrush && tmp.charFormat().background() != Qt::white){
                 QTextCharFormat fmt{tmp.charFormat()};
                 fmt.setBackground(Qt::BrushStyle::NoBrush);
                 tmp.mergeCharFormat(fmt);

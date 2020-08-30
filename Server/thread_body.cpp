@@ -7,7 +7,7 @@ Thread_body::Thread_body(int socketDescriptor, QThread* server, QObject *parent)
 {
     auto thread_id = std::this_thread::get_id();
 
-    std::cout << "ThreadBody constructor id: "<<thread_id<< std::endl;      // DEBUG
+    qDebug() << "ThreadBody constructor id: "<<threadId_toQString(thread_id);      // DEBUG
 
     socket = new QTcpSocket();
     if (!socket->setSocketDescriptor(socketDescriptor)) {
@@ -24,13 +24,13 @@ Thread_body::Thread_body(int socketDescriptor, QThread* server, QObject *parent)
 }
 
 Thread_body::~Thread_body(){
-    std::cout<<"STO DISTRUGGENDO IL THREAD_BODY"<<std::endl;            // DEBUG
+    qDebug() <<"STO DISTRUGGENDO IL THREAD_BODY";            // DEBUG
 }
 
 void Thread_body::executeJob(QByteArray data){
 
     auto thread_id = std::this_thread::get_id();
-    std::cout << "THREAD - executeJob (inizio); Thread_id: "<<thread_id<< std::endl;            // DEBUG
+    qDebug() << "THREAD - executeJob (inizio); Thread_id: "<<threadId_toQString(thread_id);            // DEBUG
 
     QDataStream in_data(&data, QIODevice::ReadOnly);
     in_data.setVersion(QDataStream::Qt_5_12);
@@ -68,8 +68,6 @@ void Thread_body::executeJob(QByteArray data){
 
         int userId;
         in_data >> userId;
-
-        std::cout<<"LOGOUT - Ricevuto dal client lo userId: "<<userId<<std::endl;           // DEBUG
 
         logout(userId);
     }
@@ -147,14 +145,14 @@ void Thread_body::executeJob(QByteArray data){
         getDocs(userId);
     }
 
-    c = "OPENDOC_DATO_URI";
+    c = "GET_DOCID_DATO_URI";
     if(text.contains(c.toUtf8())){
         QString uri;
         int userId;
         in_data >> uri;
         in_data >> userId;
 
-        openDocDatoUri(uri, userId);
+        getDocIdDatoUri(uri, userId);
     }
 
     c = "GET_URI";
@@ -217,7 +215,7 @@ void Thread_body::executeJob(QByteArray data){
         if(current_docId == -1)
             return;
 
-        std::cout << "if SEND - azione: "<<messaggio.getAzione()<< std::endl;           // DEBUG
+        qDebug() << "if SEND - azione: "<<QString::fromStdString(messaggio.getAzione());           // DEBUG
         emit messageToServer(messaggio, threadId_toQString(thread_id), current_docId);
     }
 
@@ -244,7 +242,7 @@ void Thread_body::executeJob(QByteArray data){
     //    socket->disconnectFromHost();
     //    socket->waitForDisconnected(3000);
 
-    std::cout << "THREAD - executeJob (fine); Thread_id: "<<thread_id<< std::endl;            // DEBUG
+    qDebug() << "THREAD - executeJob (fine); Thread_id: "<<threadId_toQString(thread_id);            // DEBUG
 }
 
 
@@ -449,7 +447,7 @@ void Thread_body::newDoc(QString docName, int userId){
                         out << ritorno.toUtf8();
                         writeData(blocko);
 
-                        notifyNewWorkingUser(userId, docId);
+//                        notifyNewWorkingUser(userId, docId);
                     }
                 }else{
                     mutex_db->unlock();
@@ -824,7 +822,7 @@ void Thread_body::getDocs(int userId){
 }
 
 
-void Thread_body::openDocDatoUri(QString uri, int userId){
+void Thread_body::getDocIdDatoUri(QString uri, int userId){
     QByteArray blocko;
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
@@ -834,39 +832,30 @@ void Thread_body::openDocDatoUri(QString uri, int userId){
     mutex_db->unlock();
     if(doc != "errore"){
         // Nome del documento relativo all'URI ottenuto dal DB correttamente
-
         // Cerco il docId del documento corrente
         mutex_docs->lock();
         int docId = documents.value(doc);
         mutex_docs->unlock();
 
-        //creo sul db l'associazione documento-utente (non owner)
-        QString ritorno;
-
-        //cerco il nome del doc e dello user
+        // Cerco il nome del doc e dello user
         QString username = getUsername(userId);
         QString docName = getDocname(docId);
 
-        if(!username.isEmpty() && !docName.isEmpty()){
+        QString ritorno;
+
+        if(username.isEmpty() || docName.isEmpty()){
+            ritorno = "errore";
+        } else {
             mutex_db->lock();
+
+            //creo sul db l'associazione documento-utente (non owner)
             if(database->aggiungiPartecipante(docName,username)!=2){
-                int siteCounter = database->recuperaSiteCounter(docName, username);
-                mutex_db->unlock();
-
-                if(siteCounter == -1){
-                    ritorno = "erroreOpenDocUri";
-                } else {
-                    current_siteCounter = siteCounter;
-
-                    if(openDoc(docName, docId, userId, 1) == -1){
-                        ritorno = "erroreOpenDocUri";
-                    } else {
-                        ritorno = "ok_"+QString::number(siteCounter)+"_"+QString::number(docId);
-                    }
-                }
+                ritorno = "ok_"+QString::number(docId);
             } else {
-                mutex_db->unlock();
+                ritorno = "errore";
             }
+
+            mutex_db->unlock();
         }
 
         if(ritorno.contains("ok")){
@@ -874,42 +863,40 @@ void Thread_body::openDocDatoUri(QString uri, int userId){
             out << ritorno.toUtf8();
             writeData(blocko);
 
-            crdt->mutex->lock();
+//            crdt->mutex->lock();
 
-            // Recupero il contenuto del vettore _symbols che sta all'interno del ServerEditor
-            QVector<CRDT_Symbol> simboli = crdt->getSymbols();
+//            // Recupero il contenuto del vettore _symbols che sta all'interno del ServerEditor
+//            QVector<CRDT_Symbol> simboli = crdt->getSymbols();
 
-            // Aggiorno il docId su cui sto iniziando a lavorare
-            current_docId = docId;
+//            // Aggiorno il docId su cui sto iniziando a lavorare
+//            current_docId = docId;
 
-            crdt->mutex->unlock();
+//            crdt->mutex->unlock();
 
-            // Mando al client il contenuto del il contenuto del vettore _symbols
-            QByteArray blocko1;
-            QDataStream out1(&blocko1, QIODevice::WriteOnly);
-            out1.setVersion(QDataStream::Qt_5_12);
+//            // Mando al client il contenuto del il contenuto del vettore _symbols
+//            QByteArray blocko1;
+//            QDataStream out1(&blocko1, QIODevice::WriteOnly);
+//            out1.setVersion(QDataStream::Qt_5_12);
 
-            qDebug()<<"Invio file - Sto per inviare simboli.count(): "<<simboli.count();     // DEBUG
+//            qDebug()<<"Invio file - Sto per inviare simboli.count(): "<<simboli.count();     // DEBUG
 
-            out1 << simboli.count();
-            writeData(blocko1);
+//            out1 << simboli.count();
+//            writeData(blocko1);
 
-            int cont=1;
-            for(auto i=simboli.cbegin(); i<simboli.cend(); i++, cont++){
+//            int cont=1;
+//            for(auto i=simboli.cbegin(); i<simboli.cend(); i++, cont++){
 
-                qDebug()<<"Invio file - CICLO DI SCRITTURA i: "<<cont<<"/"<<simboli.count()<<", simbolo che sto inviando: "<<(*i).getCarattere().toLatin1();         // DEBUG
+//                qDebug()<<"Invio file - CICLO DI SCRITTURA i: "<<cont<<"/"<<simboli.count()<<", simbolo che sto inviando: "<<(*i).getCarattere().toLatin1();         // DEBUG
 
-                QByteArray blocko2;
-                QDataStream out2(&blocko2, QIODevice::WriteOnly);
-                out2.setVersion(QDataStream::Qt_5_12);
+//                QByteArray blocko2;
+//                QDataStream out2(&blocko2, QIODevice::WriteOnly);
+//                out2.setVersion(QDataStream::Qt_5_12);
 
-                out2 << (*i);
-                writeData(blocko2);
-            }
+//                out2 << (*i);
+//                writeData(blocko2);
+//            }
 
-            notifyNewWorkingUser(userId, docId);
-
-            //segnalo agli altri contributors che ne faccio parte
+//            notifyNewWorkingUser(userId, docId);
             notifyNewContributor(userId, docId);
 
         }else{
@@ -1401,7 +1388,7 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
     QString docidForDebug = "CURRENTDOCID: "+QString::number(current_docId);       // DEBUG
 
     auto thread_id = std::this_thread::get_id();
-    std::cout << "---- ThreadBody processMessage RICEVUTO thread_id: "<<thread_id<<", doc_id: "<<docId<<" ---- "<< "; Stringa: "<<m.getAzione()<< std::endl;      // DEBUG
+    qDebug() << "---- ThreadBody processMessage RICEVUTO thread_id: "<<threadId_toQString(thread_id)<<", doc_id: "<<docId<<" ---- "<< "; Stringa: "<<QString::fromStdString(m.getAzione());      // DEBUG
     QString thread_id_string = threadId_toQString(thread_id);
 
     // Se altro documento o stesso user_id di questo thread => discard (return) del messaggio
@@ -1420,10 +1407,12 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
             QString str = QString::fromStdString(m.getSimbolo().getIDunivoco());
             current_siteCounter = str.split("_")[1].toInt() + 1;
         }
-        return;
+
+        if(!(QString::fromStdString(m.getAzione()).contains("ONLINEUSER")))
+            return;
     }
 
-    std::cout << "---- ThreadBody processMessage ACCETTATO thread_id: "<<thread_id<<", doc_id: "<<docId<<" ---- "<< "; Stringa: "<<m.getAzione()<< std::endl;      // DEBUG
+    qDebug() << "---- ThreadBody processMessage ACCETTATO thread_id: "<<threadId_toQString(thread_id)<<", doc_id: "<<docId<<" ---- "<< "; Stringa: "<<QString::fromStdString(m.getAzione());      // DEBUG
 
     QByteArray blocko;
     QDataStream out(&blocko, QIODevice::WriteOnly);
@@ -1437,7 +1426,8 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         QStringList userIdDisconnect = strAction.split("_");
 //        qDebug() << userIdDisconnect[1];       // DEBUG
 
-        out << "OFFLINEUSER";
+        QString s = "OFFLINEUSER";
+        out << s.toUtf8();
         out <<  userIdDisconnect[1].toInt();
         writeData(blocko);
         return;
@@ -1452,10 +1442,11 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
 
         //mando in uscita anche Nickname e icona
         mutex_db->lock();
-        QString nick = database->getNickname(getUsername(userId));       // DEBUG
+        QString nick = database->getNickname(getUsername(userId));
         QString icon = database->getIconId(getUsername(userId));
         mutex_db->unlock();
-        out << "ONLINEUSER";
+        QString s = "ONLINEUSER";
+        out << s.toUtf8();
         out << userId;
         out << icon.toUtf8();
         out << nick.toUtf8();
@@ -1473,7 +1464,8 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         QString nick = database->getNickname(getUsername(userIdContributor[1].toInt()));
         QString icon = database->getIconId(getUsername(userIdContributor[1].toInt()));
         mutex_db->unlock();
-        out << "NEWCONTRIBUTOR";
+        QString s = "NEWCONTRIBUTOR";
+        out << s.toUtf8();
         out << userIdContributor[1].toInt();
         out << icon.toUtf8();
         out << nick.toUtf8();
@@ -1488,8 +1480,8 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
 
         // "Resetto" il puntatore a CRDT_ServerEditor
         crdt = nullptr;
-
-        out << "FORCECLOSING";
+        QString s = "FORCECLOSING";
+        out << s.toUtf8();
         writeData(blocko);
         return;
     }
@@ -1497,7 +1489,8 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
     c = "MOVECURSOR";
     if(strAction.contains(c.toUtf8())){
         QStringList str = strAction.split("_");
-        out <<  "MOVECURSOR";
+        QString s = "MOVECURSOR";
+        out << s.toUtf8();
         out <<  str[1].toInt(); // userId
         out <<  str[2].toInt(); // pos
         writeData(blocko);
@@ -1505,7 +1498,9 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
     }
 
     /* Messaggio che fa parte del CRDT */
-    out << "CRDT";
+
+    QString s = "CRDT";
+    out << s.toUtf8();
     out << m;
     writeData(blocko);
 }

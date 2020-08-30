@@ -47,13 +47,11 @@ void GUI_Opendoc::on_openDocsPushButton_clicked(){
     }
     int docId = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
     QString docName = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCNAME).toString().split("(")[0];
-    QString codedParameters = GUI_ConnectionToServerWrapper::requestOpenDocumentWrapper(gimpParent, gimpParent->userid, docId);
-    if(codedParameters.compare("errore") == 0)
+
+    GUI_Editor *widget = new GUI_Editor(gimpParent, docId, docName, -1, 0);
+    if(widget->problemaApertura)
         return;
 
-    int siteCounter = codedParameters.split("_").at(1).toInt();
-
-    GUI_Editor *widget = new GUI_Editor(gimpParent, docId, docName, siteCounter);
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
 }
 
