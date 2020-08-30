@@ -18,7 +18,6 @@ class Server : public QTcpServer {
     Q_OBJECT
 public:
     Server(QObject *parent = nullptr);
-    ~Server() override;
 
 protected:
     void incomingConnection(qintptr socketDescriptor) override;
@@ -28,9 +27,6 @@ signals:
     void error(QTcpSocket::SocketError socketError);
     void dispatchMessage(CRDT_Message m, QString thread_id_sender, int docId);
     void checkPeriodicoClientConnessi();
-
-public slots:
-    void runServer();
 
 private:
     CollegamentoDB *database;
