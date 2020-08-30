@@ -6,7 +6,7 @@
 Thread_management::Thread_management(int socketDescriptor, QObject *parent): QThread(parent), socketDescriptor(socketDescriptor){
     qDebug()<< "THREAD management - Costruttore del thread con descrittore "<<socketDescriptor;          // DEBUG
     std::cout << "THREAD management - Costruttore id: " << std::this_thread::get_id()<<std::endl;          // DEBUG
-    qDebug()<< "THREAD management - Fine costruttore del thread con descrittore "<<socketDescriptor;     // DEBUG
+    qDebug()<< "THREAD management - Fine costruttore del thread con descrittore "<<socketDescriptor; // DEBUG
 }
 
 Thread_management::~Thread_management(){
@@ -14,7 +14,7 @@ Thread_management::~Thread_management(){
 }
 
 void Thread_management::run(){
-
+    this->socket->startServerEncryption();
     qDebug() << "THREAD - run iniziata";           // DEBUG
 
     auto thread_id = std::this_thread::get_id();

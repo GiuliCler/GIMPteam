@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QtNetwork/QTcpSocket>
+#include <QSslSocket>
 #include <QTextEdit>
 #include <memory>
 #include "GUI/connection/gui_connectionException.h"
@@ -71,7 +72,7 @@ signals:
 private:
     QString port;
     QString ipAddress;  
-    QTcpSocket *tcpSocket = nullptr;
+    QSslSocket *tcpSocket = nullptr;
     QByteArray fileTMP;
     //GUI_Editor *editor = nullptr;
     const int Timeout = 100 * 1000;

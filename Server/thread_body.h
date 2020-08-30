@@ -2,7 +2,7 @@
 #define THREAD_BODY_H
 
 #include <QObject>
-#include <QTcpSocket>
+#include <QSslSocket>
 #include "database/collegamentoDB.h"
 #include <QMutex>
 #include "crdt/crdt_message.h"

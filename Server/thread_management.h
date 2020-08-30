@@ -9,6 +9,7 @@
 #include <QWaitCondition>
 #include <QTcpSocket>
 #include <QPair>
+#include <QSslSocket>
 
 extern QMutex* mutex_users;
 extern QMutex* mutex_docs;
@@ -31,7 +32,7 @@ public:
     Thread_management(int socketDescriptor, QObject *parent);
     ~Thread_management() override;
     void run() override;
-    QTcpSocket* socket;
+    QSslSocket* socket;
 
 private:
     int socketDescriptor;

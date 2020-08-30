@@ -8,9 +8,12 @@
 #include "CRDT/crdt_message.h"
 
 connection_to_server::connection_to_server(QString port, QString ipAddress): fileTMP(), readBuffer(), readBuffer_size(0){
-    this->tcpSocket=new QTcpSocket(this);
+    this->tcpSocket=new QSslSocket(this);
     this->port = port;
     this->ipAddress = ipAddress;
+    //per sapere la versione di OpenSSL da installare:
+    qDebug() << QSslSocket::supportsSsl() << QSslSocket::sslLibraryBuildVersionString();
+
     connect(this, &connection_to_server::error, this, &connection_to_server::displayError);
 }
 
@@ -28,7 +31,7 @@ int connection_to_server::requestTryLogOut(int userId)
     qDebug()<<"LOGOUT";      // DEBUG
 
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
-        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+        this->tcpSocket->connectToHostEncrypted(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
             //emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -77,7 +80,7 @@ int connection_to_server::requestTryLogin(QString username, QString password)
 
     this->tcpSocket->abort();
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
-        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+        this->tcpSocket->connectToHostEncrypted(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
             //emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -131,7 +134,7 @@ std::string connection_to_server::requestCreateDocument(int userId, QString name
 
 //    this->tcpSocket->abort();
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
-        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+        this->tcpSocket->connectToHostEncrypted(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
             //emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -181,7 +184,7 @@ std::string connection_to_server::openDoc(int userId, int docId)
 
 //    this->tcpSocket->abort();
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
-        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+        this->tcpSocket->connectToHostEncrypted(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
             //emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -236,7 +239,7 @@ std::string connection_to_server::requestDocDatoUri(QString uri, int userId){
 
 //    this->tcpSocket->abort();
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
-        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+        this->tcpSocket->connectToHostEncrypted(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
             //emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -295,7 +298,7 @@ std::string connection_to_server::requestDocName(int docId){
 
 //    this->tcpSocket->abort();
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
-        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+        this->tcpSocket->connectToHostEncrypted(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
             //emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -343,7 +346,7 @@ std::shared_ptr<QTextEdit> connection_to_server::requestDocumentText(int docId, 
 
 //    this->tcpSocket->abort();
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
-        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+        this->tcpSocket->connectToHostEncrypted(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
             throw GUI_ConnectionException("Timeout Expired.");
@@ -410,7 +413,7 @@ int connection_to_server::requestNewAccount(QString username, QString password, 
 
     this->tcpSocket->abort();
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
-        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+        this->tcpSocket->connectToHostEncrypted(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
             //emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -469,7 +472,7 @@ long connection_to_server::requestUpdateAccount( int userId, QString password, Q
 
 //    this->tcpSocket->abort();
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
-        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+        this->tcpSocket->connectToHostEncrypted(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
            //emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -519,7 +522,7 @@ std::string connection_to_server::requestUri(int docId){
 
 //    this->tcpSocket->abort();
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
-        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+        this->tcpSocket->connectToHostEncrypted(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
             //emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -568,7 +571,7 @@ std::shared_ptr<QMap<int, QString>> connection_to_server::getKnownDocuments(int 
     QMap<int, QString> ritorno;
 //    this->tcpSocket->abort();
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
-        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+        this->tcpSocket->connectToHostEncrypted(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
             //emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -642,7 +645,7 @@ std::string connection_to_server::requestGetNickname(int userId){
 //    this->tcpSocket->abort();
 
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
-        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+        this->tcpSocket->connectToHostEncrypted(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
             //emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -664,7 +667,7 @@ std::string connection_to_server::requestGetNickname(int userId){
         //return "errore";
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
         throw GUI_ConnectionException("Timeout Expired.");
         //return "errore";
     }
@@ -691,7 +694,7 @@ std::string connection_to_server::requestIconId(int userId){
 
 //    this->tcpSocket->abort();
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
-        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+        this->tcpSocket->connectToHostEncrypted(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
             //emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -713,7 +716,7 @@ std::string connection_to_server::requestIconId(int userId){
         //return "errore";
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+       // emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
         throw GUI_ConnectionException("Timeout Expired.");
         //return "errore";
     }
@@ -741,7 +744,7 @@ std::string connection_to_server::requestGetUsername(int userId){
 //    this->tcpSocket->abort();
 
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
-        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+        this->tcpSocket->connectToHostEncrypted(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
             //emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -763,7 +766,7 @@ std::string connection_to_server::requestGetUsername(int userId){
         //return "errore";
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
         throw GUI_ConnectionException("Timeout Expired.");
         //return "errore";
     }
@@ -790,7 +793,7 @@ std::string connection_to_server::requestDeleteDoc(int userId,int documentId){
 
 //    this->tcpSocket->abort();
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
-        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+        this->tcpSocket->connectToHostEncrypted(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
             //emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -813,7 +816,7 @@ std::string connection_to_server::requestDeleteDoc(int userId,int documentId){
         //return "errore";
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
         throw GUI_ConnectionException("Timeout Expired.");
         //return "errore";
     }
@@ -841,7 +844,7 @@ int connection_to_server::getDocumentOwner(int docId){
 
 //    this->tcpSocket->abort();
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
-        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+        this->tcpSocket->connectToHostEncrypted(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
             //emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -863,7 +866,7 @@ int connection_to_server::getDocumentOwner(int docId){
         //return -1;
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
         throw GUI_ConnectionException("Timeout Expired.");
         //return -1;
     }
@@ -889,7 +892,7 @@ std::shared_ptr<QSet<int>> connection_to_server::getContributors(int docId){
 
 //    this->tcpSocket->abort();
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
-        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+        this->tcpSocket->connectToHostEncrypted(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
             //emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -911,7 +914,7 @@ std::shared_ptr<QSet<int>> connection_to_server::getContributors(int docId){
         throw GUI_ConnectionException("writeData ERROR. Server not connected.");
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
         throw GUI_ConnectionException("Timeout Expired.");
     }
     QByteArray data = readData();
@@ -954,7 +957,7 @@ std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int d
 
 //    this->tcpSocket->abort();
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
-        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+        this->tcpSocket->connectToHostEncrypted(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
             //emit error(tcpSocket->error(), tcpSocket->errorString());
@@ -976,7 +979,7 @@ std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int d
         throw GUI_ConnectionException("writeData ERROR. Server not connected.");
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
         throw GUI_ConnectionException("Timeout Expired.");
     }
     QByteArray data = readData();
@@ -1031,11 +1034,11 @@ void connection_to_server::requestSendMessage(CRDT_Message *messaggio){
 
     //    this->tcpSocket->abort();
     if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
-        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+        this->tcpSocket->connectToHostEncrypted(this->ipAddress, this->port.toInt());
 
     if (!tcpSocket->waitForConnected(Timeout)) {
         //emit error(tcpSocket->error(), tcpSocket->errorString());
-        return;
+        throw GUI_ConnectionException("Timeout Expired.");
     }
 
     QByteArray buffer;
@@ -1054,7 +1057,7 @@ bool connection_to_server::pingServer(){
     qDebug()<<"PING";      // DEBUG
 
       if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
-          this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+          this->tcpSocket->connectToHostEncrypted(this->ipAddress, this->port.toInt());
 
           if (!tcpSocket->waitForConnected(Timeout)) {
               return false;
@@ -1109,11 +1112,11 @@ void connection_to_server::disconnectEditor(int userId, int docId){
     disconnect(this, &connection_to_server::dataReceived, this, &connection_to_server::receiveMessage);
 
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
-        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+        this->tcpSocket->connectToHostEncrypted(this->ipAddress, this->port.toInt());
 
         if (!tcpSocket->waitForConnected(Timeout)) {
             //emit error(tcpSocket->error(), tcpSocket->errorString());
-            return;
+            throw GUI_ConnectionException("Timeout Expired.");
         }
     }
 
@@ -1230,7 +1233,7 @@ bool connection_to_server::writeData(QByteArray data){
         this->tcpSocket->write(data);                             // ... write the data itself
 
         if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
-            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+            //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
             throw GUI_ConnectionException("Timeout Expired.");
             //return false;
         }
@@ -1317,8 +1320,9 @@ void connection_to_server::readDataFile(){
 
     // Lettura del numero di simboli contenuti nel file
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-        return;
+        //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        //return;
+        throw GUI_ConnectionException("Timeout Expired.");
     }
 
     QByteArray data = readData();
@@ -1379,8 +1383,9 @@ void connection_to_server::readDataFile(){
 
         if(this->tcpSocket->bytesAvailable() == 0){
             if(!this->tcpSocket->waitForReadyRead(Timeout)){
-                emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-                return;
+                //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+                //return;
+                throw GUI_ConnectionException("Timeout Expired.");
             }
         }
 

@@ -9,7 +9,7 @@ Thread_body::Thread_body(int socketDescriptor, QThread* server, QObject *parent)
 
     std::cout << "ThreadBody constructor id: "<<thread_id<< std::endl;      // DEBUG
 
-    socket = new QTcpSocket();
+    this->socket = new QSslSocket();
     if (!socket->setSocketDescriptor(socketDescriptor)) {
         socket->disconnectFromHost();       //altrimenti non accetta più connessioni da altri client...
         emit error(socket->error());
