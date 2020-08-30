@@ -22,7 +22,7 @@
 background-color: qlineargradient(spread:reflect, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(25, 30, 28, 120), stop:1 rgba(0, 0, 0, 0));
 }</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="7,1,80,1,0">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="6,1,80,1,0">
    <property name="spacing">
     <number>0</number>
    </property>

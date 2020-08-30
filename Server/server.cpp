@@ -22,13 +22,13 @@ QMap<QString, int> users;
 QMap<QString, int> documents;
 QVector<QString> logged_users;
 
-// QMap formata da coppie (docId, [userId1, userId2, userId3, ...])
+// workingUsers --> QMap formata da coppie (docId, [userId1, userId2, userId3, ...])
 // NOTA: workingUsers può contenere righe di documenti CON ALMENO UNO USER ONLINE E ATTIVO
 //       --> se la riga contiente solo più un utente e tale utente si discollega/non lavora più a tale documento, la riga viene cancellata
 //       --> tale riga verrà ricreata non appena un altro utente (o anche lo stesso) si ricollegherà/aprirà di nuovo tale documento
 QMap<int, QVector<int>> workingUsers;
 
-// QMap formata da coppie (docId, CRDT_ServerEditor*)
+// files --> QMap formata da coppie (docId, CRDT_ServerEditor*)
 QMap<int, CRDT_ServerEditor*> files;
 
 QString path = "Files/";
@@ -78,21 +78,6 @@ Server::Server(QObject *parent): QTcpServer(parent) {
 
 }
 
-Server::~Server(){
-
-    qDebug()<<"Dentro al distruttore di Server";         // DEBUG
-
-    // Distruggo thread_management
-//    NOTA: faccio magari un vettore in cui mantengo tutti i puntatori ai thread
-//    if (thread_mgm != nullptr && thread_mgm->isRunning()) {
-//        thread_mgm->requestInterruption();
-//        thread_mgm->wait();
-//    }
-
-    qDebug()<<"Fine distruttore di Server";         // DEBUG
-
-}
-
 void Server::incomingConnection(qintptr socketDescriptor) {
     /*
      * This method will get called every time a client tries to connect ("when a new connection is available" cit.)
@@ -112,11 +97,6 @@ void Server::incomingConnection(qintptr socketDescriptor) {
 
     qDebug()<< "SERVER - Fine incomingConnection";      // DEBUG
 }
-
-void Server::runServer() {
-    qDebug()<< "SERVER - Sono nella runServer";      // DEBUG
-}
-
 
 void Server::timerEvent(QTimerEvent *event){
 

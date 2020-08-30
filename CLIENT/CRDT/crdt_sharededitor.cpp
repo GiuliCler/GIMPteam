@@ -24,7 +24,7 @@ CRDT_SharedEditor::CRDT_SharedEditor(CRDT_controller *parent, connection_to_serv
             parent->remoteInsert(pos, it->getCarattere(), it->getFormat(), it->getAlignment());
         }
 
-        QObject::connect(connection, &connection_to_server::sigProcessMessage, this, &CRDT_SharedEditor::process);
+        QObject::connect(connection, &connection_to_server::sigProcessMessage, this, &CRDT_SharedEditor::process, Qt::QueuedConnection);
 }
 
 int CRDT_SharedEditor::getSiteId() const{

@@ -10,7 +10,7 @@
  *      hostname: default "localhost"
  *      username: default "root"
  *      pssw: default ""
- * Ritorno: nessuno
+ * Ritorno: (void)
  */
 void CollegamentoDB::connettiDB(const QString& dbname, const QString& connectionName, const QString& hostname, const QString& username, const QString& pssw){
 
@@ -33,8 +33,8 @@ void CollegamentoDB::connettiDB(const QString& dbname, const QString& connection
 
 /*
  * Utilizzo: funzione che permette di scollegarsi dal database
- * Parametri: nessuno
- * Ritorno: nessuno
+ * Parametri: (void)
+ * Ritorno: (void)
  */
 void CollegamentoDB::disconnettiDB(){
     QSqlDatabase::database().close();
@@ -98,8 +98,7 @@ std::vector<QString> CollegamentoDB::login(QString username, QString password){
  *           inserendole all'interno del database
  * Parametri:
  *      username, password  e nickname dell'utente che vuole effettuare la registrazione
- *      icona --> nome di immagine   oppure   "" in caso di immagine assente
- *
+ *      icona --> nome di immagine oppure "" in caso di immagine assente
  * Ritorno:
  *      1 -> username e password correttamente inseriti nel database
  *      0 -> errore
@@ -150,7 +149,7 @@ int CollegamentoDB::signup(QString username, QString password, QString nickname,
  * Parametri:
  *      s: stringa destinazione
  *      len: lunghezza della stringa
- * Ritorno: nessuno
+ * Ritorno: (void)
  */
 void CollegamentoDB::gen_random(char *s, const int len) {
 
@@ -391,10 +390,12 @@ std::vector<QString> CollegamentoDB::recuperaDocs(QString username){
 }
 
 /*
- * Funzione che ritorna il nickname dato username.
- * Se tutto ok => nickname
- * Se errore => stringa vuota
- *
+ * Utilizzo: funzione che ritorna il nickname dato l'username dell'utente
+ * Parametri:
+ *      username: utente di cui si vuole avere il nickname
+ * Ritorno:
+ *      tutto ok -> stringa corrispondente al nickname
+ *      errore -> "errore"
  */
 QString CollegamentoDB::getNickname(QString username){
 
@@ -413,7 +414,15 @@ QString CollegamentoDB::getNickname(QString username){
     }
 }
 
-QString CollegamentoDB::getIconId(QString username){
+/*
+ * Utilizzo: funzione che ritorna il nome dell'icona dato l'username dell'utente
+ * Parametri:
+ *      username: utente di cui si vuole avere l'icona
+ * Ritorno:
+ *      tutto ok -> stringa corrispondente al nome dell'icona
+ *      errore -> "errore"
+ */
+QString CollegamentoDB::getIcon(QString username){
 
     std::string query = "SELECT icona FROM utenti WHERE username=:user";
     QSqlQuery ris(QSqlDatabase::database(connectionName));
@@ -788,8 +797,7 @@ std::vector<QString> CollegamentoDB::recuperaUtentiNelDB(){
 /*
  * Utilizzo: funzione che permette di rimuovere un documento dalla tabella doc del DB
  * Parametri:
- *      docName --> nome del documento che si vuole rimuovere dal DB
- *
+ *      nomeDOC --> nome del documento che si vuole rimuovere dal DB
  * Ritorno:
  *      1 -> documento rimosso correttamente
  *      0 -> errore
@@ -835,15 +843,12 @@ int CollegamentoDB::rimuoviDocumento(QString nomeDOC){
  * Utilizzo: funzione che permette di aggiornare le informazioni relative ad un utente già presente nel DB
  * Parametri:
  *      username, nuova_password  e nuovo_nickname dell'utente da modificare
- *      nuova_icona --> nome di immagine   oppure   "" in caso di immagine assente
- *
+ *      nuova_icona --> nome di immagine oppure "" in caso di immagine assente
  * Ritorno:
  *      1 -> info relative all'utente aggiornate correttamente
  *      0 -> errore
  */
 int CollegamentoDB::aggiornaUser(QString username, QString nuova_password, QString nuovo_nickname, QString nuova_icona){
-
-//    std::cout<<"SONO NELLA aggiornaUser"<<std::endl;        // DEBUG
 
     if(username.isEmpty() || nuova_password.isEmpty() || nuovo_nickname.isEmpty())
         return 0;
@@ -853,44 +858,39 @@ int CollegamentoDB::aggiornaUser(QString username, QString nuova_password, QStri
     ris0.prepare(QString::fromStdString(query0));
     ris0.bindValue(":user0", username);
 
-//    if(QSqlDatabase::database().driver()->hasFeature(QSqlDriver::Transactions)) {
 
-        QSqlDatabase::database().transaction();
+    QSqlDatabase::database().transaction();
 
-        if(ris0.exec()){
-            if(ris0.size() == 1){
-                char sale[10];
-                gen_random(sale, 10);
-                std::string sale_std(sale);
-                QString sale_qt = QString::fromStdString(sale_std);
-                QString pass_salata = nuova_password + sale_qt;
-                QString pass_crypt = QString(QCryptographicHash::hash((pass_salata.toUtf8()),QCryptographicHash::Sha256));
+    if(ris0.exec()){
+        if(ris0.size() == 1){
+            char sale[10];
+            gen_random(sale, 10);
+            std::string sale_std(sale);
+            QString sale_qt = QString::fromStdString(sale_std);
+            QString pass_salata = nuova_password + sale_qt;
+            QString pass_crypt = QString(QCryptographicHash::hash((pass_salata.toUtf8()),QCryptographicHash::Sha256));
 
-                QSqlQuery risDEL(QSqlDatabase::database(connectionName));
-                risDEL.prepare("DELETE FROM utenti WHERE username=:user");
-                risDEL.bindValue(":user", username);
-                risDEL.exec();
+            QSqlQuery risDEL(QSqlDatabase::database(connectionName));
+            risDEL.prepare("DELETE FROM utenti WHERE username=:user");
+            risDEL.bindValue(":user", username);
+            risDEL.exec();
 
-                std::string query = "INSERT INTO utenti(username, password, sale, nickname, icona) VALUES(:user, :pssw, :salt, :nick, :icon)";
-                QSqlQuery ris(QSqlDatabase::database(connectionName));
-                ris.prepare(QString::fromStdString(query));
-                ris.bindValue(":user", username);
-                ris.bindValue(":pssw", pass_crypt);
-                ris.bindValue(":salt", sale_qt);
-                ris.bindValue(":nick", nuovo_nickname);
+            std::string query = "INSERT INTO utenti(username, password, sale, nickname, icona) VALUES(:user, :pssw, :salt, :nick, :icon)";
+            QSqlQuery ris(QSqlDatabase::database(connectionName));
+            ris.prepare(QString::fromStdString(query));
+            ris.bindValue(":user", username);
+            ris.bindValue(":pssw", pass_crypt);
+            ris.bindValue(":salt", sale_qt);
+            ris.bindValue(":nick", nuovo_nickname);
 
-                if(!nuova_icona.isEmpty())
-                    ris.bindValue(":icon", nuova_icona);
-                else
-                    ris.bindValue(":icon", QString::fromStdString("NULL"));
+            if(!nuova_icona.isEmpty())
+                ris.bindValue(":icon", nuova_icona);
+            else
+                ris.bindValue(":icon", QString::fromStdString("NULL"));
 
-                if(ris.exec()){
-                    QSqlDatabase::database().commit();
-                    return 1;
-                } else {
-                    QSqlDatabase::database().commit();
-                    return 0;
-                }
+            if(ris.exec()){
+                QSqlDatabase::database().commit();
+                return 1;
             } else {
                 QSqlDatabase::database().commit();
                 return 0;
@@ -899,8 +899,8 @@ int CollegamentoDB::aggiornaUser(QString username, QString nuova_password, QStri
             QSqlDatabase::database().commit();
             return 0;
         }
-
-//    } else {
-//        return 0;
-//    }
+    } else {
+        QSqlDatabase::database().commit();
+        return 0;
+    }
 }

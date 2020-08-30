@@ -60,7 +60,7 @@ void GUI_ToolsBar::setSpinBoxValue(int size){
 }*/
 
 void GUI_ToolsBar::enterCompromizedModeUndoStack(){
-    fadingLabel->setPermanentText("Beware: undo chronology is compromized in contributors mode");
+    fadingLabel->setPermanentText("Contributor mode compromizes undo chronology");
 }
 
 void GUI_ToolsBar::exitCompromizedModeUndoStack(){
@@ -77,5 +77,5 @@ void GUI_ToolsBar::setTextColorIconColor(const QColor color){
 }
 
 void GUI_ToolsBar::compromisedUndoStack(){
-    fadingLabel->startFadingText("Beware: this operation has compromized undo chronology");
+    fadingLabel->startFadingText("This action compromized undo chronology");
 }
