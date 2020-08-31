@@ -42,11 +42,6 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName) : QWidg
     connect(gimpParent->getConnection(), &connection_to_server::sigOfflineUser, this, &GUI_Editor::removeUserFromEditorGUI);
     connect(gimpParent->getConnection(), &connection_to_server::sigNewContributor, this, &GUI_Editor::addContributorToCurrentDocument);
 
-    /* up è un flag che indica la funzione superiore in cui è stato creata la GUI_Editor
-       up = 0 => gui_opendoc.cpp (OPEN DOC)
-       up = 1 => gui_newdoc.cpp  (OPEN DOC DATO URI)
-       up = 2 => gui_newdoc.cpp  (NEW DOC)
-    */
     QString codedParameters = GUI_ConnectionToServerWrapper::requestOpenDocumentWrapper(gimpParent, gimpParent->userid, documentId);
     if(codedParameters.compare("errore") == 0)
         throw GUI_GenericException("");
@@ -61,10 +56,9 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName) : QWidg
     //avvio la connessione speciale per l'editor. D'ora in poi la connection_to_server è off-limits
     if(GUI_ConnectionToServerWrapper::requestStartEditorConnection(gimpParent) < 0)
         //se non riesco a far partire l'editor devo chiudere tutto
-        launchSetUi1();
+        throw GUI_GenericException("");
 
     gimpParent->isEditorConnected = true;
-
 }
 
 GUI_Editor::~GUI_Editor(){
