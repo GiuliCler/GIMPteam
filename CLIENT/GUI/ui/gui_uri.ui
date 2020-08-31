@@ -15,7 +15,7 @@
   </property>
   <property name="styleSheet">
    <string notr="true">QDialog{
-	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 rgba(122, 158, 126, 255), stop:1 rgba(198, 255, 194, 255));
+
 }
 
 QWidget#backgroundWidget{

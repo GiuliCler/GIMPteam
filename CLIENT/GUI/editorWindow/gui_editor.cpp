@@ -70,14 +70,23 @@ GUI_Editor::~GUI_Editor(){
 
 void GUI_Editor::connectMenuBarActions(){
     connect(this->gimpParent->ui2->closeDocumentAction, &QAction::triggered, this, &GUI_Editor::closeDocument);
-    //per la chiusura forzata
+    //per la chiusura forzata causata da un document cancellato
     connect(gimpParent->getConnection(), &connection_to_server::forceCloseEditor, this, &GUI_Editor::forcedCloseDocument);
     connect(gimpParent->ui2->getURIAction, &QAction::triggered, [this](){
         GUI_URI *box = new GUI_URI(this, this->uri);
         box->setVisible(true);
     });
+
     connect(gimpParent->ui2->exportPDFAction, &QAction::triggered, [this](){
-        QString fileName = QFileDialog::getSaveFileName(this, "Export PDF", "", "*.pdf");
+        QString fileDoceName = docName;
+        if(fileDoceName.compare("") == 0)
+            //non dovrebbe mai verificarsi, ma non si sa mai
+            fileDoceName = "Default";
+        QString fileName = QFileDialog::getSaveFileName(this, "Export PDF", fileDoceName, "*.pdf");
+        //se l'utente non seleziona nulla mi ritorna una stringa vuota, quindi non so distinguere se l'utente ha annullato l'operazione o se vuole dargli un nome vuoto. Nel dubbio glielo impedisco.
+        //Forse però la getSaveFileName impedisce di salvare un nome vuoto, a meno che non sia il nome di default
+        if(fileName.compare("") == 0)
+            return;
         if (QFileInfo(fileName).suffix().isEmpty())
             fileName.append(".pdf");
 
