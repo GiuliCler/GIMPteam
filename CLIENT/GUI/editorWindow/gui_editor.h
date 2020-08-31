@@ -27,10 +27,9 @@ public:
     GUI_UsersBar *childUsersBar;
     GUI_MyTextEdit *childMyTextEdit;
     CRDT_controller *crdtController;
-    bool problemaApertura;
 
 
-    explicit GUI_Editor(QWidget *parent, int documentId, QString docName, int siteCounter, int up);
+    explicit GUI_Editor(QWidget *parent, int documentId, QString docName);
     ~GUI_Editor();
     inline static QString getObjectName(){ return "GUI_Editor";}
     QColor *getUserColor(int userId);

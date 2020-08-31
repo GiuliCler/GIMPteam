@@ -13,7 +13,7 @@
 #include <QFileDialog>
 #include <QFileInfo>
 
-GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int siteCounter, int up) : QWidget(parent), documentId(documentId), docName(docName)
+GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName) : QWidget(parent), documentId(documentId), docName(docName)
 {
     this->setObjectName(GUI_Editor::getObjectName());
     gimpParent = static_cast<GIMPdocs*>(parent);
@@ -33,50 +33,32 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int sit
 
     //richiedo l'uri del documento, perchè se mi chiede l'URI mentre ci lavoro non posso contattare la connection_to_server
     QString uri = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
-    if(uri.compare("errore") != 0)
-        this->uri = uri;
-    else
-        this->uri = "Error, URI unavailable";
+    if(uri.compare("errore") == 0)
+        uri = "Error, URI unavailable";
+    this->uri = uri;
 
     //Per gli online users ed i contributors
     connect(gimpParent->getConnection(), &connection_to_server::sigOnlineUser, this, &GUI_Editor::addUserToEditorGUI);
     connect(gimpParent->getConnection(), &connection_to_server::sigOfflineUser, this, &GUI_Editor::removeUserFromEditorGUI);
     connect(gimpParent->getConnection(), &connection_to_server::sigNewContributor, this, &GUI_Editor::addContributorToCurrentDocument);
 
-    /* up è un flag che indica la funzione superiore in cui è stato creata la GUI_Editor
-       up = 0 => gui_opendoc.cpp (OPEN DOC)
-       up = 1 => gui_newdoc.cpp  (OPEN DOC DATO URI)
-       up = 2 => gui_newdoc.cpp  (NEW DOC)
-    */
-    int counter = -1;
-    if(up == 0 || up == 1){
-        QString codedParameters = GUI_ConnectionToServerWrapper::requestOpenDocumentWrapper(gimpParent, gimpParent->userid, documentId);
-        if(codedParameters.compare("errore") == 0){
-            this->problemaApertura = true;
-        } else {
-            this->problemaApertura = false;
-            counter = codedParameters.split("_").at(1).toInt();
-        }
-    } else {
-        this->problemaApertura = false;
-        counter = siteCounter;
-    }
+    QString codedParameters = GUI_ConnectionToServerWrapper::requestOpenDocumentWrapper(gimpParent, gimpParent->userid, documentId);
+    if(codedParameters.compare("errore") == 0)
+        throw GUI_GenericException("");
 
-    if(!this->problemaApertura){
-        crdtController = new CRDT_controller(gimpParent, this, *childMyTextEdit, gimpParent->userid, counter);
+    int siteCounter = codedParameters.split("_").at(1).toInt();
+    crdtController = new CRDT_controller(gimpParent, this, *childMyTextEdit, gimpParent->userid, siteCounter);
 
-        //Per spostare i cursors
-        connect(crdtController, &CRDT_controller::updateCursorPosition, childMyTextEdit, &GUI_MyTextEdit::on_updateCursorPosition_emitted);
-        //Per mostrare la fading label
-        connect(crdtController, &CRDT_controller::notifyDeletedStack, childToolsBar, &GUI_ToolsBar::compromisedUndoStack);
+    //devo fare qui queste connect perchè devo aspettare che la crdtController sia creata
+    connect(crdtController, &CRDT_controller::updateCursorPosition, childMyTextEdit, &GUI_MyTextEdit::on_updateCursorPosition_emitted);
+    connect(crdtController, &CRDT_controller::notifyDeletedStack, childToolsBar, &GUI_ToolsBar::compromisedUndoStack);
 
-        //avvio la connessione speciale per l'editor. D'ora in poi la connection_to_server è off-limits
-        if(GUI_ConnectionToServerWrapper::requestStartEditorConnection(gimpParent) < 0)
-            //se non riesco a far partire l'editor devo chiudere tutto
-            launchSetUi1();
+    //avvio la connessione speciale per l'editor. D'ora in poi la connection_to_server è off-limits
+    if(GUI_ConnectionToServerWrapper::requestStartEditorConnection(gimpParent) < 0)
+        //se non riesco a far partire l'editor devo chiudere tutto
+        throw GUI_GenericException("");
 
-        gimpParent->isEditorConnected = true;
-    }
+    gimpParent->isEditorConnected = true;
 }
 
 GUI_Editor::~GUI_Editor(){

@@ -46,11 +46,15 @@ void GUI_Opendoc::on_openDocsPushButton_clicked(){
         return;
     }
     int docId = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt();
-    QString docName = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCNAME).toString().split("(")[0];
+    QString docName = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCNAME).toString().split(GUI_Menu::documentNameSeparator())[0];
 
-    GUI_Editor *widget = new GUI_Editor(gimpParent, docId, docName, -1, 0);
-    if(widget->problemaApertura)
+    GUI_Editor *widget = nullptr;
+    try {
+        widget = new GUI_Editor(gimpParent, docId, docName);
+    } catch (GUI_GenericException &exception) {
+        delete widget;
         return;
+    }
 
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
 }
@@ -80,7 +84,15 @@ void GUI_Opendoc::on_exportPDFPushButton_clicked(){
         return;
     }
 
-    QString fileName = QFileDialog::getSaveFileName(this, "Export PDF", "", "*.pdf");
+    QString docName = currentItem->data(GUI_OPENDOC_WIDGETLIST_DOCNAME).toString().split(GUI_Menu::documentNameSeparator())[0];
+    if(docName.compare("") == 0)
+        //non dovrebbe mai verificarsi, ma non si sa mai
+        docName = "Default";
+    QString fileName = QFileDialog::getSaveFileName(this, "Export PDF", docName, "*.pdf");
+    //se l'utente non seleziona nulla mi ritorna una stringa vuota, quindi non so distinguere se l'utente ha annullato l'operazione o se vuole dargli un nome vuoto. Nel dubbio glielo impedisco.
+    //Forse però la getSaveFileName impedisce di salvare un nome vuoto, a meno che non sia il nome di default
+    if(fileName.compare("") == 0)
+        return;
     if (QFileInfo(fileName).suffix().isEmpty())
         fileName.append(".pdf");
 
@@ -169,7 +181,7 @@ void GUI_Opendoc::fillList(){
                 ui->ownedDocsListWidget->addItem(item);
             else{
                 QString docName = item->data(GUI_OPENDOC_WIDGETLIST_DOCNAME).toString();
-                docName.append(" (");
+                docName.append(GUI_Menu::documentNameSeparator());
                 QString result = GUI_ConnectionToServerWrapper::requestGetNicknameWrapper(gimpParent, ownerId);
                 if(result.compare("errore") != 0)
                     docName.append(result);

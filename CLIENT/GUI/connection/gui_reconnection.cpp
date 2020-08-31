@@ -1,8 +1,24 @@
 #include "gui_reconnection.h"
-#include "gui_connecting.h"
+#include "../gui_menu.h"
 
-GUI_Reconnection::GUI_Reconnection(GIMPdocs *parent) : QDialog(parent){
-    ui = new Ui::GUI_Reconnection;
+#include <QMessageBox>
+#include <QWidget>
+
+void GUI_Reconnection::GUI_ReconnectionWrapper(QWidget *parent){
+
+    int result = Reconnection_Results::Failure;
+    while (result == Reconnection_Results::Failure)
+        result = GUI_Reconnection(parent).exec();
+
+    if(result == Reconnection_Results::KillApplication)
+        //non uso il QCoreApplication::quit perchè qui non funziona; probabilmente perchè questa è una funzione static
+        exit(EXIT_SUCCESS);
+
+    return;
+}
+
+GUI_Reconnection::GUI_Reconnection(QWidget *parent) : QDialog(parent){
+    ui = new Ui::GUI_Reconnection();
     ui->setupUi(this);
 
     setWindowTitle("Connection failed");
@@ -11,6 +27,7 @@ GUI_Reconnection::GUI_Reconnection(GIMPdocs *parent) : QDialog(parent){
     setWindowFlag(Qt::Dialog);
     setWindowFlag(Qt::MSWindowsFixedSizeDialogHint);
 
+    ui->connectingLabel->setHidden(true);
 }
 
 GUI_Reconnection::~GUI_Reconnection(){
@@ -18,11 +35,18 @@ GUI_Reconnection::~GUI_Reconnection(){
 }
 
 void GUI_Reconnection::on_exitPushButton_clicked(){
-    QCoreApplication::quit();
+    GUI_Reconnection::done(Reconnection_Results::KillApplication);
 }
 
 void GUI_Reconnection::on_retryPushButton_clicked(){
-    GUI_Connecting::GUI_ConnectingWrapper(static_cast<GIMPdocs*>(parent()), static_cast<GIMPdocs*>(parent()));
+    ui->connectingLabel->setHidden(false);
+    ui->retryPushButton->setEnabled(false);
+    repaint();
 
-    this->close();
+    if(!Stub::isConnectionWorking(static_cast<GIMPdocs*>(this->parent())->getConnection()))
+        GUI_Reconnection::done(Reconnection_Results::Failure);
+    else
+        GUI_Reconnection::done(Reconnection_Results::Success);
+
+    return;
 }

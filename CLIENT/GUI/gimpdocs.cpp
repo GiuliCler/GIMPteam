@@ -1,24 +1,20 @@
 #include "gimpdocs.h"
-#include "connection/gui_server.h"
 #include "editorWindow/gui_editor.h"
 #include "gui_login.h"
 
 #include <QMessageBox>
+#include <QProcess>
 
 GIMPdocs::GIMPdocs(QWidget *parent) : QMainWindow(parent), userid(-1)
 {
     ui1 = new Ui::GIMPdocs;
     ui2 = new Ui::GUI_EditWindow;
 
-    QFont font("Calisto MT");
-    font.setPixelSize(14);
-    //font.setStyleHint(QFont::Monospace);
-    QApplication::setFont(font);
-
     regularWindowSize = this->size();
     alreadyMaximized = false;
 
-    this->setConnection(new connection_to_server("56529", "192.168.56.1"));
+    setupConnection();
+
     setUi1(new GUI_Login(this));
 }
 
@@ -99,7 +95,17 @@ connection_to_server *GIMPdocs::getConnection(){
    return c;
 }
 
-void GIMPdocs::setConnection(connection_to_server *connection){
-    c = connection;
+void GIMPdocs::setupConnection(){
+    c = new connection_to_server(GIMPdocs::port, GIMPdocs::ipAddress);
+}
+
+//questa funzione viene chiamata se la connessione viene persa. Devo tenere in conto che se il server è morto e risorto è lecito che la logout ritorni errore
+void GIMPdocs::returnToLogin(){
+    GUI_ConnectionToServerWrapper::requestDefinitiveLogoutWrapper(this, userid);
+
+    //QCoreApplication* app = QApplication::instance();
+    QProcess::startDetached(qApp->arguments()[0], qApp->arguments());
+    //qApp->exit(0);
+    exit(EXIT_SUCCESS);
 }
 

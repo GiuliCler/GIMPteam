@@ -15,6 +15,8 @@ public:
     ~GUI_Menu();
     inline static QString getObjectName(){ return "GUI_Menu";}
 
+    static QString documentNameSeparator() {return QString(" (");}
+
 private slots:
     void on_editPushButton_clicked();
     void on_logoutPushButton_clicked();

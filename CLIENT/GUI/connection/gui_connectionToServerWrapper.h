@@ -4,7 +4,6 @@
 #include "../../connection_to_server.h"
 //serve per gli shared pointers
 #include <memory>
-#include "GUI/editorWindow/gui_editor.h"
 #include <QTextDocument>
 
 class GIMPdocs;
@@ -47,6 +46,9 @@ public:
     static std::shared_ptr<QSet<int>> getWorkingUsersOnDocumentWrapper(GIMPdocs *gimpdocs, int docId);
     static std::shared_ptr<QSet<int>> getContributorsUsersOnDocumentWrapper(GIMPdocs *gimpdocs, int docId);
     static int requestStartEditorConnection(GIMPdocs *gimpdocs);
+
+private:
+    static void handleReconnection(GIMPdocs *gimpdocs);
 
 };
 
