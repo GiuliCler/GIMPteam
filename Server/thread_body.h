@@ -46,6 +46,7 @@ private:
     QString getDocname(int docId);
     QString threadId_toQString(std::thread::id id);
     void stampaLoggedUsers();
+    bool isLogged(QString username);
     void create(QString username, QString password, QString nickname, QString icon);
     void login(QString username, QString password);
     void getDocText(int docId, int userId);
@@ -56,7 +57,7 @@ private:
     void getIcon(int userId);
     void getDocs(int userId);
     void newDoc(QString docName, int userId);
-    void openDocDatoUri(QString uri, int userId);
+    void getDocIdDatoUri(QString uri, int userId);
     void getUri(int docId);
     void getOwnerId(int docId);
     void retrieveDocName(int docId);

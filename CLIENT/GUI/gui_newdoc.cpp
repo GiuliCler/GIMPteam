@@ -40,7 +40,7 @@ void GUI_Newdoc::on_createPushButton_clicked()
     int siteCounter = codedParameters.split("_").at(1).toInt();
     int documentId = codedParameters.split("_").at(2).toInt();
 
-    GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId, docName, siteCounter);
+    GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId, docName, siteCounter, 2);
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
 }
 
@@ -54,19 +54,21 @@ void GUI_Newdoc::on_openURIPushButton_clicked()
         QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"URI\"");
         return;
     }
-
     QString codedParameters = GUI_ConnectionToServerWrapper::requestDocumentDatoUriWrapper(gimpParent, gimpParent->userid, ui->URILineEdit->text());
     if(codedParameters.compare("errore") == 0)
         return;
 
-    int siteCounter = codedParameters.split("_").at(1).toInt();
-    int documentId = codedParameters.split("_").at(2).toInt();
+    int documentId = codedParameters.split("_").at(1).toInt();
 
     QString docName = GUI_ConnectionToServerWrapper::requestDocumentNameWrapper(gimpParent, documentId);
     if(docName.compare("errore") == 0)
         docName = "document_name_error";
     //se la request docName fallisce non posso fare una return perchè ho appena aperto il document
+    // - TODO: questo commento sopra ora è sbagliato perchè la requestDocumentDatoUriWrapper non apre più il documento (quindi ora si può fare la return)
 
-    GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId, docName, siteCounter);
+    GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId, docName, -1, 1);
+    if(widget->problemaApertura)
+        return;
+
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
 }
