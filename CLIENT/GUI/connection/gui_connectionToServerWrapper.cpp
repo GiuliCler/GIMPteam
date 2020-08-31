@@ -53,7 +53,6 @@ int GUI_ConnectionToServerWrapper::requestDefinitiveLogoutWrapper(GIMPdocs *gimp
         //return -1;
     } catch(GUI_GenericException &exception){
         gimpdocs->setCursor(Qt::ArrowCursor);
-        //QMessageBox::information(gimpdocs, "", exception.message);
         //non ritorno -1, altrimenti sono soggetto a loop infiniti. Lascio che il client si chiuda e prima o poi il server se ne accorgerà
     }
 
