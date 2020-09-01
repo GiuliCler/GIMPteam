@@ -100,6 +100,11 @@ QComboBox QAbstractItemView {
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <widget class="QGroupBox" name="userGroupBox">
+     <property name="font">
+      <font>
+       <pointsize>9</pointsize>
+      </font>
+     </property>
      <property name="title">
       <string>User</string>
      </property>
@@ -137,6 +142,14 @@ QComboBox QAbstractItemView {
       </item>
       <item>
        <widget class="QLabel" name="nicknameLabel">
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>10</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
         <property name="cursor">
          <cursorShape>IBeamCursor</cursorShape>
         </property>
@@ -183,6 +196,11 @@ QComboBox QAbstractItemView {
    </item>
    <item row="1" column="0">
     <widget class="QGroupBox" name="documentGroupBox">
+     <property name="font">
+      <font>
+       <pointsize>9</pointsize>
+      </font>
+     </property>
      <property name="title">
       <string>Documents</string>
      </property>

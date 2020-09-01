@@ -10,11 +10,6 @@
     <height>450</height>
    </rect>
   </property>
-  <property name="font">
-   <font>
-    <family>Gill Sans Ultra Bold</family>
-   </font>
-  </property>
   <property name="windowTitle">
    <string>GIMPdocs</string>
   </property>
