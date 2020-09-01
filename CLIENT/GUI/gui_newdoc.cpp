@@ -31,10 +31,7 @@ void GUI_Newdoc::on_createPushButton_clicked()
         QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"Name\" field");
         return;
     }
-    if(ui->nameLineEdit->text().contains(GUI_Menu::documentNameSeparator())){
-        QMessageBox::information(this, "", "Invalid string \"" + GUI_Menu::documentNameSeparator() + "\" is present in \"Name\" field");
-        return;
-    }
+
 
     QString docName = ui->nameLineEdit->text();
     //qui mi arriva una serie di parametri codificati in qualche modo in un'unica stringa
