@@ -74,12 +74,14 @@ private:
     GUI_ColorsManager colorsManager;
     QMap<int, QColor*> userColorMap;
 
-    //void forgetUserColor(int userId);
     void fillOnlineUsersList();
     void fillContibutorUsersList();
 
 signals:
     void menuTools_event(menuTools code);
+
+private slots:
+    void exportPDFAction_emitted();
 
 };
 

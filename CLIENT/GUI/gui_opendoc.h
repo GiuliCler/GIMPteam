@@ -26,9 +26,12 @@ private slots:
 private:
     GIMPdocs *gimpParent;
     Ui::GUI_Opendoc *ui;
+    QMap<int, QString> knownDocuments;
 
     void fillList();
-    QListWidgetItem *getSelectedItem();
+    void addItem(int docId, QString docName);
+    int getSelectedItemId();
+    QString getSelectedItemName();
     void removeSelectedItem();
 };
 

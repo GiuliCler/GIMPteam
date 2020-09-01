@@ -49,8 +49,7 @@ SOURCES += \
         GUI/gui_profile.cpp \
         GUI/gui_uri.cpp \
         connection_to_server.cpp \
-        main.cpp \
-        stub.cpp
+        main.cpp
 
 HEADERS += \
         GUI/connection/gui_connectionException.h \
@@ -77,11 +76,9 @@ HEADERS += \
         GUI/gui_opendoc.h \
         GUI/gui_profile.h \
         GUI/gui_uri.h \
-        connection_to_server.h \
-        stub.h
+        connection_to_server.h
 
 FORMS += \
-    GUI/connection/ui/gui_connecting.ui \
     GUI/connection/ui/gui_reconnection.ui \
     GUI/editorWindow/ui/gui_toolsbar.ui \
     GUI/editorWindow/ui/gui_usersbar.ui \

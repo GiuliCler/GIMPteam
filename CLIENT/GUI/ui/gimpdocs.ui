@@ -10,11 +10,6 @@
     <height>450</height>
    </rect>
   </property>
-  <property name="font">
-   <font>
-    <family>Gill Sans Ultra Bold</family>
-   </font>
-  </property>
   <property name="windowTitle">
    <string>GIMPdocs</string>
   </property>
@@ -22,7 +17,7 @@
    <string notr="true">/*font: bold italic 40px &quot;Times New Roman&quot;;*/
 
 QMainWindow, QDialog{
-background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 rgba(122, 158, 126, 255), stop:1 rgba(198, 255, 194, 255));
+background-color: qlineargradient(spread:pad, x1:1, y1:1, x2:0, y2:0, stop:0 rgba(215, 237, 226, 255), stop:1 rgba(155, 195, 182, 255));
 }
 </string>
   </property>
@@ -56,7 +51,7 @@ QPushButton:pressed,QPushButton:checked {
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

@@ -43,7 +43,7 @@ void GUI_Reconnection::on_retryPushButton_clicked(){
     ui->retryPushButton->setEnabled(false);
     repaint();
 
-    if(!Stub::isConnectionWorking(static_cast<GIMPdocs*>(this->parent())->getConnection()))
+    if(!GUI_ConnectionToServerWrapper::isConnectionWorking(static_cast<GIMPdocs*>(this->parent())))
         GUI_Reconnection::done(Reconnection_Results::Failure);
     else
         GUI_Reconnection::done(Reconnection_Results::Success);

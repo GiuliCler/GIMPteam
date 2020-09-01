@@ -70,26 +70,14 @@ GUI_Editor::~GUI_Editor(){
 
 void GUI_Editor::connectMenuBarActions(){
     connect(this->gimpParent->ui2->closeDocumentAction, &QAction::triggered, this, &GUI_Editor::closeDocument);
-    //per la chiusura forzata
+    //per la chiusura forzata causata da un document cancellato
     connect(gimpParent->getConnection(), &connection_to_server::forceCloseEditor, this, &GUI_Editor::forcedCloseDocument);
+    connect(gimpParent->ui2->exportPDFAction, &QAction::triggered, this, &GUI_Editor::exportPDFAction_emitted);
     connect(gimpParent->ui2->getURIAction, &QAction::triggered, [this](){
         GUI_URI *box = new GUI_URI(this, this->uri);
         box->setVisible(true);
     });
-    connect(gimpParent->ui2->exportPDFAction, &QAction::triggered, [this](){
-        QString fileName = QFileDialog::getSaveFileName(this, "Export PDF", "", "*.pdf");
-        if (QFileInfo(fileName).suffix().isEmpty())
-            fileName.append(".pdf");
 
-        QPrinter printer(QPrinter::PrinterResolution);
-        printer.setOutputFormat(QPrinter::PdfFormat);
-        printer.setPaperSize(QPrinter::A4);
-        printer.setOutputFileName(fileName);
-
-        QTextDocument *doc = this->childMyTextEdit->document();
-        doc->setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
-        doc->print(&printer);
-    });
 
     //ho connesso le 2 action in modo da alternarsi l'un l'altra ed in modo da comportarsi come se avessi premuto un pulsante
     connect(gimpParent->ui2->actionApplyUsersColors, &QAction::triggered, this, &GUI_Editor::on_actionApplyUsersColors);
@@ -345,8 +333,8 @@ void GUI_Editor::addUserToEditorGUI(int userid, QString nickname, QString iconId
     //nota: la findChild è ricorsiva e funziona anche coi nipoti
     //questo bruttissimo passaggio di parametri di funzione in funzione anzichè reperirli direttamente a basso livello chiamando il server è perchè mentre il CRDT è aperto non posso usare la connection_to_server
     findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->addOnlineUserIcon(userid, *color, nickname, iconId);
-    GUI_MyTextEdit *son = findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName());
 
+    GUI_MyTextEdit *son = findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName());
     if(userid != gimpParent->userid){
         QPoint p = QPoint (son->cursorRect().topLeft().x(), son->cursorRect().topLeft().y() + son->verticalScrollBar()->value());
         findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->addUserCursor(userid, p, *color);
@@ -417,4 +405,38 @@ void GUI_Editor::fillContibutorUsersList(){
         if(nickname.compare("errore") != 0 && iconId.compare("errore") != 0)
             addContributorToCurrentDocument(*userId, nickname, iconId);
     }
+}
+
+
+void GUI_Editor::exportPDFAction_emitted(){
+    bool originallyHighlighted = usersColors;
+    QSizeF originalPageSize;
+    QString fileDoceName = docName;
+    QString fileName;
+
+    if(fileDoceName.compare("") == 0)
+        //non dovrebbe mai verificarsi, ma non si sa mai
+        fileDoceName = "Default";
+    fileName = QFileDialog::getSaveFileName(this, "Export PDF", fileDoceName, "*.pdf");
+    //se l'utente non seleziona nulla mi ritorna una stringa vuota, quindi non so distinguere se l'utente ha annullato l'operazione o se vuole dargli un nome vuoto. Nel dubbio glielo impedisco.
+    //Forse però la getSaveFileName impedisce di salvare un nome vuoto, a meno che non sia il nome di default
+    if(fileName.compare("") == 0)
+        return;
+    if (QFileInfo(fileName).suffix().isEmpty())
+        fileName.append(".pdf");
+
+    QPrinter printer(QPrinter::PrinterResolution);
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setPaperSize(QPrinter::A4);
+    printer.setOutputFileName(fileName);
+
+    QTextDocument *doc = this->childMyTextEdit->document();
+    if(originallyHighlighted)
+        childUsersBar->on_hideColorsPushButton_clicked();
+    originalPageSize = doc->pageSize();
+    doc->setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
+    doc->print(&printer);
+    doc->setPageSize(originalPageSize);
+    if(originallyHighlighted)
+        childUsersBar->on_showColorsPushButton_clicked();
 }
