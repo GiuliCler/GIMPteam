@@ -72,33 +72,12 @@ void GUI_Editor::connectMenuBarActions(){
     connect(this->gimpParent->ui2->closeDocumentAction, &QAction::triggered, this, &GUI_Editor::closeDocument);
     //per la chiusura forzata causata da un document cancellato
     connect(gimpParent->getConnection(), &connection_to_server::forceCloseEditor, this, &GUI_Editor::forcedCloseDocument);
+    connect(gimpParent->ui2->exportPDFAction, &QAction::triggered, this, &GUI_Editor::exportPDFAction_emitted);
     connect(gimpParent->ui2->getURIAction, &QAction::triggered, [this](){
         GUI_URI *box = new GUI_URI(this, this->uri);
         box->setVisible(true);
     });
 
-    connect(gimpParent->ui2->exportPDFAction, &QAction::triggered, [this](){
-        QString fileDoceName = docName;
-        if(fileDoceName.compare("") == 0)
-            //non dovrebbe mai verificarsi, ma non si sa mai
-            fileDoceName = "Default";
-        QString fileName = QFileDialog::getSaveFileName(this, "Export PDF", fileDoceName, "*.pdf");
-        //se l'utente non seleziona nulla mi ritorna una stringa vuota, quindi non so distinguere se l'utente ha annullato l'operazione o se vuole dargli un nome vuoto. Nel dubbio glielo impedisco.
-        //Forse però la getSaveFileName impedisce di salvare un nome vuoto, a meno che non sia il nome di default
-        if(fileName.compare("") == 0)
-            return;
-        if (QFileInfo(fileName).suffix().isEmpty())
-            fileName.append(".pdf");
-
-        QPrinter printer(QPrinter::PrinterResolution);
-        printer.setOutputFormat(QPrinter::PdfFormat);
-        printer.setPaperSize(QPrinter::A4);
-        printer.setOutputFileName(fileName);
-
-        QTextDocument *doc = this->childMyTextEdit->document();
-        doc->setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
-        doc->print(&printer);
-    });
 
     //ho connesso le 2 action in modo da alternarsi l'un l'altra ed in modo da comportarsi come se avessi premuto un pulsante
     connect(gimpParent->ui2->actionApplyUsersColors, &QAction::triggered, this, &GUI_Editor::on_actionApplyUsersColors);
@@ -426,4 +405,38 @@ void GUI_Editor::fillContibutorUsersList(){
         if(nickname.compare("errore") != 0 && iconId.compare("errore") != 0)
             addContributorToCurrentDocument(*userId, nickname, iconId);
     }
+}
+
+
+void GUI_Editor::exportPDFAction_emitted(){
+    bool originallyHighlighted = usersColors;
+    QSizeF originalPageSize;
+    QString fileDoceName = docName;
+    QString fileName;
+
+    if(fileDoceName.compare("") == 0)
+        //non dovrebbe mai verificarsi, ma non si sa mai
+        fileDoceName = "Default";
+    fileName = QFileDialog::getSaveFileName(this, "Export PDF", fileDoceName, "*.pdf");
+    //se l'utente non seleziona nulla mi ritorna una stringa vuota, quindi non so distinguere se l'utente ha annullato l'operazione o se vuole dargli un nome vuoto. Nel dubbio glielo impedisco.
+    //Forse però la getSaveFileName impedisce di salvare un nome vuoto, a meno che non sia il nome di default
+    if(fileName.compare("") == 0)
+        return;
+    if (QFileInfo(fileName).suffix().isEmpty())
+        fileName.append(".pdf");
+
+    QPrinter printer(QPrinter::PrinterResolution);
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setPaperSize(QPrinter::A4);
+    printer.setOutputFileName(fileName);
+
+    QTextDocument *doc = this->childMyTextEdit->document();
+    if(originallyHighlighted)
+        childUsersBar->on_hideColorsPushButton_clicked();
+    originalPageSize = doc->pageSize();
+    doc->setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
+    doc->print(&printer);
+    doc->setPageSize(originalPageSize);
+    if(originallyHighlighted)
+        childUsersBar->on_showColorsPushButton_clicked();
 }

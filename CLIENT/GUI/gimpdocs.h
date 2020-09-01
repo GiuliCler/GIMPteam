@@ -2,7 +2,6 @@
 #define GIMPDOCS_H
 
 
-#include "stub.h"
 #include "gui_icons.h"
 #include "ui_gimpdocs.h"
 #include "ui_gui_editorwindow.h"
