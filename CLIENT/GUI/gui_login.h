@@ -22,6 +22,8 @@ private slots:
 private:
     GIMPdocs *gimpParent;
     Ui::GUI_Login *ui;
+
+    bool checkFieldValidity(QString value, QString name);
 };
 
 #endif // GUI_LOGIN_H

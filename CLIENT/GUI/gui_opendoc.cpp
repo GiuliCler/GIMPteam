@@ -1,13 +1,12 @@
 #include "gui_opendoc.h"
-#include "gimpdocs.h"
 #include "editorWindow/gui_editor.h"
 #include "gui_menu.h"
 #include "gui_uri.h"
-#include <QMessageBox>
 
+#include <QMessageBox>
 #include <QPrinter>
 #include <QFileDialog>
-#include <QFileInfo>
+//#include <QFileInfo>
 
 #define GUI_OPENDOC_WIDGETLIST_DOCNAME 0
 #define GUI_OPENDOC_WIDGETLIST_DOCID 1
@@ -39,7 +38,6 @@ GUI_Opendoc::~GUI_Opendoc(){
 /*SLOTS*/
 
 void GUI_Opendoc::on_openDocsPushButton_clicked(){
-    //QListWidgetItem *currentItem = getSelectedItem();
     int docId = getSelectedItemId();
     QString docName;
 
@@ -105,10 +103,9 @@ void GUI_Opendoc::on_exportPDFPushButton_clicked(){
 
 
     std::shared_ptr<QTextEdit> docp = GUI_ConnectionToServerWrapper::getDocumentTextWrapper(gimpParent, docId, gimpParent->userid);
-
     if( docp == nullptr)
         return;
-    docp->document()->setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
+
     docp->print(&printer);
 }
 
@@ -146,18 +143,16 @@ void GUI_Opendoc::on_sharedDocsListWidget_itemClicked(){
     ui->ownedDocsListWidget->setCurrentRow(-1);
 }
 
+//ricorda: si è deciso di rimuovere un file non più esistente solo quando l'utente prova a farci qualcosa. Altrimenti rimane in elenco (finchè non ricaricherò il widget)
 void GUI_Opendoc::unavailableSharedDocument_emitted(int docId){
     //in pratica questa funzione fa da wrapper che fa qualche controllo. Non vedo come possa fallire, ma non si sa mai
     int currentDocId = getSelectedItemId();
 
-    if(currentDocId == -1){
-        QMessageBox::information(this, "", "Please, select a document");
-        return;
-    }
-
     //anche questo non dovrebbe mai succedere
     if(currentDocId != docId)
         return;
+
+    QMessageBox::warning(this, "", "This file has been deleted by its owner.\nIt no longer exists.");
 
     removeSelectedItem();
 }
@@ -175,17 +170,16 @@ void GUI_Opendoc::fillList(){
 }
 
 void GUI_Opendoc::addItem(int docId, QString docName){
-    //lo inizializzo per togliere il warning
     QListWidgetItem* item = new QListWidgetItem;
     item->setData(GUI_OPENDOC_WIDGETLIST_DOCNAME, docName);
     item->setData(GUI_OPENDOC_WIDGETLIST_DOCID, docId);
 
-    int ownerId = GUI_ConnectionToServerWrapper::requestDocumentOwnerWrapper(gimpParent, item->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt());
-    if(ownerId == -1)
-        return;
-
     if(knownDocuments.find(docId) != knownDocuments.end())
         return;
+
+    int ownerId = GUI_ConnectionToServerWrapper::requestDocumentOwnerWrapper(gimpParent, item->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt());
+    if(ownerId == -1)
+        return; 
 
     if(gimpParent->userid == ownerId)
         ui->ownedDocsListWidget->addItem(item);

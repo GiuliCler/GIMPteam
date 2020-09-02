@@ -4,7 +4,7 @@
 #include <QScrollBar>
 #include <QPalette>
 
-//ho bisogno che il parent sia il widget vuoto checonterrà l'ignored
+//ho bisogno che il parent sia il widget vuoto che conterrà l'ignored
 GUI_MyScrollArea::GUI_MyScrollArea(QWidget *parent) : QScrollArea(parent){
 
     //imposto il widget che conterrà le labels della scroll area
@@ -37,7 +37,6 @@ GUI_MyScrollArea::GUI_MyScrollArea(QWidget *parent) : QScrollArea(parent){
 
     //scrollbar style
     this->horizontalScrollBar()->setMaximumHeight(GUI_MyScrollArea::getFixedScrollBarHeight());
-    //static_cast<QWidget*>(this->horizontalScrollBar()->parent())->setMaximumHeight(17);
 
 }
 

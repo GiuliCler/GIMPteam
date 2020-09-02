@@ -20,7 +20,7 @@ class GUI_Editor : public QWidget
     Q_OBJECT
 public:
     int documentId;
-    //indica se il testo è evidenziato coi colori degli utenti per identificarli
+    //indica se il testo è evidenziato coi colori degli utenti
     bool usersColors;
     GIMPdocs *gimpParent;
     GUI_ToolsBar *childToolsBar;
@@ -61,7 +61,6 @@ public slots:
     void on_actionJustified();
 
     void setMenuToolStatus(menuTools code);
-    //lo scopo di queste 2 funzioni è di venire chiamate da un più basso livello quando viene aggiunto o rimosso un nuovo utente che sta lavorando allo stesso document
     void addUserToEditorGUI(int userid, QString nickname, QString iconId);
     void removeUserFromEditorGUI(int userid);
     void addContributorToCurrentDocument(int userid, QString nickname, QString iconId);

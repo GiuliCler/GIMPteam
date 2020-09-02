@@ -23,15 +23,8 @@ GUI_Newdoc::~GUI_Newdoc(){
 
 void GUI_Newdoc::on_createPushButton_clicked()
 {
-    if(ui->nameLineEdit->text().isEmpty()){
-        QMessageBox::information(this, "", "\"Name\" field is empty");
+    if(!checkFieldValidity(ui->nameLineEdit->text(), "Name"))
         return;
-    }
-    if(ui->nameLineEdit->text().contains('\\')){
-        QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"Name\" field");
-        return;
-    }
-
 
     QString docName = ui->nameLineEdit->text();
     //qui mi arriva una serie di parametri codificati in qualche modo in un'unica stringa
@@ -39,7 +32,6 @@ void GUI_Newdoc::on_createPushButton_clicked()
     if(codedParameters.compare("errore") == 0)
         return;
 
-    //int siteCounter = codedParameters.split("_").at(1).toInt();
     int documentId = codedParameters.split("_").at(2).toInt();
 
     GUI_Editor *widget = nullptr;
@@ -55,14 +47,9 @@ void GUI_Newdoc::on_createPushButton_clicked()
 
 void GUI_Newdoc::on_openURIPushButton_clicked()
 {
-    if(ui->URILineEdit->text().isEmpty()){
-        QMessageBox::information(this, "", "\"URI\" field is empty");
+    if(!checkFieldValidity(ui->URILineEdit->text(), "URI"))
         return;
-    }
-    if(ui->nameLineEdit->text().contains('\\')){
-        QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"URI\"");
-        return;
-    }
+
     QString codedParameters = GUI_ConnectionToServerWrapper::requestDocumentDatoUriWrapper(gimpParent, gimpParent->userid, ui->URILineEdit->text());
     if(codedParameters.compare("errore") == 0)
         return;
@@ -82,4 +69,18 @@ void GUI_Newdoc::on_openURIPushButton_clicked()
     }
 
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
+}
+
+
+bool GUI_Newdoc::checkFieldValidity(QString value, QString name){
+    if(value.isEmpty()){
+        QMessageBox::information(this, "", "\"" + name + "\" field is empty");
+        return false;
+    }
+    if(value.contains('\\')){
+        QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"" + name + "\" field");
+        return false;
+    }
+
+    return true;
 }

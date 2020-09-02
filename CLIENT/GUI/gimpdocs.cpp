@@ -41,12 +41,8 @@ void GIMPdocs::closeEvent (QCloseEvent *event){
             }
     }
 
-    if (userid != -1){
-        if(GUI_ConnectionToServerWrapper::requestDefinitiveLogoutWrapper(this, userid) == -1){
-            event->ignore();
-            return;
-        }
-    }
+    if (userid != -1)
+        GUI_ConnectionToServerWrapper::requestDefinitiveLogoutWrapper(this, userid);
 
     event->accept();
 }
@@ -92,20 +88,18 @@ void GIMPdocs::setUi2(QWidget *widget){
 
 //Warning! May return a nullptr if the user hasn't set up the connection
 connection_to_server *GIMPdocs::getConnection(){
-   return c;
+   return connection;
 }
 
 void GIMPdocs::setupConnection(){
-    c = new connection_to_server(GIMPdocs::port, GIMPdocs::ipAddress);
+    connection = new connection_to_server(GIMPdocs::port, GIMPdocs::ipAddress);
 }
 
 //questa funzione viene chiamata se la connessione viene persa. Devo tenere in conto che se il server è morto e risorto è lecito che la logout ritorni errore
 void GIMPdocs::returnToLogin(){
     GUI_ConnectionToServerWrapper::requestDefinitiveLogoutWrapper(this, userid);
 
-    //QCoreApplication* app = QApplication::instance();
     QProcess::startDetached(qApp->arguments()[0], qApp->arguments());
-    //qApp->exit(0);
     exit(EXIT_SUCCESS);
 }
 
