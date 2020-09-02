@@ -3,8 +3,9 @@
 #include "gui_profile.h"
 #include "gui_newdoc.h"
 #include "gui_opendoc.h"
+
 #include <QPixmap>
-#include <QTextCodec>
+//#include <QTextCodec>
 
 GUI_Menu::GUI_Menu(QWidget *parent) : QWidget(parent)
 {

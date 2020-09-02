@@ -1,13 +1,12 @@
 #include "gui_opendoc.h"
-#include "gimpdocs.h"
 #include "editorWindow/gui_editor.h"
 #include "gui_menu.h"
 #include "gui_uri.h"
-#include <QMessageBox>
 
+#include <QMessageBox>
 #include <QPrinter>
 #include <QFileDialog>
-#include <QFileInfo>
+//#include <QFileInfo>
 
 #define GUI_OPENDOC_WIDGETLIST_DOCNAME 0
 #define GUI_OPENDOC_WIDGETLIST_DOCID 1
@@ -39,7 +38,6 @@ GUI_Opendoc::~GUI_Opendoc(){
 /*SLOTS*/
 
 void GUI_Opendoc::on_openDocsPushButton_clicked(){
-    //QListWidgetItem *currentItem = getSelectedItem();
     int docId = getSelectedItemId();
     QString docName;
 
@@ -105,10 +103,9 @@ void GUI_Opendoc::on_exportPDFPushButton_clicked(){
 
 
     std::shared_ptr<QTextEdit> docp = GUI_ConnectionToServerWrapper::getDocumentTextWrapper(gimpParent, docId, gimpParent->userid);
-
     if( docp == nullptr)
         return;
-    docp->document()->setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
+
     docp->print(&printer);
 }
 
@@ -173,17 +170,16 @@ void GUI_Opendoc::fillList(){
 }
 
 void GUI_Opendoc::addItem(int docId, QString docName){
-    //lo inizializzo per togliere il warning
     QListWidgetItem* item = new QListWidgetItem;
     item->setData(GUI_OPENDOC_WIDGETLIST_DOCNAME, docName);
     item->setData(GUI_OPENDOC_WIDGETLIST_DOCID, docId);
 
-    int ownerId = GUI_ConnectionToServerWrapper::requestDocumentOwnerWrapper(gimpParent, item->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt());
-    if(ownerId == -1)
-        return;
-
     if(knownDocuments.find(docId) != knownDocuments.end())
         return;
+
+    int ownerId = GUI_ConnectionToServerWrapper::requestDocumentOwnerWrapper(gimpParent, item->data(GUI_OPENDOC_WIDGETLIST_DOCID).toInt());
+    if(ownerId == -1)
+        return; 
 
     if(gimpParent->userid == ownerId)
         ui->ownedDocsListWidget->addItem(item);

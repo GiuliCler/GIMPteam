@@ -30,6 +30,7 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName) : QWidg
 
     fillOnlineUsersList();
     fillContibutorUsersList();
+    usersColors = false;
 
     //richiedo l'uri del documento, perchè se mi chiede l'URI mentre ci lavoro non posso contattare la connection_to_server
     QString uri = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
@@ -131,12 +132,14 @@ void GUI_Editor::launchSetUi1(){
 }
 
 void GUI_Editor::on_actionApplyUsersColors(){
+    usersColors = true;
     this->gimpParent->ui2->actionApplyTextColors->setEnabled(true);
     this->gimpParent->ui2->actionApplyUsersColors->setEnabled(false);
     findChild<GUI_ToolsBar*>(GUI_ToolsBar::getObjectName())->enterCompromizedModeUndoStack();
 }
 
 void GUI_Editor::on_actionApplyTextColors(){
+    usersColors = false;
     this->gimpParent->ui2->actionApplyUsersColors->setEnabled(true);
     this->gimpParent->ui2->actionApplyTextColors->setEnabled(false);
     findChild<GUI_ToolsBar*>(GUI_ToolsBar::getObjectName())->exitCompromizedModeUndoStack();
@@ -410,14 +413,13 @@ void GUI_Editor::fillContibutorUsersList(){
 
 void GUI_Editor::exportPDFAction_emitted(){
     bool originallyHighlighted = usersColors;
-    QSizeF originalPageSize;
-    QString fileDoceName = docName;
+    QString fileDocName = docName;
     QString fileName;
 
-    if(fileDoceName.compare("") == 0)
+    if(fileDocName.compare("") == 0)
         //non dovrebbe mai verificarsi, ma non si sa mai
-        fileDoceName = "Default";
-    fileName = QFileDialog::getSaveFileName(this, "Export PDF", fileDoceName, "*.pdf");
+        fileDocName = "Default";
+    fileName = QFileDialog::getSaveFileName(this, "Export PDF", fileDocName, "*.pdf");
     //se l'utente non seleziona nulla mi ritorna una stringa vuota, quindi non so distinguere se l'utente ha annullato l'operazione o se vuole dargli un nome vuoto. Nel dubbio glielo impedisco.
     //Forse però la getSaveFileName impedisce di salvare un nome vuoto, a meno che non sia il nome di default
     if(fileName.compare("") == 0)
@@ -433,10 +435,7 @@ void GUI_Editor::exportPDFAction_emitted(){
     QTextDocument *doc = this->childMyTextEdit->document();
     if(originallyHighlighted)
         childUsersBar->on_hideColorsPushButton_clicked();
-    originalPageSize = doc->pageSize();
-    doc->setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
     doc->print(&printer);
-    doc->setPageSize(originalPageSize);
     if(originallyHighlighted)
         childUsersBar->on_showColorsPushButton_clicked();
 }
