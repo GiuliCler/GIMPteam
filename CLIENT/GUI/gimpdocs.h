@@ -2,7 +2,6 @@
 #define GIMPDOCS_H
 
 
-#include "stub.h"
 #include "gui_icons.h"
 #include "ui_gimpdocs.h"
 #include "ui_gui_editorwindow.h"
@@ -35,14 +34,17 @@ public:
     //servono a cambiare l'ui attiva. Widget è il central widget da caricare
     void setUi1(QWidget *widget);
     void setUi2(QWidget *widget);
-    void setConnection(connection_to_server *connection);
+    void setupConnection();
     connection_to_server *getConnection();
+    void returnToLogin();
 
 private:
+    const QString ipAddress = "192.168.56.1";
+    const QString port = "56529";
     QSize regularWindowSize;
     //serve per ripristinare lo stato maximized/normal dopo la chiusura del document in base a com'era prima
     bool alreadyMaximized;
-    connection_to_server *c = nullptr;
+    connection_to_server *connection = nullptr;
 
 };
 

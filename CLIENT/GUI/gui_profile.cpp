@@ -4,8 +4,8 @@
 
 #include <QMessageBox>
 #include <QIcon>
-#include <QFile>
-#include <QDir>
+//#include <QFile>
+//#include <QDir>
 
 GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
 {
@@ -13,11 +13,6 @@ GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
     gimpParent = static_cast<GIMPdocs*>(parent);
     ui = new Ui::GUI_Profile;
     ui->setupUi(this);
-
-    //style
-    QFont font = ui->titleLabel->font();
-    font.setPixelSize(font.pixelSize() + 10);
-    ui->titleLabel->setFont(font);
 
     loadIcons();
 
@@ -42,7 +37,6 @@ GUI_Profile::~GUI_Profile(){
 }
 
 void GUI_Profile::on_savePushButton_clicked(){
-    //controllo che tutti i campi siano compilati
     if(!checkFieldValidity(ui->nicknameLineEdit->text(), "Nickname"))
         return;
     //in caso di modifica questo non ha bisogno di essere controllato perchè è read only

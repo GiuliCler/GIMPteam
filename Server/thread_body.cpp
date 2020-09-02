@@ -398,17 +398,27 @@ void Thread_body::newDoc(QString docName, int userId){
     QString username = getUsername(userId);
 
     //controllo che ci sia la cartella del dato utente
-    if(!username.isEmpty() && QDir(path+username).exists()){
+    if(!username.isEmpty() && QDir(path+username).exists() && isLogged(username)){
         mutex_db->lock();
         int esito = database->creaDoc(username+"_"+docName);
         if(esito == 1){
             // Riga creata correttamente nella tabella doc del DB
             mutex_db->unlock();
 
-            // Creo nuovo docId e inserisco nella mappa dei documents
+            // Creo un nuovo docId e inserisco nella mappa dei documents
             mutex_docs->lock();
-            int docId = documents.size();
-            docId++;
+
+            // Per creare il nuovo docId, recupero i docId già creati, trovo il massimo e faccio massimo+1
+            int docId = -1;
+            if(documents.isEmpty()){
+                docId = 1;
+            } else {
+                QList<int> docIds = documents.values();
+                std::sort(docIds.begin(), docIds.end());
+                int docId_max = docIds.last();
+                docId = docId_max + 1;
+            }
+
             documents.insert(username + "_" + docName, docId);
             mutex_docs->unlock();
 
@@ -455,7 +465,7 @@ void Thread_body::newDoc(QString docName, int userId){
             writeData(blocko);
         }
     } else {
-        // se username non esiste o non c'è la cartella relativa
+        // se username non esiste o non c'è la cartella relativa o l'utente non è loggato
         out << "errore";
         writeData(blocko);
     }
@@ -526,10 +536,21 @@ void Thread_body::create(QString username, QString password, QString nickname, Q
         mutex_db->unlock();
         if(ret == 1){
             // Dati correttamente inseriti nel DB
+            // Creo un nuovo userId e inserisco nella mappa degli users
             mutex_users->lock();
-            int id = users.size();
-            id++;
-            users.insert(username, id);
+
+            // Per creare il nuovo userId, recupero gli userId già creati, trovo il massimo e faccio massimo+1
+            int userId = -1;
+            if(users.isEmpty()){
+                userId = 1;
+            } else {
+                QList<int> userIds = users.values();
+                std::sort(userIds.begin(), userIds.end());
+                int userId_max = userIds.last();
+                userId = userId_max + 1;
+            }
+
+            users.insert(username, userId);
             mutex_users->unlock();
 
             //creo la cartella sul file system per l'utente
@@ -539,7 +560,7 @@ void Thread_body::create(QString username, QString password, QString nickname, Q
             //verifico sia stata correttamente creata
             if(QDir(path+username).exists()){
                 out << "ok";
-                out << id;
+                out << userId;
                 writeData(blocko);
                 // Aggiungo al vettore di logged_users
                 mutex_logged_users->lock();
@@ -555,6 +576,21 @@ void Thread_body::create(QString username, QString password, QString nickname, Q
             writeData(blocko);
         }
     }
+}
+
+bool Thread_body::isLogged(QString username){
+
+    mutex_logged_users->lock();
+
+    bool esito = false;
+    if(logged_users.contains(username))            // L'utente ha già effettuato il login ed è attualmente loggato
+        esito = true;
+    else                                           // L'utente non è ancora loggato
+        esito = false;
+
+    mutex_logged_users->unlock();
+
+    return esito;
 }
 
 void Thread_body::stampaLoggedUsers(){          // Funzione per il DEBUG
@@ -634,7 +670,7 @@ void Thread_body::logout(int userId){
 //    std::cout<<"### LOGOUT di: "<<username.toStdString()<<std::endl;    // DEBUG
 //    stampaLoggedUsers();                                                // DEBUG
 
-    if(username.isEmpty()){
+    if(username.isEmpty() || !isLogged(username)){
         result = -1;
     } else {
         // Rimuovo l'utente dal vettore di logged_users
@@ -680,7 +716,7 @@ void Thread_body::update(int userId, QString password, QString nickname, QString
 
     QString username = getUsername(userId);
 
-    if(!username.isEmpty()){
+    if(!username.isEmpty() && isLogged(username)){
         mutex_db->lock();
         if(database->aggiornaUser(username, password, nickname, icon)){
             mutex_db->unlock();
@@ -759,7 +795,7 @@ void Thread_body::getDocs(int userId){
 
     QString username = getUsername(userId);
 
-    if(!username.isEmpty()){
+    if(!username.isEmpty() && isLogged(username)){
         // Recupero i documenti per cui l'utente e' abilitato ad accedere
         mutex_db->lock();
         std::vector<QString> documenti = database->recuperaDocs(username);
@@ -818,7 +854,7 @@ void Thread_body::getDocIdDatoUri(QString uri, int userId){
 
         QString ritorno;
 
-        if(username.isEmpty() || docName.isEmpty()){
+        if(username.isEmpty() || docName.isEmpty() || !isLogged(username)){
             ritorno = "errore";
         } else {
             mutex_db->lock();
@@ -918,7 +954,7 @@ void Thread_body::deleteDoc(int userId, int docId){
     //cerco lo username dell'utente che ha chiesto l'eliminazione (per fare
     //la verifica sul fatto che sia l'owner o meno)
     QString username = getUsername(userId);
-    if(username.isEmpty()){
+    if(username.isEmpty() || !isLogged(username)){
         out << "erroreDeleteDoc";
         writeData(blocko);
         return;
@@ -1127,8 +1163,8 @@ void Thread_body::getDocText(int docId, int userId){
     QString docName = getDocname(docId);
     QString username = getUsername(userId);
 
-    if(docName.isEmpty() || username.isEmpty()){
-        if(username.isEmpty()){
+    if(docName.isEmpty() || username.isEmpty() || !isLogged(username)){
+        if(username.isEmpty() || !isLogged(username)){
             // L'utente non esiste
             out << "errore";
             writeData(blocko);
@@ -1202,8 +1238,8 @@ void Thread_body::openDocument(int docId, int userId){
     QString docName = getDocname(docId);
 
     // Controllo se il documento di cui si vuole fare la OPEN è tra i documenti esistenti
-    if(docName.isEmpty() || username.isEmpty()){
-        if(username.isEmpty()){
+    if(docName.isEmpty() || username.isEmpty() || !isLogged(username)){
+        if(username.isEmpty() || !isLogged(username)){
             // L'utente non esiste
             out << "errore";
             writeData(blocko);
@@ -1295,10 +1331,12 @@ void Thread_body::closeDocument(int docId, int userId){
     QString username = getUsername(userId);
     QString docName = getDocname(docId);
 
-    // Salvo il site_counter attuale nel DB
-    mutex_db->lock();
-    database->aggiornaSiteCounter(docName, username, current_siteCounter);
-    mutex_db->unlock();
+    if(isLogged(username)){
+        // Salvo il site_counter attuale nel DB
+        mutex_db->lock();
+        database->aggiornaSiteCounter(docName, username, current_siteCounter);
+        mutex_db->unlock();
+    }
 }
 
 void Thread_body::moveCursor(int userId, int pos){

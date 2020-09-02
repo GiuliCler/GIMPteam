@@ -23,37 +23,33 @@ GUI_Newdoc::~GUI_Newdoc(){
 
 void GUI_Newdoc::on_createPushButton_clicked()
 {
-    if(ui->nameLineEdit->text().isEmpty()){
-        QMessageBox::information(this, "", "\"Name\" field is empty");
+    if(!checkFieldValidity(ui->nameLineEdit->text(), "Name"))
         return;
-    }
-    if(ui->nameLineEdit->text().contains('\\')){
-        QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"Name\"");
-        return;
-    }
+
     QString docName = ui->nameLineEdit->text();
     //qui mi arriva una serie di parametri codificati in qualche modo in un'unica stringa
     QString codedParameters = GUI_ConnectionToServerWrapper::requestCreateDocumentWrapper(gimpParent, static_cast<GIMPdocs*>(gimpParent)->userid, docName);
     if(codedParameters.compare("errore") == 0)
         return;
 
-    int siteCounter = codedParameters.split("_").at(1).toInt();
     int documentId = codedParameters.split("_").at(2).toInt();
 
-    GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId, docName, siteCounter, 2);
+    GUI_Editor *widget = nullptr;
+    try {
+        widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId, docName, false);
+    } catch (GUI_GenericException &exception) {
+        delete widget;
+        return;
+    }
+
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
 }
 
 void GUI_Newdoc::on_openURIPushButton_clicked()
 {
-    if(ui->URILineEdit->text().isEmpty()){
-        QMessageBox::information(this, "", "\"URI\" field is empty");
+    if(!checkFieldValidity(ui->URILineEdit->text(), "URI"))
         return;
-    }
-    if(ui->nameLineEdit->text().contains('\\')){
-        QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"URI\"");
-        return;
-    }
+
     QString codedParameters = GUI_ConnectionToServerWrapper::requestDocumentDatoUriWrapper(gimpParent, gimpParent->userid, ui->URILineEdit->text());
     if(codedParameters.compare("errore") == 0)
         return;
@@ -63,12 +59,28 @@ void GUI_Newdoc::on_openURIPushButton_clicked()
     QString docName = GUI_ConnectionToServerWrapper::requestDocumentNameWrapper(gimpParent, documentId);
     if(docName.compare("errore") == 0)
         docName = "document_name_error";
-    //se la request docName fallisce non posso fare una return perchè ho appena aperto il document
-    // - TODO: questo commento sopra ora è sbagliato perchè la requestDocumentDatoUriWrapper non apre più il documento (quindi ora si può fare la return)
 
-    GUI_Editor *widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId, docName, -1, 1);
-    if(widget->problemaApertura)
+    GUI_Editor *widget = nullptr;
+    try {
+        widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId, docName, true);
+    } catch (GUI_GenericException &exception) {
+        delete widget;
         return;
+    }
 
     static_cast<GIMPdocs*>(gimpParent)->setUi2(widget);
+}
+
+
+bool GUI_Newdoc::checkFieldValidity(QString value, QString name){
+    if(value.isEmpty()){
+        QMessageBox::information(this, "", "\"" + name + "\" field is empty");
+        return false;
+    }
+    if(value.contains('\\')){
+        QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"" + name + "\" field");
+        return false;
+    }
+
+    return true;
 }

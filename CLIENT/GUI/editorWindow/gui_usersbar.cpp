@@ -1,8 +1,8 @@
 #include "gui_usersbar.h"
 #include "gui_editor.h"
 #include "gui_myscrollarea.h"
+
 #include <QPainter>
-#include <QScrollBar>
 
 GUI_UsersBar::GUI_UsersBar(QWidget *parent) : QWidget(parent){
     this->setObjectName(GUI_UsersBar::getObjectName());
@@ -104,15 +104,6 @@ void GUI_UsersBar::addContributorUserIcon(int userId, QColor color, QString nick
     if(contributorUsersIconMap.size() <= GUI_MyScrollArea::getMaxUsersIconsNumber()+1)
         this->findChild<GUI_MyScrollArea*>(getContributorsAreaName())->updateSize(contributorUsersIconMap.size());
 }
-
-
-/*bool GUI_UsersBar::isOnline(int userId){
-    return onlineUsersIconMap.find(userId) != onlineUsersIconMap.end();
-}
-
-bool GUI_UsersBar::isContributor(int userId){
-    return contributorUsersIconMap.find(userId) != contributorUsersIconMap.end();
-}*/
 
 /******************SLOTS**************************************/
 

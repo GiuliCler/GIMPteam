@@ -4,8 +4,7 @@
 #include "../../connection_to_server.h"
 //serve per gli shared pointers
 #include <memory>
-#include "GUI/editorWindow/gui_editor.h"
-#include <QTextDocument>
+//#include <QTextDocument>
 
 class GIMPdocs;
 
@@ -13,13 +12,15 @@ class GIMPdocs;
 //lo scopo di questa classe è quello di gestire i try catch qua dentro quando chiamo una funzione relativa alla connessione. In questo modo il codice delle altre classi dovrebbe risultare più leggibile
 class GUI_ConnectionToServerWrapper
 {
+    //ci vuole sempre un valore di ritorno, anche per funzioni potenzialmente void, per notificare se ci sono state eccezioni o se è andato tutto bene (ed in questo caso, il valore di ritorno può essere il dato richiesto)
 public:
 
-    //ci vuole sempre un valore di ritorno, anche per funzioni potenzialmente void, per notificare se ci sono state eccezioni o se è andato tutto bene (ed in questo caso, il valore di ritorno può essere il dato richiesto)
+    static bool isConnectionWorking(GIMPdocs *gimpdocs);
+
     /*USERS*/
     static int requestLoginWrapper(GIMPdocs *gimpdocs, QString username, QString password);
     static int requestLogoutWrapper(GIMPdocs *gimpdocs, int userId);
-    //è per quando chiudo direttamente GIMPdocs
+    //è per quando chiudo direttamente GIMPdocs forzatamente perchè ci sono problemi
     static int requestDefinitiveLogoutWrapper(GIMPdocs *gimpdocs, int userId);
     static int requestNewAccountWrapper(GIMPdocs *gimpdocs, QString username, QString password, QString nickname, QString icon);
     static int requestUpdateAccountWrapper(GIMPdocs *gimpdocs, int userId, QString password, QString nickname, QString icon);
@@ -33,6 +34,7 @@ public:
     static QString requestCreateDocumentWrapper(GIMPdocs *gimpdocs, int userId, QString name);
     static int requestDeleteDocumentWrapper(GIMPdocs *gimpdocs, int userId, int documentId);
     static QString requestOpenDocumentWrapper(GIMPdocs *gimpdocs, int userId, int documentId);
+    //questa chiude sia il document che l'editor
     static int requestCloseDocumentWrapper(GIMPdocs *gimpdocs, int userId, int docId);
     static QString requestDocumentDatoUriWrapper(GIMPdocs *gimpdocs, int userId, QString uri);
 
@@ -44,9 +46,12 @@ public:
     static std::shared_ptr<QTextEdit> getDocumentTextWrapper(GIMPdocs *gimpdocs, int docId, int userId);
 
     /*EDITOR*/
+    static int requestStartEditorConnection(GIMPdocs *gimpdocs);
     static std::shared_ptr<QSet<int>> getWorkingUsersOnDocumentWrapper(GIMPdocs *gimpdocs, int docId);
     static std::shared_ptr<QSet<int>> getContributorsUsersOnDocumentWrapper(GIMPdocs *gimpdocs, int docId);
-    static int requestStartEditorConnection(GIMPdocs *gimpdocs);
+
+private:
+    static void handleReconnection(GIMPdocs *gimpdocs);
 
 };
 

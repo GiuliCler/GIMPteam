@@ -1,7 +1,6 @@
 #ifndef GUI_CONNECTIONEXCEPTION_H
 #define GUI_CONNECTIONEXCEPTION_H
 
-#include "gui_connecting.h"
 #include <QException>
 
 class GUI_ConnectionException : public QException
@@ -16,10 +15,6 @@ public:
 
     void raise() const override { throw *this; }
     GUI_ConnectionException *clone() const override { return new GUI_ConnectionException(*this); }
-
-private:
-
-
 };
 
 #endif // GUI_CONNECTIONEXCEPTION_H

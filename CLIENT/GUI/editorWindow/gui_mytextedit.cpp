@@ -11,8 +11,6 @@ GUI_MyTextEdit::GUI_MyTextEdit(QWidget *parent) : QTextEdit(parent) {
     QPalette palette = this->palette();
     palette.setColor(QPalette::Inactive, QPalette::Highlight, palette.color(QPalette::Active, QPalette::Highlight));
     this->setPalette(palette);
-
-//    this->setText("I pulsanti funzionano un po' a caso per ragioni di debug");
 }
 
 void GUI_MyTextEdit::setupTextEdit(){
@@ -29,8 +27,7 @@ void GUI_MyTextEdit::setupTextEdit(){
     this->document()->clearUndoRedoStacks();
 }
 
-void GUI_MyTextEdit::paintEvent(QPaintEvent *event)
-{
+void GUI_MyTextEdit::paintEvent(QPaintEvent *event){
     // questo serve a disegnare tutto quanto il resto normalmente
     QTextEdit::paintEvent(event);
 

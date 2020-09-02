@@ -53,6 +53,11 @@ QLineEdit:focus{
    </property>
    <item row="4" column="1">
     <widget class="QLabel" name="label_2">
+     <property name="font">
+      <font>
+       <pointsize>9</pointsize>
+      </font>
+     </property>
      <property name="cursor">
       <cursorShape>IBeamCursor</cursorShape>
      </property>
@@ -194,6 +199,11 @@ QLineEdit:focus{
    </item>
    <item row="3" column="1">
     <widget class="QLabel" name="label">
+     <property name="font">
+      <font>
+       <pointsize>9</pointsize>
+      </font>
+     </property>
      <property name="cursor">
       <cursorShape>IBeamCursor</cursorShape>
      </property>

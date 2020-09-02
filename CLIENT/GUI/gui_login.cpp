@@ -33,22 +33,10 @@ void GUI_Login::on_newAccountButton_clicked()
 void GUI_Login::on_loginButton_clicked()
 {
     //faccio un po' di controlli sui contenuti delle lineEdit di username e password
-    if(ui->usernameLineEdit->text().isEmpty()){
-        QMessageBox::information(this, "", "\"Username\" field is empty");
+    if(!checkFieldValidity(ui->usernameLineEdit->text(), "Username"))
         return;
-    }
-    if(ui->usernameLineEdit->text().contains('\\')){
-        QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"Username\"");
+    if(!checkFieldValidity(ui->passwordLineEdit->text(), "Password"))
         return;
-    }
-    if(ui->passwordLineEdit->text().isEmpty()){
-        QMessageBox::information(this, "", "\"Password\" field is empty");
-        return;
-    }
-    if(ui->passwordLineEdit->text().contains('\\')){
-        QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"Password\"");
-        return;
-    }
 
     int result = GUI_ConnectionToServerWrapper::requestLoginWrapper(gimpParent, ui->usernameLineEdit->text(), ui->passwordLineEdit->text());
     if( result == -1)
@@ -59,4 +47,18 @@ void GUI_Login::on_loginButton_clicked()
 
     GUI_Menu *widget = new GUI_Menu(gimpParent);
     gimpParent->setCentralWidget(widget);
+}
+
+
+bool GUI_Login::checkFieldValidity(QString value, QString name){
+    if(value.isEmpty()){
+        QMessageBox::information(this, "", "\"" + name + "\" field is empty");
+        return false;
+    }
+    if(value.contains('\\')){
+        QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"" + name + "\" field");
+        return false;
+    }
+
+    return true;
 }

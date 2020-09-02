@@ -20,6 +20,8 @@ private slots:
 private:
     GIMPdocs *gimpParent;
     Ui::GUI_Newdoc *ui;
+
+    bool checkFieldValidity(QString value, QString name);
 };
 
 #endif // GUI_NEWDOC_H

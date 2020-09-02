@@ -6,14 +6,14 @@
 #include "gui_toolsbar.h"
 #include "gui_myscrollarea.h"
 #include "../../CRDT/crdt_controller.h"
+
 #include <QMessageBox>
 #include <QScrollBar>
-
 #include <QPrinter>
 #include <QFileDialog>
-#include <QFileInfo>
+//#include <QFileInfo>
 
-GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int siteCounter, int up) : QWidget(parent), documentId(documentId), docName(docName)
+GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, bool call_open) : QWidget(parent), documentId(documentId), docName(docName)
 {
     this->setObjectName(GUI_Editor::getObjectName());
     gimpParent = static_cast<GIMPdocs*>(parent);
@@ -31,52 +31,45 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, int sit
     fillOnlineUsersList();
     fillContibutorUsersList();
 
+    usersColors = false;
+
     //richiedo l'uri del documento, perchè se mi chiede l'URI mentre ci lavoro non posso contattare la connection_to_server
     QString uri = GUI_ConnectionToServerWrapper::requestUriWrapper(gimpParent, documentId);
-    if(uri.compare("errore") != 0)
-        this->uri = uri;
-    else
-        this->uri = "Error, URI unavailable";
+    if(uri.compare("errore") == 0)
+        uri = "Error, URI unavailable";
+    this->uri = uri;
 
     //Per gli online users ed i contributors
     connect(gimpParent->getConnection(), &connection_to_server::sigOnlineUser, this, &GUI_Editor::addUserToEditorGUI);
     connect(gimpParent->getConnection(), &connection_to_server::sigOfflineUser, this, &GUI_Editor::removeUserFromEditorGUI);
     connect(gimpParent->getConnection(), &connection_to_server::sigNewContributor, this, &GUI_Editor::addContributorToCurrentDocument);
 
-    /* up è un flag che indica la funzione superiore in cui è stato creata la GUI_Editor
-       up = 0 => gui_opendoc.cpp (OPEN DOC)
-       up = 1 => gui_newdoc.cpp  (OPEN DOC DATO URI)
-       up = 2 => gui_newdoc.cpp  (NEW DOC)
+    /* call_open è un flag che indica se deve essere chiamata la requestOpenDocumentWrapper
+       call_open = true => la requestOpenDocumentWrapper deve essere chiamata => gui_opendoc.cpp (OPEN DOC) e gui_newdoc.cpp (OPEN DOC DATO URI)
+       call_open = false => la requestOpenDocumentWrapper NON deve essere chiamata => gui_newdoc.cpp  (NEW DOC)
     */
-    int counter = -1;
-    if(up == 0 || up == 1){
+    int siteCounter;
+    if(call_open){
         QString codedParameters = GUI_ConnectionToServerWrapper::requestOpenDocumentWrapper(gimpParent, gimpParent->userid, documentId);
-        if(codedParameters.compare("errore") == 0){
-            this->problemaApertura = true;
-        } else {
-            this->problemaApertura = false;
-            counter = codedParameters.split("_").at(1).toInt();
-        }
+        if(codedParameters.compare("errore") == 0)
+            throw GUI_GenericException("");
+        siteCounter = codedParameters.split("_").at(1).toInt();
     } else {
-        this->problemaApertura = false;
-        counter = siteCounter;
+        siteCounter = 0;
     }
 
-    if(!this->problemaApertura){
-        crdtController = new CRDT_controller(gimpParent, this, *childMyTextEdit, gimpParent->userid, counter);
+    crdtController = new CRDT_controller(gimpParent, this, *childMyTextEdit, gimpParent->userid, siteCounter);
 
-        //Per spostare i cursors
-        connect(crdtController, &CRDT_controller::updateCursorPosition, childMyTextEdit, &GUI_MyTextEdit::on_updateCursorPosition_emitted);
-        //Per mostrare la fading label
-        connect(crdtController, &CRDT_controller::notifyDeletedStack, childToolsBar, &GUI_ToolsBar::compromisedUndoStack);
+    //devo fare qui queste connect perchè devo aspettare che la crdtController sia creata
+    connect(crdtController, &CRDT_controller::updateCursorPosition, childMyTextEdit, &GUI_MyTextEdit::on_updateCursorPosition_emitted);
+    connect(crdtController, &CRDT_controller::notifyDeletedStack, childToolsBar, &GUI_ToolsBar::compromisedUndoStack);
 
-        //avvio la connessione speciale per l'editor. D'ora in poi la connection_to_server è off-limits
-        if(GUI_ConnectionToServerWrapper::requestStartEditorConnection(gimpParent) < 0)
-            //se non riesco a far partire l'editor devo chiudere tutto
-            launchSetUi1();
+    //avvio la connessione speciale per l'editor. D'ora in poi la connection_to_server è off-limits
+    if(GUI_ConnectionToServerWrapper::requestStartEditorConnection(gimpParent) < 0)
+        //se non riesco a far partire l'editor devo chiudere tutto
+        throw GUI_GenericException("");
 
-        gimpParent->isEditorConnected = true;
-    }
+    gimpParent->isEditorConnected = true;
 }
 
 GUI_Editor::~GUI_Editor(){
@@ -88,32 +81,19 @@ GUI_Editor::~GUI_Editor(){
 
 void GUI_Editor::connectMenuBarActions(){
     connect(this->gimpParent->ui2->closeDocumentAction, &QAction::triggered, this, &GUI_Editor::closeDocument);
-    //per la chiusura forzata
     connect(gimpParent->getConnection(), &connection_to_server::forceCloseEditor, this, &GUI_Editor::forcedCloseDocument);
+    connect(gimpParent->ui2->exportPDFAction, &QAction::triggered, this, &GUI_Editor::exportPDFAction_emitted);
     connect(gimpParent->ui2->getURIAction, &QAction::triggered, [this](){
         GUI_URI *box = new GUI_URI(this, this->uri);
         box->setVisible(true);
     });
-    connect(gimpParent->ui2->exportPDFAction, &QAction::triggered, [this](){
-        QString fileName = QFileDialog::getSaveFileName(this, "Export PDF", "", "*.pdf");
-        if (QFileInfo(fileName).suffix().isEmpty())
-            fileName.append(".pdf");
 
-        QPrinter printer(QPrinter::PrinterResolution);
-        printer.setOutputFormat(QPrinter::PdfFormat);
-        printer.setPaperSize(QPrinter::A4);
-        printer.setOutputFileName(fileName);
-
-        QTextDocument *doc = this->childMyTextEdit->document();
-        doc->setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
-        doc->print(&printer);
-    });
 
     //ho connesso le 2 action in modo da alternarsi l'un l'altra ed in modo da comportarsi come se avessi premuto un pulsante
     connect(gimpParent->ui2->actionApplyUsersColors, &QAction::triggered, this, &GUI_Editor::on_actionApplyUsersColors);
-    connect(gimpParent->ui2->actionApplyUsersColors, &QAction::triggered, findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName()), &GUI_UsersBar::on_showColorsPushButton_clicked);
+    connect(gimpParent->ui2->actionApplyUsersColors, &QAction::triggered, childUsersBar, &GUI_UsersBar::on_showColorsPushButton_clicked);
     connect(gimpParent->ui2->actionApplyTextColors, &QAction::triggered, this, &GUI_Editor::on_actionApplyTextColors);
-    connect(gimpParent->ui2->actionApplyTextColors, &QAction::triggered, findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName()), &GUI_UsersBar::on_hideColorsPushButton_clicked);
+    connect(gimpParent->ui2->actionApplyTextColors, &QAction::triggered, childUsersBar, &GUI_UsersBar::on_hideColorsPushButton_clicked);
 
 
 
@@ -142,34 +122,35 @@ void GUI_Editor::setUpEditor(){
 void GUI_Editor::closeDocument(){
     if(GUI_ConnectionToServerWrapper::requestCloseDocumentWrapper(gimpParent, gimpParent->userid, documentId) == -1)
         return;
+    gimpParent->isEditorConnected = false;
 
     launchSetUi1();
 }
 
 void GUI_Editor::forcedCloseDocument(){
     QMessageBox::warning(this, "", "This file has been deleted by its owner.\nIt no longer exists.");
+    gimpParent->isEditorConnected = false;
 
     launchSetUi1();
 }
 
-//questo serve ad essere chiamato direttamente quando faccio la chiusura forzata
 void GUI_Editor::launchSetUi1(){
-    gimpParent->isEditorConnected = false;
-
     GUI_Menu *widget = new GUI_Menu(this->gimpParent);
     static_cast<GIMPdocs*>(this->gimpParent)->setUi1(widget);
 }
 
 void GUI_Editor::on_actionApplyUsersColors(){
+    usersColors = true;
     this->gimpParent->ui2->actionApplyTextColors->setEnabled(true);
     this->gimpParent->ui2->actionApplyUsersColors->setEnabled(false);
-    findChild<GUI_ToolsBar*>(GUI_ToolsBar::getObjectName())->enterCompromizedModeUndoStack();
+    childToolsBar->enterCompromizedModeUndoStack();
 }
 
 void GUI_Editor::on_actionApplyTextColors(){
+    usersColors = false;
     this->gimpParent->ui2->actionApplyUsersColors->setEnabled(true);
     this->gimpParent->ui2->actionApplyTextColors->setEnabled(false);
-    findChild<GUI_ToolsBar*>(GUI_ToolsBar::getObjectName())->exitCompromizedModeUndoStack();
+    childToolsBar->exitCompromizedModeUndoStack();
 }
 
 
@@ -360,28 +341,24 @@ void GUI_Editor::addUserToEditorGUI(int userid, QString nickname, QString iconId
     //ottengo un colore per cursore e icona
     QColor *color = getUserColor(userid);
 
-    //nota: la findChild è ricorsiva e funziona anche coi nipoti
     //questo bruttissimo passaggio di parametri di funzione in funzione anzichè reperirli direttamente a basso livello chiamando il server è perchè mentre il CRDT è aperto non posso usare la connection_to_server
-    findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->addOnlineUserIcon(userid, *color, nickname, iconId);
-    GUI_MyTextEdit *son = findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName());
+    childUsersBar->addOnlineUserIcon(userid, *color, nickname, iconId);
 
+    //GUI_MyTextEdit *son = findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName());
     if(userid != gimpParent->userid){
-        QPoint p = QPoint (son->cursorRect().topLeft().x(), son->cursorRect().topLeft().y() + son->verticalScrollBar()->value());
-        findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->addUserCursor(userid, p, *color);
+        QPoint p = QPoint (childMyTextEdit->cursorRect().topLeft().x(), childMyTextEdit->cursorRect().topLeft().y() + childMyTextEdit->verticalScrollBar()->value());
+        childMyTextEdit->addUserCursor(userid, p, *color);
     }
 }
 
 void GUI_Editor::removeUserFromEditorGUI(int userid){
-    findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->removeUserCursor(userid);
-    findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->removeOnlineUserIcon(userid);
-    //se l'utente non è un contributor e non è più online gli tolgo il colore associato per poterlo assegnare a qualcun altro
-    /*if(!findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->isContributor(userid))
-        forgetUserColor(userid);*/
+    childMyTextEdit->removeUserCursor(userid);
+    childUsersBar->removeOnlineUserIcon(userid);
 }
 
 void GUI_Editor::addContributorToCurrentDocument(int userid, QString nickname, QString iconId){
     QColor *color = getUserColor(userid);
-    findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->addContributorUserIcon(userid, *color, nickname, iconId);
+    childUsersBar->addContributorUserIcon(userid, *color, nickname, iconId);
 }
 
 
@@ -397,13 +374,6 @@ QColor *GUI_Editor::getUserColor(int userId){
 
     return color;
 }
-
-/*void GUI_Editor::forgetUserColor(int userId){
-    if(userColorMap.find(userId) == userColorMap.end())
-        return;
-
-    userColorMap.remove(userId);
-}*/
 
 void GUI_Editor::fillOnlineUsersList(){
     //ottengo l'elenco degli utenti che al momento stanno guardando il mio stesso document e ne creo icona e cursore
@@ -424,7 +394,7 @@ void GUI_Editor::fillOnlineUsersList(){
 void GUI_Editor::fillContibutorUsersList(){
     //creo l'icona per gli user che hanno contribuito al document
     std::shared_ptr<QSet<int>> contributors = GUI_ConnectionToServerWrapper::getContributorsUsersOnDocumentWrapper(gimpParent, documentId);
-    if(contributors == nullptr || contributors->size()==0)
+    if(contributors == nullptr)
         return;
 
     for (QSet<int>::iterator userId = contributors->begin(); userId != contributors->end(); userId++){
@@ -435,4 +405,34 @@ void GUI_Editor::fillContibutorUsersList(){
         if(nickname.compare("errore") != 0 && iconId.compare("errore") != 0)
             addContributorToCurrentDocument(*userId, nickname, iconId);
     }
+}
+
+
+void GUI_Editor::exportPDFAction_emitted(){
+    bool originallyHighlighted = usersColors;
+    QString fileDocName = docName;
+    QString fileName;
+
+    if(fileDocName.compare("") == 0)
+        //non dovrebbe mai verificarsi, ma non si sa mai
+        fileDocName = "Default";
+    fileName = QFileDialog::getSaveFileName(this, "Export PDF", fileDocName, "*.pdf");
+    //se l'utente non seleziona nulla mi ritorna una stringa vuota, quindi non so distinguere se l'utente ha annullato l'operazione o se vuole dargli un nome vuoto. Nel dubbio glielo impedisco.
+    //Forse però la getSaveFileName impedisce di salvare un nome vuoto, a meno che non sia il nome di default
+    if(fileName.compare("") == 0)
+        return;
+    if (QFileInfo(fileName).suffix().isEmpty())
+        fileName.append(".pdf");
+
+    QPrinter printer(QPrinter::PrinterResolution);
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setPaperSize(QPrinter::A4);
+    printer.setOutputFileName(fileName);
+
+    QTextDocument *doc = this->childMyTextEdit->document();
+    if(originallyHighlighted)
+        childUsersBar->on_hideColorsPushButton_clicked();
+    doc->print(&printer);
+    if(originallyHighlighted)
+        childUsersBar->on_showColorsPushButton_clicked();
 }
