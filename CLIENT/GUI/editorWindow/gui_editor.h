@@ -29,7 +29,7 @@ public:
     CRDT_controller *crdtController;
 
 
-    explicit GUI_Editor(QWidget *parent, int documentId, QString docName);
+    explicit GUI_Editor(QWidget *parent, int documentId, QString docName, bool call_open);
     ~GUI_Editor();
     inline static QString getObjectName(){ return "GUI_Editor";}
     QColor *getUserColor(int userId);

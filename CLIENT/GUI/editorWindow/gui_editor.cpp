@@ -13,7 +13,7 @@
 #include <QFileDialog>
 //#include <QFileInfo>
 
-GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName) : QWidget(parent), documentId(documentId), docName(docName)
+GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, bool call_open) : QWidget(parent), documentId(documentId), docName(docName)
 {
     this->setObjectName(GUI_Editor::getObjectName());
     gimpParent = static_cast<GIMPdocs*>(parent);
@@ -30,6 +30,7 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName) : QWidg
 
     fillOnlineUsersList();
     fillContibutorUsersList();
+
     usersColors = false;
 
     //richiedo l'uri del documento, perchè se mi chiede l'URI mentre ci lavoro non posso contattare la connection_to_server
@@ -43,11 +44,20 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName) : QWidg
     connect(gimpParent->getConnection(), &connection_to_server::sigOfflineUser, this, &GUI_Editor::removeUserFromEditorGUI);
     connect(gimpParent->getConnection(), &connection_to_server::sigNewContributor, this, &GUI_Editor::addContributorToCurrentDocument);
 
-    QString codedParameters = GUI_ConnectionToServerWrapper::requestOpenDocumentWrapper(gimpParent, gimpParent->userid, documentId);
-    if(codedParameters.compare("errore") == 0)
-        throw GUI_GenericException("");
+    /* call_open è un flag che indica se deve essere chiamata la requestOpenDocumentWrapper
+       call_open = true => la requestOpenDocumentWrapper deve essere chiamata => gui_opendoc.cpp (OPEN DOC) e gui_newdoc.cpp (OPEN DOC DATO URI)
+       call_open = false => la requestOpenDocumentWrapper NON deve essere chiamata => gui_newdoc.cpp  (NEW DOC)
+    */
+    int siteCounter;
+    if(call_open){
+        QString codedParameters = GUI_ConnectionToServerWrapper::requestOpenDocumentWrapper(gimpParent, gimpParent->userid, documentId);
+        if(codedParameters.compare("errore") == 0)
+            throw GUI_GenericException("");
+        siteCounter = codedParameters.split("_").at(1).toInt();
+    } else {
+        siteCounter = 0;
+    }
 
-    int siteCounter = codedParameters.split("_").at(1).toInt();
     crdtController = new CRDT_controller(gimpParent, this, *childMyTextEdit, gimpParent->userid, siteCounter);
 
     //devo fare qui queste connect perchè devo aspettare che la crdtController sia creata

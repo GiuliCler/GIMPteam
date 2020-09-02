@@ -50,7 +50,7 @@ void GUI_Opendoc::on_openDocsPushButton_clicked(){
 
     GUI_Editor *widget = nullptr;
     try {
-        widget = new GUI_Editor(gimpParent, docId, docName);
+        widget = new GUI_Editor(gimpParent, docId, docName, true);
     } catch (GUI_GenericException &exception) {
         delete widget;
         return;

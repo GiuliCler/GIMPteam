@@ -36,7 +36,7 @@ void GUI_Newdoc::on_createPushButton_clicked()
 
     GUI_Editor *widget = nullptr;
     try {
-        widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId, docName);
+        widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId, docName, false);
     } catch (GUI_GenericException &exception) {
         delete widget;
         return;
@@ -62,7 +62,7 @@ void GUI_Newdoc::on_openURIPushButton_clicked()
 
     GUI_Editor *widget = nullptr;
     try {
-        widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId, docName);
+        widget = new GUI_Editor(static_cast<GIMPdocs*>(gimpParent), documentId, docName, true);
     } catch (GUI_GenericException &exception) {
         delete widget;
         return;
