@@ -146,18 +146,16 @@ void GUI_Opendoc::on_sharedDocsListWidget_itemClicked(){
     ui->ownedDocsListWidget->setCurrentRow(-1);
 }
 
+//ricorda: si è deciso di rimuovere un file non più esistente solo quando l'utente prova a farci qualcosa. Altrimenti rimane in elenco (finchè non ricaricherò il widget)
 void GUI_Opendoc::unavailableSharedDocument_emitted(int docId){
     //in pratica questa funzione fa da wrapper che fa qualche controllo. Non vedo come possa fallire, ma non si sa mai
     int currentDocId = getSelectedItemId();
 
-    if(currentDocId == -1){
-        QMessageBox::information(this, "", "Please, select a document");
-        return;
-    }
-
     //anche questo non dovrebbe mai succedere
     if(currentDocId != docId)
         return;
+
+    QMessageBox::warning(this, "", "This file has been deleted by its owner.\nIt no longer exists.");
 
     removeSelectedItem();
 }

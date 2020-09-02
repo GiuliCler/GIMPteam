@@ -20,9 +20,6 @@ class GIMPdocs : public QMainWindow
     Q_OBJECT
 
 public:
-    const QString ipAddress = "192.168.1.9";
-    const QString port = "56529";
-
     int userid;
     //serve per sapere se la connessione dell'editor col server è ancora attiva
     bool isEditorConnected = false;
@@ -42,10 +39,12 @@ public:
     void returnToLogin();
 
 private:
+    const QString ipAddress = "192.168.1.9";
+    const QString port = "56529";
     QSize regularWindowSize;
     //serve per ripristinare lo stato maximized/normal dopo la chiusura del document in base a com'era prima
     bool alreadyMaximized;
-    connection_to_server *c = nullptr;
+    connection_to_server *connection = nullptr;
 
 };
 
