@@ -1,7 +1,6 @@
 #include "gui_coloredcursor.h"
 #include "../gimpdocs.h"
 
-#include <QTextEdit>
 #include <QPainter>
 #include <QScrollBar>
 

@@ -4,7 +4,7 @@
 #include "../../connection_to_server.h"
 //serve per gli shared pointers
 #include <memory>
-#include <QTextDocument>
+//#include <QTextDocument>
 
 class GIMPdocs;
 

@@ -1,5 +1,6 @@
 #include "../gimpdocs.h"
 #include "gui_connectionToServerWrapper.h"
+#include "gui_reconnection.h"
 
 #include <QMessageBox>
 

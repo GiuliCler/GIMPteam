@@ -11,14 +11,9 @@ class GUI_Profile : public QWidget
 public:
     explicit GUI_Profile(QWidget *parent);
     ~GUI_Profile();
-    static QString getObjectName() {return QString("GUI_Profile");}
+    inline static QString getObjectName() {return QString("GUI_Profile");}
 
 private slots:
-    //serve per riempire il form quando sto accedendo alla window per modificare un account già esistente
-    void fillForm();
-    //questa serve solo a riempire la combobox
-    void loadIcons();
-
     void on_savePushButton_clicked();
     void on_backPushButton_clicked();
 
@@ -26,6 +21,9 @@ private:
     GIMPdocs *gimpParent;
     Ui::GUI_Profile *ui;
 
+    void fillForm();
+    //questa serve solo a riempire la combobox
+    void loadIcons();
     bool checkFieldValidity(QString value, QString name);
     bool checkPasswordSecurity(QString password, QString repeatPassword);
 };

@@ -12,20 +12,19 @@ class GUI_ToolsBar : public QWidget
 {
     Q_OBJECT
 public:
-    GUI_Editor *editorParent;
+    //deve rimanere pubblic operchè srver per delle connect
     Ui::GUI_ToolsBar *ui;
 
     explicit GUI_ToolsBar(QWidget *parent);
     ~GUI_ToolsBar();
-    static QString getObjectName() {return QString("GUI_ToolsBar");}
+    inline static QString getObjectName() {return QString("GUI_ToolsBar");}
 
-    //void setFontComboBoxText(QFont font);
-    //void setSpinBoxValue(int size);
     void setTextColorIconColor(const QColor color);
     void enterCompromizedModeUndoStack();
     void exitCompromizedModeUndoStack();
 
 private:
+    GUI_Editor *editorParent;
     GUI_FadingLabel *fadingLabel;
 
 public slots:

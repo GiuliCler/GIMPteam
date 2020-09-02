@@ -1,8 +1,8 @@
 #include "gui_usersbar.h"
 #include "gui_editor.h"
 #include "gui_myscrollarea.h"
+
 #include <QPainter>
-#include <QScrollBar>
 
 GUI_UsersBar::GUI_UsersBar(QWidget *parent) : QWidget(parent){
     this->setObjectName(GUI_UsersBar::getObjectName());

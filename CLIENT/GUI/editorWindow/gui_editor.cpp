@@ -6,12 +6,12 @@
 #include "gui_toolsbar.h"
 #include "gui_myscrollarea.h"
 #include "../../CRDT/crdt_controller.h"
+
 #include <QMessageBox>
 #include <QScrollBar>
-
 #include <QPrinter>
 #include <QFileDialog>
-#include <QFileInfo>
+//#include <QFileInfo>
 
 GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName) : QWidget(parent), documentId(documentId), docName(docName)
 {
@@ -71,7 +71,6 @@ GUI_Editor::~GUI_Editor(){
 
 void GUI_Editor::connectMenuBarActions(){
     connect(this->gimpParent->ui2->closeDocumentAction, &QAction::triggered, this, &GUI_Editor::closeDocument);
-    //per la chiusura forzata causata da un document cancellato
     connect(gimpParent->getConnection(), &connection_to_server::forceCloseEditor, this, &GUI_Editor::forcedCloseDocument);
     connect(gimpParent->ui2->exportPDFAction, &QAction::triggered, this, &GUI_Editor::exportPDFAction_emitted);
     connect(gimpParent->ui2->getURIAction, &QAction::triggered, [this](){
@@ -82,9 +81,9 @@ void GUI_Editor::connectMenuBarActions(){
 
     //ho connesso le 2 action in modo da alternarsi l'un l'altra ed in modo da comportarsi come se avessi premuto un pulsante
     connect(gimpParent->ui2->actionApplyUsersColors, &QAction::triggered, this, &GUI_Editor::on_actionApplyUsersColors);
-    connect(gimpParent->ui2->actionApplyUsersColors, &QAction::triggered, findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName()), &GUI_UsersBar::on_showColorsPushButton_clicked);
+    connect(gimpParent->ui2->actionApplyUsersColors, &QAction::triggered, childUsersBar, &GUI_UsersBar::on_showColorsPushButton_clicked);
     connect(gimpParent->ui2->actionApplyTextColors, &QAction::triggered, this, &GUI_Editor::on_actionApplyTextColors);
-    connect(gimpParent->ui2->actionApplyTextColors, &QAction::triggered, findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName()), &GUI_UsersBar::on_hideColorsPushButton_clicked);
+    connect(gimpParent->ui2->actionApplyTextColors, &QAction::triggered, childUsersBar, &GUI_UsersBar::on_hideColorsPushButton_clicked);
 
 
 
@@ -113,20 +112,19 @@ void GUI_Editor::setUpEditor(){
 void GUI_Editor::closeDocument(){
     if(GUI_ConnectionToServerWrapper::requestCloseDocumentWrapper(gimpParent, gimpParent->userid, documentId) == -1)
         return;
+    gimpParent->isEditorConnected = false;
 
     launchSetUi1();
 }
 
 void GUI_Editor::forcedCloseDocument(){
     QMessageBox::warning(this, "", "This file has been deleted by its owner.\nIt no longer exists.");
+    gimpParent->isEditorConnected = false;
 
     launchSetUi1();
 }
 
-//questo serve ad essere chiamato direttamente quando faccio la chiusura forzata
 void GUI_Editor::launchSetUi1(){
-    gimpParent->isEditorConnected = false;
-
     GUI_Menu *widget = new GUI_Menu(this->gimpParent);
     static_cast<GIMPdocs*>(this->gimpParent)->setUi1(widget);
 }
@@ -135,14 +133,14 @@ void GUI_Editor::on_actionApplyUsersColors(){
     usersColors = true;
     this->gimpParent->ui2->actionApplyTextColors->setEnabled(true);
     this->gimpParent->ui2->actionApplyUsersColors->setEnabled(false);
-    findChild<GUI_ToolsBar*>(GUI_ToolsBar::getObjectName())->enterCompromizedModeUndoStack();
+    childToolsBar->enterCompromizedModeUndoStack();
 }
 
 void GUI_Editor::on_actionApplyTextColors(){
     usersColors = false;
     this->gimpParent->ui2->actionApplyUsersColors->setEnabled(true);
     this->gimpParent->ui2->actionApplyTextColors->setEnabled(false);
-    findChild<GUI_ToolsBar*>(GUI_ToolsBar::getObjectName())->exitCompromizedModeUndoStack();
+    childToolsBar->exitCompromizedModeUndoStack();
 }
 
 
@@ -333,28 +331,24 @@ void GUI_Editor::addUserToEditorGUI(int userid, QString nickname, QString iconId
     //ottengo un colore per cursore e icona
     QColor *color = getUserColor(userid);
 
-    //nota: la findChild è ricorsiva e funziona anche coi nipoti
     //questo bruttissimo passaggio di parametri di funzione in funzione anzichè reperirli direttamente a basso livello chiamando il server è perchè mentre il CRDT è aperto non posso usare la connection_to_server
-    findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->addOnlineUserIcon(userid, *color, nickname, iconId);
+    childUsersBar->addOnlineUserIcon(userid, *color, nickname, iconId);
 
-    GUI_MyTextEdit *son = findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName());
+    //GUI_MyTextEdit *son = findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName());
     if(userid != gimpParent->userid){
-        QPoint p = QPoint (son->cursorRect().topLeft().x(), son->cursorRect().topLeft().y() + son->verticalScrollBar()->value());
-        findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->addUserCursor(userid, p, *color);
+        QPoint p = QPoint (childMyTextEdit->cursorRect().topLeft().x(), childMyTextEdit->cursorRect().topLeft().y() + childMyTextEdit->verticalScrollBar()->value());
+        childMyTextEdit->addUserCursor(userid, p, *color);
     }
 }
 
 void GUI_Editor::removeUserFromEditorGUI(int userid){
-    findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName())->removeUserCursor(userid);
-    findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->removeOnlineUserIcon(userid);
-    //se l'utente non è un contributor e non è più online gli tolgo il colore associato per poterlo assegnare a qualcun altro
-    /*if(!findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->isContributor(userid))
-        forgetUserColor(userid);*/
+    childMyTextEdit->removeUserCursor(userid);
+    childUsersBar->removeOnlineUserIcon(userid);
 }
 
 void GUI_Editor::addContributorToCurrentDocument(int userid, QString nickname, QString iconId){
     QColor *color = getUserColor(userid);
-    findChild<GUI_UsersBar*>(GUI_UsersBar::getObjectName())->addContributorUserIcon(userid, *color, nickname, iconId);
+    childUsersBar->addContributorUserIcon(userid, *color, nickname, iconId);
 }
 
 
@@ -370,13 +364,6 @@ QColor *GUI_Editor::getUserColor(int userId){
 
     return color;
 }
-
-/*void GUI_Editor::forgetUserColor(int userId){
-    if(userColorMap.find(userId) == userColorMap.end())
-        return;
-
-    userColorMap.remove(userId);
-}*/
 
 void GUI_Editor::fillOnlineUsersList(){
     //ottengo l'elenco degli utenti che al momento stanno guardando il mio stesso document e ne creo icona e cursore
@@ -397,7 +384,7 @@ void GUI_Editor::fillOnlineUsersList(){
 void GUI_Editor::fillContibutorUsersList(){
     //creo l'icona per gli user che hanno contribuito al document
     std::shared_ptr<QSet<int>> contributors = GUI_ConnectionToServerWrapper::getContributorsUsersOnDocumentWrapper(gimpParent, documentId);
-    if(contributors == nullptr || contributors->size()==0)
+    if(contributors == nullptr)
         return;
 
     for (QSet<int>::iterator userId = contributors->begin(); userId != contributors->end(); userId++){
