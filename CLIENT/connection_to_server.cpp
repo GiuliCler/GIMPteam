@@ -1052,15 +1052,16 @@ bool connection_to_server::pingServer(){
 
     qDebug()<<"PING";      // DEBUG
 
-      if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
-          this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+    if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+        if (!tcpSocket->waitForConnected(Timeout)) {
+            return false;
+        }else{
+            return true;
+        }
+    }
+    return true;
 
-          if (!tcpSocket->waitForConnected(Timeout)) {
-              return false;
-          }else{
-              return true;
-          }
-      }
 }
 
 
