@@ -39,7 +39,7 @@ public:
     void returnToLogin();
 
 private:
-    const QString ipAddress = "192.168.56.1";
+    const QString ipAddress = "192.168.1.9";
     const QString port = "56529";
     QSize regularWindowSize;
     //serve per ripristinare lo stato maximized/normal dopo la chiusura del document in base a com'era prima

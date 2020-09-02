@@ -152,8 +152,6 @@ void GUI_Opendoc::unavailableSharedDocument_emitted(int docId){
     if(currentDocId != docId)
         return;
 
-    QMessageBox::warning(this, "", "This file has been deleted by its owner.\nIt no longer exists.");
-
     removeSelectedItem();
 }
 
