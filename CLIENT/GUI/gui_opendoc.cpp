@@ -6,7 +6,7 @@
 #include <QMessageBox>
 #include <QPrinter>
 #include <QFileDialog>
-//#include <QFileInfo>
+#include <QList>
 
 #define GUI_OPENDOC_WIDGETLIST_DOCNAME 0
 #define GUI_OPENDOC_WIDGETLIST_DOCID 1
@@ -159,12 +159,21 @@ void GUI_Opendoc::unavailableSharedDocument_emitted(int docId){
 
 
 void GUI_Opendoc::fillList(){
-    std::shared_ptr<QMap<int, QString>> vp = GUI_ConnectionToServerWrapper::requestGetKnownDocumentsWrapper(gimpParent, gimpParent->userid);
-    if(vp == nullptr)
+    std::shared_ptr<QMap<int, QString>> knownDocuments = GUI_ConnectionToServerWrapper::requestGetKnownDocumentsWrapper(gimpParent, gimpParent->userid);
+    if(knownDocuments == nullptr)
         return;
 
-    for(auto pair = vp->begin(); pair != vp->end(); pair++)
-        addItem(pair.key(), pair.value());
+    QList<QPair<int, QString>> knownDocumentsList = QList<QPair<int, QString>>();
+
+    for(auto pair = knownDocuments->begin(); pair != knownDocuments->end(); pair++)
+        knownDocumentsList.append(QPair<int, QString>(pair.key(), pair.value()));
+
+    std::sort(knownDocumentsList.begin(), knownDocumentsList.end(), [](QPair<int, QString> a, QPair<int, QString> b) {
+        return a.second < b.second;
+    });
+
+    for(auto pair : knownDocumentsList)
+        addItem(pair.first, pair.second);
 }
 
 void GUI_Opendoc::addItem(int docId, QString docName){
