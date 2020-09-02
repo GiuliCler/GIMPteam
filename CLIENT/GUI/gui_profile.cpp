@@ -118,8 +118,8 @@ bool GUI_Profile::checkFieldValidity(QString value, QString fieldName){
         QMessageBox::information(this, "", "\"" + fieldName + "\" field is empty");
         return false;
     }
-    if(value.contains('\\')){
-        QMessageBox::information(this, "", "Invalid character \"\\\" is present in \"" + fieldName + "\" field");
+    if(value.contains('\\') || value.contains('_')){
+        QMessageBox::information(this, "", "An invalid character \"\\\", \"_\" is present in \"" + fieldName + "\" field");
         return false;
     }
 
