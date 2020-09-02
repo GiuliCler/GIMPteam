@@ -405,10 +405,20 @@ void Thread_body::newDoc(QString docName, int userId){
             // Riga creata correttamente nella tabella doc del DB
             mutex_db->unlock();
 
-            // Creo nuovo docId e inserisco nella mappa dei documents
+            // Creo un nuovo docId e inserisco nella mappa dei documents
             mutex_docs->lock();
-            int docId = documents.size();
-            docId++;
+
+            // Per creare il nuovo docId, recupero i docId già creati, trovo il massimo e faccio massimo+1
+            int docId = -1;
+            if(documents.isEmpty()){
+                docId = 1;
+            } else {
+                QList<int> docIds = documents.values();
+                std::sort(docIds.begin(), docIds.end());
+                int docId_max = docIds.last();
+                docId = docId_max + 1;
+            }
+
             documents.insert(username + "_" + docName, docId);
             mutex_docs->unlock();
 
@@ -526,10 +536,21 @@ void Thread_body::create(QString username, QString password, QString nickname, Q
         mutex_db->unlock();
         if(ret == 1){
             // Dati correttamente inseriti nel DB
+            // Creo un nuovo userId e inserisco nella mappa degli users
             mutex_users->lock();
-            int id = users.size();
-            id++;
-            users.insert(username, id);
+
+            // Per creare il nuovo userId, recupero gli userId già creati, trovo il massimo e faccio massimo+1
+            int userId = -1;
+            if(users.isEmpty()){
+                userId = 1;
+            } else {
+                QList<int> userIds = users.values();
+                std::sort(userIds.begin(), userIds.end());
+                int userId_max = userIds.last();
+                userId = userId_max + 1;
+            }
+
+            users.insert(username, userId);
             mutex_users->unlock();
 
             //creo la cartella sul file system per l'utente
@@ -539,7 +560,7 @@ void Thread_body::create(QString username, QString password, QString nickname, Q
             //verifico sia stata correttamente creata
             if(QDir(path+username).exists()){
                 out << "ok";
-                out << id;
+                out << userId;
                 writeData(blocko);
                 // Aggiungo al vettore di logged_users
                 mutex_logged_users->lock();
