@@ -1,7 +1,7 @@
 #include "crdt_message.h"
 #include "crdt_symbol.h"
 
-CRDT_Message::CRDT_Message(): azione("Braiiiiins"), simbolo(*new CRDT_Symbol()), creatore(7){};
+CRDT_Message::CRDT_Message(): azione("NoAction"), simbolo(), creatore(-1){};
 
 CRDT_Message::CRDT_Message(std::string str, CRDT_Symbol s, int id): azione(str), simbolo(s), creatore(id){};
 
