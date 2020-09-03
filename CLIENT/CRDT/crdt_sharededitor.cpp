@@ -76,8 +76,8 @@ void CRDT_SharedEditor::localInsert(int index, QChar value, QTextCharFormat fmt,
     _symbols.insert(it, *simbolo);
 
     /* Creazione del messaggio e invio al NetworkServer */
-    CRDT_Message* messaggio = new CRDT_Message("insert", *simbolo, this->_siteId);
-//    _server.send(*messaggio);     --> chiamata alla funzione send di connection_to_server
+    CRDT_Message messaggio{"insert", *simbolo, this->_siteId};
+
     connection->requestSendMessage(messaggio);
 
 //    std::cout<<"*************************************"<<std::endl;                       // DEBUG -------
@@ -157,7 +157,7 @@ void CRDT_SharedEditor::localErase(int index){
     //std::cout<< "Sto creando un messaggio per eliminare... "<<simbolo.getCarattere()<<" -- "<<simbolo.getIDunivoco()<<std::endl;            // DEBUG ----
 
     /* Creazione del messaggio e invio al NetworkServer */
-    CRDT_Message* messaggio = new CRDT_Message("delete", simbolo, this->_siteId);
+    CRDT_Message messaggio{"delete", simbolo, this->_siteId};
 //    _server.send(*messaggio);
     connection->requestSendMessage(messaggio);
 }

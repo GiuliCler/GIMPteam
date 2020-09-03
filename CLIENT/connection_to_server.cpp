@@ -1016,7 +1016,7 @@ void connection_to_server::displayError(int socketError, const QString &message)
     }
 }
 
-void connection_to_server::requestSendMessage(CRDT_Message *messaggio){
+void connection_to_server::requestSendMessage(const CRDT_Message &messaggio){
 
     qDebug()<<"SEND";      // DEBUG
 
@@ -1036,7 +1036,7 @@ void connection_to_server::requestSendMessage(CRDT_Message *messaggio){
     QByteArray comando = "SEND";
 
     out << comando;
-    out << *messaggio;
+    out << messaggio;
 
     writeData(buffer);
 }
