@@ -99,11 +99,12 @@ std::vector<QString> CollegamentoDB::login(QString username, QString password){
  * Parametri:
  *      username, password  e nickname dell'utente che vuole effettuare la registrazione
  *      icona --> nome di immagine oppure "" in caso di immagine assente
+ *      userId --> userId assegnato all'utente che vuole effettuare la registrazione
  * Ritorno:
  *      1 -> username e password correttamente inseriti nel database
  *      0 -> errore
  */
-int CollegamentoDB::signup(QString username, QString password, QString nickname, QString icona){
+int CollegamentoDB::signup(QString username, QString password, QString nickname, QString icona, int userId){
 
     if(username.isEmpty() || password.isEmpty() || nickname.isEmpty())
         return 0;
@@ -116,7 +117,7 @@ int CollegamentoDB::signup(QString username, QString password, QString nickname,
     QString pass_crypt = QString(QCryptographicHash::hash((pass_salata.toUtf8()),QCryptographicHash::Sha256));
 
     std::string query0 = "SELECT * FROM utenti WHERE username=:user";
-    std::string query = "INSERT INTO utenti(username, password, sale, nickname, icona) VALUES(:user, :pssw, :salt, :nick, :icon)";
+    std::string query = "INSERT INTO utenti(username, password, sale, nickname, icona, user_id) VALUES(:user, :pssw, :salt, :nick, :icon, :id)";
     QSqlQuery ris0(QSqlDatabase::database(connectionName)), ris(QSqlDatabase::database(connectionName));
     ris0.prepare(QString::fromStdString(query0));
     ris.prepare(QString::fromStdString(query));
@@ -125,6 +126,7 @@ int CollegamentoDB::signup(QString username, QString password, QString nickname,
     ris.bindValue(":pssw", pass_crypt);
     ris.bindValue(":salt", sale_qt);
     ris.bindValue(":nick", nickname);
+    ris.bindValue(":id", userId);
 
     if(!icona.isEmpty())
         ris.bindValue(":icon", icona);
@@ -769,13 +771,14 @@ std::vector<QString> CollegamentoDB::recuperaDocsNelDB(){
  * Parametri:
  *      //
  * Ritorno:
- *      >0 utenti -> vettore composto dagli username degli utenti presenti nel DB
- *      =0 utenti -> vettore contenentente il solo elemento "nessuno"
+ *      >0 utenti -> vettore composto dalle coppie (username, userId) degli utenti presenti nel DB
+ *      =0 utenti -> vettore vuoto
  */
-std::vector<QString> CollegamentoDB::recuperaUtentiNelDB(){
-    std::vector<QString> elenco;
+QVector<QPair<QString, int>> CollegamentoDB::recuperaUtentiNelDB(){
+    QVector<QPair<QString, int>> elenco;
+    elenco.clear();     // svuoto, per sicurezza
 
-    std::string query = "SELECT username FROM utenti";
+    std::string query = "SELECT username, user_id FROM utenti";
     QSqlQuery ris(QSqlDatabase::database(connectionName));
     ris.prepare(QString::fromStdString(query));
 
@@ -784,10 +787,12 @@ std::vector<QString> CollegamentoDB::recuperaUtentiNelDB(){
     if(ris.size() > 0){
         while(ris.next()){
             QString user = QString::fromStdString(ris.value(0).toByteArray().toStdString());
-            elenco.push_back(user);
+            int userId = ris.value(1).toInt();
+            QPair<QString, int> utente;
+            utente.first = user;
+            utente.second = userId;
+            elenco.push_back(utente);
         }
-    } else {
-        elenco.emplace_back("nessuno");
     }
 
     return elenco;
@@ -848,7 +853,7 @@ int CollegamentoDB::rimuoviDocumento(QString nomeDOC){
  *      1 -> info relative all'utente aggiornate correttamente
  *      0 -> errore
  */
-int CollegamentoDB::aggiornaUser(QString username, QString nuova_password, QString nuovo_nickname, QString nuova_icona){
+int CollegamentoDB::aggiornaUser(QString username, QString nuova_password, QString nuovo_nickname, QString nuova_icona, int userId){
 
     if(username.isEmpty() || nuova_password.isEmpty() || nuovo_nickname.isEmpty())
         return 0;
@@ -875,13 +880,14 @@ int CollegamentoDB::aggiornaUser(QString username, QString nuova_password, QStri
             risDEL.bindValue(":user", username);
             risDEL.exec();
 
-            std::string query = "INSERT INTO utenti(username, password, sale, nickname, icona) VALUES(:user, :pssw, :salt, :nick, :icon)";
+            std::string query = "INSERT INTO utenti(username, password, sale, nickname, icona, user_id) VALUES(:user, :pssw, :salt, :nick, :icon, :id)";
             QSqlQuery ris(QSqlDatabase::database(connectionName));
             ris.prepare(QString::fromStdString(query));
             ris.bindValue(":user", username);
             ris.bindValue(":pssw", pass_crypt);
             ris.bindValue(":salt", sale_qt);
             ris.bindValue(":nick", nuovo_nickname);
+            ris.bindValue(":id", userId);
 
             if(!nuova_icona.isEmpty())
                 ris.bindValue(":icon", nuova_icona);

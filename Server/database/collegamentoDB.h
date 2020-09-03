@@ -6,6 +6,7 @@
 #include <QtSql/QSqlQuery>
 #include <iostream>
 #include <QVariant>
+#include <QPair>
 
 class CollegamentoDB {
 
@@ -18,7 +19,7 @@ public:
     void connettiDB(const QString& dbname, const QString& connectionName, const QString& hostname="localhost", const QString& username="root", const QString& pssw="");
     void disconnettiDB();
     std::vector<QString> login(QString username, QString password);
-    int signup(QString username, QString password, QString nickname, QString icona);
+    int signup(QString username, QString password, QString nickname, QString icona, int userId);
     int creaDoc(QString nomeDOC);
     QString recuperaURI(QString nomeDOC);
     QString recuperaDocDatoURI(QString uri);
@@ -31,9 +32,9 @@ public:
     int rimuoviPartecipante(QString nomeDOC, QString username);
     int rimuoviAccesso(QString nomeDOC, QString username);
     int aggiornaSiteCounter(QString nomeDOC, QString username, int siteCount);
-    int aggiornaUser(QString username, QString nuova_password, QString nuovo_nickname, QString nuova_icona);
+    int aggiornaUser(QString username, QString nuova_password, QString nuovo_nickname, QString nuova_icona, int userId);
     std::vector<QString> recuperaDocsNelDB();
-    std::vector<QString> recuperaUtentiNelDB();
+    QVector<QPair<QString, int>> recuperaUtentiNelDB();
     int rimuoviDocumento(QString nomeDOC);
 };
 

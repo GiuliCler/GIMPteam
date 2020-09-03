@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Ago 21, 2020 alle 16:42
+-- Creato il: Set 03, 2020 alle 21:02
 -- Versione del server: 10.1.40-MariaDB
 -- Versione PHP: 7.3.5
 
@@ -62,7 +62,8 @@ CREATE TABLE `utenti` (
   `password` varchar(260) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `sale` varchar(20) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `nickname` varchar(20) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  `icona` varchar(40) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL
+  `icona` varchar(40) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  `user_id` int(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --

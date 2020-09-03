@@ -49,7 +49,7 @@ void Thread_body::executeJob(QByteArray data){
         in_data >> nickname;
         in_data >> icon;
 
-        create(username, password, nickname, icon);
+        signup(username, password, nickname, icon);
     }
 
     c = "LOGIN";
@@ -517,7 +517,7 @@ int Thread_body::openDoc(QString docName, int docId, int userId, int new_doc){
     return 1;
 }
 
-void Thread_body::create(QString username, QString password, QString nickname, QString icon){
+void Thread_body::signup(QString username, QString password, QString nickname, QString icon){
     QByteArray blocko;
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
@@ -529,30 +529,27 @@ void Thread_body::create(QString username, QString password, QString nickname, Q
         out << "usernameEsistente";
         writeData(blocko);
     }else{
+        // Creo un nuovo userId e inserisco nella mappa degli users
+        // Per creare il nuovo userId, recupero gli userId già creati, trovo il massimo e faccio massimo+1
+        int userId = -1;
+        if(users.isEmpty()){
+            userId = 1;
+        } else {
+            QList<int> userIds = users.values();
+            std::sort(userIds.begin(), userIds.end());
+            int userId_max = userIds.last();
+            userId = userId_max + 1;
+        }
+
+        users.insert(username, userId);
         mutex_users->unlock();
 
+        // Creo la riga relativa al nuovo user nella tabella utenti del DB
         mutex_db->lock();
-        int ret = database->signup(username, password, nickname, icon);
+        int ret = database->signup(username, password, nickname, icon, userId);
         mutex_db->unlock();
         if(ret == 1){
             // Dati correttamente inseriti nel DB
-            // Creo un nuovo userId e inserisco nella mappa degli users
-            mutex_users->lock();
-
-            // Per creare il nuovo userId, recupero gli userId già creati, trovo il massimo e faccio massimo+1
-            int userId = -1;
-            if(users.isEmpty()){
-                userId = 1;
-            } else {
-                QList<int> userIds = users.values();
-                std::sort(userIds.begin(), userIds.end());
-                int userId_max = userIds.last();
-                userId = userId_max + 1;
-            }
-
-            users.insert(username, userId);
-            mutex_users->unlock();
-
             //creo la cartella sul file system per l'utente
             QDir dir = QDir::current();
             dir.mkpath(path+username);
@@ -718,7 +715,7 @@ void Thread_body::update(int userId, QString password, QString nickname, QString
 
     if(!username.isEmpty() && isLogged(username)){
         mutex_db->lock();
-        if(database->aggiornaUser(username, password, nickname, icon)){
+        if(database->aggiornaUser(username, password, nickname, icon, userId)){
             mutex_db->unlock();
             // User correttamente aggiornato nel db
             out << "ok";

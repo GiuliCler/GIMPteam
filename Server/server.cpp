@@ -44,21 +44,19 @@ Server::Server(QObject *parent): QTcpServer(parent) {
     mutex_db->unlock();
 
     // Riempimento della QMap degli utenti con gli elementi presenti sul DB
-    int cont = 1;
     mutex_db->lock();
-    std::vector<QString> utenti = database->recuperaUtentiNelDB();
+    QVector<QPair<QString, int>> utenti = database->recuperaUtentiNelDB();
     mutex_db->unlock();
     mutex_users->lock();
     for(auto i=utenti.begin(); i<utenti.end(); i++){
-        if((*i) == "nessuno"){
-            break;
-        }
-        users.insert(QString::fromStdString((*i).toStdString()), cont++);
+        QString username = (*i).first;
+        int userId = (*i).second;
+        users.insert(username, userId);
     }
     mutex_users->unlock();
 
     // Riempimento della QMap dei documenti con gli elementi presenti sul DB
-    cont = 1;
+    int cont = 1;
     mutex_db->lock();
     std::vector<QString> documenti = database->recuperaDocsNelDB();
     mutex_db->unlock();
