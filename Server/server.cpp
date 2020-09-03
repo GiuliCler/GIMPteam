@@ -62,7 +62,7 @@ Server::Server(QObject *parent): QTcpServer(parent) {
     mutex_db->unlock();
     mutex_docs->lock();
     for(auto i=documenti.begin(); i<documenti.end(); i++){
-        if((*i) == "nessuno"){
+        if((*i) == "errore"){
             break;
         }
         documents.insert(QString::fromStdString((*i).toStdString()), cont++);
