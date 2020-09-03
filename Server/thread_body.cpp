@@ -7,7 +7,7 @@ Thread_body::Thread_body(int socketDescriptor, QThread* server, QObject *parent)
 {
     auto thread_id = std::this_thread::get_id();
 
-    qDebug() << "ThreadBody constructor id: "<<threadId_toQString(thread_id);      // DEBUG
+//    qDebug() << "ThreadBody constructor id: "<<threadId_toQString(thread_id);      // DEBUG
 
     socket = new QTcpSocket();
     if (!socket->setSocketDescriptor(socketDescriptor)) {
@@ -605,23 +605,14 @@ void Thread_body::login(QString username, QString password){
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
-//    std::cout<<"### LOGIN di: "<<username.toStdString()<<std::endl;     // DEBUG
-//    stampaLoggedUsers();                                                // DEBUG
-
     // Controllo se l'utente ha già effettuato il login ed è attualmente loggato
     mutex_logged_users->lock();
     if(logged_users.contains(username)){            // L'utente ha già effettuato il login ed è attualmente loggato
         mutex_logged_users->unlock();
-
-//        std::cout<<"### Utente gia' loggato"<<std::endl;                // DEBUG
-
         out << "alreadyLogged";
         writeData(blocko);
     } else {                                        // L'utente non è ancora loggato
         mutex_logged_users->unlock();
-
-//        std::cout<<"### Utente non ancora loggato"<<std::endl;          // DEBUG
-
         mutex_db->lock();
         std::vector<QString> v = database->login(username, password);
         mutex_db->unlock();
@@ -647,8 +638,6 @@ void Thread_body::login(QString username, QString password){
             writeData(blocko);
         }
     }
-
-//    stampaLoggedUsers();                                                // DEBUG
 }
 
 void Thread_body::logout(int userId){
@@ -658,9 +647,6 @@ void Thread_body::logout(int userId){
 
     int result = 1;
     QString username = getUsername(userId);
-
-//    std::cout<<"### LOGOUT di: "<<username.toStdString()<<std::endl;    // DEBUG
-//    stampaLoggedUsers();                                                // DEBUG
 
     if(username.isEmpty() || !isLogged(username)){
         result = -1;
@@ -681,15 +667,11 @@ void Thread_body::logout(int userId){
         // Resetto lo userId corrente (nota: inutile, ma messo "per simmetria")
         current_userId = -1;
 
-//        std::cout<<"### Utente rimosso"<<std::endl;                     // DEBUG
-
         if(!flag){
             // L'username non è presente all'interno di logged_users
             result = -1;
         }
     }
-
-//    stampaLoggedUsers();                                                // DEBUG
 
     out << result;
     writeData(blocko);
@@ -1351,9 +1333,6 @@ void Thread_body::moveCursor(int userId, int pos){
 
 void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int docId){
 
-//    qDebug() << "THREAD ID SENDER: "+thread_id_sender;                              // DEBUG
-//    QString docidForDebug = "CURRENTDOCID: "+QString::number(current_docId);       // DEBUG
-
     auto thread_id = std::this_thread::get_id();
     qDebug() << "---- ThreadBody processMessage RICEVUTO thread_id: "<<threadId_toQString(thread_id)<<", doc_id: "<<docId<<" ---- "<< "; Stringa: "<<QString::fromStdString(m.getAzione());      // DEBUG
     QString thread_id_string = threadId_toQString(thread_id);
@@ -1470,8 +1449,6 @@ void Thread_body::readData(){
 
     while (socket->bytesAvailable() > 0){
 
-//        qDebug()<<"readData - BytesAvailable: "<<socket->bytesAvailable();        // DEBUG
-
         readBuffer.append(socket->readAll());
 
         while ((size == 0 && readBuffer.size() >= 4) || (size > 0 && readBuffer.size() >= size))   // While can process data, process it
@@ -1504,7 +1481,6 @@ qint32 Thread_body::ArrayToInt(QByteArray source) {
 
 
 bool Thread_body::writeData(QByteArray data){
-//    qDebug()<<"writeData - data.size(): "<<data.size();           // DEBUG
     socket->write(IntToArray(data.size()));          // ... write size of data
     socket->write(data);                             // ... write the data itself
     return socket->waitForBytesWritten(Timeout);

@@ -539,17 +539,12 @@ std::shared_ptr<QMap<int, QString>> connection_to_server::getKnownDocuments(int 
         throw GUI_GenericException("ERROR. Impossible to retrieve the user's documents.");
     }
 
-    //    qDebug()<<"CONNECTION_TO_SERVER - num_doc RICEVUTO: "<<num;     // DEBUG
-
     QByteArray doc;
     QVector<QString> vet;
     for(int i=0; i<num; i++){
         in_data >> doc;
-        //        qDebug()<<"CONNECTION_TO_SERVER - Arrivato dal server... "<<QString::fromStdString(doc.toStdString());       // DEBUG
         vet.push_back(QString::fromStdString(doc.toStdString()));
     }
-
-    //    qDebug()<<"CONNECTION_TO_SERVER - vet.size(): "<<vet.size();     // DEBUG
 
     // Conversione del QVector<QString> in <QMap<int, QString>>
     for(auto it=vet.begin(); it<vet.end(); it++){
@@ -563,7 +558,6 @@ std::shared_ptr<QMap<int, QString>> connection_to_server::getKnownDocuments(int 
         int docId = list.at(1).toInt();
 
         ritorno.insert(docId, doc_name);
-        //        qDebug()<<"CONNECTION_TO_SERVER - Salvo la coppia (doc_name, docId): ("<<doc_name<<","<<docId<<")";       // DEBUG
     }
 
     return std::make_shared<QMap<int, QString>>(ritorno);
@@ -812,8 +806,6 @@ std::shared_ptr<QSet<int>> connection_to_server::getContributors(int docId){
     int num, id;
     in_data >> num;
 
-    //    qDebug()<<"GET_COLLABORATORS_ONADOC - Ricevuto num_collaborators: "<<num;     // DEBUG
-
     for(int i=0; i<num; i++){
 
         in_data >> id;
@@ -827,8 +819,6 @@ std::shared_ptr<QSet<int>> connection_to_server::getContributors(int docId){
 
         vet.insert(id);
     }
-
-    //    qDebug()<<"GET_COLLABORATORS_ONADOC - vet.size(): "<<vet.size();     // DEBUG
 
     return std::make_shared<QSet<int>>(vet);
 }
@@ -869,19 +859,14 @@ std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int d
     int num, id;
     in_data >> num;
 
-    //    qDebug()<<"GET_WORKINGUSERS_ONADOC - Ricevuto num_working_users: "<<num;     // DEBUG
-
     // Controllo il caso di documento non risulta presente nella mappa del server workingUsers
     if(num >= 0){
         for(int i=0; i<num; i++){
             in_data >> id;
-            //            qDebug()<<"GET_WORKINGUSERS_ONADOC - Arrivato dal server... ID:"<<id;       // DEBUG
             if(id == -1)
                 break;
             vet.insert(id);
         }
-        //    qDebug()<<"GET_WORKINGUSERS_ONADOC - vet.size(): "<<vet.size();     // DEBUG
-
         return std::make_shared<QSet<int>>(vet);
     }
     throw GUI_GenericException("ERROR. Impossible to retrieve the working users on the document.");
@@ -1210,7 +1195,7 @@ void connection_to_server::readDataFile(){
     int num_simboli;
     in_num >> num_simboli;
 
-    qDebug()<<"readDataFile - Ho letto num_simboli: "<<num_simboli;           // DEBUG
+//    qDebug()<<"readDataFile - Ho letto num_simboli: "<<num_simboli;           // DEBUG
 
     // Lettura dei singoli simboli del file
     qint32 size = readBuffer_size;
@@ -1218,7 +1203,7 @@ void connection_to_server::readDataFile(){
     int i = 0;
     while(i<num_simboli){
 
-        qDebug()<<"readDataFile - CICLO DI LETTURA i: "<<i+1<<"/"<<num_simboli;         // DEBUG
+//        qDebug()<<"readDataFile - CICLO DI LETTURA i: "<<i+1<<"/"<<num_simboli;         // DEBUG
 
         if(readBuffer.size() >= 4){
 
@@ -1248,7 +1233,7 @@ void connection_to_server::readDataFile(){
                     simboli.push_back(s);
                     i++;
 
-                    qDebug()<<"readDataFile - Fatto il push_back del simbolo: "<<s.getCarattere().toLatin1();              // DEBUG
+//                    qDebug()<<"readDataFile - Fatto il push_back del simbolo: "<<s.getCarattere().toLatin1();              // DEBUG
 
                     flag = true;
                     break;

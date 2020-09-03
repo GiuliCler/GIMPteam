@@ -35,8 +35,6 @@ QString path = "Files/";
 
 Server::Server(QObject *parent): QTcpServer(parent) {
 
-    qDebug()<< "Dentro al costruttore di Server";           // DEBUG
-
     // Connessione al DB
     database = new CollegamentoDB();
     mutex_db->lock();
@@ -71,9 +69,6 @@ Server::Server(QObject *parent): QTcpServer(parent) {
 
     // Faccio partire il timer associato al check client connessi/crashati (chiamato ogni 5 minuti)
     startTimer(std::chrono::minutes(5));
-
-    qDebug()<<"Fine costruttore di Server";          // DEBUG
-
 }
 
 void Server::incomingConnection(qintptr socketDescriptor) {
@@ -83,17 +78,12 @@ void Server::incomingConnection(qintptr socketDescriptor) {
      * We create an object that will take care of the communication with this client
     */
 
-    qDebug()<< "SERVER - Sono nella incomingConnection";       // DEBUG
-    std::cout << "SERVER incomingConnection id: " << std::this_thread::get_id()<< std::endl;       // DEBUG
-
     // Creo thread_management
     Thread_management* thread_mgm = new Thread_management(socketDescriptor, this);
     connect(thread_mgm, SIGNAL(finished()), thread_mgm, SLOT(deleteLater()));
 
     // Faccio partire thread_management (mod. detach)    
     thread_mgm->start();
-
-    qDebug()<< "SERVER - Fine incomingConnection";      // DEBUG
 }
 
 void Server::timerEvent(QTimerEvent *event){
