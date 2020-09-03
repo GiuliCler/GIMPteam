@@ -772,8 +772,13 @@ void Thread_body::getIcon(int userId){
         mutex_db->lock();
         QString icon = database->getIcon(username);
         mutex_db->unlock();
-        out << icon.toUtf8();
-        writeData(blocko);
+        if(!icon.contains("errore")){
+            out << icon.toUtf8();
+            writeData(blocko);
+        } else {
+            out << "erroreGetIcon";
+            writeData(blocko);
+        }
     }else{
         out << "erroreGetIcon";
         writeData(blocko);
@@ -803,7 +808,7 @@ void Thread_body::getDocs(int userId){
             // Salvo il nome documento corrente
             QString doc_name = (*it);
 
-            if(doc_name != "nessuno"){
+            if(doc_name != "errore"){
                 // Cerco il docId del documento corrente
                 mutex_docs->lock();
                 int docId = documents.value(doc_name);
@@ -1126,8 +1131,8 @@ void Thread_body::getCollaboratorsGivenDoc(int docId){
                 QString c = (*it_int);
 
                 //controlli
-                QString err = "errore";
-                QString no = "no";
+                QString err = "errore1";
+                QString no = "errore0";
                 if(c.contains(err.toUtf8())){
                     out << -2;
                 } else if(c.contains(no.toUtf8())){
@@ -1135,7 +1140,9 @@ void Thread_body::getCollaboratorsGivenDoc(int docId){
                 } else {
                     //se sono qui, vuol dire che c'è almeno una tupla valida
                     //Mando quindi lo userId associato allo username
-                    out << users[c];
+                    mutex_users->lock();
+                    out << users.value(c);
+                    mutex_users->unlock();
                 }
             }
         }
@@ -1387,7 +1394,7 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         int userId = userIdDisconnect[1].toInt();
         QString s = "OFFLINEUSER";
         out << s.toUtf8();
-        out <<  userId;
+        out << userId;
         writeData(blocko);
         return;
     }
@@ -1443,8 +1450,8 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         QStringList str = strAction.split("_");
         QString s = "MOVECURSOR";
         out << s.toUtf8();
-        out <<  str[1].toInt();     // userId
-        out <<  str[2].toInt();     // pos
+        out << str[1].toInt();     // userId
+        out << str[2].toInt();     // pos
         writeData(blocko);
         return;
     }

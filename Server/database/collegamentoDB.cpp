@@ -365,7 +365,7 @@ int CollegamentoDB::aggiungiPartecipante(QString nomeDOC, QString username){
  *      username: utente di cui si devono mostrare i documenti che possono essere da lui modificati
  * Ritorno:
  *      >0 documenti modificabili -> vettore composto dai nomi dei documenti che l'utente è abilitato a modificare
- *      =0 documenti modificabili -> vettore contenentente il solo elemento "nessuno"
+ *      =0 documenti modificabili -> vettore contenentente il solo elemento "errore"
  */
 std::vector<QString> CollegamentoDB::recuperaDocs(QString username){
 
@@ -385,7 +385,7 @@ std::vector<QString> CollegamentoDB::recuperaDocs(QString username){
             elenco.push_back(doc);
         }
     } else {
-        elenco.emplace_back("nessuno");
+        elenco.emplace_back("errore");
     }
 
     return elenco;
@@ -448,15 +448,15 @@ QString CollegamentoDB::getIcon(QString username){
  *      nomeDOC: documento di cui si devono conoscere i collaboratori
  * Ritorno:
  *      >0 collaboratori -> vettore composto da vettori con (username, nickname, icona) degli utenti collaboratori
- *      =0 collaboratori, ovvero no righe trovate in utente_doc -> vettore contenentente un solo vettore con ("no")
- *      errore -> vettore contenentente un solo vettore con ("errore")
+ *      =0 collaboratori, ovvero no righe trovate in utente_doc -> vettore contenentente un solo vettore con ("errore0")
+ *      errore -> vettore contenentente un solo vettore con ("errore1")
  */
 std::vector<std::vector<QString>> CollegamentoDB::recuperaCollaboratori(QString nomeDOC){
     std::vector<std::vector<QString>> ritorno;
 
     if(nomeDOC.isEmpty()){
         std::vector<QString> error;
-        error.emplace_back("errore");
+        error.emplace_back("errore1");
         ritorno.push_back(error);
         return ritorno;
     }
@@ -471,7 +471,7 @@ std::vector<std::vector<QString>> CollegamentoDB::recuperaCollaboratori(QString 
 
             /* No collaboratori per il doc nomeDoc */
             std::vector<QString> nocollab;
-            nocollab.emplace_back("no");
+            nocollab.emplace_back("errore0");
             ritorno.push_back(nocollab);
 
         } else {
@@ -492,7 +492,7 @@ std::vector<std::vector<QString>> CollegamentoDB::recuperaCollaboratori(QString 
         }
     } else {
         std::vector<QString> error;
-        error.emplace_back("errore");
+        error.emplace_back("errore1");
         ritorno.push_back(error);
     }
 
@@ -742,7 +742,7 @@ QString CollegamentoDB::recuperaURI(QString nomeDOC){
  *      //
  * Ritorno:
  *      >0 documenti -> vettore composto dai nomi dei documenti presenti nel DB
- *      =0 documenti -> vettore contenentente il solo elemento "nessuno"
+ *      =0 documenti -> vettore contenentente il solo elemento "errore"
  */
 std::vector<QString> CollegamentoDB::recuperaDocsNelDB(){
     std::vector<QString> elenco;
@@ -759,7 +759,7 @@ std::vector<QString> CollegamentoDB::recuperaDocsNelDB(){
             elenco.push_back(doc);
         }
     } else {
-        elenco.emplace_back("nessuno");
+        elenco.emplace_back("errore");
     }
 
     return elenco;

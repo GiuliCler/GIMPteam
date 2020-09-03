@@ -618,7 +618,7 @@ std::shared_ptr<QMap<int, QString>> connection_to_server::getKnownDocuments(int 
     for(auto it=vet.begin(); it<vet.end(); it++){
         QString stringa = (*it);
 
-        if(stringa == "nessuno")
+        if(stringa == "errore")
             break;
 
         QStringList list = stringa.split('_');
