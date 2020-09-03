@@ -9,13 +9,6 @@
 //MIRKO: ti servirà anche questa
 //#include <QScrollBar>
 
-#define BACKWARD_SEL(action) \
-    if(textEdit.textCursor().hasSelection() && textEdit.textCursor().position() < textEdit.textCursor().anchor()){ \
-        QTextCursor tmp(textEdit.textCursor()); \
-        tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor); \
-        action \
-        rememberFormatChange = true; \
-    }
 
 CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyTextEdit& textEdit, int siteId, int siteCounter):
                         gimpDocs(gimpdocs), parent(parent), connection(gimpDocs->getConnection()), textEdit(textEdit), highlightUsers(false),
@@ -38,49 +31,77 @@ CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyT
     parent->childToolsBar->ui->spinBox->setSpecialValueText("Default");
 }
 
+
 void CRDT_controller::setLeft(){
     textEdit.setAlignment(Qt::AlignLeft);
     emit menuSet(menuTools::A_LEFT);
     cursorMoved();
 }
+
 void CRDT_controller::setCenter(){
     textEdit.setAlignment(Qt::AlignCenter);
     emit menuSet(menuTools::A_CENTER);
     cursorMoved();
 }
+
 void CRDT_controller::setRight(){
     textEdit.setAlignment(Qt::AlignRight);
     emit menuSet(menuTools::A_RIGHT);
     cursorMoved();
 }
+
 void CRDT_controller::setJustified(){
     textEdit.setAlignment(Qt::AlignJustify);
     emit menuSet(menuTools::A_JUSTIFIED);
     cursorMoved();
 }
 
+
 void CRDT_controller::setBold(){
-    BACKWARD_SEL(textEdit.setFontWeight(tmp.charFormat().fontWeight() >= QFont::Bold ? QFont::Normal : QFont::Bold);)
+    if(textEdit.textCursor().hasSelection() && textEdit.textCursor().position() < textEdit.textCursor().anchor()){
+        QTextCursor tmp(textEdit.textCursor());
+        tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+        textEdit.setFontWeight(tmp.charFormat().fontWeight() >= QFont::Bold ? QFont::Normal : QFont::Bold);
+        rememberFormatChange = true;
+    }
     else
         textEdit.setFontWeight(textEdit.fontWeight() >= QFont::Bold ? QFont::Normal : QFont::Bold);
     textEdit.setFocus();
 }
+
 void CRDT_controller::setItalic(){
-    BACKWARD_SEL(textEdit.setFontItalic(!tmp.charFormat().fontItalic());)
+    if(textEdit.textCursor().hasSelection() && textEdit.textCursor().position() < textEdit.textCursor().anchor()){
+        QTextCursor tmp(textEdit.textCursor());
+        tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+        textEdit.setFontItalic(!tmp.charFormat().fontItalic());
+        rememberFormatChange = true;
+    }
     else
         textEdit.setFontItalic(!textEdit.fontItalic());
     textEdit.setFocus();
 }
+
 void CRDT_controller::setStrikethrough(){
     QTextCharFormat fmt;
-    BACKWARD_SEL(fmt.setFontStrikeOut(!tmp.charFormat().fontStrikeOut());)
+    if(textEdit.textCursor().hasSelection() && textEdit.textCursor().position() < textEdit.textCursor().anchor()){
+        QTextCursor tmp(textEdit.textCursor());
+        tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+        fmt.setFontStrikeOut(!tmp.charFormat().fontStrikeOut());
+        rememberFormatChange = true;
+    }
     else
         fmt.setFontStrikeOut(!textEdit.currentCharFormat().fontStrikeOut());
     textEdit.mergeCurrentCharFormat(fmt);
     textEdit.setFocus();
 }
+
 void CRDT_controller::setUnderlined(){
-    BACKWARD_SEL(textEdit.setFontUnderline(!tmp.charFormat().fontUnderline());)
+    if(textEdit.textCursor().hasSelection() && textEdit.textCursor().position() < textEdit.textCursor().anchor()){
+        QTextCursor tmp(textEdit.textCursor());
+        tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+        textEdit.setFontUnderline(!tmp.charFormat().fontUnderline());
+        rememberFormatChange = true;
+    }
     else
         textEdit.setFontUnderline(!textEdit.fontUnderline());
     textEdit.setFocus();
@@ -102,6 +123,7 @@ void CRDT_controller::setFont(const QFont &f){
     textEdit.setFocus();
 }
 
+
 void CRDT_controller::copy(){
     textEdit.copy();
 }
@@ -115,6 +137,7 @@ void CRDT_controller::paste(){
     textEdit.setFocus();
 }
 
+
 void CRDT_controller::undo(){
     textEdit.undo();
     textEdit.setFocus();
@@ -124,6 +147,7 @@ void CRDT_controller::redo(){
     textEdit.redo();
     textEdit.setFocus();
 }
+
 
 void CRDT_controller::setCurrentTextColor(QColor color){
     textEdit.setTextColor(color);
@@ -168,27 +192,30 @@ void CRDT_controller::setUsersColors(bool value){
     processingMessage = processingMessage_prev;
 }
 
+
 void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
-    BACKWARD_SEL(
-                emit menuSet(tmp.charFormat().fontItalic() ? menuTools::ITALIC_ON : menuTools::ITALIC_OFF);
-                emit menuSet(tmp.charFormat().fontStrikeOut() ? menuTools::STRIKETHROUGH_ON : menuTools::STRIKETHROUGH_OFF);
-                emit menuSet(tmp.charFormat().fontUnderline() ? menuTools::UNDERLINED_ON : menuTools::UNDERLINED_OFF);
-                emit menuSet(tmp.charFormat().fontWeight() >= QFont::Bold ? menuTools::BOLD_ON : menuTools::BOLD_OFF);
-                parent->childToolsBar->setTextColorIconColor(tmp.charFormat().foreground().color());
-                if(static_cast<int>(tmp.charFormat().fontPointSize()) != parent->childToolsBar->ui->spinBox->value()){
-                    validateSpin = false;
-                    parent->childToolsBar->ui->spinBox->setValue(static_cast<int>(tmp.charFormat().fontPointSize()));
-                    if(parent->childToolsBar->ui->spinBox->value() == parent->childToolsBar->ui->spinBox->minimum()){
-                        validateSpin = false;
-                        parent->childToolsBar->ui->spinBox->setValue(12); // TODO define a default font size?
-                    }
-                }
-                if(tmp.charFormat().font() != parent->childToolsBar->ui->fontComboBox->currentFont()){
-                    validateFontCombo = false;
-                    parent->childToolsBar->ui->fontComboBox->setCurrentFont(tmp.charFormat().font());
-                }
-            )
-    else{
+    if(textEdit.textCursor().hasSelection() && textEdit.textCursor().position() < textEdit.textCursor().anchor()){
+        QTextCursor tmp(textEdit.textCursor());
+        tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+        emit menuSet(tmp.charFormat().fontItalic() ? menuTools::ITALIC_ON : menuTools::ITALIC_OFF);
+        emit menuSet(tmp.charFormat().fontStrikeOut() ? menuTools::STRIKETHROUGH_ON : menuTools::STRIKETHROUGH_OFF);
+        emit menuSet(tmp.charFormat().fontUnderline() ? menuTools::UNDERLINED_ON : menuTools::UNDERLINED_OFF);
+        emit menuSet(tmp.charFormat().fontWeight() >= QFont::Bold ? menuTools::BOLD_ON : menuTools::BOLD_OFF);
+        parent->childToolsBar->setTextColorIconColor(tmp.charFormat().foreground().color());
+        if(static_cast<int>(tmp.charFormat().fontPointSize()) != parent->childToolsBar->ui->spinBox->value()){
+            validateSpin = false;
+            parent->childToolsBar->ui->spinBox->setValue(static_cast<int>(tmp.charFormat().fontPointSize()));
+            if(parent->childToolsBar->ui->spinBox->value() == parent->childToolsBar->ui->spinBox->minimum()){
+                validateSpin = false;
+                parent->childToolsBar->ui->spinBox->setValue(12); // TODO define a default font size?
+            }
+        }
+        if(tmp.charFormat().font() != parent->childToolsBar->ui->fontComboBox->currentFont()){
+            validateFontCombo = false;
+            parent->childToolsBar->ui->fontComboBox->setCurrentFont(tmp.charFormat().font());
+        }
+        rememberFormatChange = true;
+    }else{
         emit menuSet(format.fontItalic() ? menuTools::ITALIC_ON : menuTools::ITALIC_OFF);
         emit menuSet(format.fontStrikeOut() ? menuTools::STRIKETHROUGH_ON : menuTools::STRIKETHROUGH_OFF);
         emit menuSet(format.fontUnderline() ? menuTools::UNDERLINED_ON : menuTools::UNDERLINED_OFF);
@@ -213,6 +240,7 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
     }
 }
 
+
 void CRDT_controller::cursorMoved(){
     switch (textEdit.alignment()) {
         case Qt::AlignLeft:
@@ -236,8 +264,9 @@ void CRDT_controller::cursorMoved(){
 
     connection->requestSendMovedCursor(crdt.getSiteId(), textEdit.textCursor().position());
 }
+
 void CRDT_controller::selectionChanged(){
-    if(processingMessage)                         // TODO: Paolo non sa se è da togliere o no.....
+    if(processingMessage)
         return;
 
     if(rememberFormatChange){
@@ -253,6 +282,7 @@ void CRDT_controller::selectionChanged(){
         parent->setMenuToolStatus(COPY_OFF);
     }
 }
+
 
 void CRDT_controller::contentChanged(int pos, int del, int add){
     if(processingMessage)
@@ -351,6 +381,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     }
 }
 
+
 void CRDT_controller::clipboardDataChanged(){
     if (const QMimeData *md = QApplication::clipboard()->mimeData())
         parent->setMenuToolStatus(md->hasText() ? PASTE_ON : PASTE_OFF);
@@ -363,6 +394,7 @@ void CRDT_controller::undoAvailableChanged(bool available){
 void CRDT_controller::redoAvailableChanged(bool available){
     parent->setMenuToolStatus(available ? REDO_ON : REDO_OFF);
 }
+
 
 void CRDT_controller::menuCall(menuTools op){
     switch (op) {
@@ -409,6 +441,7 @@ void CRDT_controller::menuCall(menuTools op){
             break;
     }
 }
+
 
 void CRDT_controller::remoteDelete(int pos){
 
