@@ -71,12 +71,12 @@ void CRDT_SharedEditor::localInsert(int index, QChar value, QTextCharFormat fmt,
     //printf("%d\n", _siteId);       // DEBUG ------
 
     /* Creazione del nuovo simbolo e inserimento nella corretta posizione all'interno del vettore _symbols */
-    auto simbolo = new CRDT_Symbol(value, this->_siteId, this->_counter++, posizione, fmt, align);
+    CRDT_Symbol simbolo{value, this->_siteId, this->_counter++, posizione, fmt, align};
     auto it = _symbols.begin()+index;
-    _symbols.insert(it, *simbolo);
+    _symbols.insert(it, simbolo);
 
     /* Creazione del messaggio e invio al NetworkServer */
-    CRDT_Message messaggio{"insert", *simbolo, this->_siteId};
+    CRDT_Message messaggio{"insert", simbolo, this->_siteId};
 
     connection->requestSendMessage(messaggio);
 
