@@ -194,6 +194,7 @@ void CRDT_controller::setUsersColors(bool value){
 
 
 void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
+    int defaultSize = 12;
     if(textEdit.textCursor().hasSelection() && textEdit.textCursor().position() < textEdit.textCursor().anchor()){
         QTextCursor tmp(textEdit.textCursor());
         tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
@@ -207,7 +208,7 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
             parent->childToolsBar->ui->spinBox->setValue(static_cast<int>(tmp.charFormat().fontPointSize()));
             if(parent->childToolsBar->ui->spinBox->value() == parent->childToolsBar->ui->spinBox->minimum()){
                 validateSpin = false;
-                parent->childToolsBar->ui->spinBox->setValue(12); // TODO define a default font size?
+                parent->childToolsBar->ui->spinBox->setValue(defaultSize);
             }
         }
         if(tmp.charFormat().font() != parent->childToolsBar->ui->fontComboBox->currentFont()){
@@ -229,7 +230,7 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
             if(parent->childToolsBar->ui->spinBox->value() == parent->childToolsBar->ui->spinBox->minimum()){
                 if(textEdit.textCursor().hasSelection())
                     validateSpin = false;
-                parent->childToolsBar->ui->spinBox->setValue(12); // TODO define a default font size?
+                parent->childToolsBar->ui->spinBox->setValue(defaultSize);
             }
         }
         if(textEdit.currentFont() != parent->childToolsBar->ui->fontComboBox->currentFont()) {
