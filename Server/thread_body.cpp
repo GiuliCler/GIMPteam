@@ -628,16 +628,11 @@ void Thread_body::login(QString username, QString password){
         if(v.size()==2){
             // Aggiungo al vettore di users
             mutex_users->lock();
-            int id = users[username];
-            if(id == 0){
-                id = users.size();
-                id++;
-                users.insert(username, id);
-            }
+            int userId = users.value(username);
             mutex_users->unlock();
 
             // Salvo lo userId corrente
-            current_userId = id;
+            current_userId = userId;
 
             // Aggiungo al vettore di logged_users
             mutex_logged_users->lock();
@@ -645,7 +640,7 @@ void Thread_body::login(QString username, QString password){
             mutex_logged_users->unlock();
 
             out << "ok";
-            out << id;
+            out << userId;
             writeData(blocko);
         }else{
             out << "erroreLogin";
