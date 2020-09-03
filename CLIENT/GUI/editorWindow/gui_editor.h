@@ -27,7 +27,7 @@ public:
     GUI_ToolsBar *childToolsBar;
     GUI_UsersBar *childUsersBar;
     GUI_MyTextEdit *childMyTextEdit;
-    std::unique_ptr<CRDT_controller> crdtController;
+    CRDT_controller *crdtController;
 
 
     explicit GUI_Editor(QWidget *parent, int documentId, QString docName, bool call_open);

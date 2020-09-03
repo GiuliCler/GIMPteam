@@ -11,7 +11,6 @@
 #include <QScrollBar>
 #include <QPrinter>
 #include <QFileDialog>
-//#include <QFileInfo>
 
 GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, bool call_open) : QWidget(parent), documentId(documentId), docName(docName)
 {
@@ -58,7 +57,7 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, bool ca
         siteCounter = 0;
     }
 
-    crdtController.reset(new CRDT_controller(gimpParent, this, *childMyTextEdit, gimpParent->userid, siteCounter));
+    crdtController = new CRDT_controller(gimpParent, this, *childMyTextEdit, gimpParent->userid, siteCounter);
 
     //devo fare qui queste connect perchè devo aspettare che la crdtController sia creata
     connect(&(*crdtController), &CRDT_controller::updateCursorPosition, childMyTextEdit, &GUI_MyTextEdit::on_updateCursorPosition_emitted);
