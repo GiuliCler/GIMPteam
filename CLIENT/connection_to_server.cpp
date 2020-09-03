@@ -663,7 +663,7 @@ std::string connection_to_server::requestGetNickname(int userId){
         //return "errore";
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+       // emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
         throw GUI_ConnectionException("Timeout Expired.");
         //return "errore";
     }
@@ -712,7 +712,7 @@ std::string connection_to_server::requestIconId(int userId){
         //return "errore";
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
         throw GUI_ConnectionException("Timeout Expired.");
         //return "errore";
     }
@@ -762,7 +762,7 @@ std::string connection_to_server::requestGetUsername(int userId){
         //return "errore";
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
         throw GUI_ConnectionException("Timeout Expired.");
         //return "errore";
     }
@@ -812,7 +812,7 @@ std::string connection_to_server::requestDeleteDoc(int userId,int documentId){
         //return "errore";
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
         throw GUI_ConnectionException("Timeout Expired.");
         //return "errore";
     }
@@ -862,7 +862,7 @@ int connection_to_server::getDocumentOwner(int docId){
         //return -1;
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
         throw GUI_ConnectionException("Timeout Expired.");
         //return -1;
     }
@@ -910,7 +910,7 @@ std::shared_ptr<QSet<int>> connection_to_server::getContributors(int docId){
         throw GUI_ConnectionException("writeData ERROR. Server not connected.");
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
         throw GUI_ConnectionException("Timeout Expired.");
     }
     QByteArray data = readData();
@@ -975,7 +975,7 @@ std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int d
         throw GUI_ConnectionException("writeData ERROR. Server not connected.");
 
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
         throw GUI_ConnectionException("Timeout Expired.");
     }
     QByteArray data = readData();
@@ -1034,7 +1034,8 @@ void connection_to_server::requestSendMessage(CRDT_Message *messaggio){
 
     if (!tcpSocket->waitForConnected(Timeout)) {
         //emit error(tcpSocket->error(), tcpSocket->errorString());
-        return;
+        //return;
+        throw GUI_ConnectionException("Timeout Expired.");
     }
 
     QByteArray buffer;
@@ -1075,8 +1076,9 @@ void connection_to_server::requestSendMovedCursor(int userId, int pos){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
 
     if (!tcpSocket->waitForConnected(Timeout)) {
-        emit error(tcpSocket->error(), tcpSocket->errorString());
-        return;
+        //emit error(tcpSocket->error(), tcpSocket->errorString());
+        //return;
+        throw GUI_ConnectionException("Timeout Expired.");
     }
 
     QByteArray buffer;
@@ -1146,7 +1148,8 @@ void connection_to_server::disconnectEditor(int userId, int docId){
 
         if (!tcpSocket->waitForConnected(Timeout)) {
             //emit error(tcpSocket->error(), tcpSocket->errorString());
-            return;
+            //return;
+            throw GUI_ConnectionException("Timeout Expired.");
         }
     }
 
@@ -1263,7 +1266,7 @@ bool connection_to_server::writeData(QByteArray data){
         this->tcpSocket->write(data);                             // ... write the data itself
 
         if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
-            emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+            //emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
             throw GUI_ConnectionException("Timeout Expired.");
             //return false;
         }
@@ -1350,8 +1353,9 @@ void connection_to_server::readDataFile(){
 
     // Lettura del numero di simboli contenuti nel file
     if(!this->tcpSocket->waitForReadyRead(Timeout)){
-        emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-        return;
+       // emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+        //return;
+        throw GUI_ConnectionException("Timeout Expired.");
     }
 
     QByteArray data = readData();
@@ -1412,8 +1416,9 @@ void connection_to_server::readDataFile(){
 
         if(this->tcpSocket->bytesAvailable() == 0){
             if(!this->tcpSocket->waitForReadyRead(Timeout)){
-                emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
-                return;
+               // emit error(this->tcpSocket->error(), this->tcpSocket->errorString());
+               // return;
+                throw GUI_ConnectionException("Timeout Expired.");
             }
         }
 
