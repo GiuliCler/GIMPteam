@@ -19,7 +19,7 @@ private slots:
 
 private:
     GIMPdocs *gimpParent;
-    Ui::GUI_Profile *ui;
+    std::unique_ptr<Ui::GUI_Profile> ui;
 
     void fillForm();
     //questa serve solo a riempire la combobox

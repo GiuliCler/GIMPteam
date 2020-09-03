@@ -13,7 +13,7 @@ class GUI_ToolsBar : public QWidget
     Q_OBJECT
 public:
     //deve rimanere pubblic operchè srver per delle connect
-    Ui::GUI_ToolsBar *ui;
+    std::unique_ptr<Ui::GUI_ToolsBar> ui;
 
     explicit GUI_ToolsBar(QWidget *parent);
     ~GUI_ToolsBar();

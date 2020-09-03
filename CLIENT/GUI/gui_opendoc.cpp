@@ -15,7 +15,7 @@ GUI_Opendoc::GUI_Opendoc(QWidget *parent) : QWidget(parent)
 {
     this->setObjectName(GUI_Opendoc::getObjectName());
     gimpParent = static_cast<GUI_Menu*>(parent)->gimpParent;
-    ui = new Ui::GUI_Opendoc;
+    ui.reset(new Ui::GUI_Opendoc);
     ui->setupUi(this);
 
     fillList();
@@ -31,7 +31,7 @@ GUI_Opendoc::GUI_Opendoc(QWidget *parent) : QWidget(parent)
 }
 
 GUI_Opendoc::~GUI_Opendoc(){
-    delete ui;
+    //delete ui;
 }
 
 

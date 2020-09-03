@@ -18,7 +18,7 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, bool ca
     this->setObjectName(GUI_Editor::getObjectName());
     gimpParent = static_cast<GIMPdocs*>(parent);
 
-    ui = new Ui::GUI_Editor();
+    ui.reset(new Ui::GUI_Editor());
     ui->setupUi(this);
 
     childMyTextEdit = new GUI_MyTextEdit(this);
@@ -58,11 +58,11 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, bool ca
         siteCounter = 0;
     }
 
-    crdtController = new CRDT_controller(gimpParent, this, *childMyTextEdit, gimpParent->userid, siteCounter);
+    crdtController.reset(new CRDT_controller(gimpParent, this, *childMyTextEdit, gimpParent->userid, siteCounter));
 
     //devo fare qui queste connect perchè devo aspettare che la crdtController sia creata
-    connect(crdtController, &CRDT_controller::updateCursorPosition, childMyTextEdit, &GUI_MyTextEdit::on_updateCursorPosition_emitted);
-    connect(crdtController, &CRDT_controller::notifyDeletedStack, childToolsBar, &GUI_ToolsBar::compromisedUndoStack);
+    connect(&(*crdtController), &CRDT_controller::updateCursorPosition, childMyTextEdit, &GUI_MyTextEdit::on_updateCursorPosition_emitted);
+    connect(&(*crdtController), &CRDT_controller::notifyDeletedStack, childToolsBar, &GUI_ToolsBar::compromisedUndoStack);
 
     //avvio la connessione speciale per l'editor. D'ora in poi la connection_to_server è off-limits
     if(GUI_ConnectionToServerWrapper::requestStartEditorConnection(gimpParent) < 0)
@@ -73,8 +73,8 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, bool ca
 }
 
 GUI_Editor::~GUI_Editor(){
-    delete ui;
-    delete crdtController;
+    //delete ui;
+    //delete crdtController;
 }
 
 /*************ACTIONS*********************************/

@@ -3,6 +3,7 @@
 
 #include "ui_gui_reconnection.h"
 #include <QDialog>
+#include <memory>
 
 class GIMPdocs;
 
@@ -22,7 +23,7 @@ private slots:
     void on_retryPushButton_clicked();
 
 private:
-    Ui::GUI_Reconnection *ui;
+    std::unique_ptr<Ui::GUI_Reconnection> ui;
     explicit GUI_Reconnection(QWidget *parent);
 
 };

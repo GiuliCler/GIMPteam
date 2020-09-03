@@ -6,6 +6,7 @@
 #include <QWidget>
 #include <QMap>
 #include <QColor>
+#include <memory>
 
 class CRDT_controller;
 class GUI_ToolsBar;
@@ -26,7 +27,7 @@ public:
     GUI_ToolsBar *childToolsBar;
     GUI_UsersBar *childUsersBar;
     GUI_MyTextEdit *childMyTextEdit;
-    CRDT_controller *crdtController;
+    std::unique_ptr<CRDT_controller> crdtController;
 
 
     explicit GUI_Editor(QWidget *parent, int documentId, QString docName, bool call_open);
@@ -69,7 +70,7 @@ private:
 
     QString docName;
     QString uri;
-    Ui::GUI_Editor *ui;
+    std::unique_ptr<Ui::GUI_Editor> ui;
     GUI_ColorsManager colorsManager;
     QMap<int, QColor*> userColorMap;
 

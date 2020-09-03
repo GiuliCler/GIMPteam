@@ -11,7 +11,7 @@ GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
 {
     this->setObjectName(GUI_Profile::getObjectName());
     gimpParent = static_cast<GIMPdocs*>(parent);
-    ui = new Ui::GUI_Profile;
+    ui.reset(new Ui::GUI_Profile);
     ui->setupUi(this);
 
     loadIcons();
@@ -33,7 +33,7 @@ GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
 }
 
 GUI_Profile::~GUI_Profile(){
-    delete ui;
+    //delete ui;
 }
 
 void GUI_Profile::on_savePushButton_clicked(){

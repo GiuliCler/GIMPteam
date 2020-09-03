@@ -6,9 +6,6 @@
 #include <iostream>
 #include <QScrollBar>
 
-//MIRKO: ti servirà anche questa
-//#include <QScrollBar>
-
 #define BACKWARD_SEL(action) \
     if(textEdit.textCursor().hasSelection() && textEdit.textCursor().position() < textEdit.textCursor().anchor()){ \
         QTextCursor tmp(textEdit.textCursor()); \

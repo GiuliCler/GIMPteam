@@ -25,7 +25,7 @@ private slots:
 
 private:
     GIMPdocs *gimpParent;
-    Ui::GUI_Opendoc *ui;
+    std::unique_ptr<Ui::GUI_Opendoc> ui;
     QMap<int, QString> knownDocuments;
 
     void fillList();

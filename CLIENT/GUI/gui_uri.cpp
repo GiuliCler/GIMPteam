@@ -2,7 +2,7 @@
 #include <QClipboard>
 
 GUI_URI::GUI_URI(QWidget *parent, QString uri) : QDialog(parent){
-    ui = new Ui::GUI_URI;
+    ui.reset(new Ui::GUI_URI);
     ui->setupUi(this);
 
     setWindowTitle("Document URI");
@@ -15,7 +15,7 @@ GUI_URI::GUI_URI(QWidget *parent, QString uri) : QDialog(parent){
 }
 
 GUI_URI::~GUI_URI(){
-    delete ui;
+    //delete ui;
 }
 
 void GUI_URI::on_copyPushButton_clicked(){

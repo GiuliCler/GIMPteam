@@ -18,7 +18,7 @@ private slots:
     void on_copyPushButton_released();
 
 private:
-    Ui::GUI_URI *ui;
+    std::unique_ptr<Ui::GUI_URI> ui;
 };
 
 #endif // GUI_URI_H

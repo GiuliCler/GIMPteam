@@ -18,7 +18,7 @@ void GUI_Reconnection::GUI_ReconnectionWrapper(QWidget *parent){
 }
 
 GUI_Reconnection::GUI_Reconnection(QWidget *parent) : QDialog(parent){
-    ui = new Ui::GUI_Reconnection();
+    ui.reset(new Ui::GUI_Reconnection());
     ui->setupUi(this);
 
     setWindowTitle("Connection failed");
@@ -31,7 +31,7 @@ GUI_Reconnection::GUI_Reconnection(QWidget *parent) : QDialog(parent){
 }
 
 GUI_Reconnection::~GUI_Reconnection(){
-    delete ui;
+    //delete ui;
 }
 
 void GUI_Reconnection::on_exitPushButton_clicked(){

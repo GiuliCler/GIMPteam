@@ -7,7 +7,7 @@
 GUI_UsersBar::GUI_UsersBar(QWidget *parent) : QWidget(parent){
     this->setObjectName(GUI_UsersBar::getObjectName());
     editorParent = static_cast<GUI_Editor*>(parent);
-    ui = new Ui::GUI_UsersBar();
+    ui.reset(new Ui::GUI_UsersBar());
     ui->setupUi(this);
 
     GUI_MyScrollArea *onlineIconsScrollArea = new GUI_MyScrollArea(ui->onlineIgnoredWrapper);
@@ -27,7 +27,7 @@ GUI_UsersBar::GUI_UsersBar(QWidget *parent) : QWidget(parent){
 }
 
 GUI_UsersBar::~GUI_UsersBar(){
-    delete ui;
+    //delete ui;
 }
 
 QLabel *GUI_UsersBar::getUserIcon(QColor color, QString nickname, QString iconId){

@@ -25,7 +25,7 @@ public slots:
 
 private:
     GUI_Editor *editorParent;
-    Ui::GUI_UsersBar *ui;
+    std::unique_ptr<Ui::GUI_UsersBar> ui;
     QMap<int, QLabel*> onlineUsersIconMap;
     QMap<int, QLabel*> contributorUsersIconMap;
 

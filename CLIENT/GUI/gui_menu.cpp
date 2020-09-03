@@ -11,7 +11,7 @@ GUI_Menu::GUI_Menu(QWidget *parent) : QWidget(parent)
 {
     this->setObjectName(GUI_Menu::getObjectName());
     gimpParent = static_cast<GIMPdocs*>(parent);
-    ui = new Ui::GUI_Menu;
+    ui.reset(new Ui::GUI_Menu);
     ui->setupUi(this);
 
     setProfileArea();
@@ -19,7 +19,7 @@ GUI_Menu::GUI_Menu(QWidget *parent) : QWidget(parent)
 }
 
 GUI_Menu::~GUI_Menu(){
-    delete ui;
+    //delete ui;
 }
 
 void GUI_Menu::setProfileArea(){

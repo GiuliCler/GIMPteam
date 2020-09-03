@@ -7,8 +7,8 @@
 
 GIMPdocs::GIMPdocs(QWidget *parent) : QMainWindow(parent), userid(-1)
 {
-    ui1 = new Ui::GIMPdocs;
-    ui2 = new Ui::GUI_EditWindow;
+    ui1.reset(new Ui::GIMPdocs);
+    ui2.reset(new Ui::GUI_EditWindow);
 
     regularWindowSize = this->size();
     alreadyMaximized = false;
@@ -19,8 +19,8 @@ GIMPdocs::GIMPdocs(QWidget *parent) : QMainWindow(parent), userid(-1)
 }
 
 GIMPdocs::~GIMPdocs(){
-    delete ui1;
-    delete ui2;
+    //delete ui1;
+    //delete ui2;
 }
 
 void GIMPdocs::closeEvent (QCloseEvent *event){

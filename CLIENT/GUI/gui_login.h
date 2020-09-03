@@ -21,7 +21,7 @@ private slots:
 
 private:
     GIMPdocs *gimpParent;
-    Ui::GUI_Login *ui;
+    std::unique_ptr<Ui::GUI_Login> ui;
 
     bool checkFieldValidity(QString value, QString name);
 };

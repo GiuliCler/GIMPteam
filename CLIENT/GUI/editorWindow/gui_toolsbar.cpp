@@ -7,7 +7,7 @@
 GUI_ToolsBar::GUI_ToolsBar(QWidget *parent) : QWidget(parent){
     this->setObjectName(GUI_ToolsBar::getObjectName());
     editorParent = static_cast<GUI_Editor*>(parent);
-    ui = new Ui::GUI_ToolsBar();
+    ui.reset(new Ui::GUI_ToolsBar());
     ui->setupUi(this);
 
     fadingLabel = new GUI_FadingLabel(this);
@@ -33,7 +33,7 @@ GUI_ToolsBar::GUI_ToolsBar(QWidget *parent) : QWidget(parent){
 }
 
 GUI_ToolsBar::~GUI_ToolsBar(){
-    delete ui;
+    //delete ui;
 }
 
 void GUI_ToolsBar::on_colorPushButton_clicked(){

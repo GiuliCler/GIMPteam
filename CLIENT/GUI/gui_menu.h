@@ -20,7 +20,7 @@ private slots:
     void on_logoutPushButton_clicked();
 
 private:
-    Ui::GUI_Menu *ui;
+    std::unique_ptr<Ui::GUI_Menu> ui;
 
     void setDocumentArea();
     void setProfileArea();
