@@ -339,15 +339,15 @@ void GUI_Editor::setMenuToolStatus(menuTools code){
 
 void GUI_Editor::addUserToEditorGUI(int userid, QString nickname, QString iconId){
     //ottengo un colore per cursore e icona
-    QColor *color = getUserColor(userid);
+    QColor color = getUserColor(userid);
 
     //questo bruttissimo passaggio di parametri di funzione in funzione anzichè reperirli direttamente a basso livello chiamando il server è perchè mentre il CRDT è aperto non posso usare la connection_to_server
-    childUsersBar->addOnlineUserIcon(userid, *color, nickname, iconId);
+    childUsersBar->addOnlineUserIcon(userid, color, nickname, iconId);
 
     //GUI_MyTextEdit *son = findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName());
     if(userid != gimpParent->userid){
         QPoint p = QPoint (childMyTextEdit->cursorRect().topLeft().x(), childMyTextEdit->cursorRect().topLeft().y() + childMyTextEdit->verticalScrollBar()->value());
-        childMyTextEdit->addUserCursor(userid, p, *color);
+        childMyTextEdit->addUserCursor(userid, p, color);
     }
 }
 
@@ -357,13 +357,13 @@ void GUI_Editor::removeUserFromEditorGUI(int userid){
 }
 
 void GUI_Editor::addContributorToCurrentDocument(int userid, QString nickname, QString iconId){
-    QColor *color = getUserColor(userid);
-    childUsersBar->addContributorUserIcon(userid, *color, nickname, iconId);
+    QColor color = getUserColor(userid);
+    childUsersBar->addContributorUserIcon(userid, color, nickname, iconId);
 }
 
 
-QColor *GUI_Editor::getUserColor(int userId){
-    QColor *color;
+QColor GUI_Editor::getUserColor(int userId){
+    QColor color;
     //controllo che l'user non abbia già un colore assegnato, o perchè si è disconnesso e riconnesso o perchè è già presente fra i contributors
     if(userColorMap.find(userId) == userColorMap.end() ){
         color = colorsManager.newColor();

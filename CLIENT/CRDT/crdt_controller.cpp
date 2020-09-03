@@ -146,7 +146,7 @@ void CRDT_controller::setUsersColors(bool value){
 
         QTextCharFormat fmt{tmp.charFormat()};
         if(highlightUsers){                 // L'utente vuole vedere il testo colorato con il colore di ogni utente
-            fmt.setBackground(*(parent->getUserColor(crdt.getSiteIdAt(pos))));          // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
+            fmt.setBackground(parent->getUserColor(crdt.getSiteIdAt(pos)));          // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
         } else {                            // L'utente non vuole vedere più il testo colorato con il colore di ogni utente
             fmt.setBackground(Qt::BrushStyle::NoBrush);     // Setto il background color a "white"
         }
@@ -154,7 +154,7 @@ void CRDT_controller::setUsersColors(bool value){
     }
 
     if(highlightUsers && textEdit.textBackgroundColor() == Qt::BrushStyle::NoBrush)
-        textEdit.setTextBackgroundColor(*(parent->getUserColor(crdt.getSiteId())));
+        textEdit.setTextBackgroundColor(parent->getUserColor(crdt.getSiteId()));
 
     if(!highlightUsers && textEdit.textBackgroundColor() != Qt::BrushStyle::NoBrush)
         textEdit.setTextBackgroundColor(Qt::BrushStyle::NoBrush);
@@ -331,7 +331,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
             for(int i = pos; i < pos + add + cnt; tmp.setPosition(++i)){
                 tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
                 QTextCharFormat fmt{tmp.charFormat()};
-                fmt.setBackground(*(parent->getUserColor(crdt.getSiteIdAt(pos))));           // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
+                fmt.setBackground(parent->getUserColor(crdt.getSiteIdAt(pos)));           // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
                 tmp.mergeCharFormat(fmt);
             }
         }
@@ -450,7 +450,7 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
     QTextBlockFormat blockFmt{tmp.blockFormat()};
 
     if(highlightUsers){
-        fmt.setBackground(*(parent->getUserColor(crdt.getSiteIdAt(pos))));
+        fmt.setBackground(parent->getUserColor(crdt.getSiteIdAt(pos)));
 //        qDebug()<<"highlightUsers: "<<highlightUsers<<", background color: "<<fmt.background().color();        // DEBUG
     }
 
