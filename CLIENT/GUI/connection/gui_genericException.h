@@ -9,6 +9,7 @@ class GUI_GenericException : public QException
 public:
     QString message;
 
+    explicit GUI_GenericException() : message("") {};
     explicit GUI_GenericException(QString const& message) : message(message) {};
     ~GUI_GenericException() {};
 
