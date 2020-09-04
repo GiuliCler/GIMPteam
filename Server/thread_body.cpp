@@ -24,13 +24,13 @@ Thread_body::Thread_body(int socketDescriptor, QThread* server, QObject *parent)
 }
 
 Thread_body::~Thread_body(){
-    qDebug() <<"STO DISTRUGGENDO IL THREAD_BODY";            // DEBUG
+//    qDebug() <<"STO DISTRUGGENDO IL THREAD_BODY";            // DEBUG
 }
 
 void Thread_body::executeJob(QByteArray data){
 
     auto thread_id = std::this_thread::get_id();
-    qDebug() << "THREAD - executeJob (inizio); Thread_id: "<<threadId_toQString(thread_id);            // DEBUG
+//    qDebug() << "THREAD - executeJob (inizio); Thread_id: "<<threadId_toQString(thread_id);            // DEBUG
 
     QDataStream in_data(&data, QIODevice::ReadOnly);
     in_data.setVersion(QDataStream::Qt_5_12);
@@ -39,7 +39,7 @@ void Thread_body::executeJob(QByteArray data){
     QByteArray text;
     in_data >> text;
 
-    qDebug() << "THREAD - executeJob - Prima della verifica del comando... il comando e': "<< QString::fromStdString(text.toStdString());      // DEBUG
+//    qDebug() << "THREAD - executeJob - Prima della verifica del comando... il comando e': "<< QString::fromStdString(text.toStdString());      // DEBUG
 
     QString c = "CREATE";
     if(text.contains(c.toUtf8())){
@@ -233,7 +233,7 @@ void Thread_body::executeJob(QByteArray data){
         closeDocument(docId, userId);
     }
 
-    qDebug() << "THREAD - executeJob (fine); Thread_id: "<<threadId_toQString(thread_id);            // DEBUG
+//    qDebug() << "THREAD - executeJob (fine); Thread_id: "<<threadId_toQString(thread_id);            // DEBUG
 }
 
 QString Thread_body::getUsername(int userId){
@@ -1058,6 +1058,16 @@ void Thread_body::getWorkingUsersGivenDoc(int docId){
     QDataStream out(&blocko, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
 
+    // Controllo che il documento non sia stato eliminato
+    QString docName = getDocname(docId);
+    if(docName.isEmpty()){
+        // Documento eliminato dall'owner
+        int deleted = -1;
+        out << deleted;
+        writeData(blocko);
+        return;
+    }
+
     mutex_workingUsers->lock();
 
     // Recupero gli utenti online che stanno lavorando sul documento al momento
@@ -1334,7 +1344,7 @@ void Thread_body::moveCursor(int userId, int pos){
 void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int docId){
 
     auto thread_id = std::this_thread::get_id();
-    qDebug() << "---- ThreadBody processMessage RICEVUTO thread_id: "<<threadId_toQString(thread_id)<<", doc_id: "<<docId<<" ---- "<< "; Stringa: "<<QString::fromStdString(m.getAzione());      // DEBUG
+//    qDebug() << "---- ThreadBody processMessage RICEVUTO thread_id: "<<threadId_toQString(thread_id)<<", doc_id: "<<docId<<" ---- "<< "; Stringa: "<<QString::fromStdString(m.getAzione());      // DEBUG
     QString thread_id_string = threadId_toQString(thread_id);
 
     // Se altro documento o stesso user_id di questo thread => discard (return) del messaggio
@@ -1358,7 +1368,7 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
             return;
     }
 
-    qDebug() << "---- ThreadBody processMessage ACCETTATO thread_id: "<<threadId_toQString(thread_id)<<", doc_id: "<<docId<<" ---- "<< "; Stringa: "<<QString::fromStdString(m.getAzione());      // DEBUG
+//    qDebug() << "---- ThreadBody processMessage ACCETTATO thread_id: "<<threadId_toQString(thread_id)<<", doc_id: "<<docId<<" ---- "<< "; Stringa: "<<QString::fromStdString(m.getAzione());      // DEBUG
 
     QByteArray blocko;
     QDataStream out(&blocko, QIODevice::WriteOnly);

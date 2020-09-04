@@ -15,7 +15,6 @@ connection_to_server::connection_to_server(QString port, QString ipAddress): fil
 }
 
 QTcpSocket *connection_to_server::getSocket(){
-    qDebug()<<"FUCKING GET SOCKET!!!";      // DEBUG
     return this->tcpSocket;
 }
 
@@ -25,7 +24,7 @@ QByteArray connection_to_server::getFileTMP(){
 
 int connection_to_server::requestTryLogOut(int userId){
 
-    qDebug()<<"LOGOUT";      // DEBUG
+//    qDebug()<<"LOGOUT";      // DEBUG
 
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
@@ -68,7 +67,7 @@ int connection_to_server::requestTryLogOut(int userId){
 
 int connection_to_server::requestTryLogin(QString username, QString password){
 
-    qDebug()<<"LOGIN";      // DEBUG
+//    qDebug()<<"LOGIN";      // DEBUG
 
     this->tcpSocket->abort();
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
@@ -117,7 +116,7 @@ int connection_to_server::requestTryLogin(QString username, QString password){
 
 std::string connection_to_server::requestCreateDocument(int userId, QString name){
 
-    qDebug()<<"NEW_DOC";      // DEBUG
+//    qDebug()<<"NEW_DOC";      // DEBUG
 
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
@@ -161,7 +160,7 @@ std::string connection_to_server::requestCreateDocument(int userId, QString name
 
 std::string connection_to_server::openDoc(int userId, int docId){
 
-    qDebug()<<"OPEN_DOC";      // DEBUG
+//    qDebug()<<"OPEN_DOC";      // DEBUG
 
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
@@ -210,7 +209,7 @@ std::string connection_to_server::openDoc(int userId, int docId){
 
 std::string connection_to_server::requestDocIdDatoUri(QString uri, int userId){
 
-    qDebug()<<"GET_DOCID_DATO_URI";      // DEBUG
+//    qDebug()<<"GET_DOCID_DATO_URI";      // DEBUG
 
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
@@ -257,7 +256,7 @@ std::string connection_to_server::requestDocIdDatoUri(QString uri, int userId){
 
 std::string connection_to_server::requestDocName(int docId){
 
-    qDebug()<<"GET_DOC_NAME";      // DEBUG
+//    qDebug()<<"GET_DOC_NAME";      // DEBUG
 
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
@@ -298,7 +297,7 @@ std::string connection_to_server::requestDocName(int docId){
 
 std::shared_ptr<QTextEdit> connection_to_server::requestDocumentText(int docId, int userId){
 
-    qDebug()<<"GET_DOC_TEXT";      // DEBUG
+//    qDebug()<<"GET_DOC_TEXT";      // DEBUG
 
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
@@ -362,7 +361,7 @@ std::shared_ptr<QTextEdit> connection_to_server::requestDocumentText(int docId, 
 
 int connection_to_server::requestNewAccount(QString username, QString password, QString nickname, QString icon){
 
-    qDebug()<<"CREATE";      // DEBUG
+//    qDebug()<<"CREATE";      // DEBUG
 
     this->tcpSocket->abort();
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
@@ -416,7 +415,7 @@ int connection_to_server::requestNewAccount(QString username, QString password, 
 
 long connection_to_server::requestUpdateAccount( int userId, QString password, QString nickname, QString icon){
 
-    qDebug()<<"UPDATE";      // DEBUG
+//    qDebug()<<"UPDATE";      // DEBUG
 
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
@@ -460,7 +459,7 @@ long connection_to_server::requestUpdateAccount( int userId, QString password, Q
 
 std::string connection_to_server::requestUri(int docId){
 
-    qDebug()<<"GET_URI";      // DEBUG
+//    qDebug()<<"GET_URI";      // DEBUG
 
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
@@ -502,7 +501,7 @@ std::string connection_to_server::requestUri(int docId){
 
 std::shared_ptr<QMap<int, QString>> connection_to_server::getKnownDocuments(int userId){
 
-    qDebug()<<"GET_DOCS";      // DEBUG
+//    qDebug()<<"GET_DOCS";      // DEBUG
 
     QMap<int, QString> ritorno;
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
@@ -565,7 +564,7 @@ std::shared_ptr<QMap<int, QString>> connection_to_server::getKnownDocuments(int 
 
 std::string connection_to_server::requestGetNickname(int userId){
 
-    qDebug()<<"GET_NICKNAME";      // DEBUG
+//    qDebug()<<"GET_NICKNAME";      // DEBUG
 
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
@@ -606,7 +605,7 @@ std::string connection_to_server::requestGetNickname(int userId){
 
 std::string connection_to_server::requestIconId(int userId){
 
-    qDebug()<<"GET_ICON";      // DEBUG
+//    qDebug()<<"GET_ICON";      // DEBUG
 
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
@@ -647,7 +646,7 @@ std::string connection_to_server::requestIconId(int userId){
 
 std::string connection_to_server::requestGetUsername(int userId){
 
-    qDebug()<<"GET_USERNAME";      // DEBUG
+//    qDebug()<<"GET_USERNAME";      // DEBUG
 
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
@@ -688,7 +687,7 @@ std::string connection_to_server::requestGetUsername(int userId){
 
 std::string connection_to_server::requestDeleteDoc(int userId,int documentId){
 
-    qDebug()<<"DELETE_DOC";      // DEBUG
+//    qDebug()<<"DELETE_DOC";      // DEBUG
 
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
@@ -733,7 +732,7 @@ std::string connection_to_server::requestDeleteDoc(int userId,int documentId){
 
 int connection_to_server::getDocumentOwner(int docId){
 
-    qDebug()<<"GET_DOC_OWNER";      // DEBUG
+//    qDebug()<<"GET_DOC_OWNER";      // DEBUG
 
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
@@ -772,7 +771,7 @@ int connection_to_server::getDocumentOwner(int docId){
 
 std::shared_ptr<QSet<int>> connection_to_server::getContributors(int docId){
 
-    qDebug()<<"GET_CONTRIBUTORS_ONADOC";      // DEBUG
+//    qDebug()<<"GET_CONTRIBUTORS_ONADOC";      // DEBUG
 
     std::shared_ptr<QSet<int>> ritorno;
     QSet<int> vet;
@@ -825,7 +824,7 @@ std::shared_ptr<QSet<int>> connection_to_server::getContributors(int docId){
 
 std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int docId){
 
-    qDebug()<<"GET_WORKINGUSERS_ONADOC";      // DEBUG
+//    qDebug()<<"GET_WORKINGUSERS_ONADOC";      // DEBUG
 
     std::shared_ptr<QSet<int>> ritorno;
     QSet<int> vet;
@@ -868,7 +867,11 @@ std::shared_ptr<QSet<int>> connection_to_server::getWorkingUsersOnDocument(int d
             vet.insert(id);
         }
         return std::make_shared<QSet<int>>(vet);
+    } else if (num == -1){
+        emit unavailableSharedDocument(docId);
+        throw GUI_GenericException("Warning! Impossible to open the selected document. The owner has deleted it.");
     }
+
     throw GUI_GenericException("ERROR. Impossible to retrieve the working users on the document.");
 }
 
@@ -895,7 +898,7 @@ void connection_to_server::displayError(int socketError, const QString &message)
 
 void connection_to_server::requestSendMessage(CRDT_Message *messaggio){
 
-    qDebug()<<"SEND";      // DEBUG
+//    qDebug()<<"SEND";      // DEBUG
 
     if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
@@ -917,7 +920,7 @@ void connection_to_server::requestSendMessage(CRDT_Message *messaggio){
 
 bool connection_to_server::pingServer(){
 
-    qDebug()<<"PING";      // DEBUG
+//    qDebug()<<"PING";      // DEBUG
 
     if(this->tcpSocket->state() == QTcpSocket::UnconnectedState){
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
@@ -932,7 +935,7 @@ bool connection_to_server::pingServer(){
 
 void connection_to_server::requestSendMovedCursor(int userId, int pos){
 
-    qDebug()<<"MOVECURSOR";      // DEBUG
+//    qDebug()<<"MOVECURSOR";      // DEBUG
 
     if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
         this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
@@ -955,7 +958,7 @@ void connection_to_server::requestSendMovedCursor(int userId, int pos){
 
 void connection_to_server::connectEditor(){
 
-    qDebug()<<"CONNECT EDITOR - Lettura residui da readBuffer. Size: " << readBuffer.size();      // DEBUG
+//    qDebug()<<"CONNECT EDITOR - Lettura residui da readBuffer. Size: " << readBuffer.size();      // DEBUG
 
     if(readBuffer.size() > 0){
         // Mentre ricevevo il file, mi è arrivato anche qualcos'altro che ho messo nel buffer ma che non ho ancora processato
@@ -982,12 +985,12 @@ void connection_to_server::connectEditor(){
         }
     }
 
-    qDebug()<<"CONNECT EDITOR - Connect";      // DEBUG
+//    qDebug()<<"CONNECT EDITOR - Connect";      // DEBUG
 
     connect(this->tcpSocket, &QTcpSocket::readyRead, this, &connection_to_server::acceptData);
     connect(this, &connection_to_server::dataReceived, this, &connection_to_server::receiveMessage);
 
-    qDebug()<<"CONNECT EDITOR - Lettura residui tcpSocket->bytesAvailable";      // DEBUG
+//    qDebug()<<"CONNECT EDITOR - Lettura residui tcpSocket->bytesAvailable";      // DEBUG
 
     if(this->tcpSocket->bytesAvailable() > 0){
         // Dopo aver ricevuto il file e svuotato eventualmente il buffer di cose residue, mi è arrivato qualcosa di non ancora letto
@@ -997,7 +1000,7 @@ void connection_to_server::connectEditor(){
 
 void connection_to_server::disconnectEditor(int userId, int docId){
 
-    qDebug()<<"DISCONNECT EDITOR";      // DEBUG
+//    qDebug()<<"DISCONNECT EDITOR";      // DEBUG
 
     disconnect(this->tcpSocket, &QTcpSocket::readyRead, this, &connection_to_server::acceptData);
     disconnect(this, &connection_to_server::dataReceived, this, &connection_to_server::receiveMessage);
@@ -1031,7 +1034,7 @@ void connection_to_server::receiveMessage(QByteArray data){
     QByteArray action;
     in_data >> action;
 
-    qDebug() << "SLOT CLIENT receiveMessage - action ricevuta: "<<QString::fromStdString(action.toStdString());      // DEBUG
+//    qDebug() << "SLOT CLIENT receiveMessage - action ricevuta: "<<QString::fromStdString(action.toStdString());      // DEBUG
 
     QString c = "OFFLINEUSER";
     if(action.contains(c.toUtf8())){
@@ -1070,7 +1073,7 @@ void connection_to_server::receiveMessage(QByteArray data){
     c = "FORCECLOSING";
     if(action.contains(c.toUtf8())){
 
-        qDebug()<<"FORCED DISCONNECT EDITOR";      // DEBUG
+//        qDebug()<<"FORCED DISCONNECT EDITOR";      // DEBUG
 
         disconnect(this->tcpSocket, &QTcpSocket::readyRead, this, &connection_to_server::acceptData);
         disconnect(this, &connection_to_server::dataReceived, this, &connection_to_server::receiveMessage);
@@ -1083,7 +1086,7 @@ void connection_to_server::receiveMessage(QByteArray data){
         int userId, pos;
         in_data >> userId;
         in_data >> pos;
-        qDebug() << "SLOT CLIENT receiveMessage - MOVE - user: "<< userId << "; pos: " << pos;    //DEBUG
+//        qDebug() << "SLOT CLIENT receiveMessage - MOVE - user: "<< userId << "; pos: " << pos;    //DEBUG
         emit sigMoveCursor(userId,pos);
     }
 
@@ -1091,7 +1094,7 @@ void connection_to_server::receiveMessage(QByteArray data){
     if(action.contains(c.toUtf8())){
         CRDT_Message m;
         in_data >> m;
-        qDebug() << "SLOT CLIENT receiveMessage - CRDT - m.getAction(): "<<QString::fromStdString(m.getAzione());    //DEBUG
+//        qDebug() << "SLOT CLIENT receiveMessage - CRDT - m.getAction(): "<<QString::fromStdString(m.getAzione());    //DEBUG
         emit sigProcessMessage(m);
     }
 }

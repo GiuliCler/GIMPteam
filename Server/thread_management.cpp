@@ -10,7 +10,7 @@ Thread_management::Thread_management(int socketDescriptor, QObject *parent): QTh
 }
 
 Thread_management::~Thread_management(){
-    std::cout<<"STO DISTRUGGENDO IL THREAD_MANAGEMENT"<<std::endl;              // DEBUG
+//    std::cout<<"STO DISTRUGGENDO IL THREAD_MANAGEMENT"<<std::endl;              // DEBUG
 }
 
 void Thread_management::run(){
