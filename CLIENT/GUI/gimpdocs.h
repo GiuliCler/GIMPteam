@@ -14,6 +14,8 @@
 #include <QMainWindow>
 #include <QDebug>
 #include <QCloseEvent>
+//per gli smart pointers
+#include <memory>
 
 class GIMPdocs : public QMainWindow
 {
@@ -24,11 +26,10 @@ public:
     //serve per sapere se la connessione dell'editor col server è ancora attiva
     bool isEditorConnected = false;
     //mi servono public per fare delle connect
-    Ui::GIMPdocs *ui1;
-    Ui::GUI_EditWindow *ui2;
+    std::unique_ptr<Ui::GIMPdocs> ui1;
+    std::unique_ptr<Ui::GUI_EditWindow> ui2;
 
     explicit GIMPdocs(QWidget *parent = nullptr);
-    ~GIMPdocs();
     void closeEvent (QCloseEvent *event);
 
     //servono a cambiare l'ui attiva. Widget è il central widget da caricare

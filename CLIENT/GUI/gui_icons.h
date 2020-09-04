@@ -9,7 +9,7 @@ public:
     static int iconSize;
 
     static QString getIconPath(QString iconId);
-    static QMap<QString, QString> *getIconPaths();    
+    static QMap<QString, QString> *getIconPaths();
 
 private:
     //è per caricare i path delle icone nel vettore una volta sola

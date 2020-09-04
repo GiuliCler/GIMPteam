@@ -9,7 +9,6 @@ class GUI_Opendoc: public QWidget{
     Q_OBJECT
 public:
     explicit GUI_Opendoc(QWidget *parent);
-    ~GUI_Opendoc();
     static QString getObjectName() {return QString("GUI_Opendoc");}
 
 private slots:
@@ -25,7 +24,7 @@ private slots:
 
 private:
     GIMPdocs *gimpParent;
-    Ui::GUI_Opendoc *ui;
+    std::unique_ptr<Ui::GUI_Opendoc> ui;
     QMap<int, QString> knownDocuments;
 
     void fillList();

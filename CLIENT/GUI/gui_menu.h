@@ -12,7 +12,6 @@ public:
     GIMPdocs *gimpParent;
 
     explicit GUI_Menu(QWidget *parent);
-    ~GUI_Menu();
     inline static QString getObjectName(){ return "GUI_Menu";}
 
 private slots:
@@ -20,7 +19,7 @@ private slots:
     void on_logoutPushButton_clicked();
 
 private:
-    Ui::GUI_Menu *ui;
+    std::unique_ptr<Ui::GUI_Menu> ui;
 
     void setDocumentArea();
     void setProfileArea();

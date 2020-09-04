@@ -10,7 +10,6 @@ class GUI_Newdoc: public QWidget{
 
 public:
     explicit GUI_Newdoc(QWidget *parent);
-    ~GUI_Newdoc();
     static QString getObjectName() {return QString("GUI_Newdoc");}
 
 private slots:
@@ -19,7 +18,7 @@ private slots:
 
 private:
     GIMPdocs *gimpParent;
-    Ui::GUI_Newdoc *ui;
+    std::unique_ptr<Ui::GUI_Newdoc> ui;
 
     bool checkFieldValidity(QString value, QString name);
 };

@@ -6,6 +6,7 @@
 #include <QWidget>
 #include <QMap>
 #include <QColor>
+#include <memory>
 
 class CRDT_controller;
 class GUI_ToolsBar;
@@ -30,9 +31,8 @@ public:
 
 
     explicit GUI_Editor(QWidget *parent, int documentId, QString docName, bool call_open);
-    ~GUI_Editor();
     inline static QString getObjectName(){ return "GUI_Editor";}
-    QColor *getUserColor(int userId);
+    QColor getUserColor(int userId);
 
     //mi serve perchè non posso fare le connect direttamente nel costruttore. Quando sono nel costruttore, la ui2 non è ancora stata caricata quindi la connect va fatta in un secondo momento
     void connectMenuBarActions();
@@ -69,9 +69,9 @@ private:
 
     QString docName;
     QString uri;
-    Ui::GUI_Editor *ui;
+    std::unique_ptr<Ui::GUI_Editor> ui;
     GUI_ColorsManager colorsManager;
-    QMap<int, QColor*> userColorMap;
+    QMap<int, QColor> userColorMap;
 
     void fillOnlineUsersList();
     void fillContibutorUsersList();

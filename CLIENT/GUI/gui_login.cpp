@@ -7,7 +7,7 @@ GUI_Login::GUI_Login(QWidget *parent) : QWidget(parent)
 {
     this->setObjectName(GUI_Login::getObjectName());
     gimpParent = static_cast<GIMPdocs*>(parent);
-    ui = new Ui::GUI_Login();
+    ui.reset(new Ui::GUI_Login());
     ui->setupUi(this);
 
     //serve a segnalare che non ci sono utenti attivi e rimuove l'id dell'eventuale user che ha appena fatto il logout
@@ -17,10 +17,6 @@ GUI_Login::GUI_Login(QWidget *parent) : QWidget(parent)
     connect(ui->usernameLineEdit, &QLineEdit::returnPressed, this, &GUI_Login::on_loginButton_clicked);
     connect(ui->passwordLineEdit, &QLineEdit::returnPressed, this, &GUI_Login::on_loginButton_clicked);
 
-}
-
-GUI_Login::~GUI_Login(){
-    delete ui;
 }
 
 void GUI_Login::on_newAccountButton_clicked()

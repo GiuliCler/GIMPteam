@@ -9,16 +9,12 @@ GUI_Newdoc::GUI_Newdoc(QWidget *parent) : QWidget(parent)
 {
     this->setObjectName(GUI_Newdoc::getObjectName());
     gimpParent = static_cast<GUI_Menu*>(parent)->gimpParent;
-    ui = new Ui::GUI_Newdoc;
+    ui.reset(new Ui::GUI_Newdoc);
     ui->setupUi(this);
 
     //imposto la connect per premere invio
     connect(ui->nameLineEdit, &QLineEdit::returnPressed, this, &GUI_Newdoc::on_createPushButton_clicked);
     connect(ui->URILineEdit, &QLineEdit::returnPressed, this, &GUI_Newdoc::on_openURIPushButton_clicked);
-}
-
-GUI_Newdoc::~GUI_Newdoc(){
-    delete ui;
 }
 
 void GUI_Newdoc::on_createPushButton_clicked()

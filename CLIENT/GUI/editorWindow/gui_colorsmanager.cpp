@@ -7,11 +7,11 @@ GUI_ColorsManager::GUI_ColorsManager(){
     vFlag = 1;
 }
 
-QColor *GUI_ColorsManager::newColor(){
-    QColor *color = new QColor();
-    color->setHsv(h*12, 105 + 75 * sFlag, 205 + 50*vFlag, 180);
+QColor GUI_ColorsManager::newColor(){
+    QColor color = QColor();
+    color.setHsv(h*12, 105 + 75 * sFlag, 205 + 50*vFlag, 180);
 
-    //genero 29*2*3 colori diversi. Poi si ripetono, ma se riesco ad usare lo stack potrei evitarlo
+    //genero 29*2*3 colori diversi. Poi si ripetono
     h = (h +11)%29;
     sFlag = (sFlag +1) %3;
     vFlag = (vFlag +1) %2;

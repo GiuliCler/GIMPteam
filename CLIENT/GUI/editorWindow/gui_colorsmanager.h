@@ -11,7 +11,7 @@ class GUI_ColorsManager : public QObject
     Q_OBJECT
 public:
     explicit GUI_ColorsManager();
-    QColor *newColor();
+    QColor newColor();
 
 private:
     //sfrutto il modello HSV

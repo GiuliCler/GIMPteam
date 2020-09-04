@@ -15,7 +15,7 @@ GUI_Opendoc::GUI_Opendoc(QWidget *parent) : QWidget(parent)
 {
     this->setObjectName(GUI_Opendoc::getObjectName());
     gimpParent = static_cast<GUI_Menu*>(parent)->gimpParent;
-    ui = new Ui::GUI_Opendoc;
+    ui.reset(new Ui::GUI_Opendoc);
     ui->setupUi(this);
 
     fillList();
@@ -28,10 +28,6 @@ GUI_Opendoc::GUI_Opendoc(QWidget *parent) : QWidget(parent)
     connect(ui->sharedDocsListWidget, &QListWidget::itemClicked, this, &GUI_Opendoc::on_sharedDocsListWidget_itemClicked);
     //questa connect è per rimuovere dall'elenco un documento appena eliminato da qualcun altro
     connect(gimpParent->getConnection(), &connection_to_server::unavailableSharedDocument, this, &GUI_Opendoc::unavailableSharedDocument_emitted);
-}
-
-GUI_Opendoc::~GUI_Opendoc(){
-    delete ui;
 }
 
 

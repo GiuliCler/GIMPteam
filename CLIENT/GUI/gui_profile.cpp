@@ -4,14 +4,12 @@
 
 #include <QMessageBox>
 #include <QIcon>
-//#include <QFile>
-//#include <QDir>
 
 GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
 {
     this->setObjectName(GUI_Profile::getObjectName());
     gimpParent = static_cast<GIMPdocs*>(parent);
-    ui = new Ui::GUI_Profile;
+    ui.reset(new Ui::GUI_Profile);
     ui->setupUi(this);
 
     loadIcons();
@@ -30,10 +28,6 @@ GUI_Profile::GUI_Profile(QWidget *parent) : QWidget(parent)
     connect(ui->usernameLineEdit, &QLineEdit::returnPressed, this, &GUI_Profile::on_savePushButton_clicked);
     connect(ui->passwordLineEdit, &QLineEdit::returnPressed, this, &GUI_Profile::on_savePushButton_clicked);
     connect(ui->repeatLineEdit, &QLineEdit::returnPressed, this, &GUI_Profile::on_savePushButton_clicked);
-}
-
-GUI_Profile::~GUI_Profile(){
-    delete ui;
 }
 
 void GUI_Profile::on_savePushButton_clicked(){

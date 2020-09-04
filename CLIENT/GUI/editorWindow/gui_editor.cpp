@@ -11,14 +11,13 @@
 #include <QScrollBar>
 #include <QPrinter>
 #include <QFileDialog>
-//#include <QFileInfo>
 
 GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, bool call_open) : QWidget(parent), documentId(documentId), docName(docName)
 {
     this->setObjectName(GUI_Editor::getObjectName());
     gimpParent = static_cast<GIMPdocs*>(parent);
 
-    ui = new Ui::GUI_Editor();
+    ui.reset(new Ui::GUI_Editor());
     ui->setupUi(this);
 
     childMyTextEdit = new GUI_MyTextEdit(this);
@@ -61,8 +60,8 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, bool ca
     crdtController = new CRDT_controller(gimpParent, this, *childMyTextEdit, gimpParent->userid, siteCounter);
 
     //devo fare qui queste connect perchè devo aspettare che la crdtController sia creata
-    connect(crdtController, &CRDT_controller::updateCursorPosition, childMyTextEdit, &GUI_MyTextEdit::on_updateCursorPosition_emitted);
-    connect(crdtController, &CRDT_controller::notifyDeletedStack, childToolsBar, &GUI_ToolsBar::compromisedUndoStack);
+    connect(&(*crdtController), &CRDT_controller::updateCursorPosition, childMyTextEdit, &GUI_MyTextEdit::on_updateCursorPosition_emitted);
+    connect(&(*crdtController), &CRDT_controller::notifyDeletedStack, childToolsBar, &GUI_ToolsBar::compromisedUndoStack);
 
     //avvio la connessione speciale per l'editor. D'ora in poi la connection_to_server è off-limits
     if(GUI_ConnectionToServerWrapper::requestStartEditorConnection(gimpParent) < 0)
@@ -72,10 +71,6 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, bool ca
     gimpParent->isEditorConnected = true;
 }
 
-GUI_Editor::~GUI_Editor(){
-    delete ui;
-    delete crdtController;
-}
 
 /*************ACTIONS*********************************/
 
@@ -339,15 +334,15 @@ void GUI_Editor::setMenuToolStatus(menuTools code){
 
 void GUI_Editor::addUserToEditorGUI(int userid, QString nickname, QString iconId){
     //ottengo un colore per cursore e icona
-    QColor *color = getUserColor(userid);
+    QColor color = getUserColor(userid);
 
     //questo bruttissimo passaggio di parametri di funzione in funzione anzichè reperirli direttamente a basso livello chiamando il server è perchè mentre il CRDT è aperto non posso usare la connection_to_server
-    childUsersBar->addOnlineUserIcon(userid, *color, nickname, iconId);
+    childUsersBar->addOnlineUserIcon(userid, color, nickname, iconId);
 
     //GUI_MyTextEdit *son = findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName());
     if(userid != gimpParent->userid){
         QPoint p = QPoint (childMyTextEdit->cursorRect().topLeft().x(), childMyTextEdit->cursorRect().topLeft().y() + childMyTextEdit->verticalScrollBar()->value());
-        childMyTextEdit->addUserCursor(userid, p, *color);
+        childMyTextEdit->addUserCursor(userid, p, color);
     }
 }
 
@@ -357,13 +352,13 @@ void GUI_Editor::removeUserFromEditorGUI(int userid){
 }
 
 void GUI_Editor::addContributorToCurrentDocument(int userid, QString nickname, QString iconId){
-    QColor *color = getUserColor(userid);
-    childUsersBar->addContributorUserIcon(userid, *color, nickname, iconId);
+    QColor color = getUserColor(userid);
+    childUsersBar->addContributorUserIcon(userid, color, nickname, iconId);
 }
 
 
-QColor *GUI_Editor::getUserColor(int userId){
-    QColor *color;
+QColor GUI_Editor::getUserColor(int userId){
+    QColor color;
     //controllo che l'user non abbia già un colore assegnato, o perchè si è disconnesso e riconnesso o perchè è già presente fra i contributors
     if(userColorMap.find(userId) == userColorMap.end() ){
         color = colorsManager.newColor();

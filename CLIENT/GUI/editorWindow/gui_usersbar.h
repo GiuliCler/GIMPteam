@@ -11,7 +11,6 @@ class GUI_UsersBar : public QWidget
     Q_OBJECT
 public:
     explicit GUI_UsersBar(QWidget *parent);
-    ~GUI_UsersBar();
     inline static QString getObjectName() {return QString("GUI_UsersBar");}
 
     void addOnlineUserIcon(int userId, QColor color, QString nickname, QString iconId);
@@ -25,7 +24,7 @@ public slots:
 
 private:
     GUI_Editor *editorParent;
-    Ui::GUI_UsersBar *ui;
+    std::unique_ptr<Ui::GUI_UsersBar> ui;
     QMap<int, QLabel*> onlineUsersIconMap;
     QMap<int, QLabel*> contributorUsersIconMap;
 
