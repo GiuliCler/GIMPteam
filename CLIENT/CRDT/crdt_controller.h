@@ -25,6 +25,7 @@ private:
     bool validateSpin;
     bool validateFontCombo;
     bool processingMessage = false;
+    int defaultFontPointSize = 12;
 
     void setLeft();
     void setCenter();

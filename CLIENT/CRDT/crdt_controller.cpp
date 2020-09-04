@@ -108,9 +108,12 @@ void CRDT_controller::setUnderlined(){
 }
 
 void CRDT_controller::setSize(int size){
-    if(validateSpin)
-        textEdit.setFontPointSize(size);
-    else
+    if(validateSpin){
+        if(size > 0)
+            textEdit.setFontPointSize(size);
+        else
+            parent->childToolsBar->ui->spinBox->setValue(defaultFontPointSize);
+    }else
         validateSpin = true;
     textEdit.setFocus();
 }
@@ -194,7 +197,6 @@ void CRDT_controller::setUsersColors(bool value){
 
 
 void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
-    int defaultSize = 12;
     if(textEdit.textCursor().hasSelection() && textEdit.textCursor().position() < textEdit.textCursor().anchor()){
         QTextCursor tmp(textEdit.textCursor());
         tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
@@ -208,7 +210,7 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
             parent->childToolsBar->ui->spinBox->setValue(static_cast<int>(tmp.charFormat().fontPointSize()));
             if(parent->childToolsBar->ui->spinBox->value() == parent->childToolsBar->ui->spinBox->minimum()){
                 validateSpin = false;
-                parent->childToolsBar->ui->spinBox->setValue(defaultSize);
+                parent->childToolsBar->ui->spinBox->setValue(defaultFontPointSize);
             }
         }
         if(tmp.charFormat().font() != parent->childToolsBar->ui->fontComboBox->currentFont()){
@@ -230,7 +232,7 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
             if(parent->childToolsBar->ui->spinBox->value() == parent->childToolsBar->ui->spinBox->minimum()){
                 if(textEdit.textCursor().hasSelection())
                     validateSpin = false;
-                parent->childToolsBar->ui->spinBox->setValue(defaultSize);
+                parent->childToolsBar->ui->spinBox->setValue(defaultFontPointSize);
             }
         }
         if(textEdit.currentFont() != parent->childToolsBar->ui->fontComboBox->currentFont()) {
