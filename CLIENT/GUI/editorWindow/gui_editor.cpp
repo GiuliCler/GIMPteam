@@ -51,7 +51,7 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, bool ca
     if(call_open){
         QString codedParameters = GUI_ConnectionToServerWrapper::requestOpenDocumentWrapper(gimpParent, gimpParent->userid, documentId);
         if(codedParameters.compare("errore") == 0)
-            throw GUI_GenericException("");
+            throw GUI_GenericException();
         siteCounter = codedParameters.split("_").at(1).toInt();
     } else {
         siteCounter = 0;
@@ -66,7 +66,7 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, bool ca
     //avvio la connessione speciale per l'editor. D'ora in poi la connection_to_server è off-limits
     if(GUI_ConnectionToServerWrapper::requestStartEditorConnection(gimpParent) < 0)
         //se non riesco a far partire l'editor devo chiudere tutto
-        throw GUI_GenericException("");
+        throw GUI_GenericException();
 
     gimpParent->isEditorConnected = true;
 }
@@ -374,7 +374,7 @@ void GUI_Editor::fillOnlineUsersList(){
     //ottengo l'elenco degli utenti che al momento stanno guardando il mio stesso document e ne creo icona e cursore
     std::shared_ptr<QSet<int>> users = GUI_ConnectionToServerWrapper::getWorkingUsersOnDocumentWrapper(gimpParent, documentId);
     if(users == nullptr)
-        return;
+        throw GUI_GenericException();
 
     for (QSet<int>::iterator userId = users->begin(); userId != users->end(); userId++){
         //questo bruttissimo passaggio di parametri di funzione in funzione anzichè reperirli direttamente a basso livello chiamando il server è perchè mentre il CRDT è aperto non posso usare la connection_to_server
@@ -390,7 +390,7 @@ void GUI_Editor::fillContibutorUsersList(){
     //creo l'icona per gli user che hanno contribuito al document
     std::shared_ptr<QSet<int>> contributors = GUI_ConnectionToServerWrapper::getContributorsUsersOnDocumentWrapper(gimpParent, documentId);
     if(contributors == nullptr)
-        return;
+        throw GUI_GenericException();
 
     for (QSet<int>::iterator userId = contributors->begin(); userId != contributors->end(); userId++){
         //questo bruttissimo passaggio di parametri di funzione in funzione anzichè reperirli direttamente a basso livello chiamando il server è perchè mentre il CRDT è aperto non posso usare la connection_to_server
