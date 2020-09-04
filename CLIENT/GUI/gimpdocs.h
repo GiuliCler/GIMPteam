@@ -30,7 +30,6 @@ public:
     std::unique_ptr<Ui::GUI_EditWindow> ui2;
 
     explicit GIMPdocs(QWidget *parent = nullptr);
-    ~GIMPdocs();
     void closeEvent (QCloseEvent *event);
 
     //servono a cambiare l'ui attiva. Widget è il central widget da caricare
@@ -41,7 +40,7 @@ public:
     void returnToLogin();
 
 private:
-    const QString ipAddress = "192.168.1.9";
+    const QString ipAddress = "192.168.56.1";
     const QString port = "56529";
     QSize regularWindowSize;
     //serve per ripristinare lo stato maximized/normal dopo la chiusura del document in base a com'era prima

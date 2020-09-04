@@ -30,10 +30,6 @@ GUI_Reconnection::GUI_Reconnection(QWidget *parent) : QDialog(parent){
     ui->connectingLabel->setHidden(true);
 }
 
-GUI_Reconnection::~GUI_Reconnection(){
-    //delete ui;
-}
-
 void GUI_Reconnection::on_exitPushButton_clicked(){
     GUI_Reconnection::done(Reconnection_Results::KillApplication);
 }

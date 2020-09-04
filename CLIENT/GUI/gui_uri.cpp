@@ -13,11 +13,6 @@ GUI_URI::GUI_URI(QWidget *parent, QString uri) : QDialog(parent){
 
     ui->URILabel->setText(uri);
 }
-
-GUI_URI::~GUI_URI(){
-    //delete ui;
-}
-
 void GUI_URI::on_copyPushButton_clicked(){
     QClipboard *clip = QApplication::clipboard();
     clip->setText(ui->URILabel->text());

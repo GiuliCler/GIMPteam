@@ -30,10 +30,6 @@ GUI_Opendoc::GUI_Opendoc(QWidget *parent) : QWidget(parent)
     connect(gimpParent->getConnection(), &connection_to_server::unavailableSharedDocument, this, &GUI_Opendoc::unavailableSharedDocument_emitted);
 }
 
-GUI_Opendoc::~GUI_Opendoc(){
-    //delete ui;
-}
-
 
 /*SLOTS*/
 

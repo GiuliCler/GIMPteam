@@ -10,7 +10,6 @@ class GUI_Profile : public QWidget
     Q_OBJECT
 public:
     explicit GUI_Profile(QWidget *parent);
-    ~GUI_Profile();
     inline static QString getObjectName() {return QString("GUI_Profile");}
 
 private slots:

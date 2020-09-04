@@ -15,10 +15,8 @@ public:
     enum Reconnection_Results {Success, Failure, KillApplication};
 
     static void GUI_ReconnectionWrapper(QWidget *parent);
-    ~GUI_Reconnection();
 
 private slots:
-
     void on_exitPushButton_clicked();
     void on_retryPushButton_clicked();
 

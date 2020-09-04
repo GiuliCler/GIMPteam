@@ -26,10 +26,6 @@ GUI_UsersBar::GUI_UsersBar(QWidget *parent) : QWidget(parent){
     connect(ui->hideColorsPushButton, &QPushButton::clicked, this->editorParent, &GUI_Editor::on_actionApplyTextColors);
 }
 
-GUI_UsersBar::~GUI_UsersBar(){
-    //delete ui;
-}
-
 QLabel *GUI_UsersBar::getUserIcon(QColor color, QString nickname, QString iconId){
     //carico l'icona e le metto uno sfondo
     QString iconPath = GUI_Icons::getIconPath(iconId);

@@ -17,10 +17,6 @@ GUI_Newdoc::GUI_Newdoc(QWidget *parent) : QWidget(parent)
     connect(ui->URILineEdit, &QLineEdit::returnPressed, this, &GUI_Newdoc::on_openURIPushButton_clicked);
 }
 
-GUI_Newdoc::~GUI_Newdoc(){
-    //delete ui;
-}
-
 void GUI_Newdoc::on_createPushButton_clicked()
 {
     if(!checkFieldValidity(ui->nameLineEdit->text(), "Name"))

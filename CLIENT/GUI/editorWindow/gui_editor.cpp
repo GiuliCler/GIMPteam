@@ -71,10 +71,6 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, bool ca
     gimpParent->isEditorConnected = true;
 }
 
-GUI_Editor::~GUI_Editor(){
-    //delete ui;
-    //delete crdtController;
-}
 
 /*************ACTIONS*********************************/
 

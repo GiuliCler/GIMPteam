@@ -18,10 +18,6 @@ GUI_Menu::GUI_Menu(QWidget *parent) : QWidget(parent)
     setDocumentArea();
 }
 
-GUI_Menu::~GUI_Menu(){
-    //delete ui;
-}
-
 void GUI_Menu::setProfileArea(){
     //carico nickname e icona dell'utente
     QString nickname = GUI_ConnectionToServerWrapper::requestGetNicknameWrapper(gimpParent, gimpParent->userid);

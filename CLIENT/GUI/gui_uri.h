@@ -10,7 +10,6 @@ class GUI_URI : public QDialog
     Q_OBJECT
 public:
     explicit GUI_URI(QWidget *parent, QString uri);
-    ~GUI_URI();
 
 private slots:
     void on_copyPushButton_clicked();

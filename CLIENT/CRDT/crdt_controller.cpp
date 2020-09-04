@@ -15,10 +15,10 @@
     }
 
 CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyTextEdit& textEdit, int siteId, int siteCounter):
-                        gimpDocs(gimpdocs), parent(parent), connection(gimpDocs->getConnection()), textEdit(textEdit), highlightUsers(false),
+                        QObject(parent), gimpDocs(gimpdocs),  editorParent(parent),  connection(gimpDocs->getConnection()), textEdit(textEdit), highlightUsers(false),
                         crdt{this, gimpDocs->getConnection(), siteId, siteCounter},
                         rememberFormatChange(false), validateSpin(true), validateFontCombo(true) {
-    QObject::connect(this->parent, &GUI_Editor::menuTools_event, this, &CRDT_controller::menuCall);
+    QObject::connect(this->editorParent, &GUI_Editor::menuTools_event, this, &CRDT_controller::menuCall);
     QObject::connect(this, &CRDT_controller::menuSet, parent, &GUI_Editor::setMenuToolStatus);
     QObject::connect(&this->textEdit, &QTextEdit::currentCharFormatChanged, this, &CRDT_controller::currentCharFormatChanged);
     QObject::connect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
@@ -34,7 +34,9 @@ CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyT
 
     parent->childToolsBar->ui->spinBox->setSpecialValueText("Default");
 }
-
+CRDT_controller::~CRDT_controller(){
+    qDebug() << "Wakanda";
+}
 void CRDT_controller::setLeft(){
     textEdit.setAlignment(Qt::AlignLeft);
     emit menuSet(menuTools::A_LEFT);
@@ -146,7 +148,7 @@ void CRDT_controller::setUsersColors(bool value){
 
         QTextCharFormat fmt{tmp.charFormat()};
         if(highlightUsers){                 // L'utente vuole vedere il testo colorato con il colore di ogni utente
-            fmt.setBackground(parent->getUserColor(crdt.getSiteIdAt(pos)));          // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
+            fmt.setBackground(editorParent->getUserColor(crdt.getSiteIdAt(pos)));          // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
         } else {                            // L'utente non vuole vedere più il testo colorato con il colore di ogni utente
             fmt.setBackground(Qt::BrushStyle::NoBrush);     // Setto il background color a "white"
         }
@@ -154,7 +156,7 @@ void CRDT_controller::setUsersColors(bool value){
     }
 
     if(highlightUsers && textEdit.textBackgroundColor() == Qt::BrushStyle::NoBrush)
-        textEdit.setTextBackgroundColor(parent->getUserColor(crdt.getSiteId()));
+        textEdit.setTextBackgroundColor(editorParent->getUserColor(crdt.getSiteId()));
 
     if(!highlightUsers && textEdit.textBackgroundColor() != Qt::BrushStyle::NoBrush)
         textEdit.setTextBackgroundColor(Qt::BrushStyle::NoBrush);
@@ -171,18 +173,18 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
                 emit menuSet(tmp.charFormat().fontStrikeOut() ? menuTools::STRIKETHROUGH_ON : menuTools::STRIKETHROUGH_OFF);
                 emit menuSet(tmp.charFormat().fontUnderline() ? menuTools::UNDERLINED_ON : menuTools::UNDERLINED_OFF);
                 emit menuSet(tmp.charFormat().fontWeight() >= QFont::Bold ? menuTools::BOLD_ON : menuTools::BOLD_OFF);
-                parent->childToolsBar->setTextColorIconColor(tmp.charFormat().foreground().color());
-                if(static_cast<int>(tmp.charFormat().fontPointSize()) != parent->childToolsBar->ui->spinBox->value()){
+                editorParent->childToolsBar->setTextColorIconColor(tmp.charFormat().foreground().color());
+                if(static_cast<int>(tmp.charFormat().fontPointSize()) != editorParent->childToolsBar->ui->spinBox->value()){
                     validateSpin = false;
-                    parent->childToolsBar->ui->spinBox->setValue(static_cast<int>(tmp.charFormat().fontPointSize()));
-                    if(parent->childToolsBar->ui->spinBox->value() == parent->childToolsBar->ui->spinBox->minimum()){
+                    editorParent->childToolsBar->ui->spinBox->setValue(static_cast<int>(tmp.charFormat().fontPointSize()));
+                    if(editorParent->childToolsBar->ui->spinBox->value() == editorParent->childToolsBar->ui->spinBox->minimum()){
                         validateSpin = false;
-                        parent->childToolsBar->ui->spinBox->setValue(12); // TODO define a default font size?
+                        editorParent->childToolsBar->ui->spinBox->setValue(12); // TODO define a default font size?
                     }
                 }
-                if(tmp.charFormat().font() != parent->childToolsBar->ui->fontComboBox->currentFont()){
+                if(tmp.charFormat().font() != editorParent->childToolsBar->ui->fontComboBox->currentFont()){
                     validateFontCombo = false;
-                    parent->childToolsBar->ui->fontComboBox->setCurrentFont(tmp.charFormat().font());
+                    editorParent->childToolsBar->ui->fontComboBox->setCurrentFont(tmp.charFormat().font());
                 }
             )
     else{
@@ -191,21 +193,21 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
         emit menuSet(format.fontUnderline() ? menuTools::UNDERLINED_ON : menuTools::UNDERLINED_OFF);
         emit menuSet(format.fontWeight() >= QFont::Bold ? menuTools::BOLD_ON : menuTools::BOLD_OFF);
 
-        parent->childToolsBar->setTextColorIconColor(format.foreground().color());
-        if(static_cast<int>(textEdit.fontPointSize()) != parent->childToolsBar->ui->spinBox->value()){
+        editorParent->childToolsBar->setTextColorIconColor(format.foreground().color());
+        if(static_cast<int>(textEdit.fontPointSize()) != editorParent->childToolsBar->ui->spinBox->value()){
             if(textEdit.textCursor().hasSelection())
                 validateSpin = false;
-            parent->childToolsBar->ui->spinBox->setValue(static_cast<int>(textEdit.fontPointSize()));
-            if(parent->childToolsBar->ui->spinBox->value() == parent->childToolsBar->ui->spinBox->minimum()){
+            editorParent->childToolsBar->ui->spinBox->setValue(static_cast<int>(textEdit.fontPointSize()));
+            if(editorParent->childToolsBar->ui->spinBox->value() == editorParent->childToolsBar->ui->spinBox->minimum()){
                 if(textEdit.textCursor().hasSelection())
                     validateSpin = false;
-                parent->childToolsBar->ui->spinBox->setValue(12); // TODO define a default font size?
+                editorParent->childToolsBar->ui->spinBox->setValue(12); // TODO define a default font size?
             }
         }
-        if(textEdit.currentFont() != parent->childToolsBar->ui->fontComboBox->currentFont()) {
+        if(textEdit.currentFont() != editorParent->childToolsBar->ui->fontComboBox->currentFont()) {
             if(textEdit.textCursor().hasSelection())
                 validateFontCombo = false;
-            parent->childToolsBar->ui->fontComboBox->setCurrentFont(textEdit.currentFont());
+            editorParent->childToolsBar->ui->fontComboBox->setCurrentFont(textEdit.currentFont());
         }
     }
 }
@@ -243,11 +245,11 @@ void CRDT_controller::selectionChanged(){
     }
 
     if(textEdit.textCursor().hasSelection()){
-        parent->setMenuToolStatus(CUT_ON);
-        parent->setMenuToolStatus(COPY_ON);
+        editorParent->setMenuToolStatus(CUT_ON);
+        editorParent->setMenuToolStatus(COPY_ON);
     } else {
-        parent->setMenuToolStatus(CUT_OFF);
-        parent->setMenuToolStatus(COPY_OFF);
+        editorParent->setMenuToolStatus(CUT_OFF);
+        editorParent->setMenuToolStatus(COPY_OFF);
     }
 }
 
@@ -331,7 +333,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
             for(int i = pos; i < pos + add + cnt; tmp.setPosition(++i)){
                 tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
                 QTextCharFormat fmt{tmp.charFormat()};
-                fmt.setBackground(parent->getUserColor(crdt.getSiteIdAt(pos)));           // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
+                fmt.setBackground(editorParent->getUserColor(crdt.getSiteIdAt(pos)));           // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
                 tmp.mergeCharFormat(fmt);
             }
         }
@@ -350,15 +352,15 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
 void CRDT_controller::clipboardDataChanged(){
     if (const QMimeData *md = QApplication::clipboard()->mimeData())
-        parent->setMenuToolStatus(md->hasText() ? PASTE_ON : PASTE_OFF);
+        editorParent->setMenuToolStatus(md->hasText() ? PASTE_ON : PASTE_OFF);
 }
 
 void CRDT_controller::undoAvailableChanged(bool available){
-    parent->setMenuToolStatus(available ? UNDO_ON : UNDO_OFF);
+    editorParent->setMenuToolStatus(available ? UNDO_ON : UNDO_OFF);
 }
 
 void CRDT_controller::redoAvailableChanged(bool available){
-    parent->setMenuToolStatus(available ? REDO_ON : REDO_OFF);
+    editorParent->setMenuToolStatus(available ? REDO_ON : REDO_OFF);
 }
 
 void CRDT_controller::menuCall(menuTools op){
@@ -450,7 +452,7 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
     QTextBlockFormat blockFmt{tmp.blockFormat()};
 
     if(highlightUsers){
-        fmt.setBackground(parent->getUserColor(crdt.getSiteIdAt(pos)));
+        fmt.setBackground(editorParent->getUserColor(crdt.getSiteIdAt(pos)));
 //        qDebug()<<"highlightUsers: "<<highlightUsers<<", background color: "<<fmt.background().color();        // DEBUG
     }
 

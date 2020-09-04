@@ -9,7 +9,6 @@ class GUI_Opendoc: public QWidget{
     Q_OBJECT
 public:
     explicit GUI_Opendoc(QWidget *parent);
-    ~GUI_Opendoc();
     static QString getObjectName() {return QString("GUI_Opendoc");}
 
 private slots:

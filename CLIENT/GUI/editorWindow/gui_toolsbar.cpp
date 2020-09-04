@@ -32,10 +32,6 @@ GUI_ToolsBar::GUI_ToolsBar(QWidget *parent) : QWidget(parent){
     fadingLabel->fadingLabelSetUp("Beware: this operation has compromized undo chronology", 4000, 0.75f);
 }
 
-GUI_ToolsBar::~GUI_ToolsBar(){
-    //delete ui;
-}
-
 void GUI_ToolsBar::on_colorPushButton_clicked(){
     QColor chosenColor = QColorDialog::getColor(); //return the color chosen by user
     editorParent->crdtController->setCurrentTextColor(chosenColor);

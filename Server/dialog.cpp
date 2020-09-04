@@ -15,7 +15,7 @@ Dialog::Dialog(QWidget *parent)
     quitButton->setAutoDefault(false);
 
     QString ipAddress;
-    ipAddress = "192.168.1.9";
+    ipAddress = "192.168.56.1";
     if (!server.listen(QHostAddress::Any,56529)) {
         QMessageBox::critical(this, tr("Threaded Server"),
                               tr("Unable to start the server: %1.")

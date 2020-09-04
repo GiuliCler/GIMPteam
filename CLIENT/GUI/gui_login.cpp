@@ -19,10 +19,6 @@ GUI_Login::GUI_Login(QWidget *parent) : QWidget(parent)
 
 }
 
-GUI_Login::~GUI_Login(){
-    //delete ui;
-}
-
 void GUI_Login::on_newAccountButton_clicked()
 {
     gimpParent->userid = -1;

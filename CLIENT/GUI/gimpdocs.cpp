@@ -18,10 +18,6 @@ GIMPdocs::GIMPdocs(QWidget *parent) : QMainWindow(parent), userid(-1)
     setUi1(new GUI_Login(this));
 }
 
-GIMPdocs::~GIMPdocs(){
-    //delete ui1;
-    //delete ui2;
-}
 
 void GIMPdocs::closeEvent (QCloseEvent *event){
 
