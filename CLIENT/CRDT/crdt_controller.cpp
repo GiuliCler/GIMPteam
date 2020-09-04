@@ -322,8 +322,11 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         tmp.setPosition(pos+1);
 
         for(int i = pos; i < pos + add; ++i, tmp.movePosition(QTextCursor::NextCharacter)){
+            QTextCharFormat fmt{tmp.charFormat()};
+            if(fmt.fontPointSize() <= 0)
+                fmt.setFontPointSize(defaultFontPointSize);
             //std::cout << "Cursor position: " << textEdit.textCursor().position() << std::endl;                        // DEBUG
-            crdt.localInsert(i, textEdit.toPlainText().at(i), tmp.charFormat(), tmp.blockFormat().alignment());
+            crdt.localInsert(i, textEdit.toPlainText().at(i), fmt, tmp.blockFormat().alignment());
         }
     }
 
@@ -353,8 +356,11 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         tmp.setPosition(pos1+1);
         // inserisco da tmp a fondo del blocco
         for(int i = pos1; i < pos1 + cnt; ++i, tmp.movePosition(QTextCursor::NextCharacter)){
+            QTextCharFormat fmt{tmp.charFormat()};
+            if(fmt.fontPointSize() <= 0)
+                fmt.setFontPointSize(defaultFontPointSize);
             //std::cout << "Cursor position: " << textEdit.textCursor().position() << std::endl;                            // DEBUG
-            crdt.localInsert(i, textEdit.toPlainText().at(i), tmp.charFormat(), tmp.blockFormat().alignment());
+            crdt.localInsert(i, textEdit.toPlainText().at(i), fmt, tmp.blockFormat().alignment());
         }
 //        crdt.print();                                 // DEBUG
     }
@@ -484,6 +490,9 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
     QTextCursor tmp{textEdit.document()};
     tmp.beginEditBlock();
     tmp.setPosition(pos);
+
+    if(fmt.fontPointSize() <= 0)
+        fmt.setFontPointSize(defaultFontPointSize);
 
 //    std::cout<<"AAAA TextEdit... cursor: "<<textEdit.textCursor().position()<<", pos: "<<pos<<std::endl;        // DEBUG
     QTextBlockFormat blockFmt{tmp.blockFormat()};
