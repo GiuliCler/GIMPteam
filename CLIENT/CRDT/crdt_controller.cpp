@@ -59,24 +59,28 @@ void CRDT_controller::setJustified(){
 
 void CRDT_controller::setBold(){
     if(textEdit.textCursor().hasSelection() && textEdit.textCursor().position() < textEdit.textCursor().anchor()){
+        // selecting from right to left => should consider the format of the letter on the right of the cursor
         QTextCursor tmp(textEdit.textCursor());
         tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
         textEdit.setFontWeight(tmp.charFormat().fontWeight() >= QFont::Bold ? QFont::Normal : QFont::Bold);
         rememberFormatChange = true;
     }
     else
+        // no selection or selecting from left to right => should consider the format of the letter on the left of the cursor
         textEdit.setFontWeight(textEdit.fontWeight() >= QFont::Bold ? QFont::Normal : QFont::Bold);
     textEdit.setFocus();
 }
 
 void CRDT_controller::setItalic(){
     if(textEdit.textCursor().hasSelection() && textEdit.textCursor().position() < textEdit.textCursor().anchor()){
+        // selecting from right to left => should consider the format of the letter on the right of the cursor
         QTextCursor tmp(textEdit.textCursor());
         tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
         textEdit.setFontItalic(!tmp.charFormat().fontItalic());
         rememberFormatChange = true;
     }
     else
+        // no selection or selecting from left to right => should consider the format of the letter on the left of the cursor
         textEdit.setFontItalic(!textEdit.fontItalic());
     textEdit.setFocus();
 }
@@ -84,12 +88,14 @@ void CRDT_controller::setItalic(){
 void CRDT_controller::setStrikethrough(){
     QTextCharFormat fmt;
     if(textEdit.textCursor().hasSelection() && textEdit.textCursor().position() < textEdit.textCursor().anchor()){
+        // selecting from right to left => should consider the format of the letter on the right of the cursor
         QTextCursor tmp(textEdit.textCursor());
         tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
         fmt.setFontStrikeOut(!tmp.charFormat().fontStrikeOut());
         rememberFormatChange = true;
     }
     else
+        // no selection or selecting from left to right => should consider the format of the letter on the left of the cursor
         fmt.setFontStrikeOut(!textEdit.currentCharFormat().fontStrikeOut());
     textEdit.mergeCurrentCharFormat(fmt);
     textEdit.setFocus();
@@ -97,28 +103,38 @@ void CRDT_controller::setStrikethrough(){
 
 void CRDT_controller::setUnderlined(){
     if(textEdit.textCursor().hasSelection() && textEdit.textCursor().position() < textEdit.textCursor().anchor()){
+        // selecting from right to left => should consider the format of the letter on the right of the cursor
         QTextCursor tmp(textEdit.textCursor());
         tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
         textEdit.setFontUnderline(!tmp.charFormat().fontUnderline());
         rememberFormatChange = true;
     }
     else
+        // no selection or selecting from left to right => should consider the format of the letter on the left of the cursor
         textEdit.setFontUnderline(!textEdit.fontUnderline());
     textEdit.setFocus();
 }
 
 void CRDT_controller::setSize(int size){
+    // validate spin:
+    //      = true => wanna change for real the size
+    //      = false => the function has been called only because of a change of selection, cannot change the size
     if(validateSpin){
         if(size > 0)
             textEdit.setFontPointSize(size);
         else
+            // size can't be <= 0. Set it to a default value
             parent->childToolsBar->ui->spinBox->setValue(defaultFontPointSize);
     }else
         validateSpin = true;
+    cursorMoved();
     textEdit.setFocus();
 }
 
 void CRDT_controller::setFont(const QFont &f){
+    // validate font combo:
+    //      = true => wanna change for real the font
+    //      = false => the function has been called only because of a change of selection, cannot change the font
     if(validateFontCombo){
         textEdit.setCurrentFont(f);
     } else
@@ -198,13 +214,20 @@ void CRDT_controller::setUsersColors(bool value){
 
 void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
     if(textEdit.textCursor().hasSelection() && textEdit.textCursor().position() < textEdit.textCursor().anchor()){
+        // selecting from right to left => should consider the format of the letter on the right of the cursor
         QTextCursor tmp(textEdit.textCursor());
         tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+
+        // check if the text is bold, strikethrough, underlined and/or italic and update the toolbar
         emit menuSet(tmp.charFormat().fontItalic() ? menuTools::ITALIC_ON : menuTools::ITALIC_OFF);
         emit menuSet(tmp.charFormat().fontStrikeOut() ? menuTools::STRIKETHROUGH_ON : menuTools::STRIKETHROUGH_OFF);
         emit menuSet(tmp.charFormat().fontUnderline() ? menuTools::UNDERLINED_ON : menuTools::UNDERLINED_OFF);
         emit menuSet(tmp.charFormat().fontWeight() >= QFont::Bold ? menuTools::BOLD_ON : menuTools::BOLD_OFF);
+
+        // check the color of the text update the toolbar
         parent->childToolsBar->setTextColorIconColor(tmp.charFormat().foreground().color());
+
+        // check the font point size and update the toolbar
         if(static_cast<int>(tmp.charFormat().fontPointSize()) != parent->childToolsBar->ui->spinBox->value()){
             validateSpin = false;
             parent->childToolsBar->ui->spinBox->setValue(static_cast<int>(tmp.charFormat().fontPointSize()));
@@ -213,18 +236,25 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
                 parent->childToolsBar->ui->spinBox->setValue(defaultFontPointSize);
             }
         }
+
+        // check the font of the text and update the toolbar
         if(tmp.charFormat().font() != parent->childToolsBar->ui->fontComboBox->currentFont()){
             validateFontCombo = false;
             parent->childToolsBar->ui->fontComboBox->setCurrentFont(tmp.charFormat().font());
         }
         rememberFormatChange = true;
+
     }else{
+
+        // no selection or selecting from left to right => should consider the format of the letter on the left of the cursor
+        // same steps as before (bold/italic/..., color, size, font)
         emit menuSet(format.fontItalic() ? menuTools::ITALIC_ON : menuTools::ITALIC_OFF);
         emit menuSet(format.fontStrikeOut() ? menuTools::STRIKETHROUGH_ON : menuTools::STRIKETHROUGH_OFF);
         emit menuSet(format.fontUnderline() ? menuTools::UNDERLINED_ON : menuTools::UNDERLINED_OFF);
         emit menuSet(format.fontWeight() >= QFont::Bold ? menuTools::BOLD_ON : menuTools::BOLD_OFF);
 
         parent->childToolsBar->setTextColorIconColor(format.foreground().color());
+
         if(static_cast<int>(textEdit.fontPointSize()) != parent->childToolsBar->ui->spinBox->value()){
             if(textEdit.textCursor().hasSelection())
                 validateSpin = false;
@@ -235,6 +265,7 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
                 parent->childToolsBar->ui->spinBox->setValue(defaultFontPointSize);
             }
         }
+
         if(textEdit.currentFont() != parent->childToolsBar->ui->fontComboBox->currentFont()) {
             if(textEdit.textCursor().hasSelection())
                 validateFontCombo = false;
@@ -245,6 +276,7 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
 
 
 void CRDT_controller::cursorMoved(){
+    // update the alignment button on the toolbar
     switch (textEdit.alignment()) {
         case Qt::AlignLeft:
             emit menuSet(menuTools::A_LEFT);
@@ -260,18 +292,22 @@ void CRDT_controller::cursorMoved(){
             break;
     }
 
+    // if it's needed to recheck the current format (e.g.backward selection)
     if(rememberFormatChange){
         rememberFormatChange = false;
         currentCharFormatChanged(textEdit.currentCharFormat());
     }
 
+    // notify the server that the user moved the cursor
     connection->requestSendMovedCursor(crdt.getSiteId(), textEdit.textCursor().position());
 }
 
 void CRDT_controller::selectionChanged(){
+    // ignore this function if performing remote operations
     if(processingMessage)
         return;
 
+    // if it's needed to recheck the current format (e.g.backward selection)
     if(rememberFormatChange){
         rememberFormatChange = false;
         currentCharFormatChanged(textEdit.currentCharFormat());
@@ -288,6 +324,7 @@ void CRDT_controller::selectionChanged(){
 
 
 void CRDT_controller::contentChanged(int pos, int del, int add){
+    // ignore this function if performing remote operations
     if(processingMessage)
         return;
 
@@ -302,13 +339,17 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     //    DEBUG: get some info on what has been modified
     std::cout << "pos: " << pos << "; add: " << add << "; del: " << del << std::endl;
 
+    // remove the deleted letters from the crdt
     if(del > 0){
         for(int i = pos + del - 1; i >= pos; --i)
             crdt.localErase(i);
     }
 
+    // insert the added letters in the crdt
     if(add > 0){
         tmp.setPosition(pos);
+
+        // make sure that the background is NoBrush/white before the insertion
         for(int i = pos; i < pos + add; tmp.setPosition(++i)){
             tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
             if(tmp.charFormat().background() != Qt::BrushStyle::NoBrush && tmp.charFormat().background() != Qt::white){
@@ -321,6 +362,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
         tmp.setPosition(pos+1);
 
+        // insert in crdt, making sure that the font size is > 0 (or use the default one)
         for(int i = pos; i < pos + add; ++i, tmp.movePosition(QTextCursor::NextCharacter)){
             QTextCharFormat fmt{tmp.charFormat()};
             if(fmt.fontPointSize() <= 0)
@@ -332,16 +374,21 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
     int cnt = 0;
 
+    // if i'm changing the alignment of the paragraph next to the cursor (deleting an enter)
 //    std::cout << "At end: " << textEdit.textCursor().atEnd() << "; Alignment: " << textEdit.alignment() /* << "; crdt-al: " << crdt.getAlignAt(textEdit.textCursor().position()) */ << std::endl;      // DEBUG
     if(!tmp.atEnd() &&  tmp.blockFormat().alignment() != crdt.getAlignAt(tmp.position())){
-//        std::cout << "At end: " << textEdit.textCursor().atEnd() << "; Alignment: " << textEdit.alignment() << "; crdt-al: " << crdt.getAlignAt(textEdit.textCursor().position()) << std::endl;        // DEBUG
+
+        //        std::cout << "At end: " << textEdit.textCursor().atEnd() << "; Alignment: " << textEdit.alignment() << "; crdt-al: " << crdt.getAlignAt(textEdit.textCursor().position()) << std::endl;        // DEBUG
         int pos1 = textEdit.textCursor().position();
         tmp = textEdit.textCursor();
         //cancello dal fondo del blocco a tmp
         tmp.movePosition(QTextCursor::EndOfBlock);
+
+        // remove these letters (w/ the old alignment) from the crdt
         for(int i = tmp.position() - 1; i >= pos1 ; --i, ++cnt)
             crdt.localErase(i);
 
+        // re-insert the letters making sure that the format is correct
         tmp.setPosition(pos1);
         for(int i = pos1; i < pos1 + cnt; tmp.setPosition(++i)){
             tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
@@ -365,6 +412,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 //        crdt.print();                                 // DEBUG
     }
 
+    // if "users colors" is selected, visualize the background according to who modified what (otherwise it should be white / NoBrush)
     if(highlightUsers){
         mustClearStacks = true;
         tmp.setPosition(pos);
@@ -379,6 +427,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         }
     }
 
+    // if the text was changed in the function, clear the undo stack
     if(mustClearStacks){
         if(!highlightUsers){
             QTextCharFormat fmt{textEdit.currentCharFormat()};
@@ -390,22 +439,25 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     }
 }
 
-
+// if the clipboard has some text, enable the paste
 void CRDT_controller::clipboardDataChanged(){
     if (const QMimeData *md = QApplication::clipboard()->mimeData())
         parent->setMenuToolStatus(md->hasText() ? PASTE_ON : PASTE_OFF);
 }
 
+// enable / disable the undo button
 void CRDT_controller::undoAvailableChanged(bool available){
     parent->setMenuToolStatus(available ? UNDO_ON : UNDO_OFF);
 }
 
+// enable / disable the redo button
 void CRDT_controller::redoAvailableChanged(bool available){
     parent->setMenuToolStatus(available ? REDO_ON : REDO_OFF);
 }
 
 
 void CRDT_controller::menuCall(menuTools op){
+    // receive a new operation and check what type of operation should be performed
     switch (op) {
         case UNDO_ON:
             undo();
@@ -452,6 +504,7 @@ void CRDT_controller::menuCall(menuTools op){
 }
 
 
+// show the delection of the letter by another user
 void CRDT_controller::remoteDelete(int pos){
 
 //    std::cout<<"EHI! SONO NELLA REMOTE DELETE! Position: "<< pos <<std::endl;
@@ -479,6 +532,7 @@ void CRDT_controller::remoteDelete(int pos){
     processingMessage = processingMessage_prev;
 }
 
+// show the insertion of a new letter by another user
 void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align){
 
 //    std::cout<<"EHI! SONO NELLA REMOTE INSERT! Char: "<< c.toLatin1() <<std::endl;
@@ -488,6 +542,8 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
 
     int pos_prev = textEdit.textCursor().position();
     QTextCursor tmp{textEdit.document()};
+
+    // edit block => insert and chang a format together in the same undo operation
     tmp.beginEditBlock();
     tmp.setPosition(pos);
 
@@ -523,6 +579,7 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
     processingMessage = processingMessage_prev;
 }
 
+// update a colored cursor of another user
 void CRDT_controller::remoteMove(int userId, int pos){
     QTextCursor tmp{textEdit.document()};
     tmp.setPosition(pos);
