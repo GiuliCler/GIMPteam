@@ -105,7 +105,7 @@ background-color: rgb(203, 240, 251);
           </size>
          </property>
          <property name="text">
-          <string>Default</string>
+          <string/>
          </property>
          <property name="placeholderText">
           <string>Insert new document name</string>

@@ -77,6 +77,10 @@ bool GUI_Newdoc::checkFieldValidity(QString value, QString name){
         QMessageBox::information(this, "", "An invalid character \"\\\", \"_\" is present in \"" + name + "\" field");
         return false;
     }
+    if(value.contains("error")){
+        QMessageBox::information(this, "", "Invalid string \"error\" is present in \"" + name + "\" field");
+        return false;
+    }
 
     return true;
 }
