@@ -41,7 +41,7 @@ public:
     std::string requestDeleteDoc(int userId,int documentId);
     int getDocumentOwner(int docId);
     std::string openDoc(int userId, int docId);
-    void requestSendMessage(CRDT_Message *messaggio);
+    void requestSendMessage(const CRDT_Message& messaggio);
     void requestSendMovedCursor(int userId, int pos);
     void connectEditor();
     void disconnectEditor(int userId, int docId);
