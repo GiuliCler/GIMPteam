@@ -8,14 +8,10 @@
 #include "CRDT/crdt_message.h"
 
 connection_to_server::connection_to_server(QString port, QString ipAddress): fileTMP(), readBuffer(), readBuffer_size(0){
-    this->tcpSocket=new QTcpSocket(this);
+    this->tcpSocket = new QTcpSocket(this);
     this->port = port;
     this->ipAddress = ipAddress;
     connect(this, &connection_to_server::error, this, &connection_to_server::displayError);
-}
-
-QTcpSocket *connection_to_server::getSocket(){
-    return this->tcpSocket;
 }
 
 QByteArray connection_to_server::getFileTMP(){

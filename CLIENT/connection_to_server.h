@@ -35,7 +35,6 @@ public:
     std::string requestUri(int docId);
     std::string requestDocIdDatoUri(QString uri, int userId);
     std::shared_ptr<QMap<int, QString>> getKnownDocuments(int userId);
-    QTcpSocket *getSocket();
     std::string requestDocName(int docId);
     std::shared_ptr<QSet<int>> getWorkingUsersOnDocument(int docId);
     std::string requestDeleteDoc(int userId,int documentId);

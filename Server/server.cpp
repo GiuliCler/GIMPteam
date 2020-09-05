@@ -71,6 +71,15 @@ Server::Server(QObject *parent): QTcpServer(parent) {
     startTimer(std::chrono::minutes(5));
 }
 
+Server::~Server(){
+    delete mutex_users;
+    delete mutex_docs;
+    delete mutex_workingUsers;
+    delete mutex_db;
+    delete mutex_logged_users;
+    delete mutex_files;
+}
+
 void Server::incomingConnection(qintptr socketDescriptor) {
     /*
      * This method will get called every time a client tries to connect ("when a new connection is available" cit.)
