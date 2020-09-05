@@ -9,7 +9,7 @@ Thread_body::Thread_body(int socketDescriptor, QThread* server, QObject *parent)
 
 //    qDebug() << "ThreadBody constructor id: "<<threadId_toQString(thread_id);      // DEBUG
 
-    socket = new QTcpSocket();
+    socket = new QTcpSocket(this);
     if (!socket->setSocketDescriptor(socketDescriptor)) {
         socket->disconnectFromHost();
         emit error(socket->error());
