@@ -20,7 +20,7 @@ extern QMap<QString, int> users;
 extern QMap<QString, int> documents;
 extern QVector<QString> logged_users;
 extern QMap<int, QVector<int>> workingUsers;
-extern QMap<int, CRDT_ServerEditor*> files;
+extern QMap<int, std::shared_ptr<CRDT_ServerEditor>> files;
 extern QString path;
 
 class Thread_body : public QObject
@@ -38,7 +38,7 @@ private:
     int current_siteCounter;
     int current_docId;
     int current_userId;
-    CRDT_ServerEditor* crdt;
+    std::shared_ptr<CRDT_ServerEditor> crdt;
     QByteArray readBuffer;
     qint32 readBuffer_size;
 

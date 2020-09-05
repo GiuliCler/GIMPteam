@@ -21,7 +21,7 @@ extern QMap<QString, int> users;
 extern QMap<QString, int> documents;
 extern QVector<QString> logged_users;
 extern QMap<int, QVector<int>> workingUsers;
-extern QMap<int, CRDT_ServerEditor*> files;
+extern QMap<int, std::shared_ptr<CRDT_ServerEditor>> files;
 extern QString path;
 
 

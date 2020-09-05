@@ -29,7 +29,7 @@ QVector<QString> logged_users;
 QMap<int, QVector<int>> workingUsers;
 
 // files --> QMap formata da coppie (docId, CRDT_ServerEditor*)
-QMap<int, CRDT_ServerEditor*> files;
+QMap<int, std::shared_ptr<CRDT_ServerEditor>> files;
 
 QString path = "Files/";
 

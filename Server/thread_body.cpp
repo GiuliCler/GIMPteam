@@ -495,8 +495,8 @@ int Thread_body::openDoc(QString docName, int docId, int userId, int new_doc){
         QString owner = docName.split("_")[0];
         QString percorsoFile = path+owner+"/"+docName+".txt";
 
-        // Creazione nuovo ServerEditor (=> new CRDT_ServerEditor())
-        CRDT_ServerEditor* file = new CRDT_ServerEditor(percorsoFile);
+        // Creazione nuovo ServerEditor
+        std::shared_ptr<CRDT_ServerEditor> file = std::make_shared<CRDT_ServerEditor>(percorsoFile);
 
         // Spostamento della proprietà dell'oggetto al master thread (Server)
         file->moveToThread(server);
@@ -1003,8 +1003,6 @@ void Thread_body::deleteDoc(int userId, int docId){
                 files.remove(docId);
                 mutex_files->unlock();
 
-                delete crdt;
-
                 // ... Segnalo agli utenti che devono essere "buttati fuori" dall'editor
                 forceCloseDocument(docId);
             }
@@ -1310,8 +1308,6 @@ void Thread_body::closeDocument(int docId, int userId){
 
         // Salvo il contenuto attuale del crdt nel filesystem
         crdt->saveInFilesystem();
-
-        delete crdt;
     }
 
     // "Resetto" il puntatore a CRDT_ServerEditor
