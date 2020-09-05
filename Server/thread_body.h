@@ -34,7 +34,7 @@ public:
 private:
     QThread* server;
     const int Timeout = 100 * 1000;
-    CollegamentoDB* database;
+    CollegamentoDB database;
     int current_siteCounter;
     int current_docId;
     int current_userId;

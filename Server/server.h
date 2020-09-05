@@ -29,7 +29,6 @@ signals:
     void checkPeriodicoClientConnessi();
 
 private:
-    CollegamentoDB *database;
     int socketDescriptor;
 };
 

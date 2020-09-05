@@ -36,14 +36,14 @@ QString path = "Files/";
 Server::Server(QObject *parent): QTcpServer(parent) {
 
     // Connessione al DB
-    database = new CollegamentoDB();
+    CollegamentoDB database{};
     mutex_db->lock();
-    database->connettiDB("gimpdocs_db", "connServer");
+    database.connettiDB("gimpdocs_db", "connServer");
     mutex_db->unlock();
 
     // Riempimento della QMap degli utenti con gli elementi presenti sul DB
     mutex_db->lock();
-    QVector<QPair<QString, int>> utenti = database->recuperaUtentiNelDB();
+    QVector<QPair<QString, int>> utenti = database.recuperaUtentiNelDB();
     mutex_db->unlock();
     mutex_users->lock();
     for(auto i=utenti.begin(); i<utenti.end(); i++){
@@ -56,7 +56,7 @@ Server::Server(QObject *parent): QTcpServer(parent) {
     // Riempimento della QMap dei documenti con gli elementi presenti sul DB
     int cont = 1;
     mutex_db->lock();
-    std::vector<QString> documenti = database->recuperaDocsNelDB();
+    std::vector<QString> documenti = database.recuperaDocsNelDB();
     mutex_db->unlock();
     mutex_docs->lock();
     for(auto i=documenti.begin(); i<documenti.end(); i++){

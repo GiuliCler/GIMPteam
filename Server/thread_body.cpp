@@ -17,8 +17,7 @@ Thread_body::Thread_body(int socketDescriptor, QThread* server, QObject *parent)
     }
 
     // Creo nel thread un collegamento al DB, mettendo come nome univoco di connessione "connSOCKETDESCRIPTOR"
-    database = new CollegamentoDB();
-    database->connettiDB("gimpdocs_db", "conn" + threadId_toQString(thread_id));
+    database.connettiDB("gimpdocs_db", "conn" + threadId_toQString(thread_id));
 
     QObject::connect(this, &Thread_body::dataReceived, this, &Thread_body::executeJob);
 }
@@ -400,7 +399,7 @@ void Thread_body::newDoc(QString docName, int userId){
     //controllo che ci sia la cartella del dato utente
     if(!username.isEmpty() && QDir(path+username).exists() && isLogged(username)){
         mutex_db->lock();
-        int esito = database->creaDoc(username+"_"+docName);
+        int esito = database.creaDoc(username+"_"+docName);
         if(esito == 1){
             // Riga creata correttamente nella tabella doc del DB
             mutex_db->unlock();
@@ -429,8 +428,8 @@ void Thread_body::newDoc(QString docName, int userId){
             }else{
                 mutex_db->lock();
                 // Associazione username - nome_doc nella tabella utente_doc del DB
-                if(database->aggiungiPartecipante(username+"_"+docName, username) != 2){
-                    int siteCounter = database->recuperaSiteCounter(username+"_"+docName, username);
+                if(database.aggiungiPartecipante(username+"_"+docName, username) != 2){
+                    int siteCounter = database.recuperaSiteCounter(username+"_"+docName, username);
                     mutex_db->unlock();
 
                     if(siteCounter == -1){
@@ -546,7 +545,7 @@ void Thread_body::signup(QString username, QString password, QString nickname, Q
 
         // Creo la riga relativa al nuovo user nella tabella utenti del DB
         mutex_db->lock();
-        int ret = database->signup(username, password, nickname, icon, userId);
+        int ret = database.signup(username, password, nickname, icon, userId);
         mutex_db->unlock();
         if(ret == 1){
             // Dati correttamente inseriti nel DB
@@ -614,7 +613,7 @@ void Thread_body::login(QString username, QString password){
     } else {                                        // L'utente non è ancora loggato
         mutex_logged_users->unlock();
         mutex_db->lock();
-        std::vector<QString> v = database->login(username, password);
+        std::vector<QString> v = database.login(username, password);
         mutex_db->unlock();
         if(v.size()==2){
             // Aggiungo al vettore di users
@@ -692,7 +691,7 @@ void Thread_body::update(int userId, QString password, QString nickname, QString
 
     if(!username.isEmpty() && isLogged(username)){
         mutex_db->lock();
-        if(database->aggiornaUser(username, password, nickname, icon, userId)){
+        if(database.aggiornaUser(username, password, nickname, icon, userId)){
             mutex_db->unlock();
             // User correttamente aggiornato nel db
             out << "ok";
@@ -733,7 +732,7 @@ void Thread_body::getNickname(int userId){
 
     if(!username.isEmpty()){
         mutex_db->lock();
-        QString nick = database->getNickname(username);
+        QString nick = database.getNickname(username);
         mutex_db->unlock();
         out << nick.toUtf8();
         writeData(blocko);
@@ -752,7 +751,7 @@ void Thread_body::getIcon(int userId){
 
     if(!username.isEmpty()){
         mutex_db->lock();
-        QString icon = database->getIcon(username);
+        QString icon = database.getIcon(username);
         mutex_db->unlock();
         if(!icon.contains("errore")){
             out << icon.toUtf8();
@@ -777,7 +776,7 @@ void Thread_body::getDocs(int userId){
     if(!username.isEmpty() && isLogged(username)){
         // Recupero i documenti per cui l'utente e' abilitato ad accedere
         mutex_db->lock();
-        std::vector<QString> documenti = database->recuperaDocs(username);
+        std::vector<QString> documenti = database.recuperaDocs(username);
         mutex_db->unlock();
 
         // Mando al client il numero di elementi/documenti che verranno inviati
@@ -818,7 +817,7 @@ void Thread_body::getDocIdDatoUri(QString uri, int userId){
     out.setVersion(QDataStream::Qt_5_12);
 
     mutex_db->lock();
-    QString doc = database->recuperaDocDatoURI(uri);
+    QString doc = database.recuperaDocDatoURI(uri);
     mutex_db->unlock();
     if(doc != "errore"){
         // Nome del documento relativo all'URI ottenuto dal DB correttamente
@@ -839,7 +838,7 @@ void Thread_body::getDocIdDatoUri(QString uri, int userId){
             mutex_db->lock();
 
             //creo sul db l'associazione documento-utente (non owner)
-            if(database->aggiungiPartecipante(docName,username)!=2){
+            if(database.aggiungiPartecipante(docName,username)!=2){
                 ritorno = "ok_"+QString::number(docId);
             } else {
                 ritorno = "errore";
@@ -875,7 +874,7 @@ void Thread_body::getUri(int docId){
 
     if(!docName.isEmpty()){
         mutex_db->lock();
-        out << database->recuperaURI(docName).toUtf8();
+        out << database.recuperaURI(docName).toUtf8();
         mutex_db->unlock();
         writeData(blocko);
     }else{
@@ -943,7 +942,7 @@ void Thread_body::deleteDoc(int userId, int docId){
     if(QString::compare(username, docName.split("_").at(0))==0){
         mutex_db->lock();
         //è il creatore del documento: tutti i partecipanti, non vi hanno più accesso
-        std::vector<std::vector<QString>> collaboratori = database->recuperaCollaboratori(docName);
+        std::vector<std::vector<QString>> collaboratori = database.recuperaCollaboratori(docName);
         mutex_db->unlock();
         if(collaboratori.size()==0){
             out << "erroreDeleteDoc";
@@ -959,7 +958,7 @@ void Thread_body::deleteDoc(int userId, int docId){
         //itero sui collaboratori ed elimino il loro documento
         for(auto i:collaboratori){
             mutex_db->lock();
-            if(database->rimuoviPartecipante(docName, i.at(0))==0){
+            if(database.rimuoviPartecipante(docName, i.at(0))==0){
                 mutex_db->unlock();
                 out << "erroreDeleteDoc";
                 writeData(blocko);
@@ -970,7 +969,7 @@ void Thread_body::deleteDoc(int userId, int docId){
 
         //elimino il documento nella tabella doc del DB
         mutex_db->lock();
-        if(database->rimuoviDocumento(docName)==0){
+        if(database.rimuoviDocumento(docName)==0){
             mutex_db->unlock();
             out << "erroreDeleteDoc";
             writeData(blocko);
@@ -1017,7 +1016,7 @@ void Thread_body::deleteDoc(int userId, int docId){
     }else{
         // il documento rimane e viene dimenticato il documento da parte del partecipane
         mutex_db->lock();
-        if(database->rimuoviAccesso(docName, username)==0){
+        if(database.rimuoviAccesso(docName, username)==0){
             mutex_db->unlock();
             out << "erroreDeleteDoc";
             writeData(blocko);
@@ -1110,7 +1109,7 @@ void Thread_body::getCollaboratorsGivenDoc(int docId){
     if(!docName.isEmpty()){
         //recupero i collaboratori dal db
         mutex_db->lock();
-        std::vector<std::vector<QString>> collaboratori = this->database->recuperaCollaboratori(docName);
+        std::vector<std::vector<QString>> collaboratori = this->database.recuperaCollaboratori(docName);
         mutex_db->unlock();
 
         // Mando al client il numero di elementi/id che verranno inviati
@@ -1171,7 +1170,7 @@ void Thread_body::getDocText(int docId, int userId){
             writeData(blocko);
         }else{
             mutex_db->lock();
-            int siteCounter = database->recuperaSiteCounter(docName, username);
+            int siteCounter = database.recuperaSiteCounter(docName, username);
             mutex_db->unlock();
 
             if(siteCounter == -1){
@@ -1246,7 +1245,7 @@ void Thread_body::openDocument(int docId, int userId){
             writeData(blocko);
         }else{
             mutex_db->lock();
-            int siteCounter = database->recuperaSiteCounter(docName, username);
+            int siteCounter = database.recuperaSiteCounter(docName, username);
             mutex_db->unlock();
 
             if(siteCounter == -1){
@@ -1325,7 +1324,7 @@ void Thread_body::closeDocument(int docId, int userId){
     if(isLogged(username)){
         // Salvo il site_counter attuale nel DB
         mutex_db->lock();
-        database->aggiornaSiteCounter(docName, username, current_siteCounter);
+        database.aggiornaSiteCounter(docName, username, current_siteCounter);
         mutex_db->unlock();
     }
 }
@@ -1394,8 +1393,8 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         int userId = userIdConnect[1].toInt();
         QString username = getUsername(userId);
         mutex_db->lock();
-        QString nick = database->getNickname(username);
-        QString icon = database->getIcon(username);
+        QString nick = database.getNickname(username);
+        QString icon = database.getIcon(username);
         mutex_db->unlock();
         QString s = "ONLINEUSER";
         out << s.toUtf8();
@@ -1412,8 +1411,8 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         int userId = userIdContributor[1].toInt();
         QString username = getUsername(userId);
         mutex_db->lock();
-        QString nick = database->getNickname(username);
-        QString icon = database->getIcon(username);
+        QString nick = database.getNickname(username);
+        QString icon = database.getIcon(username);
         mutex_db->unlock();
         QString s = "NEWCONTRIBUTOR";
         out << s.toUtf8();
