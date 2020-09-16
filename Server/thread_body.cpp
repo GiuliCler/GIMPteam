@@ -23,7 +23,7 @@ Thread_body::Thread_body(int socketDescriptor, QThread* server, QObject *parent)
 }
 
 Thread_body::~Thread_body(){
-//    qDebug() <<"STO DISTRUGGENDO IL THREAD_BODY";            // DEBUG
+    qDebug() <<"STO DISTRUGGENDO IL THREAD_BODY";            // DEBUG
 }
 
 void Thread_body::executeJob(QByteArray data){
@@ -1519,6 +1519,7 @@ void Thread_body::checkPeriodicoClientConnessiSlot(){
     // Controllo lo stato del socket
     if(socket->state() != QTcpSocket::ConnectedState){
 
+        qDebug() << "Entering thread deletion procedure";
         // Il socket NON è in stato ConnectedState => client crashato
 
         // Controllo se l'utente aveva l'editor aperto e stava modificando un documento (simulo DISCONNECT_FROM_DOC)
@@ -1529,6 +1530,7 @@ void Thread_body::checkPeriodicoClientConnessiSlot(){
         // Tolgo l'utente dagli logged users (simulo LOGOUT)
         QString username = getUsername(current_userId);
         if(!username.isEmpty()){
+            qDebug() << "Removing user from logged users";
             mutex_logged_users->lock();
             for(auto it=logged_users.begin(); it<logged_users.end(); it++){
                 if((*it) == username){
