@@ -29,7 +29,7 @@ CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyT
 }
 
 CRDT_controller::~CRDT_controller(){
-    qDebug() << "Wakanda";
+//    qDebug() << "Distruttore CRDT_controller chiamato";        // DEBUG
 }
 
 
@@ -178,8 +178,6 @@ void CRDT_controller::setUsersColors(bool value){
 
     // Setto il valore di highlightUsers al valore di GUI_Editor->usersColors
     highlightUsers = value;
-
-//    qDebug()<<"setUsersColors chiamata .. flag: "<< highlightUsers;     // DEBUG
 
     bool processingMessage_prev = processingMessage;
     processingMessage = true;
@@ -337,8 +335,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         add--;
     }
 
-    //    DEBUG: get some info on what has been modified
-    std::cout << "pos: " << pos << "; add: " << add << "; del: " << del << std::endl;
+//    std::cout << "pos: " << pos << "; add: " << add << "; del: " << del << std::endl;     // DEBUG: get some info on what has been modified
 
     // remove the deleted letters from the crdt
     if(del > 0){
@@ -368,7 +365,6 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
             QTextCharFormat fmt{tmp.charFormat()};
             if(fmt.fontPointSize() <= 0)
                 fmt.setFontPointSize(defaultFontPointSize);
-            //std::cout << "Cursor position: " << textEdit.textCursor().position() << std::endl;                        // DEBUG
             crdt.localInsert(i, textEdit.toPlainText().at(i), fmt, tmp.blockFormat().alignment());
         }
     }
@@ -376,10 +372,9 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     int cnt = 0;
 
     // if i'm changing the alignment of the paragraph next to the cursor (deleting an enter)
-//    std::cout << "At end: " << textEdit.textCursor().atEnd() << "; Alignment: " << textEdit.alignment() /* << "; crdt-al: " << crdt.getAlignAt(textEdit.textCursor().position()) */ << std::endl;      // DEBUG
     if(!tmp.atEnd() &&  tmp.blockFormat().alignment() != crdt.getAlignAt(tmp.position())){
 
-        //        std::cout << "At end: " << textEdit.textCursor().atEnd() << "; Alignment: " << textEdit.alignment() << "; crdt-al: " << crdt.getAlignAt(textEdit.textCursor().position()) << std::endl;        // DEBUG
+//        std::cout << "At end: " << textEdit.textCursor().atEnd() << "; Alignment: " << textEdit.alignment() << "; crdt-al: " << crdt.getAlignAt(textEdit.textCursor().position()) << std::endl;        // DEBUG
         int pos1 = textEdit.textCursor().position();
         tmp = textEdit.textCursor();
         //cancello dal fondo del blocco a tmp
@@ -407,7 +402,6 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
             QTextCharFormat fmt{tmp.charFormat()};
             if(fmt.fontPointSize() <= 0)
                 fmt.setFontPointSize(defaultFontPointSize);
-            //std::cout << "Cursor position: " << textEdit.textCursor().position() << std::endl;                            // DEBUG
             crdt.localInsert(i, textEdit.toPlainText().at(i), fmt, tmp.blockFormat().alignment());
         }
 //        crdt.print();                                 // DEBUG
@@ -508,7 +502,7 @@ void CRDT_controller::menuCall(menuTools op){
 // show the delection of the letter by another user
 void CRDT_controller::remoteDelete(int pos){
 
-//    std::cout<<"EHI! SONO NELLA REMOTE DELETE! Position: "<< pos <<std::endl;
+//    std::cout<<"EHI! SONO NELLA REMOTE DELETE! Position: "<< pos <<std::endl;         // DEBUG
 
     bool processingMessage_prev = processingMessage;
     processingMessage = true;
@@ -536,7 +530,7 @@ void CRDT_controller::remoteDelete(int pos){
 // show the insertion of a new letter by another user
 void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align){
 
-//    std::cout<<"EHI! SONO NELLA REMOTE INSERT! Char: "<< c.toLatin1() <<std::endl;
+//    std::cout<<"EHI! SONO NELLA REMOTE INSERT! Char: "<< c.toLatin1() <<std::endl;        // DEBUG
 
     bool processingMessage_prev = processingMessage;
     processingMessage = true;
@@ -551,12 +545,10 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
     if(fmt.fontPointSize() <= 0)
         fmt.setFontPointSize(defaultFontPointSize);
 
-//    std::cout<<"AAAA TextEdit... cursor: "<<textEdit.textCursor().position()<<", pos: "<<pos<<std::endl;        // DEBUG
     QTextBlockFormat blockFmt{tmp.blockFormat()};
 
     if(highlightUsers){
         fmt.setBackground(editorParent->getUserColor(crdt.getSiteIdAt(pos)));
-//        qDebug()<<"highlightUsers: "<<highlightUsers<<", background color: "<<fmt.background().color();        // DEBUG
     }
 
     tmp.insertText(c, fmt);
@@ -564,7 +556,6 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
         blockFmt.setAlignment(align);
         tmp.mergeBlockFormat(blockFmt);
     }
-//    std::cout << "Block End: " << textEdit.textCursor().atBlockEnd() << "; Alignment: " << align << std::endl;
 
     tmp.endEditBlock();
 
