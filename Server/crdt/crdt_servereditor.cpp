@@ -23,12 +23,9 @@ void CRDT_ServerEditor::process(const CRDT_Message& m){
     QVector<CRDT_Symbol>::iterator it = _symbols.begin();
 
     if(azione == "insert"){                 /* SIMBOLO INSERITO */
-        int count = 0;
         if(!_symbols.empty()){
             QVector<int> posNew = m.getSimbolo().getPosizione();
             it = trovaPosizione(posNew);
-            for(QVector<CRDT_Symbol>::iterator iterat=_symbols.begin(); iterat<it; iterat++)
-                count++;
         }
 
         _symbols.insert(it, simbolo);
@@ -47,28 +44,55 @@ void CRDT_ServerEditor::process(const CRDT_Message& m){
 }
 
 
-QVector<CRDT_Symbol>::iterator CRDT_ServerEditor::trovaPosizione(QVector<int> pos) {
-    QVector<int> currentPos;
+QVector<CRDT_Symbol>::iterator CRDT_ServerEditor::trovaPosizione(QVector<int> target) {
     int esito = 0;
-    QVector<CRDT_Symbol>::iterator it;
+    QVector<CRDT_Symbol>::iterator it = _symbols.begin();
 
-    for(it = _symbols.begin(); it < _symbols.end(); it++){
-        currentPos = (*it).getPosizione();
-        esito = confrontaPos(pos, currentPos);
-        if(esito)
-            break;
+    // Controllo inserimento in coda
+    if(confrontaPos(target, _symbols[_symbols.size()-1].getPosizione()) == 0)
+        return _symbols.end();
+
+    int sx = 0, dx = _symbols.size()-1, centro = (sx + dx) / 2;
+
+    while(dx - sx > 1){
+        esito = confrontaPos(target, _symbols[centro].getPosizione());
+        if(esito == 1){
+            // currentPos > target
+            dx = centro;
+        } else {
+            // currentPos < target
+            sx = centro;
+        }
+
+        centro = (sx + dx) / 2;
     }
 
-    if(!esito)
-        it = _symbols.end();
+    esito = confrontaPos(target, _symbols[centro].getPosizione());
+    if(esito == 1){
+        // currentPos > target
+        it = it + centro;
+    } else {
+        // currentPos < target
+        it = it + centro + 1;
+    }
+
+//    for(it = _symbols.begin; it < _symbols.end; it++){
+//        currentPos = (*it).getPosizione();
+//        esito = confrontaPos(pos, currentPos);
+//        if(esito)
+//            break;
+//    }
+
+//    if(!esito)
+//        it = _symbols.end();
 
     return it;
 }
 
 
 /*
- * ESITO = 1 --> currentPos > pos ==> posso inserire il nuovo elemento qui
- * ESITO = 0 --> currentPos < pos ==> devo continuare la ricerca guardando il prossimo elemento
+ * ESITO = 1 --> currentPos > target/pos
+ * ESITO = 0 --> currentPos < target/pos
 */
 int CRDT_ServerEditor::confrontaPos(QVector<int> pos, QVector<int> currentPos){
     for(int index=0; index<pos.size(); index++){

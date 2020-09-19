@@ -191,7 +191,7 @@ QVector<CRDT_Symbol>::iterator CRDT_SharedEditor::trovaPosizione(QVector<int> ta
     QVector<CRDT_Symbol>::iterator it = _symbols.begin();
 
     // Controllo inserimento in coda
-    if(confrontaPos(target, _symbols[_symbols.size()-1].getPosizione()) == 1)
+    if(confrontaPos(target, _symbols[_symbols.size()-1].getPosizione()) == 0)
         return _symbols.end();
 
     int sx = 0, dx = _symbols.size()-1, centro = (sx + dx) / 2;
