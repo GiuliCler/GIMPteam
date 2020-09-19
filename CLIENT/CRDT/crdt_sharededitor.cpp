@@ -33,11 +33,11 @@ int CRDT_SharedEditor::getSiteIdAt(int pos){
     return _symbols[pos].getSiteId();
 }
 
+QVector<int> CRDT_SharedEditor::generaPrimaPosizione(int index){
 
-void CRDT_SharedEditor::localInsert(int index, QChar value, QTextCharFormat fmt, Qt::Alignment align){
+    // Generazione della posizione (senza siteId) del primo elemento da inserire
+
     QVector<int> posizione, posPREV, posNEXT;
-
-//    std::cout << "localInsert - Adding " << value.toLatin1() << " to CRDT in pos " << index << std::endl;      // DEBUG
 
     if(index<0)
         index = 0;
@@ -62,17 +62,10 @@ void CRDT_SharedEditor::localInsert(int index, QChar value, QTextCharFormat fmt,
         }
     }
 
+    // Aggiungo al fondo del vettore di interi il siteId
     posizione.push_back(_siteId);
 
-    /* Creazione del nuovo simbolo e inserimento nella corretta posizione all'interno del vettore _symbols */
-    CRDT_Symbol simbolo{value, this->_siteId, this->_counter++, posizione, fmt, align};
-    auto it = _symbols.begin()+index;
-    _symbols.insert(it, simbolo);
-
-    /* Creazione del messaggio e invio al NetworkServer */
-    CRDT_Message messaggio{"insert", simbolo, this->_siteId};
-
-    connection->requestSendMessage(messaggio);
+    return posizione;
 }
 
 
@@ -126,6 +119,21 @@ QVector<int> CRDT_SharedEditor::generaPosizione(QVector<int> prev, QVector<int> 
 }
 
 
+void CRDT_SharedEditor::localInsert(int index, QChar value, QTextCharFormat fmt, Qt::Alignment align, QVector<int> posizione){
+
+    //    std::cout << "localInsert - Adding " << value.toLatin1() << " to CRDT in pos " << index << std::endl;      // DEBUG
+
+    /* Creazione del nuovo simbolo e inserimento nella corretta posizione all'interno del vettore _symbols */
+    CRDT_Symbol simbolo{value, this->_siteId, this->_counter++, posizione, fmt, align};
+    auto it = _symbols.begin()+index;
+    _symbols.insert(it, simbolo);
+
+    /* Creazione del messaggio e invio al NetworkServer */
+    CRDT_Message messaggio{"insert", simbolo, this->_siteId};
+    connection->requestSendMessage(messaggio);
+}
+
+
 void CRDT_SharedEditor::localErase(int index){
     /* Recupero dal vettore di simboli il simbolo da eliminare */
     CRDT_Symbol simbolo = _symbols[index];
@@ -155,8 +163,9 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
             if(!_symbols.empty()){
                 QVector<int> posNew = m.getSimbolo().getPosizione();
                 it = trovaPosizione(posNew);
-                for(QVector<CRDT_Symbol>::iterator iterat=_symbols.begin(); iterat<it; iterat++)
-                    count++;
+//                for(QVector<CRDT_Symbol>::iterator iterat=_symbols.begin(); iterat<it; iterat++)
+//                    count++;
+                count = it - _symbols.begin();
             }
 
             _symbols.insert(it, simbolo);

@@ -335,7 +335,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         add--;
     }
 
-//    std::cout << "pos: " << pos << "; add: " << add << "; del: " << del << std::endl;     // DEBUG: get some info on what has been modified
+    std::cout << "pos: " << pos << "; add: " << add << "; del: " << del << std::endl;     // DEBUG: get some info on what has been modified
 
     // remove the deleted letters from the crdt
     if(del > 0){
@@ -360,12 +360,26 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
         tmp.setPosition(pos+1);
 
-        // insert in crdt, making sure that the font size is > 0 (or use the default one)
-        for(int i = pos; i < pos + add; ++i, tmp.movePosition(QTextCursor::NextCharacter)){
+        // Trovo dove inserire la prima lettera
+        QVector<int> firstPosition = crdt.generaPrimaPosizione(pos);
+
+        QTextCharFormat fmt{tmp.charFormat()};
+        if(fmt.fontPointSize() <= 0)
+            fmt.setFontPointSize(defaultFontPointSize);
+        crdt.localInsert(pos, textEdit.toPlainText().at(pos), fmt, tmp.blockFormat().alignment(), firstPosition);
+
+        // Aggiungo al fondo del vettore di interi il siteId
+        firstPosition.push_back(crdt.getSiteId());
+
+        // Insert in crdt, making sure that the font size is > 0 (or use the default one)
+        for(int i = pos+1; i < pos + add; ++i){
+            tmp.movePosition(QTextCursor::NextCharacter);
             QTextCharFormat fmt{tmp.charFormat()};
             if(fmt.fontPointSize() <= 0)
                 fmt.setFontPointSize(defaultFontPointSize);
-            crdt.localInsert(i, textEdit.toPlainText().at(i), fmt, tmp.blockFormat().alignment());
+
+            firstPosition[firstPosition.size()-1]++;
+            crdt.localInsert(i, textEdit.toPlainText().at(i), fmt, tmp.blockFormat().alignment(), firstPosition);
         }
     }
 
@@ -397,14 +411,28 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         }
 
         tmp.setPosition(pos1+1);
-        // inserisco da tmp a fondo del blocco
-        for(int i = pos1; i < pos1 + cnt; ++i, tmp.movePosition(QTextCursor::NextCharacter)){
+
+        // Trovo dove inserire la prima lettera
+        QVector<int> firstPosition = crdt.generaPrimaPosizione(pos1);
+
+        QTextCharFormat fmt{tmp.charFormat()};
+        if(fmt.fontPointSize() <= 0)
+            fmt.setFontPointSize(defaultFontPointSize);
+        crdt.localInsert(pos1, textEdit.toPlainText().at(pos1), fmt, tmp.blockFormat().alignment(), firstPosition);
+
+        // Aggiungo al fondo del vettore di interi il siteId
+        firstPosition.push_back(crdt.getSiteId());
+
+        // insert in crdt, making sure that the font size is > 0 (or use the default one)
+        for(int i = pos1+1; i < pos1 + cnt; ++i){
+            tmp.movePosition(QTextCursor::NextCharacter);
             QTextCharFormat fmt{tmp.charFormat()};
             if(fmt.fontPointSize() <= 0)
                 fmt.setFontPointSize(defaultFontPointSize);
-            crdt.localInsert(i, textEdit.toPlainText().at(i), fmt, tmp.blockFormat().alignment());
+
+            firstPosition[firstPosition.size()-1]++;
+            crdt.localInsert(i, textEdit.toPlainText().at(i), fmt, tmp.blockFormat().alignment(), firstPosition);
         }
-//        crdt.print();                                 // DEBUG
     }
 
     // if "users colors" is selected, visualize the background according to who modified what (otherwise it should be white / NoBrush)
@@ -574,7 +602,12 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
 // update a colored cursor of another user
 void CRDT_controller::remoteMove(int userId, int pos){
     QTextCursor tmp{textEdit.document()};
-    tmp.setPosition(pos);
+//    tmp.setPosition(pos);
+
+    if(pos > textEdit.document()->characterCount())
+        pos = textEdit.document()->characterCount();
+    else
+        tmp.setPosition(pos);
 
     QPoint position = QPoint (textEdit.cursorRect(tmp).topLeft().x(), textEdit.cursorRect(tmp).topLeft().y() + textEdit.verticalScrollBar()->value());
     emit updateCursorPosition(userId, position);
