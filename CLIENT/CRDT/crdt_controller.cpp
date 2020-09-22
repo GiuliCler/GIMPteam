@@ -6,6 +6,8 @@
 #include <iostream>
 #include <QScrollBar>
 
+#include <ctime>
+
 
 CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyTextEdit& textEdit, int siteId, int siteCounter):
                         QObject(parent), gimpDocs(gimpdocs),  editorParent(parent),  connection(gimpDocs->getConnection()), textEdit(textEdit), highlightUsers(false),
@@ -323,6 +325,10 @@ void CRDT_controller::selectionChanged(){
 
 
 void CRDT_controller::contentChanged(int pos, int del, int add){
+    //TIMER
+    //time_t tstart, tend;
+    //tstart = time(0);
+
     // ignore this function if performing remote operations
     if(processingMessage)
         return;
@@ -339,8 +345,16 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
     // remove the deleted letters from the crdt
     if(del > 0){
+        //TIMER
+        time_t tstart, tend;
+        tstart = time(0);
+
         for(int i = pos + del - 1; i >= pos; --i)
             crdt.localErase(i);
+
+        //TIMER
+        tend = time(0);
+        std::cout << "It took "<< difftime(tend, tstart) <<" second(s)."<< std::endl;
     }
 
     // insert the added letters in the crdt
@@ -460,6 +474,10 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         }
         textEdit.document()->clearUndoRedoStacks();
     }
+
+    //TIMER
+    //tend = time(0);
+    //std::cout << "It took "<< difftime(tend, tstart) <<" second(s)."<< std::endl;
 }
 
 // if the clipboard has some text, enable the paste
