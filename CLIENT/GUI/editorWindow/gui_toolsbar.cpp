@@ -35,8 +35,6 @@ GUI_ToolsBar::GUI_ToolsBar(QWidget *parent) : QWidget(parent){
 void GUI_ToolsBar::on_colorPushButton_clicked(){
     QColor chosenColor = QColorDialog::getColor(); //return the color chosen by user
     editorParent->crdtController->setCurrentTextColor(chosenColor);
-
-    compromisedUndoStack();
 }
 
 void GUI_ToolsBar::enterCompromizedModeUndoStack(){
