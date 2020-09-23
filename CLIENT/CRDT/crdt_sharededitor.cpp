@@ -163,8 +163,6 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
             if(!_symbols.empty()){
                 QVector<int> posNew = m.getSimbolo().getPosizione();
                 it = trovaPosizione(posNew);
-//                for(QVector<CRDT_Symbol>::iterator iterat=_symbols.begin(); iterat<it; iterat++)
-//                    count++;
                 count = it - _symbols.begin();
             }
 
@@ -173,7 +171,6 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
             parent->remoteInsert(count, simbolo.getCarattere(), simbolo.getFormat(), simbolo.getAlignment());
 
         } else if(azione == "delete"){           /* SIMBOLO CANCELLATO */
-//            std::cout<<"(dispatch nell'ed "<<_siteId<<"): elimino un carattere di id "<<simbolo.getIDunivoco()<<std::endl;     // DEBUG
 
             // Ricerca dicotomica
             QVector<CRDT_Symbol>::iterator it =

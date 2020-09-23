@@ -31,13 +31,23 @@ void CRDT_ServerEditor::process(const CRDT_Message& m){
         _symbols.insert(it, simbolo);
 
     } else if(azione == "delete"){           /* SIMBOLO CANCELLATO */
-        for(; it < _symbols.end(); it++){
-            CRDT_Symbol s = *it;
-            if((s.getPosizione()==simbolo.getPosizione()) && (s.getIDunivoco()==simbolo.getIDunivoco())) {
-                _symbols.erase(it);
-                break;
-            }
+
+        // Ricerca dicotomica
+        QVector<CRDT_Symbol>::iterator it =
+                std::lower_bound(_symbols.begin(), _symbols.end(), simbolo,
+                [this](CRDT_Symbol s1, CRDT_Symbol s2) {return confrontaPos(s1.getPosizione(), s2.getPosizione());});
+
+        if(it < _symbols.end() && it->getIDunivoco() == simbolo.getIDunivoco()){
+            _symbols.erase(it);
         }
+
+//        for(; it < _symbols.end(); it++){
+//            CRDT_Symbol s = *it;
+//            if((s.getPosizione()==simbolo.getPosizione()) && (s.getIDunivoco()==simbolo.getIDunivoco())) {
+//                _symbols.erase(it);
+//                break;
+//            }
+//        }
     }
 
     mutex->unlock();
