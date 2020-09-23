@@ -174,14 +174,26 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
 
         } else if(azione == "delete"){           /* SIMBOLO CANCELLATO */
 //            std::cout<<"(dispatch nell'ed "<<_siteId<<"): elimino un carattere di id "<<simbolo.getIDunivoco()<<std::endl;     // DEBUG
-            for(; it < _symbols.end(); it++){
-                CRDT_Symbol s = *it;
-                if((s.getPosizione()==simbolo.getPosizione()) && (s.getIDunivoco()==simbolo.getIDunivoco())) {
-                    _symbols.erase(it);
-                    parent->remoteDelete(it - _symbols.begin());
-                    break;
-                }
+
+            // Ricerca dicotomica
+            QVector<CRDT_Symbol>::iterator it =
+                    std::lower_bound(_symbols.begin(), _symbols.end(), simbolo,
+                    [this](CRDT_Symbol s1, CRDT_Symbol s2) {return confrontaPos(s1.getPosizione(), s2.getPosizione());});
+
+            if(it < _symbols.end() && it->getIDunivoco() == simbolo.getIDunivoco()){
+                _symbols.erase(it);
+                parent->remoteDelete(it - _symbols.begin());
             }
+
+            // Ricerca lineare
+//            for(; it < _symbols.end(); it++){
+//                CRDT_Symbol s = *it;
+//                if((s.getPosizione()==simbolo.getPosizione()) && (s.getIDunivoco()==simbolo.getIDunivoco())) {
+//                    _symbols.erase(it);
+//                    parent->remoteDelete(it - _symbols.begin());
+//                    break;
+//                }
+//            }
         }
 }
 
