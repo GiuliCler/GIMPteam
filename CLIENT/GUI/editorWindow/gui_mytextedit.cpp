@@ -3,6 +3,8 @@
 #include <QColor>
 #include <QFont>
 #include <QPalette>
+#include <QMimeData>
+#include <QRegularExpression>
 
 GUI_MyTextEdit::GUI_MyTextEdit(QWidget *parent) : QTextEdit(parent) {
     this->setObjectName(GUI_MyTextEdit::getObjectName());
@@ -34,6 +36,28 @@ void GUI_MyTextEdit::paintEvent(QPaintEvent *event){
     //e qui do l'ordine di disegnare sopra al foglio i cursori secondari
     for(auto pair = cursorsMap.begin(); pair != cursorsMap.end(); pair++)
       pair.value()->paint();
+}
+
+
+void GUI_MyTextEdit::insertFromMimeData (const QMimeData * constClipboard){
+    if(constClipboard == nullptr)
+        return;
+
+    if(constClipboard->hasHtml()){
+        //Se il testo da incollare ha un formato in html, provo a rimuovere eventuali evidenziazioni colorate
+        //rimuovendolo a mano dalla stringa. Funziona solo con una precisa sintassi, quindi solo se il testo era stato copiato da gimpdocs
+        QString newhtmlString = "";
+        QVector<QStringRef> htmlsplitted = constClipboard->html().splitRef(QRegularExpression("background-color.*?;"));
+
+        for(auto string = htmlsplitted.begin(); string != htmlsplitted.end(); string++)
+            newhtmlString.append(*string);
+
+        QMimeData *clipboard = const_cast<QMimeData *>(constClipboard);
+        clipboard->setHtml(newhtmlString);
+        QTextEdit::insertFromMimeData(const_cast<const QMimeData *>(clipboard));
+    }
+    else
+        QTextEdit::insertFromMimeData(constClipboard);
 }
 
 void GUI_MyTextEdit::addUserCursor(int userId, QPoint position, QColor color){

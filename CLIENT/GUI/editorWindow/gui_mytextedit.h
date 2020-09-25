@@ -23,6 +23,7 @@ private:
 
 protected:
     virtual void paintEvent(QPaintEvent *pEvent) override;
+    void insertFromMimeData (const QMimeData * source) override;
 
 public slots:
     void addUserCursor(int userId, QPoint position, QColor color);
