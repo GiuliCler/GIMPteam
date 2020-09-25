@@ -48,10 +48,12 @@ private:
     void redo();
 
 public:
+    QMap<int, int> usersCursors;
     CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyTextEdit& textEdit, int siteId, int siteCounter);
     void setCurrentTextColor(QColor color);
     void remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align);
     void remoteDelete(int pos);
+
 ~CRDT_controller();
 private slots:
     void menuCall(menuTools op);

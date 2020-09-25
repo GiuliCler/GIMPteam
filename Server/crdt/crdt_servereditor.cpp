@@ -40,14 +40,6 @@ void CRDT_ServerEditor::process(const CRDT_Message& m){
         if(it < _symbols.end() && it->getIDunivoco() == simbolo.getIDunivoco()){
             _symbols.erase(it);
         }
-
-//        for(; it < _symbols.end(); it++){
-//            CRDT_Symbol s = *it;
-//            if((s.getPosizione()==simbolo.getPosizione()) && (s.getIDunivoco()==simbolo.getIDunivoco())) {
-//                _symbols.erase(it);
-//                break;
-//            }
-//        }
     }
 
     mutex->unlock();

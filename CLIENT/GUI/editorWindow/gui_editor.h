@@ -73,8 +73,9 @@ private:
     GUI_ColorsManager colorsManager;
     QMap<int, QColor> userColorMap;
 
-    void fillOnlineUsersList();
+    std::shared_ptr<QSet<int>> fillOnlineUsersList();
     void fillContibutorUsersList();
+    void fillOnlineUsersCursors(std::shared_ptr<QSet<int>> userIds);
 
 signals:
     void menuTools_event(menuTools code);
