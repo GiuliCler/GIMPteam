@@ -76,6 +76,7 @@ private:
     std::shared_ptr<QSet<int>> fillOnlineUsersList();
     void fillContibutorUsersList();
     void fillOnlineUsersCursors(std::shared_ptr<QSet<int>> userIds);
+    void addUserToEditorGUIstart(int userid, QString nickname, QString iconId);
 
 signals:
     void menuTools_event(menuTools code);

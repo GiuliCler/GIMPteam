@@ -26,6 +26,7 @@ private:
     bool validateFontCombo;
     bool processingMessage = false;
     int defaultFontPointSize = 12;
+    bool cursorMovable;
 
     void setLeft();
     void setCenter();
@@ -49,10 +50,11 @@ private:
 
 public:
     QMap<int, int> usersCursors;
+    QMap<int, bool> usersMovingCursors;
     CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyTextEdit& textEdit, int siteId, int siteCounter);
     void setCurrentTextColor(QColor color);
-    void remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align);
-    void remoteDelete(int pos);
+    void remoteInsert(int userId, int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align);
+    void remoteDelete(int userId, int pos);
 
 ~CRDT_controller();
 private slots:
@@ -68,6 +70,8 @@ private slots:
 public slots:
     void setUsersColors(bool value);
     void remoteMove(int userId, int pos);
+    void remoteStopCursor(int userId);
+    void remoteStartCursor(int userId);
 
 signals:
     void menuSet(menuTools set);

@@ -42,6 +42,8 @@ public:
     std::string openDoc(int userId, int docId);
     void requestSendMessage(const CRDT_Message& messaggio);
     void requestSendMovedCursor(int userId, int pos);
+    void requestSendStopCursor();
+    void requestSendStartCursor();
     void connectEditor();
     void disconnectEditor(int userId, int docId);
     std::shared_ptr<QSet<int>> getContributors(int docId);
@@ -60,6 +62,8 @@ signals:
     void newFile(const QString &fortune);
     void sigProcessMessage(const CRDT_Message& m);
     void sigMoveCursor(const int userId, const int pos);
+    void sigStopCursor(int userId);
+    void sigStartCursor(int userId);
     void sigOfflineUser(int userId);
     void sigOnlineUser(int userid, QString nickname, QString iconId);
     void sigNewContributor(int userid, QString nickname, QString iconId);

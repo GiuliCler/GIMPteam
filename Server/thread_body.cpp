@@ -222,6 +222,18 @@ void Thread_body::executeJob(QByteArray data){
         moveCursor(userId, pos);
     }
 
+    c = "STOPCURSOR";
+    if(text.contains(c.toUtf8())){
+
+        stopCursor();
+    }
+
+    c = "STARTCURSOR";
+    if(text.contains(c.toUtf8())){
+
+        startCursor();
+    }
+
     c = "DISCONNECT_FROM_DOC";
     if(text.contains(c.toUtf8())){
 
@@ -542,6 +554,8 @@ void Thread_body::signup(QString username, QString password, QString nickname, Q
 
         users.insert(username, userId);
         mutex_users->unlock();
+
+        current_userId = userId;
 
         // Creo la riga relativa al nuovo user nella tabella utenti del DB
         mutex_db->lock();
@@ -1336,10 +1350,32 @@ void Thread_body::moveCursor(int userId, int pos){
     emit messageToServer(m, threadId_toQString(threadId), current_docId);
 }
 
+void Thread_body::stopCursor(){
+    if(current_docId == -1)
+        return;
+
+    CRDT_Symbol s{};
+    CRDT_Message m{"STOPCURSOR", s, current_userId};
+    auto threadId = std::this_thread::get_id();
+
+    emit messageToServer(m, threadId_toQString(threadId), current_docId);
+}
+
+void Thread_body::startCursor(){
+    if(current_docId == -1)
+        return;
+
+    CRDT_Symbol s{};
+    CRDT_Message m{"STARTCURSOR", s, current_userId};
+    auto threadId = std::this_thread::get_id();
+
+    emit messageToServer(m, threadId_toQString(threadId), current_docId);
+}
+
 void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int docId){
 
     auto thread_id = std::this_thread::get_id();
-//    qDebug() << "---- ThreadBody processMessage RICEVUTO thread_id: "<<threadId_toQString(thread_id)<<", doc_id: "<<docId<<" ---- "<< "; Stringa: "<<QString::fromStdString(m.getAzione());      // DEBUG
+    qDebug() << "---- ThreadBody processMessage RICEVUTO thread_id: "<<threadId_toQString(thread_id)<<", doc_id: "<<docId<<" ---- "<< "; Stringa: "<<QString::fromStdString(m.getAzione());      // DEBUG
     QString thread_id_string = threadId_toQString(thread_id);
 
     // Se altro documento o stesso user_id di questo thread => discard (return) del messaggio
@@ -1436,6 +1472,24 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         out << s.toUtf8();
         out << str[1].toInt();     // userId
         out << str[2].toInt();     // pos
+        writeData(blocko);
+        return;
+    }
+
+    c = "STOPCURSOR";
+    if(strAction.contains(c.toUtf8())){
+        QString s = "STOPCURSOR";
+        out << s.toUtf8();
+        out << m.getCreatore();
+        writeData(blocko);
+        return;
+    }
+
+    c = "STARTCURSOR";
+    if(strAction.contains(c.toUtf8())){
+        QString s = "STARTCURSOR";
+        out << s.toUtf8();
+        out << m.getCreatore();
         writeData(blocko);
         return;
     }

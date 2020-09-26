@@ -930,7 +930,7 @@ bool connection_to_server::pingServer(){
 }
 
 void connection_to_server::requestSendMovedCursor(int userId, int pos){
-
+    std::cout << "MOVECURSOR" << std::endl;
 //    qDebug()<<"MOVECURSOR";      // DEBUG
 
     if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
@@ -948,6 +948,49 @@ void connection_to_server::requestSendMovedCursor(int userId, int pos){
     out << comando;
     out << userId;
     out << pos;
+
+    writeData(buffer);
+}
+
+void connection_to_server::requestSendStopCursor(){
+
+    std::cout << "STOPCURSOR" << std::endl;
+//    qDebug()<<"STOPCURSOR";      // DEBUG
+
+    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+
+    if (!tcpSocket->waitForConnected(Timeout)) {
+        throw GUI_ConnectionException("Timeout Expired.");
+    }
+
+    QByteArray buffer;
+    QDataStream out(&buffer, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+    QByteArray comando = "STOPCURSOR";
+
+    out << comando;
+
+    writeData(buffer);
+}
+
+void connection_to_server::requestSendStartCursor(){
+    std::cout << "STARTCURSOR" << std::endl;
+//    qDebug()<<"STARTCURSOR";      // DEBUG
+
+    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+
+    if (!tcpSocket->waitForConnected(Timeout)) {
+        throw GUI_ConnectionException("Timeout Expired.");
+    }
+
+    QByteArray buffer;
+    QDataStream out(&buffer, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+    QByteArray comando = "STARTCURSOR";
+
+    out << comando;
 
     writeData(buffer);
 }
@@ -984,7 +1027,7 @@ void connection_to_server::connectEditor(){
 //    qDebug()<<"CONNECT EDITOR - Connect";      // DEBUG
 
     connect(this->tcpSocket, &QTcpSocket::readyRead, this, &connection_to_server::acceptData);
-    connect(this, &connection_to_server::dataReceived, this, &connection_to_server::receiveMessage);
+    connect(this, &connection_to_server::dataReceived, this, &connection_to_server::receiveMessage, Qt::ConnectionType::QueuedConnection);
 
 //    qDebug()<<"CONNECT EDITOR - Lettura residui tcpSocket->bytesAvailable";      // DEBUG
 
@@ -1030,6 +1073,7 @@ void connection_to_server::receiveMessage(QByteArray data){
     QByteArray action;
     in_data >> action;
 
+    std::cout << "SLOT CLIENT receiveMessage - action ricevuta: "<< action.toStdString() << std::endl;      // DEBUG
 //    qDebug() << "SLOT CLIENT receiveMessage - action ricevuta: "<<QString::fromStdString(action.toStdString());      // DEBUG
 
     QString c = "OFFLINEUSER";
@@ -1084,6 +1128,24 @@ void connection_to_server::receiveMessage(QByteArray data){
         in_data >> pos;
 //        qDebug() << "SLOT CLIENT receiveMessage - MOVE - user: "<< userId << "; pos: " << pos;    //DEBUG
         emit sigMoveCursor(userId,pos);
+    }
+
+    c = "STOPCURSOR";
+    if(action.contains(c.toUtf8())){
+        int userId;
+        in_data >> userId;
+//        qDebug() << "SLOT CLIENT receiveMessage - STOPCURSOR";    //DEBUG
+//        std::cout << "SLOT CLIENT receiveMessage - STOPCURSOR" << std::endl;
+        emit sigStopCursor(userId);
+    }
+
+    c = "STARTCURSOR";
+    if(action.contains(c.toUtf8())){
+        int userId;
+        in_data >> userId;
+//        qDebug() << "SLOT CLIENT receiveMessage - STARTCURSOR";    //DEBUG
+//        std::cout << "SLOT CLIENT receiveMessage - STARTCURSOR" << std::endl;
+        emit sigStartCursor(userId);
     }
 
     c = "CRDT";

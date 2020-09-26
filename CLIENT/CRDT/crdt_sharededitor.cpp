@@ -18,7 +18,7 @@ CRDT_SharedEditor::CRDT_SharedEditor(CRDT_controller *parent, connection_to_serv
 
         // Aggiorno lo shared editor
         for(auto it = _symbols.begin();it<_symbols.end();it++, pos++) {
-            parent->remoteInsert(pos, it->getCarattere(), it->getFormat(), it->getAlignment());
+            parent->remoteInsert(this->_siteId, pos, it->getCarattere(), it->getFormat(), it->getAlignment());
         }
 
         QObject::connect(connection, &connection_to_server::sigProcessMessage, this, &CRDT_SharedEditor::process, Qt::QueuedConnection);
@@ -121,7 +121,7 @@ QVector<int> CRDT_SharedEditor::generaPosizione(QVector<int> prev, QVector<int> 
 
 void CRDT_SharedEditor::localInsert(int index, QChar value, QTextCharFormat fmt, Qt::Alignment align, QVector<int> posizione){
 
-    //    std::cout << "localInsert - Adding " << value.toLatin1() << " to CRDT in pos " << index << std::endl;      // DEBUG
+//    std::cout << "localInsert - Adding " << value.toLatin1() << " to CRDT in pos " << index << std::endl;      // DEBUG
 
     /* Creazione del nuovo simbolo e inserimento nella corretta posizione all'interno del vettore _symbols */
     CRDT_Symbol simbolo{value, this->_siteId, this->_counter++, posizione, fmt, align};
@@ -210,14 +210,14 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
                 }
             }
 
-//            std::cout<<"Sto INSERENDO all'indice: "<<count<<std::endl;          // DEBUG
+            std::cout<<"Sto INSERENDO all'indice: "<<count<<std::endl;          // DEBUG
             _symbols.insert(it, simbolo);
 
-            parent->remoteInsert(count, simbolo.getCarattere(), simbolo.getFormat(), simbolo.getAlignment());
+            parent->remoteInsert(m.getCreatore(), count, simbolo.getCarattere(), simbolo.getFormat(), simbolo.getAlignment());
 
             // Aggiorno il cursore dell'utente che ha scritto
             parent->usersCursors[m.getCreatore()] = count + 1;
-//            std::cout<<"(insert) Sto mettendo il cursore all'indice: "<<parent->usersCursors[m.getCreatore()]<<std::endl;          // DEBUG
+            std::cout<<"(insert) Sto mettendo il cursore all'indice: "<<parent->usersCursors[m.getCreatore()]<<std::endl;          // DEBUG
 
         } else if(azione == "delete"){           /* SIMBOLO CANCELLATO */
             QVector<int> posNew = simbolo.getPosizione();
@@ -267,9 +267,9 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
             }
 
             if(it < _symbols.end() && it->getIDunivoco() == simbolo.getIDunivoco()){
-//                std::cout<<"Sto CANCELLANDO all'indice: "<<it - _symbols.begin()<<std::endl;          // DEBUG
+                std::cout<<"Sto CANCELLANDO all'indice: "<<it - _symbols.begin()<<std::endl;          // DEBUG
                 _symbols.erase(it);
-                parent->remoteDelete(it - _symbols.begin());
+                parent->remoteDelete(m.getCreatore(), it - _symbols.begin());
             }
 
             // Ricerca lineare
@@ -284,7 +284,7 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
 
             // Aggiorno il cursore dell'utente che ha cancellato
             parent->usersCursors[m.getCreatore()] = it - _symbols.begin();
-//            std::cout<<"(delete) Sto mettendo il cursore all'indice: "<<parent->usersCursors[m.getCreatore()]<<std::endl;          // DEBUG
+            std::cout<<"(delete) Sto mettendo il cursore all'indice: "<<parent->usersCursors[m.getCreatore()]<<std::endl;          // DEBUG
         }
 }
 

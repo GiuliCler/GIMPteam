@@ -74,6 +74,8 @@ private:
     bool removeFromWorkingUsers(int docId, int userId);
     void forceCloseDocument(int docId_deleted);
     void moveCursor(int userId, int pos);
+    void stopCursor();
+    void startCursor();
     static qint32 ArrayToInt(QByteArray source);
     bool writeData(QByteArray data);
     static QByteArray IntToArray(qint32 source);
