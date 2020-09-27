@@ -6,6 +6,14 @@
 #include "gui_editor.h"
 #include <QWidget>
 
+class GUI_MyEvent : public QEvent{
+
+public:
+    explicit GUI_MyEvent();
+    static const QEvent::Type myType = static_cast<QEvent::Type>(QEvent::User);
+
+};
+
 class GUI_UsersBar : public QWidget
 {
     Q_OBJECT
@@ -16,6 +24,9 @@ public:
     void addOnlineUserIcon(int userId, QColor color, QString nickname, QString iconId);
     void removeOnlineUserIcon(int userId);
     void addContributorUserIcon(int userId, QColor color, QString nickname, QString iconId);
+
+    virtual bool eventFilter(QObject *watched, QEvent *event) override;
+    //virtual void childEvent(QChildEvent *event) override;
 
 public slots:
     //questi 2 metodi non servono solo per la users bar, ma anche per attivare il comando che cambia colore al testo
@@ -33,8 +44,10 @@ private:
     inline static QString getContributorsAreaName() {return QString("contributorIconsScrollArea");}
     QLabel *getUserIcon(QColor color, QString nickname, QString iconId);
 
+    bool filter = false;
+
 signals:
-    void highlightingUsers(bool value);
+    //void highlightingUsers(bool value);
 };
 
 #endif // GUI_USERSBAR_H
