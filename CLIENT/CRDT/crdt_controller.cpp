@@ -11,7 +11,7 @@ CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyT
                         QObject(parent), gimpDocs(gimpdocs),  editorParent(parent),  connection(gimpDocs->getConnection()), textEdit(textEdit), highlightUsers(false),
                         crdt{this, gimpDocs->getConnection(), siteId, siteCounter},
                         rememberFormatChange(false), validateSpin(true), validateFontCombo(true) {
-    QObject::connect(this->editorParent, &GUI_Editor::menuTools_event, this, &CRDT_controller::menuCall);
+    //QObject::connect(this->editorParent, &GUI_Editor::menuTools_event, this, &CRDT_controller::menuCall);
     QObject::connect(this, &CRDT_controller::menuSet, parent, &GUI_Editor::setMenuToolStatus);
     QObject::connect(&this->textEdit, &QTextEdit::currentCharFormatChanged, this, &CRDT_controller::currentCharFormatChanged);
     QObject::connect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
@@ -22,7 +22,7 @@ CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyT
     QObject::connect(QApplication::clipboard(), &QClipboard::dataChanged, this, &CRDT_controller::clipboardDataChanged);
     QObject::connect(textEdit.document(), &QTextDocument::undoAvailable, this, &CRDT_controller::undoAvailableChanged);
     QObject::connect(textEdit.document(), &QTextDocument::redoAvailable, this, &CRDT_controller::redoAvailableChanged);
-    QObject::connect(parent->childUsersBar, &GUI_UsersBar::highlightingUsers, this, &CRDT_controller::setUsersColors);
+    //QObject::connect(parent->childUsersBar, &GUI_UsersBar::highlightingUsers, this, &CRDT_controller::setUsersColors);
     QObject::connect(connection, &connection_to_server::sigMoveCursor, this, &CRDT_controller::remoteMove);
 
     parent->childToolsBar->ui->spinBox->setSpecialValueText("Default");

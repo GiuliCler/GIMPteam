@@ -20,6 +20,7 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, bool ca
     ui.reset(new Ui::GUI_Editor());
     ui->setupUi(this);
 
+    childEventFilter = new GUI_MouseEventFilter(this);
     childMyTextEdit = new GUI_MyTextEdit(this);
     ui->textWidget->layout()->addWidget(childMyTextEdit);
     childUsersBar = new GUI_UsersBar(this);
@@ -150,58 +151,58 @@ void GUI_Editor::on_actionApplyTextColors(){
 
 
 void GUI_Editor::on_actionUndo(){
-    menuTools_event(UNDO_ON);
+    callMenuToolsAction(UNDO_ON);
 }
 
 void GUI_Editor::on_actionRedo(){
-    menuTools_event(REDO_ON);
+    callMenuToolsAction(REDO_ON);
 }
 
 void GUI_Editor::on_actionCut(){
-    menuTools_event(CUT_ON);
+    callMenuToolsAction(CUT_ON);
 }
 
 void GUI_Editor::on_actionCopy(){
-    menuTools_event(COPY_ON);
+    callMenuToolsAction(COPY_ON);
 }
 
 void GUI_Editor::on_actionPaste(){
-    menuTools_event(PASTE_ON);
+    callMenuToolsAction(PASTE_ON);
 }
 
 void GUI_Editor::on_actionBold(){
-    menuTools_event(BOLD_ON);
+    callMenuToolsAction(BOLD_ON);
 }
 
 void GUI_Editor::on_actionItalic(){
-    menuTools_event(ITALIC_ON);
+    callMenuToolsAction(ITALIC_ON);
 }
 
 void GUI_Editor::on_actionUnderlined(){
-    menuTools_event(UNDERLINED_ON);
+    callMenuToolsAction(UNDERLINED_ON);
 }
 
 void GUI_Editor::on_actionStrikethrough(){
-    menuTools_event(STRIKETHROUGH_ON);
+    callMenuToolsAction(STRIKETHROUGH_ON);
 }
 
 void GUI_Editor::on_actionLeft(){
-    menuTools_event(A_LEFT);
+    callMenuToolsAction(A_LEFT);
     this->childMyTextEdit->setFocus();
 }
 
 void GUI_Editor::on_actionCenter(){
-    menuTools_event(A_CENTER);
+    callMenuToolsAction(A_CENTER);
     this->childMyTextEdit->setFocus();
 }
 
 void GUI_Editor::on_actionRight(){
-    menuTools_event(A_RIGHT);
+    callMenuToolsAction(A_RIGHT);
     this->childMyTextEdit->setFocus();
 }
 
 void GUI_Editor::on_actionJustified(){
-    menuTools_event(A_JUSTIFIED);
+    callMenuToolsAction(A_JUSTIFIED);
     this->childMyTextEdit->setFocus();
 }
 
@@ -403,6 +404,26 @@ void GUI_Editor::fillContibutorUsersList(){
 }
 
 
+void GUI_Editor::callMenuToolsAction(menuTools code){
+    gimpParent->setCursor(Qt::WaitCursor);
+
+    //un button vale l'altro, basta raggiungere l'oggetto eventfilter
+    //(avrei potuto fare un design migliore del setting a true)
+    GUI_SetFilterStatus *event1 = new GUI_SetFilterStatus(true);
+    qApp->sendEvent(childToolsBar->ui->boldPushButton, event1);
+
+    crdtController->menuCall(code);
+
+    gimpParent->setCursor(Qt::ArrowCursor);
+    //serve a forzare la send dell'eventuale mouseEvent in coda, finchè il filtro per catturarla è ancora attivo
+    qApp->processEvents();
+
+    //again, un button vale l'altro. Ho preso il bold a caso
+    GUI_SetFilterStatus *event2 = new GUI_SetFilterStatus(false);
+    qApp->postEvent(childToolsBar->ui->boldPushButton, event2);
+}
+
+
 void GUI_Editor::exportPDFAction_emitted(){
     bool originallyHighlighted = usersColors;
     QString fileDocName = docName;
@@ -431,3 +452,4 @@ void GUI_Editor::exportPDFAction_emitted(){
     if(originallyHighlighted)
         childUsersBar->on_showColorsPushButton_clicked();
 }
+

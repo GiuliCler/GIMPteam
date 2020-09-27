@@ -1,6 +1,7 @@
 #include "gui_usersbar.h"
 #include "gui_editor.h"
 #include "gui_myscrollarea.h"
+#include "../../CRDT/crdt_controller.h"
 
 #include <QPainter>
 
@@ -10,16 +11,19 @@ GUI_UsersBar::GUI_UsersBar(QWidget *parent) : QWidget(parent){
     ui.reset(new Ui::GUI_UsersBar());
     ui->setupUi(this);
 
+    ui->hideColorsPushButton->hide();
+    ui->contributorUsersWidget->hide();
+
     GUI_MyScrollArea *onlineIconsScrollArea = new GUI_MyScrollArea(ui->onlineIgnoredWrapper);
     onlineIconsScrollArea->setObjectName(getOnlineAreaName());
     ui->onlineIgnoredWrapper->layout()->addWidget(onlineIconsScrollArea);
 
-    ui->hideColorsPushButton->hide();
-    ui->contributorUsersWidget->hide();
-
     GUI_MyScrollArea *contributorIconsScrollArea = new GUI_MyScrollArea(ui->contributorsIgnoredWrapper);
     contributorIconsScrollArea->setObjectName(getContributorsAreaName());
     ui->contributorsIgnoredWrapper->layout()->addWidget(contributorIconsScrollArea);
+
+    ui->showColorsPushButton->installEventFilter(editorParent->childEventFilter);
+    ui->hideColorsPushButton->installEventFilter(editorParent->childEventFilter);
 
     //connetto le signals dei pulsanti per fare alternare i pulsanti nella menù bar
     connect(ui->showColorsPushButton, &QPushButton::clicked, this->editorParent, &GUI_Editor::on_actionApplyUsersColors);
@@ -101,22 +105,59 @@ void GUI_UsersBar::addContributorUserIcon(int userId, QColor color, QString nick
         this->findChild<GUI_MyScrollArea*>(getContributorsAreaName())->updateSize(contributorUsersIconMap.size());
 }
 
+
+
 /******************SLOTS**************************************/
 
 void GUI_UsersBar::on_showColorsPushButton_clicked(){
     editorParent->usersColors = true;
-    emit highlightingUsers(true);
+
+    //l'"enabled" ha solo funzione grafica in questo contesto
+    ui->showColorsPushButton->setEnabled(false);
+    ui->showColorsPushButton->repaint();
+    editorParent->gimpParent->setCursor(Qt::WaitCursor);
+
+    //serve ad attivare il filtro per impedire che l'utente prema pulsanti a raffica
+    GUI_SetFilterStatus *event1 = new GUI_SetFilterStatus(true);
+    qApp->sendEvent(ui->showColorsPushButton, event1);
+
+    editorParent->crdtController->setUsersColors(true);
+
+    ui->showColorsPushButton->setEnabled(true);
+    editorParent->gimpParent->setCursor(Qt::ArrowCursor);
 
     ui->hideColorsPushButton->show();
     ui->contributorUsersWidget->show();
     ui->showColorsPushButton->hide();
+
+    //serve a forzare l'eseguzione del mousePressedEvent e a filtrarlo colla eventFilter
+    qApp->processEvents();
+
+    GUI_SetFilterStatus *event2 = new GUI_SetFilterStatus(false);
+    qApp->postEvent(ui->showColorsPushButton, event2);
 }
 
 void GUI_UsersBar::on_hideColorsPushButton_clicked(){
     editorParent->usersColors = false;
-    emit highlightingUsers(false);
+
+    ui->hideColorsPushButton->setEnabled(false);
+    ui->hideColorsPushButton->repaint();
+    editorParent->gimpParent->setCursor(Qt::WaitCursor);
+
+    GUI_SetFilterStatus *event1 = new GUI_SetFilterStatus(true);
+    qApp->sendEvent(ui->hideColorsPushButton, event1);
+
+    editorParent->crdtController->setUsersColors(false);
+
+    ui->hideColorsPushButton->setEnabled(true);
+    editorParent->gimpParent->setCursor(Qt::ArrowCursor);
+
 
     ui->showColorsPushButton->show();
     ui->contributorUsersWidget->hide();
     ui->hideColorsPushButton->hide();
+
+    qApp->processEvents();
+    GUI_SetFilterStatus *event2 = new GUI_SetFilterStatus(false);
+    qApp->postEvent(ui->hideColorsPushButton, event2);
 }

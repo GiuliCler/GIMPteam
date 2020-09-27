@@ -34,7 +34,7 @@ private:
     QLabel *getUserIcon(QColor color, QString nickname, QString iconId);
 
 signals:
-    void highlightingUsers(bool value);
+    //void highlightingUsers(bool value);
 };
 
 #endif // GUI_USERSBAR_H
