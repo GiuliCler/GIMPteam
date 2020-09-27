@@ -930,7 +930,7 @@ bool connection_to_server::pingServer(){
 }
 
 void connection_to_server::requestSendMovedCursor(int userId, int pos){
-    std::cout << "MOVECURSOR" << std::endl;
+//    std::cout << "MOVECURSOR" << std::endl;
 //    qDebug()<<"MOVECURSOR";      // DEBUG
 
     if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
@@ -954,7 +954,7 @@ void connection_to_server::requestSendMovedCursor(int userId, int pos){
 
 void connection_to_server::requestSendStopCursor(){
 
-    std::cout << "STOPCURSOR" << std::endl;
+//    std::cout << "STOPCURSOR" << std::endl;
 //    qDebug()<<"STOPCURSOR";      // DEBUG
 
     if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
@@ -975,7 +975,7 @@ void connection_to_server::requestSendStopCursor(){
 }
 
 void connection_to_server::requestSendStartCursor(){
-    std::cout << "STARTCURSOR" << std::endl;
+//    std::cout << "STARTCURSOR" << std::endl;
 //    qDebug()<<"STARTCURSOR";      // DEBUG
 
     if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
@@ -1073,7 +1073,7 @@ void connection_to_server::receiveMessage(QByteArray data){
     QByteArray action;
     in_data >> action;
 
-    std::cout << "SLOT CLIENT receiveMessage - action ricevuta: "<< action.toStdString() << std::endl;      // DEBUG
+//    std::cout << "SLOT CLIENT receiveMessage - action ricevuta: "<< action.toStdString() << std::endl;      // DEBUG
 //    qDebug() << "SLOT CLIENT receiveMessage - action ricevuta: "<<QString::fromStdString(action.toStdString());      // DEBUG
 
     QString c = "OFFLINEUSER";

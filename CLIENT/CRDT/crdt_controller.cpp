@@ -279,7 +279,7 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
 
 
 void CRDT_controller::cursorMoved(){
-    std::cout << "Hey, I'm in Cursor Moved!" << std::endl;
+//    std::cout << "Hey, I'm in Cursor Moved! Cursor movable = "<< cursorMovable << std::endl;
     // update the alignment button on the toolbar
     switch (textEdit.alignment()) {
         case Qt::AlignLeft:
@@ -564,6 +564,12 @@ void CRDT_controller::remoteDelete(int userId, int pos){
     processingMessage = true;
     bool oldCursorMovable, isStoppingCursors = false;
 
+    if(!usersMovingCursors.value(userId)){
+       oldCursorMovable = cursorMovable;
+       cursorMovable = false;
+       isStoppingCursors = true;
+    }
+
     int pos_prev = textEdit.textCursor().position();
     QTextCursor tmp{textEdit.document()};
     tmp.beginEditBlock();
@@ -572,12 +578,6 @@ void CRDT_controller::remoteDelete(int userId, int pos){
     tmp.deleteChar();
 
     tmp.endEditBlock();
-
-    if(!usersMovingCursors.value(userId)){
-       oldCursorMovable = cursorMovable;
-       cursorMovable = false;
-       isStoppingCursors = true;
-    }
 
     tmp.setPosition(pos_prev <= pos ? pos_prev : pos_prev-1);
     textEdit.setTextCursor(tmp);
@@ -602,6 +602,13 @@ void CRDT_controller::remoteInsert(int userId, int pos, QChar c, QTextCharFormat
     processingMessage = true;
     bool oldCursorMovable, isStoppingCursors = false;
 
+    // userId = crdt.getSiteId iff loading the file from the server (calling remote insert from CRDT_SharedEditor constructor)
+    if(userId == crdt.getSiteId() || !usersMovingCursors.value(userId)){
+       oldCursorMovable = cursorMovable;
+       cursorMovable = false;
+       isStoppingCursors = true;
+    }
+
     int pos_prev = textEdit.textCursor().position();
     QTextCursor tmp{textEdit.document()};
 
@@ -625,13 +632,6 @@ void CRDT_controller::remoteInsert(int userId, int pos, QChar c, QTextCharFormat
     }
 
     tmp.endEditBlock();
-
-    // userId = crdt.getSiteId iff loading the file from the server (calling remote insert from CRDT_SharedEditor constructor)
-    if(userId == crdt.getSiteId() || !usersMovingCursors.value(userId)){
-       oldCursorMovable = cursorMovable;
-       cursorMovable = false;
-       isStoppingCursors = true;
-    }
 
     tmp.setPosition(pos_prev <= pos ? pos_prev : pos_prev+1);
     textEdit.setTextCursor(tmp);
@@ -660,7 +660,7 @@ void CRDT_controller::remoteMove(int userId, int pos){
         tmp.setPosition(pos);
 
     // Aggiorno vettore dei cursori degli utenti online
-    std::cout<<"(remoteMove) Sto MUOVENDO IL CURSORE all'indice: "<<pos<<std::endl;          // DEBUG
+//    std::cout<<"(remoteMove) Sto MUOVENDO IL CURSORE all'indice: "<<pos<<std::endl;          // DEBUG
     usersCursors[userId] = pos;
 
     QPoint position = QPoint (textEdit.cursorRect(tmp).topLeft().x(), textEdit.cursorRect(tmp).topLeft().y() + textEdit.verticalScrollBar()->value());

@@ -210,14 +210,14 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
                 }
             }
 
-            std::cout<<"Sto INSERENDO all'indice: "<<count<<std::endl;          // DEBUG
+//            std::cout<<"Sto INSERENDO all'indice: "<<count<<std::endl;          // DEBUG
             _symbols.insert(it, simbolo);
 
             parent->remoteInsert(m.getCreatore(), count, simbolo.getCarattere(), simbolo.getFormat(), simbolo.getAlignment());
 
             // Aggiorno il cursore dell'utente che ha scritto
             parent->usersCursors[m.getCreatore()] = count + 1;
-            std::cout<<"(insert) Sto mettendo il cursore all'indice: "<<parent->usersCursors[m.getCreatore()]<<std::endl;          // DEBUG
+//            std::cout<<"(insert) Sto mettendo il cursore all'indice: "<<parent->usersCursors[m.getCreatore()]<<std::endl;          // DEBUG
 
         } else if(azione == "delete"){           /* SIMBOLO CANCELLATO */
             QVector<int> posNew = simbolo.getPosizione();
@@ -267,7 +267,7 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
             }
 
             if(it < _symbols.end() && it->getIDunivoco() == simbolo.getIDunivoco()){
-                std::cout<<"Sto CANCELLANDO all'indice: "<<it - _symbols.begin()<<std::endl;          // DEBUG
+//                std::cout<<"Sto CANCELLANDO all'indice: "<<it - _symbols.begin()<<std::endl;          // DEBUG
                 _symbols.erase(it);
                 parent->remoteDelete(m.getCreatore(), it - _symbols.begin());
             }
@@ -284,7 +284,7 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
 
             // Aggiorno il cursore dell'utente che ha cancellato
             parent->usersCursors[m.getCreatore()] = it - _symbols.begin();
-            std::cout<<"(delete) Sto mettendo il cursore all'indice: "<<parent->usersCursors[m.getCreatore()]<<std::endl;          // DEBUG
+//            std::cout<<"(delete) Sto mettendo il cursore all'indice: "<<parent->usersCursors[m.getCreatore()]<<std::endl;          // DEBUG
         }
 }
 
