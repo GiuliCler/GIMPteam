@@ -279,7 +279,11 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
 
 
 void CRDT_controller::cursorMoved(){
+    if(!cursorMovable)
+        return;
+
 //    std::cout << "Hey, I'm in Cursor Moved! Cursor movable = "<< cursorMovable << std::endl;
+
     // update the alignment button on the toolbar
     switch (textEdit.alignment()) {
         case Qt::AlignLeft:
@@ -302,9 +306,8 @@ void CRDT_controller::cursorMoved(){
         currentCharFormatChanged(textEdit.currentCharFormat());
     }
 
-    if(cursorMovable)
-       // notify the server that the user moved the cursor
-       connection->requestSendMovedCursor(crdt.getSiteId(), textEdit.textCursor().position());
+    // notify the server that the user moved the cursor
+    connection->requestSendMovedCursor(crdt.getSiteId(), textEdit.textCursor().position());
 }
 
 void CRDT_controller::selectionChanged(){
@@ -652,12 +655,11 @@ void CRDT_controller::remoteInsert(int userId, int pos, QChar c, QTextCharFormat
 void CRDT_controller::remoteMove(int userId, int pos){
 
     QTextCursor tmp{textEdit.document()};
-//    tmp.setPosition(pos);
 
-    if(pos > textEdit.document()->characterCount())
-        pos = textEdit.document()->characterCount();
+    if(pos >= textEdit.document()->characterCount())
+        pos = textEdit.document()->characterCount() - 1;
 //    else
-        tmp.setPosition(pos);
+    tmp.setPosition(pos);
 
     // Aggiorno vettore dei cursori degli utenti online
 //    std::cout<<"(remoteMove) Sto MUOVENDO IL CURSORE all'indice: "<<pos<<std::endl;          // DEBUG

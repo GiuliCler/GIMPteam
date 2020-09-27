@@ -329,6 +329,9 @@ int Thread_body::addToWorkingUsers(int docId, int userId, int open_new){
 
 void Thread_body::notifyNewWorkingUser(int userId, int docId){
 
+    // add user in the usersCursors map (simil-TLB)
+    crdt->addUserToCursorMap(userId);
+
     CRDT_Symbol s{};
     CRDT_Message m{"ONLINEUSER_"+std::to_string(userId), s, userId};
     auto thread_id = std::this_thread::get_id();
@@ -337,6 +340,10 @@ void Thread_body::notifyNewWorkingUser(int userId, int docId){
 }
 
 void Thread_body::notifyWorkingUserAway(int userId, int docId){
+
+    // remove user from the usersCursors map (simil-TLB)
+    crdt->removeUserFromCursorMap(userId);
+
 
     CRDT_Symbol s{};
     CRDT_Message m{"OFFLINEUSER_"+std::to_string(userId), s, userId};
@@ -1342,6 +1349,8 @@ void Thread_body::closeDocument(int docId, int userId){
 void Thread_body::moveCursor(int userId, int pos){
     if(current_docId == -1)
         return;
+
+    crdt->updateCursorMap(userId, pos);
 
     CRDT_Symbol s{};
     CRDT_Message m{"MOVECURSOR_"+std::to_string(userId)+"_"+std::to_string(pos), s, userId};
