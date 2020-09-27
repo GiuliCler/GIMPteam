@@ -20,6 +20,7 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, bool ca
     ui.reset(new Ui::GUI_Editor());
     ui->setupUi(this);
 
+    childEventFilter = new GUI_MouseEventFilter(this);
     childMyTextEdit = new GUI_MyTextEdit(this);
     ui->textWidget->layout()->addWidget(childMyTextEdit);
     childUsersBar = new GUI_UsersBar(this);

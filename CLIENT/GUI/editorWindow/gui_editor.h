@@ -3,6 +3,8 @@
 
 #include "ui_gui_editor.h"
 #include "gui_colorsmanager.h"
+# include "gui_mouseeventfilter.h"
+
 #include <QWidget>
 #include <QMap>
 #include <QColor>
@@ -24,6 +26,7 @@ public:
     //indica se il testo è evidenziato coi colori degli utenti
     bool usersColors;
     GIMPdocs *gimpParent;
+    GUI_MouseEventFilter *childEventFilter;
     GUI_ToolsBar *childToolsBar;
     GUI_UsersBar *childUsersBar;
     GUI_MyTextEdit *childMyTextEdit;

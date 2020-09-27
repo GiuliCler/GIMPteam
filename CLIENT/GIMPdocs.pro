@@ -34,6 +34,7 @@ SOURCES += \
         CRDT/crdt_symbol.cpp \
         GUI/editorWindow/gui_colorsmanager.cpp \
         GUI/editorWindow/gui_fadinglabel.cpp \
+        GUI/editorWindow/gui_mouseeventfilter.cpp \
         GUI/editorWindow/gui_myscrollarea.cpp \
         GUI/editorWindow/gui_toolsbar.cpp \
         GUI/editorWindow/gui_usersbar.cpp \
@@ -62,6 +63,7 @@ HEADERS += \
         CRDT/crdt_symbol.h \
         GUI/editorWindow/gui_colorsmanager.h \
         GUI/editorWindow/gui_fadinglabel.h \
+        GUI/editorWindow/gui_mouseeventfilter.h \
         GUI/editorWindow/gui_myscrollarea.h \
         GUI/editorWindow/gui_toolsbar.h \
         GUI/editorWindow/gui_usersbar.h \
