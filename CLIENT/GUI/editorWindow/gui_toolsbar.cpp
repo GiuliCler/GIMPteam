@@ -37,6 +37,7 @@ GUI_ToolsBar::GUI_ToolsBar(QWidget *parent) : QWidget(parent){
 void GUI_ToolsBar::on_colorPushButton_clicked(){
     QColor chosenColor = QColorDialog::getColor(); //return the color chosen by user
 
+
     editorParent->gimpParent->setCursor(Qt::WaitCursor);
 
     //serve ad attivare il filtro per impedire che l'utente prema pulsanti a raffica

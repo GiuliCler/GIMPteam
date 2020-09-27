@@ -5,8 +5,8 @@
 
 class GUI_Icons{
 public:
-    //è la size dell'immagine nella myScrollArea
-    static int iconSize;
+    //è la dimensione in pixels nella myscrollarea
+    static const int iconSize = 28;
 
     static QString getIconPath(QString iconId);
     static QMap<QString, QString> *getIconPaths();

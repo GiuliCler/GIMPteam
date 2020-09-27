@@ -1,11 +1,10 @@
 #include "gui_icons.h"
 #include <QDirIterator>
 
-//è la dimensione in pixels nella myscrollarea (per ora solo lì)
-int GUI_Icons::iconSize = 28;
+// li inizializzo qui perchè sono static
 bool GUI_Icons::loaded = false;
-// lo inizializzo qui perchè è static
 QMap<QString, QString> GUI_Icons::icons;
+
 
 void GUI_Icons::load(){
     //itero su tutte le risorse che ho registrato nell'index "icons" del file di risorse .qrc
