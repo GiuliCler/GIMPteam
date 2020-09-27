@@ -123,9 +123,6 @@ void GUI_UsersBar::on_showColorsPushButton_clicked(){
 
     editorParent->crdtController->setUsersColors(true);
 
-    //qApp->sendPostedEvents(nullptr);
-    //qApp->removePostedEvents(nullptr);
-
     ui->showColorsPushButton->setEnabled(true);
     editorParent->gimpParent->setCursor(Qt::ArrowCursor);
 

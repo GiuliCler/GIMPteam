@@ -78,9 +78,7 @@ private:
 
     void fillOnlineUsersList();
     void fillContibutorUsersList();
-
-signals:
-    void menuTools_event(menuTools code);
+    void callMenuToolsAction(menuTools code);
 
 private slots:
     void exportPDFAction_emitted();

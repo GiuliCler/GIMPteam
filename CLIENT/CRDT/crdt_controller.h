@@ -54,7 +54,6 @@ public:
     void remoteDelete(int pos);
 ~CRDT_controller();
 private slots:
-    void menuCall(menuTools op);
     void currentCharFormatChanged(const QTextCharFormat &format);
     void cursorMoved();
     void contentChanged(int pos, int del, int add);
@@ -64,6 +63,7 @@ private slots:
     void redoAvailableChanged(bool available);
 
 public slots:
+    void menuCall(menuTools op);
     void setUsersColors(bool value);
     void remoteMove(int userId, int pos);
 

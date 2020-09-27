@@ -22,13 +22,16 @@ public:
     void enterCompromizedModeUndoStack();
     void exitCompromizedModeUndoStack();
 
+public slots:
+    void on_colorPushButton_clicked();
+    void compromisedUndoStack();
+
 private:
     GUI_Editor *editorParent;
     GUI_FadingLabel *fadingLabel;
 
-public slots:
-    void on_colorPushButton_clicked();
-    void compromisedUndoStack();
+    void addEventFilter();
+
 };
 
 #endif // GUI_TOOLSBAR_H

@@ -11,7 +11,7 @@ CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyT
                         QObject(parent), gimpDocs(gimpdocs),  editorParent(parent),  connection(gimpDocs->getConnection()), textEdit(textEdit), highlightUsers(false),
                         crdt{this, gimpDocs->getConnection(), siteId, siteCounter},
                         rememberFormatChange(false), validateSpin(true), validateFontCombo(true) {
-    QObject::connect(this->editorParent, &GUI_Editor::menuTools_event, this, &CRDT_controller::menuCall);
+    //QObject::connect(this->editorParent, &GUI_Editor::menuTools_event, this, &CRDT_controller::menuCall);
     QObject::connect(this, &CRDT_controller::menuSet, parent, &GUI_Editor::setMenuToolStatus);
     QObject::connect(&this->textEdit, &QTextEdit::currentCharFormatChanged, this, &CRDT_controller::currentCharFormatChanged);
     QObject::connect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
