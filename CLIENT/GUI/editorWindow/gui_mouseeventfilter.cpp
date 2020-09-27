@@ -12,18 +12,11 @@ GUI_MouseEventFilter::GUI_MouseEventFilter(QObject *parent) : QObject(parent){
 
 bool GUI_MouseEventFilter::eventFilter(QObject *watched, QEvent *event){
 
-    //if(watched == ui->hideColorsPushButton || event->type() == GUI_SetFilterStatus::eventType){
-        //qDebug() << event->type();
-    //}
-
     if(event->type() == GUI_SetFilterStatus::eventType)
         filter = static_cast<GUI_SetFilterStatus*>(event)->enabled;
 
-    if(event->type() == QEvent::MouseButtonPress || event->type() == QEvent::MouseButtonDblClick){
-        qDebug() << watched->objectName();
-        qDebug() << filter;
+    if(event->type() == QEvent::MouseButtonPress || event->type() == QEvent::MouseButtonDblClick)
         return filter;
-    }
 
     return false;
 }
