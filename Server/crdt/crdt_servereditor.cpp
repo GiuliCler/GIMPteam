@@ -131,14 +131,15 @@ void CRDT_ServerEditor::process(const CRDT_Message& m){
             }
         }
 
+        // Aggiorno il cursore dell'utente che ha cancellato
+        usersCursors[m.getCreatore()] = it - _symbols.begin();
+//        std::cout<<"(delete) Sto mettendo il cursore all'indice: "<<parent->usersCursors[m.getCreatore()]<<std::endl;          // DEBUG
+
         if(it < _symbols.end() && it->getIDunivoco() == simbolo.getIDunivoco()){
 //            std::cout<<"Sto CANCELLANDO all'indice: "<<it - _symbols.begin()<<std::endl;          // DEBUG
             _symbols.erase(it);
         }
 
-        // Aggiorno il cursore dell'utente che ha cancellato
-        usersCursors[m.getCreatore()] = it - _symbols.begin();
-//        std::cout<<"(delete) Sto mettendo il cursore all'indice: "<<parent->usersCursors[m.getCreatore()]<<std::endl;          // DEBUG
     }
 
     mutex->unlock();
@@ -260,6 +261,6 @@ void CRDT_ServerEditor::removeUserFromCursorMap(int userId){
 
 void CRDT_ServerEditor::updateCursorMap(int userId, int pos){
     mutex->lock();
-    usersCursors[userId] = pos;
+    usersCursors[userId] = qMin(pos, _symbols.size());
     mutex->unlock();
 }
