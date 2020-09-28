@@ -1334,6 +1334,9 @@ void Thread_body::closeDocument(int docId, int userId){
     // "Resetto" il puntatore a CRDT_ServerEditor
     crdt = nullptr;
 
+    // Segnalo all'utente che ho finito di fare la closeDocument
+    sendEndBuffer();
+
     // Recupero il nome del documento e il nome dello user
     QString username = getUsername(userId);
     QString docName = getDocname(docId);
@@ -1344,6 +1347,16 @@ void Thread_body::closeDocument(int docId, int userId){
         database.aggiornaSiteCounter(docName, username, current_siteCounter);
         mutex_db->unlock();
     }
+}
+
+void Thread_body::sendEndBuffer(){
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
+    QString str = "ENDBUFFER";
+    out << str.toUtf8();
+    writeData(blocko);
 }
 
 void Thread_body::moveCursor(int userId, int pos){

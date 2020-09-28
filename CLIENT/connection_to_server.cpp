@@ -1063,6 +1063,74 @@ void connection_to_server::disconnectEditor(int userId, int docId){
 
     if(!writeData(buffer))
         throw GUI_ConnectionException("writeData ERROR. Server not connected.");
+
+    // Check per vedere se il client ha ricevuto tutto prima di chiudere l'editor definitivamente
+    // - svuota il readbuffer di tutti i pacchetti completi
+    // - continua ad accettare pacchetti e continua a scartarli finchè non trovi l'ENDBUFFER (oppure fino a quando un timeout scade)
+
+    // Svuoto il buffer
+    qint32 size = readBuffer_size;
+    while ((size == 0 && readBuffer.size() >= 4) || (size > 0 && readBuffer.size() >= size))   // While can process data, process it
+    {
+        if (size == 0 && readBuffer.size() >= 4)        // If size of data has received completely, then store it on our global variable
+        {
+            size = ArrayToInt(readBuffer.mid(0, 4));
+            readBuffer_size = size;
+            readBuffer.remove(0, 4);
+        }
+        if (size > 0 && readBuffer.size() >= size)      // If data has received completely, then emit our SIGNAL with the data
+        {
+            QByteArray data = readBuffer.mid(0, size);
+            readBuffer.remove(0, size);
+            size = 0;
+            readBuffer_size = size;
+        }
+    }
+
+    // Accetto pacchetti finchè non mi arriva ENDBUFFER
+    QByteArray endBuf = "ENDBUFFER";
+    bool found = false;
+    size = readBuffer_size;
+
+    while(!found){
+        while (this->tcpSocket->bytesAvailable() > 0 && !found){
+
+            readBuffer.append(this->tcpSocket->readAll());
+
+            while (((size == 0 && readBuffer.size() >= 4) || (size > 0 && readBuffer.size() >= size)) && !found)   // While can process data, process it
+            {
+                if (size == 0 && readBuffer.size() >= 4)        // If size of data has received completely, then store it on our global variable
+                {
+                    size = ArrayToInt(readBuffer.mid(0, 4));
+                    readBuffer_size = size;
+                    readBuffer.remove(0, 4);
+                }
+                if (size > 0 && readBuffer.size() >= size)      // If data has received completely, then emit our SIGNAL with the data
+                {
+                    QByteArray data = readBuffer.mid(0, size);
+                    readBuffer.remove(0, size);
+                    size = 0;
+                    readBuffer_size = size;
+
+                    // Controllo se è arrivato l'ENDBUFFER
+                    QDataStream in_data(&data, QIODevice::ReadOnly);
+                    in_data.setVersion(QDataStream::Qt_5_12);
+                    QByteArray action;
+                    in_data >> action;
+                    if(action.contains(endBuf)){
+                        found = true;
+                    }
+                }
+            }
+        }
+
+        if(found)
+            break;
+
+        if(!this->tcpSocket->waitForReadyRead(Timeout)){
+            throw GUI_ConnectionException("Timeout Expired.");
+        }
+    }
 }
 
 void connection_to_server::receiveMessage(QByteArray data){
