@@ -16,8 +16,8 @@ CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyT
     QObject::connect(this->editorParent, &GUI_Editor::menuTools_event, this, &CRDT_controller::menuCall);
     QObject::connect(this, &CRDT_controller::menuSet, parent, &GUI_Editor::setMenuToolStatus);
     QObject::connect(&this->textEdit, &QTextEdit::currentCharFormatChanged, this, &CRDT_controller::currentCharFormatChanged);
-    QObject::connect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
-    QObject::connect(&this->textEdit, &QTextEdit::selectionChanged, this, &CRDT_controller::selectionChanged);
+        QObject::connect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
+        QObject::connect(&this->textEdit, &QTextEdit::selectionChanged, this, &CRDT_controller::selectionChanged);
     QObject::connect(this->textEdit.document(), &QTextDocument::contentsChange, this, &CRDT_controller::contentChanged);
     QObject::connect(parent->childToolsBar->ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &CRDT_controller::setSize);
     QObject::connect(parent->childToolsBar->ui->fontComboBox, &QFontComboBox::currentFontChanged, this, &CRDT_controller::setFont);
@@ -279,10 +279,11 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
 
 
 void CRDT_controller::cursorMoved(){
+
+    std::cout << "Hey, I'm in Cursor Moved! Cursor movable = "<< cursorMovable << std::endl;
+
     if(!cursorMovable)
         return;
-
-//    std::cout << "Hey, I'm in Cursor Moved! Cursor movable = "<< cursorMovable << std::endl;
 
     // update the alignment button on the toolbar
     switch (textEdit.alignment()) {
@@ -341,6 +342,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         return;
 
     cursorMovable = false;
+    QObject::disconnect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
     connection->requestSendStopCursor();
 
     QTextCursor tmp{textEdit.document()};
@@ -490,6 +492,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     //std::cout << "It took "<< difftime(tend, tstart) <<" second(s)."<< std::endl;
 
     cursorMovable = true;
+    QObject::connect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
     connection->requestSendStartCursor();
 }
 
@@ -565,11 +568,14 @@ void CRDT_controller::remoteDelete(int userId, int pos){
 
     bool processingMessage_prev = processingMessage;
     processingMessage = true;
-    bool oldCursorMovable, isStoppingCursors = false;
+    bool oldCursorMovable = cursorMovable, isStoppingCursors = false;
 
     if(!usersMovingCursors.value(userId)){
-       oldCursorMovable = cursorMovable;
        cursorMovable = false;
+
+       if(oldCursorMovable)
+           QObject::disconnect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
+
        isStoppingCursors = true;
     }
 
@@ -587,8 +593,11 @@ void CRDT_controller::remoteDelete(int userId, int pos){
     if(textEdit.alignment() != Qt::AlignLeft)
         cursorMoved();
 
-    if(isStoppingCursors)
+    if(isStoppingCursors){
         cursorMovable = oldCursorMovable;
+        if(oldCursorMovable)
+            QObject::connect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
+    }
 
     if(highlightUsers)
         textEdit.document()->clearUndoRedoStacks();
@@ -603,12 +612,15 @@ void CRDT_controller::remoteInsert(int userId, int pos, QChar c, QTextCharFormat
 
     bool processingMessage_prev = processingMessage;
     processingMessage = true;
-    bool oldCursorMovable, isStoppingCursors = false;
+    bool oldCursorMovable = cursorMovable, isStoppingCursors = false;
 
     // userId = crdt.getSiteId iff loading the file from the server (calling remote insert from CRDT_SharedEditor constructor)
     if(userId == crdt.getSiteId() || !usersMovingCursors.value(userId)){
-       oldCursorMovable = cursorMovable;
        cursorMovable = false;
+
+       if(oldCursorMovable)
+           QObject::disconnect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
+
        isStoppingCursors = true;
     }
 
@@ -642,8 +654,11 @@ void CRDT_controller::remoteInsert(int userId, int pos, QChar c, QTextCharFormat
 //    if(textEdit.alignment() != Qt::AlignLeft)
 //        cursorMoved();
 
-    if(isStoppingCursors)
+    if(isStoppingCursors){
         cursorMovable = oldCursorMovable;
+        if(oldCursorMovable)
+            QObject::connect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
+    }
 
     if(highlightUsers)
         textEdit.document()->clearUndoRedoStacks();
