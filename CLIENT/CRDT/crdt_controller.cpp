@@ -12,7 +12,7 @@
 CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyTextEdit& textEdit, int siteId, int siteCounter):
                         QObject(parent), gimpDocs(gimpdocs),  editorParent(parent),  connection(gimpDocs->getConnection()), textEdit(textEdit), highlightUsers(false),
                         crdt{this, gimpDocs->getConnection(), siteId, siteCounter},
-                        rememberFormatChange(false), validateSpin(true), validateFontCombo(true), cursorMovable(true) {
+                        rememberFormatChange(false), validateSpin(true), validateFontCombo(true), cursorMovable(true), deletedAmountOnPaste(-1) {
     QObject::connect(this->editorParent, &GUI_Editor::menuTools_event, this, &CRDT_controller::menuCall);
     QObject::connect(this, &CRDT_controller::menuSet, parent, &GUI_Editor::setMenuToolStatus);
     QObject::connect(&this->textEdit, &QTextEdit::currentCharFormatChanged, this, &CRDT_controller::currentCharFormatChanged);
@@ -157,6 +157,7 @@ void CRDT_controller::cut(){
 }
 
 void CRDT_controller::paste(){
+    deletedAmountOnPaste = textEdit.textCursor().selectedText().length();
     textEdit.paste();
     textEdit.setFocus();
 }
@@ -348,9 +349,12 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     QTextCursor tmp{textEdit.document()};
     bool mustClearStacks = false;
 
-    if(pos + del - 1 > crdt.getLength() - 1){
-        del--;
-        add--;
+    if(deletedAmountOnPaste != -1){
+        if(pos == 0){
+            add = add - del + deletedAmountOnPaste;
+            del = deletedAmountOnPaste;
+        }
+        deletedAmountOnPaste = -1;
     }
 
     std::cout << "pos: " << pos << "; add: " << add << "; del: " << del << std::endl;     // DEBUG: get some info on what has been modified

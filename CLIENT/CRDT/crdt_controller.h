@@ -27,6 +27,7 @@ private:
     bool processingMessage = false;
     int defaultFontPointSize = 12;
     bool cursorMovable;
+    int deletedAmountOnPaste;
 
     void setLeft();
     void setCenter();
