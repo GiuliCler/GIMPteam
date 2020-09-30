@@ -26,7 +26,6 @@ private:
     bool validateFontCombo;
     bool processingMessage = false;
     int defaultFontPointSize = 12;
-    bool cursorMovable;
     int deletedAmountOnPaste;
 
     void setLeft();
@@ -51,7 +50,7 @@ private:
 
 public:
     QMap<int, int> usersCursors;
-    QMap<int, bool> usersMovingCursors;
+    int cursorMovable_sem;
     CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyTextEdit& textEdit, int siteId, int siteCounter);
     void setCurrentTextColor(QColor color);
     void remoteInsert(int userId, int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align);

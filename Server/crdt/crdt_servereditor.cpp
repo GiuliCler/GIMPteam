@@ -264,3 +264,21 @@ void CRDT_ServerEditor::updateCursorMap(int userId, int pos){
     usersCursors[userId] = qMin(pos, _symbols.size());
     mutex->unlock();
 }
+
+void CRDT_ServerEditor::addInUsersMovingCursors(int userId){
+    mutex->lock();
+    usersMovingCursors.insert(userId, true);
+    mutex->unlock();
+}
+
+void CRDT_ServerEditor::removeFromUsersMovingCursors(int userId){
+    mutex->lock();
+    usersMovingCursors.remove(userId);
+    mutex->unlock();
+}
+
+void CRDT_ServerEditor::updateUsersMovingCursors(int userId, bool v){
+    mutex->lock();
+    usersMovingCursors[userId] = v;
+    mutex->unlock();
+}

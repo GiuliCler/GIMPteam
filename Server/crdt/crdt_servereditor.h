@@ -13,7 +13,7 @@ class CRDT_ServerEditor : public QObject {
 
 private:
     QMap<int, int> usersCursors;
-
+    QMap<int, bool> usersMovingCursors;
     QString percorsoFile;
     QVector<CRDT_Symbol> _symbols;
     QVector<CRDT_Symbol>::iterator trovaPosizione(QVector<int> pos);
@@ -29,6 +29,9 @@ public:
     void addUserToCursorMap(int userId);
     void removeUserFromCursorMap(int userId);
     void updateCursorMap(int userId, int pos);
+    void addInUsersMovingCursors(int userId);
+    void removeFromUsersMovingCursors(int userId);
+    void updateUsersMovingCursors(int userId, bool v);
 
 public slots:
     void process(const CRDT_Message& m);
