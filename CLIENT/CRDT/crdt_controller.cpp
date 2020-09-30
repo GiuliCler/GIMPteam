@@ -497,7 +497,6 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
     if(cursorMovable_sem == 1){
         QObject::connect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
-        cursorMoved();
     }
     cursorMovable_sem--;
     connection->requestSendStartCursor();

@@ -247,14 +247,16 @@ QVector<CRDT_Symbol> CRDT_ServerEditor::getSymbols(){
 }
 
 
-void CRDT_ServerEditor::addUserToCursorMap(int userId){
+void CRDT_ServerEditor::addUserToCursorMaps(int userId){
     mutex->lock();
+    usersMovingCursors.insert(userId, true);
     usersCursors.insert(userId, 0);
     mutex->unlock();
 }
 
-void CRDT_ServerEditor::removeUserFromCursorMap(int userId){
+void CRDT_ServerEditor::removeUserFromCursorMaps(int userId){
     mutex->lock();
+    usersMovingCursors.remove(userId);
     usersCursors.remove(userId);
     mutex->unlock();
 }
@@ -265,20 +267,15 @@ void CRDT_ServerEditor::updateCursorMap(int userId, int pos){
     mutex->unlock();
 }
 
-void CRDT_ServerEditor::addInUsersMovingCursors(int userId){
-    mutex->lock();
-    usersMovingCursors.insert(userId, true);
-    mutex->unlock();
-}
-
-void CRDT_ServerEditor::removeFromUsersMovingCursors(int userId){
-    mutex->lock();
-    usersMovingCursors.remove(userId);
-    mutex->unlock();
-}
-
 void CRDT_ServerEditor::updateUsersMovingCursors(int userId, bool v){
     mutex->lock();
     usersMovingCursors[userId] = v;
     mutex->unlock();
+}
+
+bool CRDT_ServerEditor::getUserMovingCursor(int userId){
+    mutex->lock();
+    bool val = usersMovingCursors[userId];
+    mutex->unlock();
+    return val;
 }

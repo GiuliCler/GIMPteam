@@ -330,7 +330,7 @@ int Thread_body::addToWorkingUsers(int docId, int userId, int open_new){
 void Thread_body::notifyNewWorkingUser(int userId, int docId){
 
     // add user in the usersCursors map (simil-TLB)
-    crdt->addUserToCursorMap(userId);
+    crdt->addUserToCursorMaps(userId);
 
     CRDT_Symbol s{};
     CRDT_Message m{"ONLINEUSER_"+std::to_string(userId), s, userId};
@@ -342,7 +342,7 @@ void Thread_body::notifyNewWorkingUser(int userId, int docId){
 void Thread_body::notifyWorkingUserAway(int userId, int docId){
 
     // remove user from the usersCursors map (simil-TLB)
-    crdt->removeUserFromCursorMap(userId);
+    crdt->removeUserFromCursorMaps(userId);
 
 
     CRDT_Symbol s{};
@@ -1318,6 +1318,9 @@ void Thread_body::openDocument(int docId, int userId){
 
 void Thread_body::closeDocument(int docId, int userId){
 
+    if(crdt->getUserMovingCursor(userId))
+        startCursor();
+
     // Rimuovo l'utente dalla riga degli utenti online su un certo documento
     bool last = removeFromWorkingUsers(docId, userId);
 
@@ -1376,6 +1379,8 @@ void Thread_body::stopCursor(){
     if(current_docId == -1)
         return;
 
+    crdt->updateUsersMovingCursors(current_userId, false);
+
     CRDT_Symbol s{};
     CRDT_Message m{"STOPCURSOR", s, current_userId};
     auto threadId = std::this_thread::get_id();
@@ -1386,6 +1391,8 @@ void Thread_body::stopCursor(){
 void Thread_body::startCursor(){
     if(current_docId == -1)
         return;
+
+    crdt->updateUsersMovingCursors(current_userId, true);
 
     CRDT_Symbol s{};
     CRDT_Message m{"STARTCURSOR", s, current_userId};

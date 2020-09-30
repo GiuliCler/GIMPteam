@@ -26,12 +26,11 @@ public:
     void saveInFilesystem();
     void loadFromFilesystem();
     QVector<CRDT_Symbol> getSymbols();
-    void addUserToCursorMap(int userId);
-    void removeUserFromCursorMap(int userId);
+    void addUserToCursorMaps(int userId);
+    void removeUserFromCursorMaps(int userId);
     void updateCursorMap(int userId, int pos);
-    void addInUsersMovingCursors(int userId);
-    void removeFromUsersMovingCursors(int userId);
     void updateUsersMovingCursors(int userId, bool v);
+    bool getUserMovingCursor(int userId);
 
 public slots:
     void process(const CRDT_Message& m);
