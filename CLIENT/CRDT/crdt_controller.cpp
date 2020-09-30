@@ -357,6 +357,11 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         deletedAmountOnPaste = -1;
     }
 
+    if(pos + del -1 > crdt.getLength() - 1){
+        del--;
+        add--;
+    }
+
     std::cout << "After adj - pos: " << pos << "; add: " << add << "; del: " << del << std::endl;     // DEBUG
 
     // remove the deleted letters from the crdt
