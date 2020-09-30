@@ -71,6 +71,10 @@ bool GUI_MyTextEdit::eventFilter(QObject *watched, QEvent *event){
             editorParent->on_actionPaste();
             return true;
         }
+        if (keyEvent->matches(QKeySequence::Undo)){
+            editorParent->on_actionUndo();
+            return true;
+        }
     }
 
     return false;
