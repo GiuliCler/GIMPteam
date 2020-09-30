@@ -211,7 +211,11 @@ int CRDT_ServerEditor::confrontaPos(QVector<int> pos, QVector<int> currentPos){
             return 0;
         }
     }
-    return 0;
+
+    if(pos.size() < currentPos.size())
+        return 1;
+    else
+        return 0;
 }
 
 

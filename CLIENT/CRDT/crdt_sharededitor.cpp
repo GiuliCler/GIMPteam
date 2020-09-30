@@ -156,7 +156,7 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
         CRDT_Symbol simbolo = m.getSimbolo();
         QVector<CRDT_Symbol>::iterator it = _symbols.begin();
 
-        std::cout<<"Sono nella process per una... "<<azione<<std::endl;        // DEBUG
+//        std::cout<<"Sono nella process per una... "<<azione<<std::endl;        // DEBUG
 
         if(azione == "insert"){                 /* SIMBOLO INSERITO */
 
@@ -212,7 +212,7 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
                 }
             }
 
-            std::cout<<"Sto INSERENDO all'indice: "<<count<<"; simbolo: "<<simbolo.getCarattere().toLatin1()<<std::endl;          // DEBUG
+//            std::cout<<"Sto INSERENDO all'indice: "<<count<<"; simbolo: "<<simbolo.getCarattere().toLatin1()<<std::endl;          // DEBUG
             _symbols.insert(it, simbolo);
 
             parent->remoteInsert(m.getCreatore(), count, simbolo.getCarattere(), simbolo.getFormat(), simbolo.getAlignment());
@@ -269,7 +269,7 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
             }
 
             if(it < _symbols.end() && it->getIDunivoco() == simbolo.getIDunivoco()){
-                std::cout<<"Sto CANCELLANDO all'indice: "<<it - _symbols.begin()<<std::endl;          // DEBUG
+//                std::cout<<"Sto CANCELLANDO all'indice: "<<it - _symbols.begin()<<std::endl;          // DEBUG
                 _symbols.erase(it);
                 parent->remoteDelete(m.getCreatore(), it - _symbols.begin());
             }
@@ -355,7 +355,11 @@ int CRDT_SharedEditor::confrontaPos(QVector<int> pos, QVector<int> currentPos){
             return 0;
         }
     }
-    return 0;
+
+    if(pos.size() < currentPos.size())
+        return 1;
+    else
+        return 0;
 }
 
 
