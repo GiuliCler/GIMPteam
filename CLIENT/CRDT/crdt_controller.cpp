@@ -415,6 +415,8 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
                 fmt.setFontPointSize(defaultFontPointSize);
 
             firstPosition[firstPosition.size()-2]++;
+//            firstPosition[firstPosition.size()-1]++;
+//            firstPosition.push_back(crdt.getSiteId());
             crdt.localInsert(i, textEdit.toPlainText().at(i), fmt, tmp.blockFormat().alignment(), firstPosition);
         }
     }
@@ -467,6 +469,8 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
                 fmt.setFontPointSize(defaultFontPointSize);
 
             firstPosition[firstPosition.size()-2]++;
+//            firstPosition[firstPosition.size()-1]++;
+//            firstPosition.push_back(crdt.getSiteId());
             crdt.localInsert(i, textEdit.toPlainText().at(i), fmt, tmp.blockFormat().alignment(), firstPosition);
         }
     }
@@ -506,6 +510,9 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     }
     cursorMovable_sem--;
     connection->requestSendStartCursor();
+
+//    if(highlightUsers)
+//        cursorMoved();
 }
 
 // if the clipboard has some text, enable the paste
