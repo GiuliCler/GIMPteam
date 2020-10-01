@@ -1318,7 +1318,7 @@ void Thread_body::openDocument(int docId, int userId){
 
 void Thread_body::closeDocument(int docId, int userId){
 
-    if(crdt->getUserMovingCursor(userId))
+    if(!crdt->getUserMovingCursor(userId))
         startCursor();
 
     // Rimuovo l'utente dalla riga degli utenti online su un certo documento
