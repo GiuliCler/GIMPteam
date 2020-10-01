@@ -91,12 +91,7 @@ QVector<int> CRDT_SharedEditor::generaPosizione(QVector<int> prev, QVector<int> 
     }
 
     if((*SX)<(*DX)){                  /* CASO DI USCITA DAL WHILE: (*i)<(*j) */
-        int assolutoDX = abs((*DX));
-        int assolutoSX = abs((*SX));
-        if(assolutoDX > assolutoSX)
-            delta = assolutoDX - assolutoSX;
-        else
-            delta = assolutoSX - assolutoDX;
+        delta = *DX - *SX;
         if(delta > 1){
             pos.push_back((*SX) + 1);
             SX++;
