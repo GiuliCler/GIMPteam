@@ -232,8 +232,11 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
             if(indexCursore == 0)                    // Controllo se il cursore dello user è in testa al documento
                 cursoreInTesta = true;
 
-            if(indexCursore >= _symbols.size())      // Controllo se il cursore dello user è in coda al documento
+            if(indexCursore >= _symbols.size()){      // Controllo se il cursore dello user è in coda al documento
                 cursoreInCoda = true;
+                if(indexCursore > _symbols.size())
+                    indexCursore = _symbols.size();
+            }
 
             if(cursoreInTesta){
                 if(posNew == _symbols[indexCursore].getPosizione()){              // Confronto posNew con pos di indexCursore per vedere se lo user ha premuto il tasto CANC
