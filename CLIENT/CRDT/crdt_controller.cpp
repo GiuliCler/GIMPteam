@@ -511,8 +511,8 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     cursorMovable_sem--;
     connection->requestSendStartCursor();
 
-//    if(highlightUsers)
-//        cursorMoved();
+    if(highlightUsers)
+        cursorMoved();
 }
 
 // if the clipboard has some text, enable the paste
