@@ -18,7 +18,7 @@ CRDT_SharedEditor::CRDT_SharedEditor(CRDT_controller *parent, connection_to_serv
 
         // Aggiorno lo shared editor
         for(auto it = _symbols.begin();it<_symbols.end();it++, pos++) {
-            parent->remoteInsert(this->_siteId, pos, it->getCarattere(), it->getFormat(), it->getAlignment());
+            parent->remoteInsert(pos, it->getCarattere(), it->getFormat(), it->getAlignment());
         }
 
         QObject::connect(connection, &connection_to_server::sigProcessMessage, this, &CRDT_SharedEditor::process, Qt::QueuedConnection);
@@ -210,7 +210,7 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
 //            std::cout<<"Sto INSERENDO all'indice: "<<count<<"; simbolo: "<<simbolo.getCarattere().toLatin1()<<std::endl;          // DEBUG
             _symbols.insert(it, simbolo);
 
-            parent->remoteInsert(m.getCreatore(), count, simbolo.getCarattere(), simbolo.getFormat(), simbolo.getAlignment());
+            parent->remoteInsert(count, simbolo.getCarattere(), simbolo.getFormat(), simbolo.getAlignment());
 
             // Aggiorno il cursore dell'utente che ha scritto
             parent->usersCursors[m.getCreatore()] = count + 1;
@@ -266,7 +266,7 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
             if(it < _symbols.end() && it->getIDunivoco() == simbolo.getIDunivoco()){
 //                std::cout<<"Sto CANCELLANDO all'indice: "<<it - _symbols.begin()<<std::endl;          // DEBUG
                 _symbols.erase(it);
-                parent->remoteDelete(m.getCreatore(), it - _symbols.begin());
+                parent->remoteDelete(it - _symbols.begin());
             }
 
             // Ricerca lineare

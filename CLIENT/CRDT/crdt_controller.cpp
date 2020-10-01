@@ -574,7 +574,7 @@ void CRDT_controller::menuCall(menuTools op){
 
 
 // show the delection of the letter by another user
-void CRDT_controller::remoteDelete(int userId, int pos){
+void CRDT_controller::remoteDelete(int pos){
 
 //    std::cout<<"EHI! SONO NELLA REMOTE DELETE! Position: "<< pos <<std::endl;         // DEBUG
 
@@ -591,7 +591,7 @@ void CRDT_controller::remoteDelete(int userId, int pos){
 //       isStoppingCursors = true;
 //    }
 
-    int pos_prev = textEdit.textCursor().position();
+//    int pos_prev = textEdit.textCursor().position();
     QTextCursor tmp{textEdit.document()};
     tmp.beginEditBlock();
     tmp.setPosition(pos);
@@ -600,8 +600,8 @@ void CRDT_controller::remoteDelete(int userId, int pos){
 
     tmp.endEditBlock();
 
-    tmp.setPosition(pos_prev <= pos ? pos_prev : pos_prev-1);
-    textEdit.setTextCursor(tmp);
+//    tmp.setPosition(pos_prev <= pos ? pos_prev : pos_prev-1);
+//    textEdit.setTextCursor(tmp);
     if(textEdit.alignment() != Qt::AlignLeft)
         cursorMoved();
 
@@ -618,7 +618,7 @@ void CRDT_controller::remoteDelete(int userId, int pos){
 }
 
 // show the insertion of a new letter by another user
-void CRDT_controller::remoteInsert(int userId, int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align){
+void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align){
 
 //    std::cout<<"EHI! SONO NELLA REMOTE INSERT! Char: "<< c.toLatin1() <<std::endl;        // DEBUG
 
@@ -636,7 +636,7 @@ void CRDT_controller::remoteInsert(int userId, int pos, QChar c, QTextCharFormat
 //       isStoppingCursors = true;
 //    }
 
-    int pos_prev = textEdit.textCursor().position();
+//    int pos_prev = textEdit.textCursor().position();
     QTextCursor tmp{textEdit.document()};
 
     // edit block => insert and chang a format together in the same undo operation
@@ -660,8 +660,8 @@ void CRDT_controller::remoteInsert(int userId, int pos, QChar c, QTextCharFormat
 
     tmp.endEditBlock();
 
-    tmp.setPosition(pos_prev <= pos ? pos_prev : pos_prev+1);
-    textEdit.setTextCursor(tmp);
+//    tmp.setPosition(pos_prev <= pos ? pos_prev : pos_prev+1);
+//    textEdit.setTextCursor(tmp);
 
 //    if(textEdit.alignment() != Qt::AlignLeft)
 //        cursorMoved();
@@ -698,14 +698,14 @@ void CRDT_controller::remoteMove(int userId, int pos){
 
 
 // receive the request to stop moving the cursor
-void CRDT_controller::remoteStopCursor(int userId){
+void CRDT_controller::remoteStopCursor(){
     cursorMovable_sem++;
     if(cursorMovable_sem == 1)
         QObject::disconnect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
 }
 
 // receive the request to restart moving the cursor
-void CRDT_controller::remoteStartCursor(int userId){
+void CRDT_controller::remoteStartCursor(){
     if(cursorMovable_sem == 1)
         QObject::connect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
     cursorMovable_sem--;
