@@ -406,6 +406,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
         // Aggiungo al fondo del vettore di interi il siteId
         firstPosition.push_back(crdt.getSiteId());
+        firstPosition.push_back(crdt.getSiteId());
 
         // Insert in crdt, making sure that the font size is > 0 (or use the default one)
         for(int i = pos+1; i < pos + add; ++i){
@@ -415,8 +416,6 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
                 fmt.setFontPointSize(defaultFontPointSize);
 
             firstPosition[firstPosition.size()-2]++;
-//            firstPosition[firstPosition.size()-1]++;
-//            firstPosition.push_back(crdt.getSiteId());
             crdt.localInsert(i, textEdit.toPlainText().at(i), fmt, tmp.blockFormat().alignment(), firstPosition);
         }
     }
@@ -460,6 +459,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
         // Aggiungo al fondo del vettore di interi il siteId
         firstPosition.push_back(crdt.getSiteId());
+        firstPosition.push_back(crdt.getSiteId());
 
         // insert in crdt, making sure that the font size is > 0 (or use the default one)
         for(int i = pos1+1; i < pos1 + cnt; ++i){
@@ -469,8 +469,6 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
                 fmt.setFontPointSize(defaultFontPointSize);
 
             firstPosition[firstPosition.size()-2]++;
-//            firstPosition[firstPosition.size()-1]++;
-//            firstPosition.push_back(crdt.getSiteId());
             crdt.localInsert(i, textEdit.toPlainText().at(i), fmt, tmp.blockFormat().alignment(), firstPosition);
         }
     }
