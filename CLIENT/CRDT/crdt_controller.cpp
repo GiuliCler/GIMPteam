@@ -466,7 +466,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
             if(fmt.fontPointSize() <= 0)
                 fmt.setFontPointSize(defaultFontPointSize);
 
-            firstPosition[firstPosition.size()-1]++;
+            firstPosition[firstPosition.size()-2]++;
             crdt.localInsert(i, textEdit.toPlainText().at(i), fmt, tmp.blockFormat().alignment(), firstPosition);
         }
     }
