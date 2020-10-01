@@ -6,23 +6,26 @@
 #include <iostream>
 #include <QScrollBar>
 
+#include <ctime>
+
 
 CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyTextEdit& textEdit, int siteId, int siteCounter):
                         QObject(parent), gimpDocs(gimpdocs),  editorParent(parent),  connection(gimpDocs->getConnection()), textEdit(textEdit), highlightUsers(false),
                         crdt{this, gimpDocs->getConnection(), siteId, siteCounter},
-                        rememberFormatChange(false), validateSpin(true), validateFontCombo(true) {
+                        rememberFormatChange(false), validateSpin(true), validateFontCombo(true), deletedAmountOnPaste(-1),
+                        cursorMovable_sem(0){
     //QObject::connect(this->editorParent, &GUI_Editor::menuTools_event, this, &CRDT_controller::menuCall);
     QObject::connect(this, &CRDT_controller::menuSet, parent, &GUI_Editor::setMenuToolStatus);
     QObject::connect(&this->textEdit, &QTextEdit::currentCharFormatChanged, this, &CRDT_controller::currentCharFormatChanged);
-    QObject::connect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
-    QObject::connect(&this->textEdit, &QTextEdit::selectionChanged, this, &CRDT_controller::selectionChanged);
+        QObject::connect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
+        QObject::connect(&this->textEdit, &QTextEdit::selectionChanged, this, &CRDT_controller::selectionChanged);
     QObject::connect(this->textEdit.document(), &QTextDocument::contentsChange, this, &CRDT_controller::contentChanged);
     QObject::connect(parent->childToolsBar->ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &CRDT_controller::setSize);
     QObject::connect(parent->childToolsBar->ui->fontComboBox, &QFontComboBox::currentFontChanged, this, &CRDT_controller::setFont);
     QObject::connect(QApplication::clipboard(), &QClipboard::dataChanged, this, &CRDT_controller::clipboardDataChanged);
     QObject::connect(textEdit.document(), &QTextDocument::undoAvailable, this, &CRDT_controller::undoAvailableChanged);
     QObject::connect(textEdit.document(), &QTextDocument::redoAvailable, this, &CRDT_controller::redoAvailableChanged);
-    //QObject::connect(parent->childUsersBar, &GUI_UsersBar::highlightingUsers, this, &CRDT_controller::setUsersColors);
+    QObject::connect(parent->childUsersBar, &GUI_UsersBar::highlightingUsers, this, &CRDT_controller::setUsersColors);
     QObject::connect(connection, &connection_to_server::sigMoveCursor, this, &CRDT_controller::remoteMove);
 
     parent->childToolsBar->ui->spinBox->setSpecialValueText("Default");
@@ -153,6 +156,7 @@ void CRDT_controller::cut(){
 }
 
 void CRDT_controller::paste(){
+    deletedAmountOnPaste = textEdit.textCursor().selectedText().length();
     textEdit.paste();
     textEdit.setFocus();
 }
@@ -275,6 +279,9 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
 
 
 void CRDT_controller::cursorMoved(){
+
+    std::cout << "Hey, I'm in Cursor Moved!" << std::endl;
+
     // update the alignment button on the toolbar
     switch (textEdit.alignment()) {
         case Qt::AlignLeft:
@@ -323,24 +330,49 @@ void CRDT_controller::selectionChanged(){
 
 
 void CRDT_controller::contentChanged(int pos, int del, int add){
+    //TIMER
+    //time_t tstart, tend;
+    //tstart = time(0);
+
     // ignore this function if performing remote operations
     if(processingMessage)
         return;
 
+    cursorMovable_sem++;
+    if(cursorMovable_sem == 1)
+        QObject::disconnect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
+    connection->requestSendStopCursor();
+
     QTextCursor tmp{textEdit.document()};
     bool mustClearStacks = false;
 
-    if(pos + del - 1 > crdt.getLength() - 1){
-        del--;
-        add--;
+    std::cout << "Before adj - pos: " << pos << "; add: " << add << "; del: " << del <<"; deletedAmountOnPaste: " << deletedAmountOnPaste << std::endl;     // DEBUG
+
+    std::cout << "Pos cursore: " << textEdit.textCursor().position() << std::endl;
+
+    if(deletedAmountOnPaste != -1){
+        if(pos == 0){
+            add = add - del + deletedAmountOnPaste;
+            del = deletedAmountOnPaste;
+            mustClearStacks = true;
+        }
+        deletedAmountOnPaste = -1;
     }
 
-//    std::cout << "pos: " << pos << "; add: " << add << "; del: " << del << std::endl;     // DEBUG: get some info on what has been modified
+    std::cout << "After adj - pos: " << pos << "; add: " << add << "; del: " << del << std::endl;     // DEBUG
 
     // remove the deleted letters from the crdt
     if(del > 0){
+        //TIMER
+//        time_t tstart, tend;
+//        tstart = time(0);
+
         for(int i = pos + del - 1; i >= pos; --i)
             crdt.localErase(i);
+
+        //TIMER
+//        tend = time(0);
+//        std::cout << "It took "<< difftime(tend, tstart) <<" second(s)."<< std::endl;
     }
 
     // insert the added letters in the crdt
@@ -360,12 +392,26 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
         tmp.setPosition(pos+1);
 
-        // insert in crdt, making sure that the font size is > 0 (or use the default one)
-        for(int i = pos; i < pos + add; ++i, tmp.movePosition(QTextCursor::NextCharacter)){
+        // Trovo dove inserire la prima lettera
+        QVector<int> firstPosition = crdt.generaPrimaPosizione(pos);
+
+        QTextCharFormat fmt{tmp.charFormat()};
+        if(fmt.fontPointSize() <= 0)
+            fmt.setFontPointSize(defaultFontPointSize);
+        crdt.localInsert(pos, textEdit.toPlainText().at(pos), fmt, tmp.blockFormat().alignment(), firstPosition);
+
+        // Aggiungo al fondo del vettore di interi il siteId
+        firstPosition.push_back(crdt.getSiteId());
+
+        // Insert in crdt, making sure that the font size is > 0 (or use the default one)
+        for(int i = pos+1; i < pos + add; ++i){
+            tmp.movePosition(QTextCursor::NextCharacter);
             QTextCharFormat fmt{tmp.charFormat()};
             if(fmt.fontPointSize() <= 0)
                 fmt.setFontPointSize(defaultFontPointSize);
-            crdt.localInsert(i, textEdit.toPlainText().at(i), fmt, tmp.blockFormat().alignment());
+
+            firstPosition[firstPosition.size()-2]++;
+            crdt.localInsert(i, textEdit.toPlainText().at(i), fmt, tmp.blockFormat().alignment(), firstPosition);
         }
     }
 
@@ -397,14 +443,28 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         }
 
         tmp.setPosition(pos1+1);
-        // inserisco da tmp a fondo del blocco
-        for(int i = pos1; i < pos1 + cnt; ++i, tmp.movePosition(QTextCursor::NextCharacter)){
+
+        // Trovo dove inserire la prima lettera
+        QVector<int> firstPosition = crdt.generaPrimaPosizione(pos1);
+
+        QTextCharFormat fmt{tmp.charFormat()};
+        if(fmt.fontPointSize() <= 0)
+            fmt.setFontPointSize(defaultFontPointSize);
+        crdt.localInsert(pos1, textEdit.toPlainText().at(pos1), fmt, tmp.blockFormat().alignment(), firstPosition);
+
+        // Aggiungo al fondo del vettore di interi il siteId
+        firstPosition.push_back(crdt.getSiteId());
+
+        // insert in crdt, making sure that the font size is > 0 (or use the default one)
+        for(int i = pos1+1; i < pos1 + cnt; ++i){
+            tmp.movePosition(QTextCursor::NextCharacter);
             QTextCharFormat fmt{tmp.charFormat()};
             if(fmt.fontPointSize() <= 0)
                 fmt.setFontPointSize(defaultFontPointSize);
-            crdt.localInsert(i, textEdit.toPlainText().at(i), fmt, tmp.blockFormat().alignment());
+
+            firstPosition[firstPosition.size()-1]++;
+            crdt.localInsert(i, textEdit.toPlainText().at(i), fmt, tmp.blockFormat().alignment(), firstPosition);
         }
-//        crdt.print();                                 // DEBUG
     }
 
     // if "users colors" is selected, visualize the background according to who modified what (otherwise it should be white / NoBrush)
@@ -432,6 +492,16 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         }
         textEdit.document()->clearUndoRedoStacks();
     }
+
+    //TIMER
+    //tend = time(0);
+    //std::cout << "It took "<< difftime(tend, tstart) <<" second(s)."<< std::endl;
+
+    if(cursorMovable_sem == 1){
+        QObject::connect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
+    }
+    cursorMovable_sem--;
+    connection->requestSendStartCursor();
 }
 
 // if the clipboard has some text, enable the paste
@@ -500,12 +570,22 @@ void CRDT_controller::menuCall(menuTools op){
 
 
 // show the delection of the letter by another user
-void CRDT_controller::remoteDelete(int pos){
+void CRDT_controller::remoteDelete(int userId, int pos){
 
 //    std::cout<<"EHI! SONO NELLA REMOTE DELETE! Position: "<< pos <<std::endl;         // DEBUG
 
     bool processingMessage_prev = processingMessage;
     processingMessage = true;
+//    bool oldCursorMovable = cursorMovable, isStoppingCursors = false;
+
+//    if(!usersMovingCursors.value(userId)){
+//       cursorMovable = false;
+
+//       if(oldCursorMovable)
+//           QObject::disconnect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
+
+//       isStoppingCursors = true;
+//    }
 
     int pos_prev = textEdit.textCursor().position();
     QTextCursor tmp{textEdit.document()};
@@ -521,6 +601,12 @@ void CRDT_controller::remoteDelete(int pos){
     if(textEdit.alignment() != Qt::AlignLeft)
         cursorMoved();
 
+//    if(isStoppingCursors){
+//        cursorMovable = oldCursorMovable;
+//        if(oldCursorMovable)
+//            QObject::connect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
+//    }
+
     if(highlightUsers)
         textEdit.document()->clearUndoRedoStacks();
 
@@ -528,12 +614,23 @@ void CRDT_controller::remoteDelete(int pos){
 }
 
 // show the insertion of a new letter by another user
-void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align){
+void CRDT_controller::remoteInsert(int userId, int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align){
 
 //    std::cout<<"EHI! SONO NELLA REMOTE INSERT! Char: "<< c.toLatin1() <<std::endl;        // DEBUG
 
     bool processingMessage_prev = processingMessage;
     processingMessage = true;
+//    bool oldCursorMovable = cursorMovable, isStoppingCursors = false;
+
+//    // userId = crdt.getSiteId iff loading the file from the server (calling remote insert from CRDT_SharedEditor constructor)
+//    if(userId == crdt.getSiteId() || !usersMovingCursors.value(userId)){
+//       cursorMovable = false;
+
+//       if(oldCursorMovable)
+//           QObject::disconnect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
+
+//       isStoppingCursors = true;
+//    }
 
     int pos_prev = textEdit.textCursor().position();
     QTextCursor tmp{textEdit.document()};
@@ -562,8 +659,14 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
     tmp.setPosition(pos_prev <= pos ? pos_prev : pos_prev+1);
     textEdit.setTextCursor(tmp);
 
-    if(textEdit.alignment() != Qt::AlignLeft)
-        cursorMoved();
+//    if(textEdit.alignment() != Qt::AlignLeft)
+//        cursorMoved();
+
+//    if(isStoppingCursors){
+//        cursorMovable = oldCursorMovable;
+//        if(oldCursorMovable)
+//            QObject::connect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
+//    }
 
     if(highlightUsers)
         textEdit.document()->clearUndoRedoStacks();
@@ -573,9 +676,35 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
 
 // update a colored cursor of another user
 void CRDT_controller::remoteMove(int userId, int pos){
+
     QTextCursor tmp{textEdit.document()};
+
+    if(pos >= textEdit.document()->characterCount())
+        pos = textEdit.document()->characterCount() - 1;
+//    else
     tmp.setPosition(pos);
+
+    // Aggiorno vettore dei cursori degli utenti online
+//    std::cout<<"(remoteMove) Sto MUOVENDO IL CURSORE all'indice: "<<pos<<std::endl;          // DEBUG
+    usersCursors[userId] = pos;
 
     QPoint position = QPoint (textEdit.cursorRect(tmp).topLeft().x(), textEdit.cursorRect(tmp).topLeft().y() + textEdit.verticalScrollBar()->value());
     emit updateCursorPosition(userId, position);
+}
+
+
+// receive the request to stop moving the cursor
+void CRDT_controller::remoteStopCursor(int userId){
+    cursorMovable_sem++;
+    if(cursorMovable_sem == 1)
+        QObject::disconnect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
+}
+
+// receive the request to restart moving the cursor
+void CRDT_controller::remoteStartCursor(int userId){
+    if(cursorMovable_sem == 1)
+        QObject::connect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
+    cursorMovable_sem--;
+
+    cursorMoved();
 }

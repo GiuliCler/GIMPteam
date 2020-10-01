@@ -70,10 +70,13 @@ private:
     void notifyNewWorkingUser(int userId, int docId);
     void notifyWorkingUserAway(int userId, int docId);
     void notifyNewContributor(int userId, int docId);
+    void sendEndBuffer();
     int addToWorkingUsers(int docId, int userId, int open_new);
     bool removeFromWorkingUsers(int docId, int userId);
     void forceCloseDocument(int docId_deleted);
     void moveCursor(int userId, int pos);
+    void stopCursor();
+    void startCursor();
     static qint32 ArrayToInt(QByteArray source);
     bool writeData(QByteArray data);
     static QByteArray IntToArray(qint32 source);

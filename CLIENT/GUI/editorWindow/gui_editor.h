@@ -76,8 +76,10 @@ private:
     GUI_ColorsManager colorsManager;
     QMap<int, QColor> userColorMap;
 
-    void fillOnlineUsersList();
+    std::shared_ptr<QSet<int>> fillOnlineUsersList();
     void fillContibutorUsersList();
+    void fillOnlineUsersCursors(std::shared_ptr<QSet<int>> userIds);
+    void addUserToEditorGUIstart(int userid, QString nickname, QString iconId);
     void callMenuToolsAction(menuTools code);
 
 private slots:

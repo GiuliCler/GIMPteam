@@ -10,6 +10,8 @@ GUI_MyTextEdit::GUI_MyTextEdit(QWidget *parent) : QTextEdit(parent) {
     this->setObjectName(GUI_MyTextEdit::getObjectName());
     editorParent = static_cast<GUI_Editor*>(parent);
 
+    installEventFilter(this);
+
     QPalette palette = this->palette();
     palette.setColor(QPalette::Inactive, QPalette::Highlight, palette.color(QPalette::Active, QPalette::Highlight));
     this->setPalette(palette);
@@ -82,4 +84,22 @@ void GUI_MyTextEdit::on_updateCursorPosition_emitted(int userId, QPoint position
         return;
 
     cursorsMap[userId]->updatePosition(position);
+}
+
+bool GUI_MyTextEdit::eventFilter(QObject *watched, QEvent *event){
+
+    if (event->type() == QEvent::KeyPress) {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+
+        if (keyEvent->matches(QKeySequence::Paste)){
+            editorParent->on_actionPaste();
+            return true;
+        }
+        if (keyEvent->matches(QKeySequence::Undo)){
+            editorParent->on_actionUndo();
+            return true;
+        }
+    }
+
+    return false;
 }

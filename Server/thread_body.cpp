@@ -222,6 +222,18 @@ void Thread_body::executeJob(QByteArray data){
         moveCursor(userId, pos);
     }
 
+    c = "STOPCURSOR";
+    if(text.contains(c.toUtf8())){
+
+        stopCursor();
+    }
+
+    c = "STARTCURSOR";
+    if(text.contains(c.toUtf8())){
+
+        startCursor();
+    }
+
     c = "DISCONNECT_FROM_DOC";
     if(text.contains(c.toUtf8())){
 
@@ -317,6 +329,9 @@ int Thread_body::addToWorkingUsers(int docId, int userId, int open_new){
 
 void Thread_body::notifyNewWorkingUser(int userId, int docId){
 
+    // add user in the usersCursors map (simil-TLB)
+    crdt->addUserToCursorMaps(userId);
+
     CRDT_Symbol s{};
     CRDT_Message m{"ONLINEUSER_"+std::to_string(userId), s, userId};
     auto thread_id = std::this_thread::get_id();
@@ -325,6 +340,10 @@ void Thread_body::notifyNewWorkingUser(int userId, int docId){
 }
 
 void Thread_body::notifyWorkingUserAway(int userId, int docId){
+
+    // remove user from the usersCursors map (simil-TLB)
+    crdt->removeUserFromCursorMaps(userId);
+
 
     CRDT_Symbol s{};
     CRDT_Message m{"OFFLINEUSER_"+std::to_string(userId), s, userId};
@@ -542,6 +561,8 @@ void Thread_body::signup(QString username, QString password, QString nickname, Q
 
         users.insert(username, userId);
         mutex_users->unlock();
+
+        current_userId = userId;
 
         // Creo la riga relativa al nuovo user nella tabella utenti del DB
         mutex_db->lock();
@@ -1297,6 +1318,9 @@ void Thread_body::openDocument(int docId, int userId){
 
 void Thread_body::closeDocument(int docId, int userId){
 
+    if(crdt->getUserMovingCursor(userId))
+        startCursor();
+
     // Rimuovo l'utente dalla riga degli utenti online su un certo documento
     bool last = removeFromWorkingUsers(docId, userId);
 
@@ -1313,6 +1337,9 @@ void Thread_body::closeDocument(int docId, int userId){
     // "Resetto" il puntatore a CRDT_ServerEditor
     crdt = nullptr;
 
+    // Segnalo all'utente che ho finito di fare la closeDocument
+    sendEndBuffer();
+
     // Recupero il nome del documento e il nome dello user
     QString username = getUsername(userId);
     QString docName = getDocname(docId);
@@ -1325,12 +1352,50 @@ void Thread_body::closeDocument(int docId, int userId){
     }
 }
 
+void Thread_body::sendEndBuffer(){
+    QByteArray blocko;
+    QDataStream out(&blocko, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_12);
+
+    QString str = "ENDBUFFER";
+    out << str.toUtf8();
+    writeData(blocko);
+}
+
 void Thread_body::moveCursor(int userId, int pos){
     if(current_docId == -1)
         return;
 
+    crdt->updateCursorMap(userId, pos);
+
     CRDT_Symbol s{};
     CRDT_Message m{"MOVECURSOR_"+std::to_string(userId)+"_"+std::to_string(pos), s, userId};
+    auto threadId = std::this_thread::get_id();
+
+    emit messageToServer(m, threadId_toQString(threadId), current_docId);
+}
+
+void Thread_body::stopCursor(){
+    if(current_docId == -1)
+        return;
+
+    crdt->updateUsersMovingCursors(current_userId, false);
+
+    CRDT_Symbol s{};
+    CRDT_Message m{"STOPCURSOR", s, current_userId};
+    auto threadId = std::this_thread::get_id();
+
+    emit messageToServer(m, threadId_toQString(threadId), current_docId);
+}
+
+void Thread_body::startCursor(){
+    if(current_docId == -1)
+        return;
+
+    crdt->updateUsersMovingCursors(current_userId, true);
+
+    CRDT_Symbol s{};
+    CRDT_Message m{"STARTCURSOR", s, current_userId};
     auto threadId = std::this_thread::get_id();
 
     emit messageToServer(m, threadId_toQString(threadId), current_docId);
@@ -1436,6 +1501,24 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         out << s.toUtf8();
         out << str[1].toInt();     // userId
         out << str[2].toInt();     // pos
+        writeData(blocko);
+        return;
+    }
+
+    c = "STOPCURSOR";
+    if(strAction.contains(c.toUtf8())){
+        QString s = "STOPCURSOR";
+        out << s.toUtf8();
+        out << m.getCreatore();
+        writeData(blocko);
+        return;
+    }
+
+    c = "STARTCURSOR";
+    if(strAction.contains(c.toUtf8())){
+        QString s = "STARTCURSOR";
+        out << s.toUtf8();
+        out << m.getCreatore();
         writeData(blocko);
         return;
     }

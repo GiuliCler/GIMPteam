@@ -21,6 +21,8 @@ private:
     //la mappa serve per i cursori degli altri users
     QMap<int, GUI_ColoredCursor*> cursorsMap;
 
+    bool eventFilter(QObject *watched, QEvent *event) override;
+
 protected:
     virtual void paintEvent(QPaintEvent *pEvent) override;
     void insertFromMimeData (const QMimeData * source) override;

@@ -28,7 +28,7 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, bool ca
     childToolsBar = new GUI_ToolsBar(this);
     ui->toolsBarWidget->layout()->addWidget(childToolsBar);
 
-    fillOnlineUsersList();
+    std::shared_ptr<QSet<int>> userIds = fillOnlineUsersList();
     fillContibutorUsersList();
 
     usersColors = false;
@@ -63,6 +63,8 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, bool ca
     //devo fare qui queste connect perchè devo aspettare che la crdtController sia creata
     connect(&(*crdtController), &CRDT_controller::updateCursorPosition, childMyTextEdit, &GUI_MyTextEdit::on_updateCursorPosition_emitted);
     connect(&(*crdtController), &CRDT_controller::notifyDeletedStack, childToolsBar, &GUI_ToolsBar::compromisedUndoStack);
+
+    fillOnlineUsersCursors(userIds);
 
     //avvio la connessione speciale per l'editor. D'ora in poi la connection_to_server è off-limits
     if(GUI_ConnectionToServerWrapper::requestStartEditorConnection(gimpParent) < 0)
@@ -344,12 +346,31 @@ void GUI_Editor::addUserToEditorGUI(int userid, QString nickname, QString iconId
     if(userid != gimpParent->userid){
         QPoint p = QPoint (childMyTextEdit->cursorRect().topLeft().x(), childMyTextEdit->cursorRect().topLeft().y() + childMyTextEdit->verticalScrollBar()->value());
         childMyTextEdit->addUserCursor(userid, p, color);
+        crdtController->usersCursors.insert(userid, 0);
     }
 }
+
+void GUI_Editor::addUserToEditorGUIstart(int userid, QString nickname, QString iconId){
+    //ottengo un colore per cursore e icona
+    QColor color = getUserColor(userid);
+
+    //questo bruttissimo passaggio di parametri di funzione in funzione anzichè reperirli direttamente a basso livello chiamando il server è perchè mentre il CRDT è aperto non posso usare la connection_to_server
+    childUsersBar->addOnlineUserIcon(userid, color, nickname, iconId);
+
+    //GUI_MyTextEdit *son = findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName());
+    if(userid != gimpParent->userid){
+        QPoint p = QPoint (childMyTextEdit->cursorRect().topLeft().x(), childMyTextEdit->cursorRect().topLeft().y() + childMyTextEdit->verticalScrollBar()->value());
+        childMyTextEdit->addUserCursor(userid, p, color);
+    }
+}
+
 
 void GUI_Editor::removeUserFromEditorGUI(int userid){
     childMyTextEdit->removeUserCursor(userid);
     childUsersBar->removeOnlineUserIcon(userid);
+
+    // Rimuovo riga nel vettore dei cursori di crdt controller
+    crdtController->usersCursors.remove(userid);
 }
 
 void GUI_Editor::addContributorToCurrentDocument(int userid, QString nickname, QString iconId){
@@ -371,7 +392,14 @@ QColor GUI_Editor::getUserColor(int userId){
     return color;
 }
 
-void GUI_Editor::fillOnlineUsersList(){
+void GUI_Editor::fillOnlineUsersCursors(std::shared_ptr<QSet<int>> userIds){
+    for (QSet<int>::iterator userId = userIds->begin(); userId != userIds->end(); userId++){
+        // Creo nuova riga nel vettore dei cursori di crdt controller
+        crdtController->usersCursors.insert(*userId, 0);
+    }
+}
+
+std::shared_ptr<QSet<int>> GUI_Editor::fillOnlineUsersList(){
     //ottengo l'elenco degli utenti che al momento stanno guardando il mio stesso document e ne creo icona e cursore
     std::shared_ptr<QSet<int>> users = GUI_ConnectionToServerWrapper::getWorkingUsersOnDocumentWrapper(gimpParent, documentId);
     if(users == nullptr)
@@ -383,8 +411,10 @@ void GUI_Editor::fillOnlineUsersList(){
         QString nickname = GUI_ConnectionToServerWrapper::requestGetNicknameWrapper(gimpParent, *userId);
         QString iconId = GUI_ConnectionToServerWrapper::requestGetIconIdWrapper(gimpParent, *userId);
         if(nickname.compare("errore") != 0 && iconId.compare("errore") != 0)
-            addUserToEditorGUI(*userId, nickname, iconId);
+            addUserToEditorGUIstart(*userId, nickname, iconId);
     }
+
+    return users;
 }
 
 void GUI_Editor::fillContibutorUsersList(){

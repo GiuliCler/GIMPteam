@@ -29,7 +29,8 @@ public:
     explicit CRDT_SharedEditor(CRDT_controller *parent, connection_to_server *connection, int siteId, int siteCounter);
     int getSiteId() const;
 //    std::string print();            // FUNZIONI PER IL DEBUG
-    void localInsert(int index, QChar value, QTextCharFormat fmt, Qt::Alignment align);
+    QVector<int> generaPrimaPosizione(int index);
+    void localInsert(int index, QChar value, QTextCharFormat fmt, Qt::Alignment align, QVector<int> posizione);
     void localErase(int index);
     int getLength();
 //    std::string to_string();        // FUNZIONI PER IL DEBUG
