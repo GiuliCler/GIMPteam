@@ -39,25 +39,69 @@ CRDT_controller::~CRDT_controller(){
 
 
 void CRDT_controller::setLeft(){
+    bool oldProcessingMessage;
+    bool isDocEmpty = false;
+
+    if(textEdit.document()->characterCount() == 1){
+        oldProcessingMessage = processingMessage;
+        processingMessage = true;
+        isDocEmpty = true;
+    }
     textEdit.setAlignment(Qt::AlignLeft);
+    if(isDocEmpty){
+        processingMessage = oldProcessingMessage;
+    }
     emit menuSet(menuTools::A_LEFT);
     cursorMoved();
 }
 
 void CRDT_controller::setCenter(){
+    bool oldProcessingMessage;
+    bool isDocEmpty = false;
+
+    if(textEdit.document()->characterCount() == 1){
+        oldProcessingMessage = processingMessage;
+        processingMessage = true;
+        isDocEmpty = true;
+    }
     textEdit.setAlignment(Qt::AlignCenter);
+    if(isDocEmpty){
+        processingMessage = oldProcessingMessage;
+    }
     emit menuSet(menuTools::A_CENTER);
     cursorMoved();
 }
 
 void CRDT_controller::setRight(){
+    bool oldProcessingMessage;
+    bool isDocEmpty = false;
+
+    if(textEdit.document()->characterCount() == 1){
+        oldProcessingMessage = processingMessage;
+        processingMessage = true;
+        isDocEmpty = true;
+    }
     textEdit.setAlignment(Qt::AlignRight);
+    if(isDocEmpty){
+        processingMessage = oldProcessingMessage;
+    }
     emit menuSet(menuTools::A_RIGHT);
     cursorMoved();
 }
 
 void CRDT_controller::setJustified(){
+    bool oldProcessingMessage;
+    bool isDocEmpty = false;
+
+    if(textEdit.document()->characterCount() == 1){
+        oldProcessingMessage = processingMessage;
+        processingMessage = true;
+        isDocEmpty = true;
+    }
     textEdit.setAlignment(Qt::AlignJustify);
+    if(isDocEmpty){
+        processingMessage = oldProcessingMessage;
+    }
     emit menuSet(menuTools::A_JUSTIFIED);
     cursorMoved();
 }
@@ -509,7 +553,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     cursorMovable_sem--;
     connection->requestSendStartCursor();
 
-    if(highlightUsers)
+    if(highlightUsers && cursorMovable_sem == 0)
         cursorMoved();
 }
 
@@ -607,8 +651,8 @@ void CRDT_controller::remoteDelete(int pos){
 
 //    tmp.setPosition(pos_prev <= pos ? pos_prev : pos_prev-1);
 //    textEdit.setTextCursor(tmp);
-    if(textEdit.alignment() != Qt::AlignLeft)
-        cursorMoved();
+//    if(textEdit.alignment() != Qt::AlignLeft)
+//        cursorMoved();
 
 //    if(isStoppingCursors){
 //        cursorMovable = oldCursorMovable;
