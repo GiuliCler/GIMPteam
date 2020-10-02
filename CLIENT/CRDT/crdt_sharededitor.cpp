@@ -217,6 +217,9 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
 //            std::cout<<"(insert) Sto mettendo il cursore all'indice: "<<parent->usersCursors[m.getCreatore()]<<std::endl;          // DEBUG
 
         } else if(azione == "delete"){           /* SIMBOLO CANCELLATO */
+            if(_symbols.empty())
+                return;
+
             QVector<int> posNew = simbolo.getPosizione();
 
             // Implementazione simil-TLB:
@@ -229,13 +232,14 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
             int user = m.getCreatore();                                       // Recupero dal messaggio lo userId di chi sta scrivendo
             int indexCursore = parent->usersCursors.value(user);              // Recupero il cursore di tale user
 
+            if(indexCursore > _symbols.size())
+                indexCursore = _symbols.size();
+
             if(indexCursore == 0)                    // Controllo se il cursore dello user è in testa al documento
                 cursoreInTesta = true;
 
             if(indexCursore >= _symbols.size()){      // Controllo se il cursore dello user è in coda al documento
                 cursoreInCoda = true;
-                if(indexCursore > _symbols.size())
-                    indexCursore = _symbols.size();
             }
 
             if(cursoreInTesta){

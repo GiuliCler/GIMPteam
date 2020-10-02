@@ -85,6 +85,9 @@ void CRDT_ServerEditor::process(const CRDT_Message& m){
 
     } else if(azione == "delete"){           /* SIMBOLO CANCELLATO */
 
+        if(_symbols.isEmpty())
+            return;
+
         QVector<int> posNew = simbolo.getPosizione();
 
         // Implementazione simil-TLB:
@@ -97,13 +100,14 @@ void CRDT_ServerEditor::process(const CRDT_Message& m){
         int user = m.getCreatore();                                       // Recupero dal messaggio lo userId di chi sta scrivendo
         int indexCursore = usersCursors.value(user);              // Recupero il cursore di tale user
 
+        if(indexCursore > _symbols.size())
+            indexCursore = _symbols.size();
+
         if(indexCursore == 0)                    // Controllo se il cursore dello user è in testa al documento
             cursoreInTesta = true;
 
         if(indexCursore >= _symbols.size()){      // Controllo se il cursore dello user è in coda al documento
             cursoreInCoda = true;
-            if(indexCursore > _symbols.size())
-                indexCursore = _symbols.size();
         }
 
         if(cursoreInTesta){
