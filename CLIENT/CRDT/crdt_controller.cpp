@@ -13,7 +13,7 @@ CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyT
                         QObject(parent), gimpDocs(gimpdocs),  editorParent(parent),  connection(gimpDocs->getConnection()), textEdit(textEdit), highlightUsers(false),
                         crdt{this, gimpDocs->getConnection(), siteId, siteCounter},
                         rememberFormatChange(false), validateSpin(true), validateFontCombo(true), deletedAmountOnPaste(-1),
-                        cursorMovable_sem(0){
+                        isChangingAlign(false), cursorMovable_sem(0){
     QObject::connect(this->editorParent, &GUI_Editor::menuTools_event, this, &CRDT_controller::menuCall);
     QObject::connect(this, &CRDT_controller::menuSet, parent, &GUI_Editor::setMenuToolStatus);
     QObject::connect(&this->textEdit, &QTextEdit::currentCharFormatChanged, this, &CRDT_controller::currentCharFormatChanged);
@@ -39,69 +39,29 @@ CRDT_controller::~CRDT_controller(){
 
 
 void CRDT_controller::setLeft(){
-    bool oldProcessingMessage;
-    bool isDocEmpty = false;
-
-    if(textEdit.document()->characterCount() == 1){
-        oldProcessingMessage = processingMessage;
-        processingMessage = true;
-        isDocEmpty = true;
-    }
+    isChangingAlign = true;
     textEdit.setAlignment(Qt::AlignLeft);
-    if(isDocEmpty){
-        processingMessage = oldProcessingMessage;
-    }
     emit menuSet(menuTools::A_LEFT);
     cursorMoved();
 }
 
 void CRDT_controller::setCenter(){
-    bool oldProcessingMessage;
-    bool isDocEmpty = false;
-
-    if(textEdit.document()->characterCount() == 1){
-        oldProcessingMessage = processingMessage;
-        processingMessage = true;
-        isDocEmpty = true;
-    }
+    isChangingAlign = true;
     textEdit.setAlignment(Qt::AlignCenter);
-    if(isDocEmpty){
-        processingMessage = oldProcessingMessage;
-    }
     emit menuSet(menuTools::A_CENTER);
     cursorMoved();
 }
 
 void CRDT_controller::setRight(){
-    bool oldProcessingMessage;
-    bool isDocEmpty = false;
-
-    if(textEdit.document()->characterCount() == 1){
-        oldProcessingMessage = processingMessage;
-        processingMessage = true;
-        isDocEmpty = true;
-    }
+    isChangingAlign = true;
     textEdit.setAlignment(Qt::AlignRight);
-    if(isDocEmpty){
-        processingMessage = oldProcessingMessage;
-    }
     emit menuSet(menuTools::A_RIGHT);
     cursorMoved();
 }
 
 void CRDT_controller::setJustified(){
-    bool oldProcessingMessage;
-    bool isDocEmpty = false;
-
-    if(textEdit.document()->characterCount() == 1){
-        oldProcessingMessage = processingMessage;
-        processingMessage = true;
-        isDocEmpty = true;
-    }
+    isChangingAlign = true;
     textEdit.setAlignment(Qt::AlignJustify);
-    if(isDocEmpty){
-        processingMessage = oldProcessingMessage;
-    }
     emit menuSet(menuTools::A_JUSTIFIED);
     cursorMoved();
 }
@@ -390,6 +350,14 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     if(cursorMovable_sem == 1)
         QObject::disconnect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
     connection->requestSendStopCursor();
+
+    if(isChangingAlign){
+        if(pos == 0){
+            add--;
+            del--;
+        }
+        isChangingAlign = false;
+    }
 
     QTextCursor tmp{textEdit.document()};
     bool mustClearStacks = false;
