@@ -406,52 +406,48 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
         tmp.setPosition(pos+1);
 
-        // TODO - da scommentare
-//        int inizio = -1, fine = -1;
-//        for(int i = pos+1; i < pos + add; ++i){
-//            tmp.setPosition(i);
-//            QTextCharFormat fmt{tmp.charFormat()};
-//            if(fmt.fontPointSize() <= 0){
-//                if(inizio == -1){
-//                    inizio = i;
-//                }
-//            } else {
-//                if(inizio != -1){
-//                    fine = i - 1;
-//                    int selezionate = fine - inizio;
+        int inizio = -1, fine = -1;
+        for(int i = pos+1; i < pos + add; ++i){
+            tmp.setPosition(i);
+            QTextCharFormat fmt{tmp.charFormat()};
+            if(fmt.fontPointSize() <= 0){
+                if(inizio == -1){
+                    inizio = i;
+                }
+            } else {
+                if(inizio != -1){
+                    fine = i - 1;
+                    int selezionate = fine - inizio;
 
-//                    tmp.setPosition(inizio);
-//                    tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, selezionate);
-//                    QTextCharFormat fmt;
-//                    fmt.setFontPointSize(defaultFontPointSize);
-//                    tmp.mergeCharFormat(fmt);
+                    tmp.setPosition(inizio);
+                    tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, selezionate);
+                    QTextCharFormat fmt;
+                    fmt.setFontPointSize(defaultFontPointSize);
+                    tmp.mergeCharFormat(fmt);
 
-//                    inizio = -1;
-//                    fine = -1;
-//                    tmp.setPosition(i);
-//                }
-//            }
-//        }
-//        if(inizio != -1){
-//            fine = pos + add - 1;
-//            int selezionate = fine - inizio;
+                    inizio = -1;
+                    fine = -1;
+                    tmp.setPosition(i);
+                }
+            }
+        }
+        if(inizio != -1){
+            fine = pos + add - 1;
+            int selezionate = fine - inizio;
 
-//            tmp.setPosition(inizio);
-//            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, selezionate);
-//            QTextCharFormat fmt;
-//            fmt.setFontPointSize(defaultFontPointSize);
-//            tmp.mergeCharFormat(fmt);
-//        }
+            tmp.setPosition(inizio);
+            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, selezionate);
+            QTextCharFormat fmt;
+            fmt.setFontPointSize(defaultFontPointSize);
+            tmp.mergeCharFormat(fmt);
+        }
 
-//        tmp.setPosition(pos+1);
+        tmp.setPosition(pos+1);
 
         // Trovo dove inserire la prima lettera
         QVector<int> firstPosition = crdt.generaPrimaPosizione(pos);
 
         QTextCharFormat fmt{tmp.charFormat()};
-        // TODO - da rimuovere due righe sotto
-        if(fmt.fontPointSize() <= 0)
-            fmt.setFontPointSize(defaultFontPointSize);
         crdt.localInsert(pos, textEdit.toPlainText().at(pos), fmt, tmp.blockFormat().alignment(), firstPosition);
 
         // Aggiungo al fondo del vettore di interi il siteId
@@ -462,9 +458,6 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         for(int i = pos+1; i < pos + add; ++i){
             tmp.movePosition(QTextCursor::NextCharacter);
             QTextCharFormat fmt{tmp.charFormat()};
-            // TODO - da rimuovere due righe sotto
-            if(fmt.fontPointSize() <= 0)
-                fmt.setFontPointSize(defaultFontPointSize);
 
             firstPosition[firstPosition.size()-2]++;
             crdt.localInsert(i, textEdit.toPlainText().at(i), fmt, tmp.blockFormat().alignment(), firstPosition);
@@ -505,52 +498,48 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
         tmp.setPosition(pos1+1);
 
-        // TODO - da scommentare
-//        int inizio = -1, fine = -1;
-//        for(int i = pos1+1; i < pos1 + cnt; ++i){
-//            tmp.setPosition(i);
-//            QTextCharFormat fmt{tmp.charFormat()};
-//            if(fmt.fontPointSize() <= 0){
-//                if(inizio == -1){
-//                    inizio = i - 1;
-//                }
-//            } else {
-//                if(inizio != -1){
-//                    fine = i - 1;
-//                    int selezionate = fine - inizio;
+        int inizio = -1, fine = -1;
+        for(int i = pos1+1; i < pos1 + cnt; ++i){
+            tmp.setPosition(i);
+            QTextCharFormat fmt{tmp.charFormat()};
+            if(fmt.fontPointSize() <= 0){
+                if(inizio == -1){
+                    inizio = i - 1;
+                }
+            } else {
+                if(inizio != -1){
+                    fine = i - 1;
+                    int selezionate = fine - inizio;
 
-//                    tmp.setPosition(inizio);
-//                    tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, selezionate);
-//                    QTextCharFormat fmt;
-//                    fmt.setFontPointSize(defaultFontPointSize);
-//                    tmp.mergeCharFormat(fmt);
+                    tmp.setPosition(inizio);
+                    tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, selezionate);
+                    QTextCharFormat fmt;
+                    fmt.setFontPointSize(defaultFontPointSize);
+                    tmp.mergeCharFormat(fmt);
 
-//                    inizio = -1;
-//                    fine = -1;
-//                    tmp.setPosition(i);
-//                }
-//            }
-//        }
-//        if(inizio != -1){
-//            fine = pos1 + cnt - 1;
-//            int selezionate = fine - inizio;
+                    inizio = -1;
+                    fine = -1;
+                    tmp.setPosition(i);
+                }
+            }
+        }
+        if(inizio != -1){
+            fine = pos1 + cnt - 1;
+            int selezionate = fine - inizio;
 
-//            tmp.setPosition(inizio);
-//            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, selezionate);
-//            QTextCharFormat fmt;
-//            fmt.setFontPointSize(defaultFontPointSize);
-//            tmp.mergeCharFormat(fmt);
-//        }
+            tmp.setPosition(inizio);
+            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, selezionate);
+            QTextCharFormat fmt;
+            fmt.setFontPointSize(defaultFontPointSize);
+            tmp.mergeCharFormat(fmt);
+        }
 
-//        tmp.setPosition(pos1+1);
+        tmp.setPosition(pos1+1);
 
         // Trovo dove inserire la prima lettera
         QVector<int> firstPosition = crdt.generaPrimaPosizione(pos1);
 
         QTextCharFormat fmt{tmp.charFormat()};
-        // TODO - rimuovere le due righe sotto
-        if(fmt.fontPointSize() <= 0)
-            fmt.setFontPointSize(defaultFontPointSize);
         crdt.localInsert(pos1, textEdit.toPlainText().at(pos1), fmt, tmp.blockFormat().alignment(), firstPosition);
 
         // Aggiungo al fondo del vettore di interi il siteId
@@ -561,9 +550,6 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         for(int i = pos1+1; i < pos1 + cnt; ++i){
             tmp.movePosition(QTextCursor::NextCharacter);
             QTextCharFormat fmt{tmp.charFormat()};
-            // TODO - rimuovere le due righe sotto
-            if(fmt.fontPointSize() <= 0)
-                fmt.setFontPointSize(defaultFontPointSize);
 
             firstPosition[firstPosition.size()-2]++;
             crdt.localInsert(i, textEdit.toPlainText().at(i), fmt, tmp.blockFormat().alignment(), firstPosition);
