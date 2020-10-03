@@ -85,8 +85,10 @@ void CRDT_ServerEditor::process(const CRDT_Message& m){
 
     } else if(azione == "delete"){           /* SIMBOLO CANCELLATO */
 
-        if(_symbols.isEmpty())
+        if(_symbols.isEmpty()){
+            mutex->unlock();
             return;
+        }
 
         QVector<int> posNew = simbolo.getPosizione();
 
