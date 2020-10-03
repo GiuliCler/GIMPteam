@@ -389,22 +389,67 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         tmp.setPosition(pos);
 
         // make sure that the background is NoBrush/white before the insertion
+        bool colored = false;
         for(int i = pos; i < pos + add; tmp.setPosition(++i)){
-            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
             if(tmp.charFormat().background() != Qt::BrushStyle::NoBrush && tmp.charFormat().background() != Qt::white){
-                QTextCharFormat fmt{tmp.charFormat()};
-                fmt.setBackground(Qt::BrushStyle::NoBrush);
-                tmp.mergeCharFormat(fmt);
-                mustClearStacks = true;
+                colored = true;
+                break;
             }
+        }
+        if(colored){
+            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, add);
+            QTextCharFormat fmt;
+            fmt.setBackground(Qt::BrushStyle::NoBrush);
+            tmp.mergeCharFormat(fmt);
+            mustClearStacks = true;
         }
 
         tmp.setPosition(pos+1);
+
+        // TODO - da scommentare
+//        int inizio = -1, fine = -1;
+//        for(int i = pos+1; i < pos + add; ++i){
+//            tmp.setPosition(i);
+//            QTextCharFormat fmt{tmp.charFormat()};
+//            if(fmt.fontPointSize() <= 0){
+//                if(inizio == -1){
+//                    inizio = i;
+//                }
+//            } else {
+//                if(inizio != -1){
+//                    fine = i - 1;
+//                    int selezionate = fine - inizio;
+
+//                    tmp.setPosition(inizio);
+//                    tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, selezionate);
+//                    QTextCharFormat fmt;
+//                    fmt.setFontPointSize(defaultFontPointSize);
+//                    tmp.mergeCharFormat(fmt);
+
+//                    inizio = -1;
+//                    fine = -1;
+//                    tmp.setPosition(i);
+//                }
+//            }
+//        }
+//        if(inizio != -1){
+//            fine = pos + add - 1;
+//            int selezionate = fine - inizio;
+
+//            tmp.setPosition(inizio);
+//            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, selezionate);
+//            QTextCharFormat fmt;
+//            fmt.setFontPointSize(defaultFontPointSize);
+//            tmp.mergeCharFormat(fmt);
+//        }
+
+//        tmp.setPosition(pos+1);
 
         // Trovo dove inserire la prima lettera
         QVector<int> firstPosition = crdt.generaPrimaPosizione(pos);
 
         QTextCharFormat fmt{tmp.charFormat()};
+        // TODO - da rimuovere due righe sotto
         if(fmt.fontPointSize() <= 0)
             fmt.setFontPointSize(defaultFontPointSize);
         crdt.localInsert(pos, textEdit.toPlainText().at(pos), fmt, tmp.blockFormat().alignment(), firstPosition);
@@ -417,6 +462,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         for(int i = pos+1; i < pos + add; ++i){
             tmp.movePosition(QTextCursor::NextCharacter);
             QTextCharFormat fmt{tmp.charFormat()};
+            // TODO - da rimuovere due righe sotto
             if(fmt.fontPointSize() <= 0)
                 fmt.setFontPointSize(defaultFontPointSize);
 
@@ -442,22 +488,67 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
         // re-insert the letters making sure that the format is correct
         tmp.setPosition(pos1);
+        bool colored = false;
         for(int i = pos1; i < pos1 + cnt; tmp.setPosition(++i)){
-            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
             if(tmp.charFormat().background() != Qt::BrushStyle::NoBrush && tmp.charFormat().background() != Qt::white){
-                QTextCharFormat fmt{tmp.charFormat()};
-                fmt.setBackground(Qt::BrushStyle::NoBrush);
-                tmp.mergeCharFormat(fmt);
-                mustClearStacks = true;
+                colored = true;
+                break;
             }
+        }
+        if(colored){
+            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, add);
+            QTextCharFormat fmt;
+            fmt.setBackground(Qt::BrushStyle::NoBrush);
+            tmp.mergeCharFormat(fmt);
+            mustClearStacks = true;
         }
 
         tmp.setPosition(pos1+1);
+
+        // TODO - da scommentare
+//        int inizio = -1, fine = -1;
+//        for(int i = pos1+1; i < pos1 + cnt; ++i){
+//            tmp.setPosition(i);
+//            QTextCharFormat fmt{tmp.charFormat()};
+//            if(fmt.fontPointSize() <= 0){
+//                if(inizio == -1){
+//                    inizio = i - 1;
+//                }
+//            } else {
+//                if(inizio != -1){
+//                    fine = i - 1;
+//                    int selezionate = fine - inizio;
+
+//                    tmp.setPosition(inizio);
+//                    tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, selezionate);
+//                    QTextCharFormat fmt;
+//                    fmt.setFontPointSize(defaultFontPointSize);
+//                    tmp.mergeCharFormat(fmt);
+
+//                    inizio = -1;
+//                    fine = -1;
+//                    tmp.setPosition(i);
+//                }
+//            }
+//        }
+//        if(inizio != -1){
+//            fine = pos1 + cnt - 1;
+//            int selezionate = fine - inizio;
+
+//            tmp.setPosition(inizio);
+//            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, selezionate);
+//            QTextCharFormat fmt;
+//            fmt.setFontPointSize(defaultFontPointSize);
+//            tmp.mergeCharFormat(fmt);
+//        }
+
+//        tmp.setPosition(pos1+1);
 
         // Trovo dove inserire la prima lettera
         QVector<int> firstPosition = crdt.generaPrimaPosizione(pos1);
 
         QTextCharFormat fmt{tmp.charFormat()};
+        // TODO - rimuovere le due righe sotto
         if(fmt.fontPointSize() <= 0)
             fmt.setFontPointSize(defaultFontPointSize);
         crdt.localInsert(pos1, textEdit.toPlainText().at(pos1), fmt, tmp.blockFormat().alignment(), firstPosition);
@@ -470,6 +561,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         for(int i = pos1+1; i < pos1 + cnt; ++i){
             tmp.movePosition(QTextCursor::NextCharacter);
             QTextCharFormat fmt{tmp.charFormat()};
+            // TODO - rimuovere le due righe sotto
             if(fmt.fontPointSize() <= 0)
                 fmt.setFontPointSize(defaultFontPointSize);
 
@@ -484,12 +576,10 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         tmp.setPosition(pos);
 
         if(add+cnt > 0){
-            for(int i = pos; i < pos + add + cnt; tmp.setPosition(++i)){
-                tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
-                QTextCharFormat fmt{tmp.charFormat()};
-                fmt.setBackground(editorParent->getUserColor(crdt.getSiteIdAt(pos)));           // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
-                tmp.mergeCharFormat(fmt);
-            }
+            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, add + cnt);
+            QTextCharFormat format;
+            format.setBackground(editorParent->getUserColor(crdt.getSiteIdAt(pos)));
+            tmp.mergeCharFormat(format);
         }
     }
 
