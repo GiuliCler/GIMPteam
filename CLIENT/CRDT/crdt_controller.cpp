@@ -450,7 +450,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
                     int selezionate = fine - inizio;
 
                     tmp.setPosition(inizio);
-                    tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, selezionate);
+                    tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, selezionate + 1);
                     QTextCharFormat fmt;
                     fmt.setFontPointSize(defaultFontPointSize);
                     tmp.mergeCharFormat(fmt);
@@ -466,7 +466,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
             int selezionate = fine - inizio;
 
             tmp.setPosition(inizio);
-            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, selezionate);
+            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, selezionate + 1);
             QTextCharFormat fmt;
             fmt.setFontPointSize(defaultFontPointSize);
             tmp.mergeCharFormat(fmt);
@@ -542,7 +542,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
                     int selezionate = fine - inizio;
 
                     tmp.setPosition(inizio);
-                    tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, selezionate);
+                    tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, selezionate + 1);
                     QTextCharFormat fmt;
                     fmt.setFontPointSize(defaultFontPointSize);
                     tmp.mergeCharFormat(fmt);
@@ -558,7 +558,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
             int selezionate = fine - inizio;
 
             tmp.setPosition(inizio);
-            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, selezionate);
+            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, selezionate + 1);
             QTextCharFormat fmt;
             fmt.setFontPointSize(defaultFontPointSize);
             tmp.mergeCharFormat(fmt);
