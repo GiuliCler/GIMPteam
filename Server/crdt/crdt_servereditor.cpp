@@ -292,3 +292,13 @@ bool CRDT_ServerEditor::getUserMovingCursor(int userId){
     mutex->unlock();
     return val;
 }
+
+int CRDT_ServerEditor::countBlockingCursors(){
+    mutex->lock();
+    int n = 0;
+    for(bool val : usersMovingCursors)
+        if(!val)
+            n++;
+    mutex->unlock();
+    return n;
+}

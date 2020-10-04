@@ -31,6 +31,7 @@ public:
     void updateCursorMap(int userId, int pos);
     void updateUsersMovingCursors(int userId, bool v);
     bool getUserMovingCursor(int userId);
+    int countBlockingCursors();
 
 public slots:
     void process(const CRDT_Message& m);
