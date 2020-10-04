@@ -156,7 +156,6 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
         if(azione == "insert"){                 /* SIMBOLO INSERITO */
 
             int count = 0;
-            QVector<int> posNew = simbolo.getPosizione();
 
             if(!_symbols.empty()){
 
@@ -167,6 +166,7 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
                 // se pos è in mezzo a posCursSX e posCursDX --> inserisco
                 // altrimenti, ricerca dicotomica (trovaPosizione originale)
 
+                QVector<int> posNew = simbolo.getPosizione();
                 bool inserimTesta = false, inserimCoda = false;
                 QVector<int> posCursoreDX, posCursoreSX;
                 int esitoDX, esitoSX;
@@ -209,7 +209,7 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
             }
 
             //check whether the symbol is already present in the CRDT
-            if(it != _symbols.begin() && (it-1)->getPosizione() == posNew)
+            if(it != _symbols.begin() && (it-1)->getIDunivoco() == simbolo.getIDunivoco())
                 return;
 
 //            std::cout<<"Sto INSERENDO all'indice: "<<count<<"; simbolo: "<<simbolo.getCarattere().toLatin1()<<std::endl;          // DEBUG
