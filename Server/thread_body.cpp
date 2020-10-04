@@ -1295,6 +1295,7 @@ void Thread_body::openDocument(int docId, int userId){
                 // Aggiorno il docId su cui sto iniziando a lavorare
                 current_docId = docId;
 
+                crdt->mutex->unlock();
 
                 // Mando al client il contenuto del il contenuto del vettore _symbols
                 QByteArray blocko1;
@@ -1319,7 +1320,6 @@ void Thread_body::openDocument(int docId, int userId){
                     writeData(blocko2);
                 }
 
-                crdt->mutex->unlock();
                 notifyNewWorkingUser(userId, docId);
             }
         }
@@ -1423,14 +1423,10 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         return;
     }
 
-    crdt->mutex->lock();
     if(thread_id_string == thread_id_sender){
-        if(!(QString::fromStdString(m.getAzione()).contains("ONLINEUSER"))){
-            crdt->mutex->unlock();
+        if(!(QString::fromStdString(m.getAzione()).contains("ONLINEUSER")))
             return;
-        }
     }
-    crdt->mutex->unlock();
 
 //    qDebug() << "---- ThreadBody processMessage ACCETTATO thread_id: "<<threadId_toQString(thread_id)<<", doc_id: "<<docId<<" ---- "<< "; Stringa: "<<QString::fromStdString(m.getAzione());      // DEBUG
 

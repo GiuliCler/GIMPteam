@@ -156,9 +156,9 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
         if(azione == "insert"){                 /* SIMBOLO INSERITO */
 
             int count = 0;
+            QVector<int> posNew = simbolo.getPosizione();
 
             if(!_symbols.empty()){
-                QVector<int> posNew = simbolo.getPosizione();
 
                 // Implementazione simil-TLB:
                 // confronto posNew con posCursSX (pos-1) e posCursDX (pos)
@@ -173,13 +173,14 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
                 int user = m.getCreatore();                                       // Recupero dal messaggio lo userId di chi sta scrivendo
                 int indexCursore = parent->usersCursors.value(user);              // Recupero il cursore di tale user
 
+                if(indexCursore > _symbols.size())
+                    indexCursore = _symbols.size();
+
                 if(indexCursore == 0)                    // Controllo se il cursore dello user è in testa al documento
                     inserimTesta = true;
 
                 if(indexCursore >= _symbols.size()){      // Controllo se il cursore dello user è in coda al documento
                     inserimCoda = true;
-                    if(indexCursore > _symbols.size())
-                        indexCursore = _symbols.size();
                 }
 
                 if(!inserimTesta){
@@ -206,6 +207,10 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
                     count = it - _symbols.begin();
                 }
             }
+
+            //check whether the symbol is already present in the CRDT
+            if(it != _symbols.begin() && (it-1)->getPosizione() == posNew)
+                return;
 
 //            std::cout<<"Sto INSERENDO all'indice: "<<count<<"; simbolo: "<<simbolo.getCarattere().toLatin1()<<std::endl;          // DEBUG
             _symbols.insert(it, simbolo);
