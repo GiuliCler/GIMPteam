@@ -191,16 +191,46 @@ void CRDT_controller::setUsersColors(bool value){
     QTextCursor tmp{textEdit.document()};
     tmp.setPosition(0);
 
-    for(int pos=0; !tmp.atEnd(); tmp.setPosition(++pos)){
+    if(highlightUsers){
 
-        tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+        int inizio = -1, fine = -1, id_corrente = -1;
 
-        QTextCharFormat fmt{tmp.charFormat()};
-        if(highlightUsers){                 // L'utente vuole vedere il testo colorato con il colore di ogni utente
-            fmt.setBackground(editorParent->getUserColor(crdt.getSiteIdAt(pos)));          // Setto il background color al colore associato all'utente che ha scritto tale simbolo selezionato
-        } else {                            // L'utente non vuole vedere più il testo colorato con il colore di ogni utente
-            fmt.setBackground(Qt::BrushStyle::NoBrush);     // Setto il background color a "white"
+        for(int pos = 0; pos < crdt.getLength(); tmp.setPosition(++pos)){
+            if(crdt.getSiteIdAt(pos) != id_corrente){
+                if(inizio == -1){
+                    inizio = pos;
+                    id_corrente = crdt.getSiteIdAt(pos);
+                } else {
+                    fine = pos - 1;
+                    int selezionate = fine - inizio;
+
+                    tmp.setPosition(inizio);
+                    tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, selezionate + 1);
+                    QTextCharFormat fmt;
+                    fmt.setBackground(editorParent->getUserColor(id_corrente));
+                    tmp.mergeCharFormat(fmt);
+
+                    inizio = pos;
+                    fine = -1;
+                    tmp.setPosition(pos);
+                    id_corrente = crdt.getSiteIdAt(pos);
+                }
+            }
         }
+        if(inizio != -1){
+            fine = crdt.getLength();
+            int selezionate = fine - inizio;
+
+            tmp.setPosition(inizio);
+            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, selezionate);
+            QTextCharFormat fmt;
+            fmt.setBackground(editorParent->getUserColor(id_corrente));
+            tmp.mergeCharFormat(fmt);
+        }
+    } else {
+        tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, crdt.getLength());
+        QTextCharFormat fmt;
+        fmt.setBackground(Qt::BrushStyle::NoBrush);
         tmp.mergeCharFormat(fmt);
     }
 
