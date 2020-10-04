@@ -348,6 +348,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     connection->requestSendStopCursor();
 
     QTextCursor tmp{textEdit.document()};
+    tmp.setPosition(pos);
     bool mustClearStacks = false;
 
     std::cout << "Before adj - pos: " << pos << "; add: " << add << "; del: " << del <<"; deletedAmountOnPaste: " << deletedAmountOnPaste << std::endl;     // DEBUG
@@ -386,7 +387,6 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
     // insert the added letters in the crdt
     if(add > 0){
-        tmp.setPosition(pos);
 
         // make sure that the background is NoBrush/white before the insertion
         bool colored = false;
