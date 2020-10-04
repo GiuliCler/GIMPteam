@@ -696,18 +696,7 @@ void CRDT_controller::remoteDelete(int pos){
 
     bool processingMessage_prev = processingMessage;
     processingMessage = true;
-//    bool oldCursorMovable = cursorMovable, isStoppingCursors = false;
 
-//    if(!usersMovingCursors.value(userId)){
-//       cursorMovable = false;
-
-//       if(oldCursorMovable)
-//           QObject::disconnect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
-
-//       isStoppingCursors = true;
-//    }
-
-//    int pos_prev = textEdit.textCursor().position();
     QTextCursor tmp{textEdit.document()};
     tmp.beginEditBlock();
     tmp.setPosition(pos);
@@ -715,17 +704,6 @@ void CRDT_controller::remoteDelete(int pos){
     tmp.deleteChar();
 
     tmp.endEditBlock();
-
-//    tmp.setPosition(pos_prev <= pos ? pos_prev : pos_prev-1);
-//    textEdit.setTextCursor(tmp);
-//    if(textEdit.alignment() != Qt::AlignLeft)
-//        cursorMoved();
-
-//    if(isStoppingCursors){
-//        cursorMovable = oldCursorMovable;
-//        if(oldCursorMovable)
-//            QObject::connect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
-//    }
 
     if(highlightUsers)
         textEdit.document()->clearUndoRedoStacks();
@@ -740,19 +718,7 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
 
     bool processingMessage_prev = processingMessage;
     processingMessage = true;
-//    bool oldCursorMovable = cursorMovable, isStoppingCursors = false;
 
-//    // userId = crdt.getSiteId iff loading the file from the server (calling remote insert from CRDT_SharedEditor constructor)
-//    if(userId == crdt.getSiteId() || !usersMovingCursors.value(userId)){
-//       cursorMovable = false;
-
-//       if(oldCursorMovable)
-//           QObject::disconnect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
-
-//       isStoppingCursors = true;
-//    }
-
-//    int pos_prev = textEdit.textCursor().position();
     QTextCursor tmp{textEdit.document()};
 
     // edit block => insert and chang a format together in the same undo operation
@@ -775,18 +741,6 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
     }
 
     tmp.endEditBlock();
-
-//    tmp.setPosition(pos_prev <= pos ? pos_prev : pos_prev+1);
-//    textEdit.setTextCursor(tmp);
-
-//    if(textEdit.alignment() != Qt::AlignLeft)
-//        cursorMoved();
-
-//    if(isStoppingCursors){
-//        cursorMovable = oldCursorMovable;
-//        if(oldCursorMovable)
-//            QObject::connect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
-//    }
 
     if(highlightUsers)
         textEdit.document()->clearUndoRedoStacks();
