@@ -1272,7 +1272,8 @@ void Thread_body::openDocument(int docId, int userId){
                 writeData(blocko);
             } else {
                 current_siteCounter = siteCounter;
-                QString ritorno = "ok_"+QString::number(siteCounter);
+                int cursorSem = crdt->countBlockingCursors();
+                QString ritorno = "ok_"+QString::number(siteCounter) + "_" + QString::number(cursorSem);
 
                 out << ritorno.toUtf8();
                 writeData(blocko);
