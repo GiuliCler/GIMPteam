@@ -896,13 +896,6 @@ void connection_to_server::requestSendMessage(const CRDT_Message &messaggio){
 
 //    qDebug()<<"SEND";      // DEBUG
 
-    if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
-        this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
-
-    if (!tcpSocket->waitForConnected(Timeout)) {
-        throw GUI_ConnectionException("Timeout Expired.");
-    }
-
     QByteArray buffer;
     QDataStream out(&buffer, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
@@ -911,7 +904,8 @@ void connection_to_server::requestSendMessage(const CRDT_Message &messaggio){
     out << comando;
     out << messaggio;
 
-    writeData(buffer);
+    sendBuffer.append(IntToArray(buffer.size()));
+    sendBuffer.append(buffer);
 }
 
 bool connection_to_server::pingServer(){
@@ -985,14 +979,16 @@ void connection_to_server::requestSendStartCursor(){
         throw GUI_ConnectionException("Timeout Expired.");
     }
 
-    QByteArray buffer;
-    QDataStream out(&buffer, QIODevice::WriteOnly);
+    QByteArray comando;
+    QDataStream out(&comando, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_12);
-    QByteArray comando = "STARTCURSOR";
 
-    out << comando;
+    out << "STARTCURSOR";
 
-    writeData(buffer);
+    sendBuffer.append(IntToArray(comando.size()));
+    sendBuffer.append(comando);
+
+    writeDataBuffer();
 }
 
 void connection_to_server::connectEditor(){
@@ -1235,6 +1231,32 @@ bool connection_to_server::writeData(QByteArray data){
         if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
             throw GUI_ConnectionException("Timeout Expired.");
         }
+
+        return true;
+
+    } else {
+        return false;
+    }
+}
+
+bool connection_to_server::writeDataBuffer(){
+//    static long long tot_time = 0;
+//    auto start_time = std::chrono::high_resolution_clock::now();
+
+    if(this->tcpSocket->state() == QAbstractSocket::ConnectedState) {
+
+        this->tcpSocket->write(this->sendBuffer);                             // ... write the data itself
+
+        if (!this->tcpSocket->waitForBytesWritten(Timeout)) {
+            throw GUI_ConnectionException("Timeout Expired.");
+        }
+
+        this->sendBuffer.clear();
+
+//        auto end_time = std::chrono::high_resolution_clock::now();
+//        tot_time = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
+//        std::cout << "sending Buffer: ";
+//        std::cout << tot_time << std::endl;
 
         return true;
 

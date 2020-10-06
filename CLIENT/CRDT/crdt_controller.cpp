@@ -372,6 +372,8 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     if(processingMessage)
         return;
 
+//    auto start_time = std::chrono::high_resolution_clock::now();
+
     cursorMovable_sem++;
     if(cursorMovable_sem == 1)
         QObject::disconnect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
@@ -480,6 +482,10 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         QTextCharFormat fmt{tmp.charFormat()};
         crdt.localInsert(pos, textEdit.toPlainText().at(pos), fmt, tmp.blockFormat().alignment(), firstPosition);
 
+//        auto time5 = std::chrono::high_resolution_clock::now();
+//                auto tot_time5 = std::chrono::duration_cast<std::chrono::microseconds>(time5 - start_time).count();
+//                std::cout << "Inserted first time: " << tot_time5 << std::endl;
+
         // Aggiungo al fondo del vettore di interi il siteId
         firstPosition.push_back(crdt.getSiteId());
         firstPosition.push_back(crdt.getSiteId());
@@ -493,6 +499,10 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
             crdt.localInsert(i, textEdit.toPlainText().at(i), fmt, tmp.blockFormat().alignment(), firstPosition);
         }
     }
+
+//    auto time6 = std::chrono::high_resolution_clock::now();
+//            auto tot_time6 = std::chrono::duration_cast<std::chrono::microseconds>(time6 - start_time).count();
+//            std::cout << "Inserted all time: " << tot_time6 << std::endl;
 
     int cnt = 0;
 
