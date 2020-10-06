@@ -364,9 +364,6 @@ void CRDT_controller::selectionChanged(){
 
 
 void CRDT_controller::contentChanged(int pos, int del, int add){
-    //TIMER
-    //time_t tstart, tend;
-    //tstart = time(0);
 
     // ignore this function if performing remote operations
     if(processingMessage)
@@ -405,16 +402,8 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
     // remove the deleted letters from the crdt
     if(del > 0){
-        //TIMER
-//        time_t tstart, tend;
-//        tstart = time(0);
-
         for(int i = pos + del - 1; i >= pos; --i)
             crdt.localErase(i);
-
-        //TIMER
-//        tend = time(0);
-//        std::cout << "It took "<< difftime(tend, tstart) <<" second(s)."<< std::endl;
     }
 
     // insert the added letters in the crdt
@@ -428,7 +417,11 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
                 break;
             }
         }
+
+//        std::cout << "Pos cursore (DOPO CODICE NoBrush): " << tmp.position() << std::endl;      // DEBUG
+
         if(colored){
+            tmp.setPosition(pos);
             tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, add);
             QTextCharFormat fmt;
             fmt.setBackground(Qt::BrushStyle::NoBrush);
@@ -444,7 +437,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
             QTextCharFormat fmt{tmp.charFormat()};
             if(fmt.fontPointSize() <= 0){
                 if(inizio == -1){
-                    inizio = i;
+                    inizio = i - 1;
                 }
             } else {
                 if(inizio != -1){
@@ -529,6 +522,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
             }
         }
         if(colored){
+            tmp.setPosition(pos1);
             tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, add);
             QTextCharFormat fmt;
             fmt.setBackground(Qt::BrushStyle::NoBrush);
@@ -619,10 +613,6 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         }
         textEdit.document()->clearUndoRedoStacks();
     }
-
-    //TIMER
-    //tend = time(0);
-    //std::cout << "It took "<< difftime(tend, tstart) <<" second(s)."<< std::endl;
 
     if(cursorMovable_sem == 1){
         QObject::connect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
