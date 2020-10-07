@@ -35,13 +35,11 @@ public:
     //servono a cambiare l'ui attiva. Widget è il central widget da caricare
     void setUi1(QWidget *widget);
     void setUi2(QWidget *widget);
-    void setupConnection();
+    void setConnection(connection_to_server *connection);
     connection_to_server *getConnection();
     void returnToLogin();
 
 private:
-    const QString ipAddress = "192.168.56.1";
-    const QString port = "56529";
     QSize regularWindowSize;
     //serve per ripristinare lo stato maximized/normal dopo la chiusura del document in base a com'era prima
     bool alreadyMaximized;

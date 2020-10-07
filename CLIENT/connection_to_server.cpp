@@ -1144,12 +1144,23 @@ void connection_to_server::receiveMessage(QByteArray data){
 //    std::cout << "SLOT CLIENT receiveMessage - action ricevuta: "<< action.toStdString() << std::endl;      // DEBUG
 //    qDebug() << "SLOT CLIENT receiveMessage - action ricevuta: "<<QString::fromStdString(action.toStdString());      // DEBUG
 
-    QString c = "OFFLINEUSER";
+    QString c;
+    c = "CRDT";
+    if(action.contains(c.toUtf8())){
+        CRDT_Message m;
+        in_data >> m;
+//        qDebug() << "SLOT CLIENT receiveMessage - CRDT - m.getAction(): "<<QString::fromStdString(m.getAzione());    //DEBUG
+        emit sigProcessMessage(m);
+        return;
+    }
+
+    c = "OFFLINEUSER";
     if(action.contains(c.toUtf8())){
         //aggiorna la lista degli utenti online
         int userGetOffline;
         in_data >> userGetOffline;
         emit sigOfflineUser(userGetOffline);
+        return;
     }
 
     c = "ONLINEUSER";
@@ -1163,6 +1174,7 @@ void connection_to_server::receiveMessage(QByteArray data){
         QString icona = QString::fromStdString(iconId.toStdString());
         QString nick = QString::fromStdString(nickname.toStdString());
         emit sigOnlineUser(userGetOnline, nick, icona);
+        return;
     }
 
     c = "NEWCONTRIBUTOR";
@@ -1176,6 +1188,7 @@ void connection_to_server::receiveMessage(QByteArray data){
         QString icona = QString::fromStdString(iconId.toStdString());
         QString nick = QString::fromStdString(nickname.toStdString());
         emit sigNewContributor(userNewContributor, nick, icona);
+        return;
     }
 
     c = "FORCECLOSING";
@@ -1187,6 +1200,7 @@ void connection_to_server::receiveMessage(QByteArray data){
         disconnect(this, &connection_to_server::dataReceived, this, &connection_to_server::receiveMessage);
 
         emit forceCloseEditor();
+        return;
     }
 
     c = "MOVECURSOR";
@@ -1196,6 +1210,7 @@ void connection_to_server::receiveMessage(QByteArray data){
         in_data >> pos;
 //        qDebug() << "SLOT CLIENT receiveMessage - MOVE - user: "<< userId << "; pos: " << pos;    //DEBUG
         emit sigMoveCursor(userId,pos);
+        return;
     }
 
     c = "STOPCURSOR";
@@ -1205,6 +1220,7 @@ void connection_to_server::receiveMessage(QByteArray data){
 //        qDebug() << "SLOT CLIENT receiveMessage - STOPCURSOR";    //DEBUG
 //        std::cout << "SLOT CLIENT receiveMessage - STOPCURSOR" << std::endl;
         emit sigStopCursor(userId);
+        return;
     }
 
     c = "STARTCURSOR";
@@ -1214,15 +1230,10 @@ void connection_to_server::receiveMessage(QByteArray data){
 //        qDebug() << "SLOT CLIENT receiveMessage - STARTCURSOR";    //DEBUG
 //        std::cout << "SLOT CLIENT receiveMessage - STARTCURSOR" << std::endl;
         emit sigStartCursor(userId);
+        return;
     }
 
-    c = "CRDT";
-    if(action.contains(c.toUtf8())){
-        CRDT_Message m;
-        in_data >> m;
-//        qDebug() << "SLOT CLIENT receiveMessage - CRDT - m.getAction(): "<<QString::fromStdString(m.getAzione());    //DEBUG
-        emit sigProcessMessage(m);
-    }
+
 }
 
 bool connection_to_server::writeData(QByteArray data){

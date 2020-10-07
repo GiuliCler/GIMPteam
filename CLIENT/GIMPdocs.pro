@@ -32,6 +32,7 @@ SOURCES += \
         CRDT/crdt_message.cpp \
         CRDT/crdt_sharededitor.cpp \
         CRDT/crdt_symbol.cpp \
+        GUI/connection/gui_server.cpp \
         GUI/editorWindow/gui_colorsmanager.cpp \
         GUI/editorWindow/gui_fadinglabel.cpp \
         GUI/editorWindow/gui_mouseeventfilter.cpp \
@@ -61,6 +62,7 @@ HEADERS += \
         CRDT/crdt_message.h \
         CRDT/crdt_sharededitor.h \
         CRDT/crdt_symbol.h \
+        GUI/connection/gui_server.h \
         GUI/editorWindow/gui_colorsmanager.h \
         GUI/editorWindow/gui_fadinglabel.h \
         GUI/editorWindow/gui_mouseeventfilter.h \
@@ -82,6 +84,7 @@ HEADERS += \
 
 FORMS += \
     GUI/connection/ui/gui_reconnection.ui \
+    GUI/connection/ui/gui_server.ui \
     GUI/editorWindow/ui/gui_toolsbar.ui \
     GUI/editorWindow/ui/gui_usersbar.ui \
     GUI/ui/gimpdocs.ui \
