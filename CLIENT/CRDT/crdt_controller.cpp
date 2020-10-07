@@ -1,6 +1,7 @@
 #include "crdt_controller.h"
 #include "crdt_message.h"
 #include "GUI/editorWindow/gui_usersbar.h"
+#include "GUI/connection/gui_reconnection.h"
 #include <QClipboard>
 #include <QMimeData>
 #include <iostream>
@@ -305,7 +306,12 @@ void CRDT_controller::cursorMoved(){
     }
 
     // notify the server that the user moved the cursor
-    connection->requestSendMovedCursor(crdt.getSiteId(), textEdit.textCursor().position());
+    try {
+        connection->requestSendMovedCursor(crdt.getSiteId(), textEdit.textCursor().position());
+    } catch (GUI_ConnectionException &exception){
+        GUI_Reconnection::GUI_ReconnectionWrapper(gimpDocs);
+        gimpDocs->returnToLogin();
+    }
 }
 
 void CRDT_controller::selectionChanged(){
@@ -341,7 +347,13 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     cursorMovable_sem++;
     if(cursorMovable_sem == 1)
         QObject::disconnect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
-    connection->requestSendStopCursor();
+    try {
+        connection->requestSendStopCursor();
+    } catch (GUI_ConnectionException &exception){
+        GUI_Reconnection::GUI_ReconnectionWrapper(gimpDocs);
+        gimpDocs->returnToLogin();
+    }
+
 
     QTextCursor tmp{textEdit.document()};
     bool mustClearStacks = false;
@@ -501,7 +513,13 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         QObject::connect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
     }
     cursorMovable_sem--;
-    connection->requestSendStartCursor();
+    try {
+        connection->requestSendStopCursor();
+    } catch (GUI_ConnectionException &exception){
+        GUI_Reconnection::GUI_ReconnectionWrapper(gimpDocs);
+        gimpDocs->returnToLogin();
+    }
+
 }
 
 // if the clipboard has some text, enable the paste
@@ -707,4 +725,8 @@ void CRDT_controller::remoteStartCursor(int userId){
     cursorMovable_sem--;
 
     cursorMoved();
+}
+
+GIMPdocs* CRDT_controller::getGimpDocs(){
+    return gimpDocs;
 }

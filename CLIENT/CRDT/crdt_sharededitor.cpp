@@ -2,7 +2,8 @@
 #include "crdt_symbol.h"
 #include "crdt_message.h"
 #include "crdt_controller.h"
-#include "GUI/connection/gui_connectionToServerWrapper.h"
+#include "GUI/connection/gui_reconnection.h"
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -130,7 +131,13 @@ void CRDT_SharedEditor::localInsert(int index, QChar value, QTextCharFormat fmt,
 
     /* Creazione del messaggio e invio al NetworkServer */
     CRDT_Message messaggio{"insert", simbolo, this->_siteId};
-    connection->requestSendMessage(messaggio);
+    try {
+        connection->requestSendMessage(messaggio);
+    } catch (GUI_ConnectionException &exception){
+        GUI_Reconnection::GUI_ReconnectionWrapper(parent->getGimpDocs());
+        parent->getGimpDocs()->returnToLogin();
+    }
+
 }
 
 
@@ -146,7 +153,13 @@ void CRDT_SharedEditor::localErase(int index){
 
     /* Creazione del messaggio e invio al NetworkServer */
     CRDT_Message messaggio{"delete", simbolo, this->_siteId};
-    connection->requestSendMessage(messaggio);
+    try {
+        connection->requestSendMessage(messaggio);
+    } catch (GUI_ConnectionException &exception){
+        GUI_Reconnection::GUI_ReconnectionWrapper(parent->getGimpDocs());
+        parent->getGimpDocs()->returnToLogin();
+    }
+
 }
 
 

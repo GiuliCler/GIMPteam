@@ -56,6 +56,8 @@ public:
     void remoteInsert(int userId, int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align);
     void remoteDelete(int userId, int pos);
 
+    GIMPdocs* getGimpDocs();
+
 ~CRDT_controller();
 private slots:
     void currentCharFormatChanged(const QTextCharFormat &format);
