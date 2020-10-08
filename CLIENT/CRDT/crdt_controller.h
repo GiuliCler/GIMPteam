@@ -50,18 +50,19 @@ private:
 
 public:
     QMap<int, int> usersCursors;
+    QMap<int, QList<CRDT_Message>> userBuffers;
     int cursorMovable_sem;
     CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyTextEdit& textEdit, int siteId, int siteCounter);
     void setCurrentTextColor(QColor color);
-    void remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align);
-    void remoteDelete(int pos);
+    void remoteInsert(int pos, QString s, QTextCharFormat fmt, Qt::Alignment align);
+    void remoteDelete(int start, int cnt);
 
 ~CRDT_controller();
 private slots:
     void menuCall(menuTools op);
     void currentCharFormatChanged(const QTextCharFormat &format);
     void cursorMoved();
-    void contentChanged(int pos, int del, int add);
+    void contentChanged(int pos, int del, int adds);
     void selectionChanged();
     void clipboardDataChanged();
     void undoAvailableChanged(bool available);
@@ -71,7 +72,7 @@ public slots:
     void setUsersColors(bool value);
     void remoteMove(int userId, int pos);
     void remoteStopCursor();
-    void remoteStartCursor();
+    void remoteStartCursor(int userId);
 
 signals:
     void menuSet(menuTools set);

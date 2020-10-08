@@ -146,94 +146,67 @@ void CRDT_SharedEditor::localErase(int index){
 
 
 void CRDT_SharedEditor::process(const CRDT_Message& m){
+    int userId = m.getCreatore();
 
-        std::string azione = m.getAzione();
-        CRDT_Symbol simbolo = m.getSimbolo();
-        QVector<CRDT_Symbol>::iterator it = _symbols.begin();
+    if(!parent->userBuffers.contains(userId)){
+        std::cout << "Discarding message from unknown user " << userId << std::endl;
+        return;
+    }
 
-//        std::cout<<"Sono nella process per una... "<<azione<<std::endl;        // DEBUG
+    if(parent->userBuffers[userId].empty()){
+        std::cout << "Adding in empty buffer of user " << userId << std::endl;
+        parent->userBuffers[userId].append(m);
+        return;
+    }
 
-        if(azione == "insert"){                 /* SIMBOLO INSERITO */
+    std::string azione = m.getAzione();
+    CRDT_Symbol simbolo = m.getSimbolo();
+    CRDT_Message head = parent->userBuffers[userId][0];
 
-            int count = 0;
+    if(azione != head.getAzione()){
+        std::cout << "Changing op type in buffer of user " << userId << std::endl;
+        processBuffer(userId);
+        parent->userBuffers[userId].append(m);
+        return;
+    }
 
-            if(!_symbols.empty()){
+    if(azione == "insert" &&
+            (simbolo.getFormat() != head.getSimbolo().getFormat() || simbolo.getAlignment() != head.getSimbolo().getAlignment())){
+            processBuffer(userId);
+        }
+    parent->userBuffers[userId].append(m);
+}
 
-                // Implementazione simil-TLB:
-                // confronto posNew con posCursSX (pos-1) e posCursDX (pos)
-                // se pos-1 < 0, sono in testa
-                // se pos = end, sono in coda
-                // se pos è in mezzo a posCursSX e posCursDX --> inserisco
-                // altrimenti, ricerca dicotomica (trovaPosizione originale)
 
-                QVector<int> posNew = simbolo.getPosizione();
-                bool inserimTesta = false, inserimCoda = false;
-                QVector<int> posCursoreDX, posCursoreSX;
-                int esitoDX, esitoSX;
-                int user = m.getCreatore();                                       // Recupero dal messaggio lo userId di chi sta scrivendo
-                int indexCursore = parent->usersCursors.value(user);              // Recupero il cursore di tale user
+void CRDT_SharedEditor::processBuffer(int userId){
 
-                if(indexCursore > _symbols.size())
-                    indexCursore = _symbols.size();
+    if(parent->userBuffers.value(userId).empty())
+        return;
 
-                if(indexCursore == 0)                    // Controllo se il cursore dello user è in testa al documento
-                    inserimTesta = true;
+    CRDT_Message m = parent->userBuffers.value(userId)[0];
+    std::string azione = m.getAzione();
+    CRDT_Symbol simbolo = m.getSimbolo();
 
-                if(indexCursore >= _symbols.size()){      // Controllo se il cursore dello user è in coda al documento
-                    inserimCoda = true;
-                }
+    QVector<CRDT_Symbol>::iterator it = _symbols.begin();
+    //        std::cout<<"Sono nella process per una... "<<azione<<std::endl;        // DEBUG
 
-                if(!inserimTesta){
-                    posCursoreSX = _symbols[indexCursore-1].getPosizione();       // Recupero posizione immediatamente prima del cursore
-                    esitoSX = confrontaPos(posNew, posCursoreSX);
-                } else {
-                    esitoSX = 0;
-                }
+    if(azione == "insert"){                 // SIMBOLO INSERITO
 
-                if(!inserimCoda){
-                    posCursoreDX = _symbols[indexCursore].getPosizione();      // Recupero posizione corrispondente al cursore
-                    esitoDX = confrontaPos(posNew, posCursoreDX);
-                } else {
-                    esitoDX = 1;
-                }
+        int count = 0;
 
-                // confrontaPos fornisce... ESITO = 1 --> posCursoreXX > posNew ; ESITO = 0 --> posCursoreXX < posNew
-                if(!esitoSX && esitoDX){
-                    // Caso in cui posCursoreSX < posNew < posCursoreDX
-                    it = _symbols.begin() + indexCursore;
-                    count = indexCursore;
-                } else {
-                    it = trovaPosizione(posNew);
-                    count = it - _symbols.begin();
-                }
-            }
-
-            //check whether the symbol is already present in the CRDT
-            if(it != _symbols.begin() && (it-1)->getIDunivoco() == simbolo.getIDunivoco())
-                return;
-
-//            std::cout<<"Sto INSERENDO all'indice: "<<count<<"; simbolo: "<<simbolo.getCarattere().toLatin1()<<std::endl;          // DEBUG
-            _symbols.insert(it, simbolo);
-
-            parent->remoteInsert(count, simbolo.getCarattere(), simbolo.getFormat(), simbolo.getAlignment());
-
-            // Aggiorno il cursore dell'utente che ha scritto
-            parent->usersCursors[m.getCreatore()] = count + 1;
-//            std::cout<<"(insert) Sto mettendo il cursore all'indice: "<<parent->usersCursors[m.getCreatore()]<<std::endl;          // DEBUG
-
-        } else if(azione == "delete"){           /* SIMBOLO CANCELLATO */
-            if(_symbols.empty())
-                return;
-
-            QVector<int> posNew = simbolo.getPosizione();
+        if(!_symbols.empty()){
 
             // Implementazione simil-TLB:
-            // confronto posNew con posCursDX
-            // se il simbolo è proprio in posCursDX --> cancella
+            // confronto posNew con posCursSX (pos-1) e posCursDX (pos)
+            // se pos-1 < 0, sono in testa
+            // se pos = end, sono in coda
+            // se pos è in mezzo a posCursSX e posCursDX --> inserisco
             // altrimenti, ricerca dicotomica (trovaPosizione originale)
 
-            bool cursoreInTesta = false, cursoreInCoda = false;
+            QVector<int> posNew = simbolo.getPosizione();
+            bool inserimTesta = false, inserimCoda = false;
             QVector<int> posCursoreDX, posCursoreSX;
+            int esitoDX, esitoSX;
             int user = m.getCreatore();                                       // Recupero dal messaggio lo userId di chi sta scrivendo
             int indexCursore = parent->usersCursors.value(user);              // Recupero il cursore di tale user
 
@@ -241,61 +214,147 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
                 indexCursore = _symbols.size();
 
             if(indexCursore == 0)                    // Controllo se il cursore dello user è in testa al documento
-                cursoreInTesta = true;
+                inserimTesta = true;
 
             if(indexCursore >= _symbols.size()){      // Controllo se il cursore dello user è in coda al documento
-                cursoreInCoda = true;
+                inserimCoda = true;
             }
 
-            if(cursoreInTesta){
-                if(posNew == _symbols[indexCursore].getPosizione()){              // Confronto posNew con pos di indexCursore per vedere se lo user ha premuto il tasto CANC
-                    it = _symbols.begin() + indexCursore;
-                } else {
-                    // Ricerca dicotomica
-                    it = std::lower_bound(_symbols.begin(), _symbols.end(), simbolo,
-                         [this](CRDT_Symbol s1, CRDT_Symbol s2) {return confrontaPos(s1.getPosizione(), s2.getPosizione());});
-                }
-            } else if(cursoreInCoda){
-                if(posNew == _symbols[indexCursore-1].getPosizione()) {           // Confronto posNew con pos di indexCursore-1 per vedere se lo user ha premuto il tasto <-
-                    it = _symbols.begin() + indexCursore-1;
-                } else {
-                    // Ricerca dicotomica
-                    it = std::lower_bound(_symbols.begin(), _symbols.end(), simbolo,
-                         [this](CRDT_Symbol s1, CRDT_Symbol s2) {return confrontaPos(s1.getPosizione(), s2.getPosizione());});
-                }
+            if(!inserimTesta){
+                posCursoreSX = _symbols[indexCursore-1].getPosizione();       // Recupero posizione immediatamente prima del cursore
+                esitoSX = confrontaPos(posNew, posCursoreSX);
             } else {
-                if(posNew == _symbols[indexCursore-1].getPosizione()) {          // Confronto posNew con pos di indexCursore-1 per vedere se lo user ha premuto il tasto <-
-                    it = _symbols.begin() + indexCursore-1;
-                } else if(posNew == _symbols[indexCursore].getPosizione()){      // Confronto posNew con pos di indexCursore per vedere se lo user ha premuto il tasto CANC
-                    it = _symbols.begin() + indexCursore;
-                } else {
-                    // Ricerca dicotomica
-                    it = std::lower_bound(_symbols.begin(), _symbols.end(), simbolo,
-                         [this](CRDT_Symbol s1, CRDT_Symbol s2) {return confrontaPos(s1.getPosizione(), s2.getPosizione());});
-                }
+                esitoSX = 0;
             }
 
-            if(it < _symbols.end() && it->getIDunivoco() == simbolo.getIDunivoco()){
-//                std::cout<<"Sto CANCELLANDO all'indice: "<<it - _symbols.begin()<<std::endl;          // DEBUG
-                _symbols.erase(it);
-                parent->remoteDelete(it - _symbols.begin());
+            if(!inserimCoda){
+                posCursoreDX = _symbols[indexCursore].getPosizione();      // Recupero posizione corrispondente al cursore
+                esitoDX = confrontaPos(posNew, posCursoreDX);
+            } else {
+                esitoDX = 1;
             }
 
-            // Ricerca lineare
-//            for(; it < _symbols.end(); it++){
-//                CRDT_Symbol s = *it;
-//                if((s.getPosizione()==simbolo.getPosizione()) && (s.getIDunivoco()==simbolo.getIDunivoco())) {
-//                    _symbols.erase(it);
-//                    parent->remoteDelete(it - _symbols.begin());
-//                    break;
-//                }
-//            }
-
-            // Aggiorno il cursore dell'utente che ha cancellato
-            parent->usersCursors[m.getCreatore()] = it - _symbols.begin();
-//            std::cout<<"(delete) Sto mettendo il cursore all'indice: "<<parent->usersCursors[m.getCreatore()]<<std::endl;          // DEBUG
+            // confrontaPos fornisce... ESITO = 1 --> posCursoreXX > posNew ; ESITO = 0 --> posCursoreXX < posNew
+            if(!esitoSX && esitoDX){
+                // Caso in cui posCursoreSX < posNew < posCursoreDX
+                it = _symbols.begin() + indexCursore;
+                count = indexCursore;
+            } else {
+                it = trovaPosizione(posNew);
+                count = it - _symbols.begin();
+            }
         }
+
+        //check whether the symbol is already present in the CRDT
+        if(it != _symbols.begin() && (it-1)->getIDunivoco() == simbolo.getIDunivoco()){
+            parent->userBuffers[userId].removeFirst();
+            parent->usersCursors[m.getCreatore()] = count;
+            processBuffer(userId);
+        }
+
+        auto it2 = parent->userBuffers[userId].rbegin();
+        QString s;
+        QTextCharFormat fmt = simbolo.getFormat();
+        Qt::Alignment align = simbolo.getAlignment();
+
+        while(it2 != parent->userBuffers[userId].rend()){
+//            std::cout<<"Sto INSERENDO all'indice: "<<count<<"; simbolo: "<<simbolo.getCarattere().toLatin1()<<std::endl;          // DEBUG
+            _symbols.insert(count, it2->getSimbolo());
+            s.push_front(it2->getSimbolo().getCarattere());
+            it2++;
+        }
+
+        parent->remoteInsert(count, s, fmt, align);
+
+        // Aggiorno il cursore dell'utente che ha scritto
+        parent->usersCursors[m.getCreatore()] = count + s.length();
+//            std::cout<<"(insert) Sto mettendo il cursore all'indice: "<<parent->usersCursors[m.getCreatore()]<<std::endl;          // DEBUG
+
+        parent->userBuffers[userId].clear();
+
+    } else if(azione == "delete"){           // SIMBOLO CANCELLATO
+        if(_symbols.empty())
+            return;
+
+        QVector<int> posNew = simbolo.getPosizione();
+
+        // Implementazione simil-TLB:
+        // confronto posNew con posCursDX
+        // se il simbolo è proprio in posCursDX --> cancella
+        // altrimenti, ricerca dicotomica (trovaPosizione originale)
+
+        bool cursoreInTesta = false, cursoreInCoda = false;
+        QVector<int> posCursoreDX, posCursoreSX;
+        int user = m.getCreatore();                                       // Recupero dal messaggio lo userId di chi sta scrivendo
+        int indexCursore = parent->usersCursors.value(user);              // Recupero il cursore di tale user
+
+        if(indexCursore > _symbols.size())
+            indexCursore = _symbols.size();
+
+        if(indexCursore == 0)                    // Controllo se il cursore dello user è in testa al documento
+            cursoreInTesta = true;
+
+        if(indexCursore >= _symbols.size()){      // Controllo se il cursore dello user è in coda al documento
+            cursoreInCoda = true;
+        }
+
+        if(cursoreInTesta){
+            if(posNew == _symbols[indexCursore].getPosizione()){              // Confronto posNew con pos di indexCursore per vedere se lo user ha premuto il tasto CANC
+                it = _symbols.begin() + indexCursore;
+            } else {
+                // Ricerca dicotomica
+                it = std::lower_bound(_symbols.begin(), _symbols.end(), simbolo,
+                     [this](CRDT_Symbol s1, CRDT_Symbol s2) {return confrontaPos(s1.getPosizione(), s2.getPosizione());});
+            }
+        } else if(cursoreInCoda){
+            if(posNew == _symbols[indexCursore-1].getPosizione()) {           // Confronto posNew con pos di indexCursore-1 per vedere se lo user ha premuto il tasto <-
+                it = _symbols.begin() + indexCursore-1;
+            } else {
+                // Ricerca dicotomica
+                it = std::lower_bound(_symbols.begin(), _symbols.end(), simbolo,
+                     [this](CRDT_Symbol s1, CRDT_Symbol s2) {return confrontaPos(s1.getPosizione(), s2.getPosizione());});
+            }
+        } else {
+            if(posNew == _symbols[indexCursore-1].getPosizione()) {          // Confronto posNew con pos di indexCursore-1 per vedere se lo user ha premuto il tasto <-
+                it = _symbols.begin() + indexCursore-1;
+            } else if(posNew == _symbols[indexCursore].getPosizione()){      // Confronto posNew con pos di indexCursore per vedere se lo user ha premuto il tasto CANC
+                it = _symbols.begin() + indexCursore;
+            } else {
+                // Ricerca dicotomica
+                it = std::lower_bound(_symbols.begin(), _symbols.end(), simbolo,
+                     [this](CRDT_Symbol s1, CRDT_Symbol s2) {return confrontaPos(s1.getPosizione(), s2.getPosizione());});
+            }
+        }
+
+
+        if(it == _symbols.end()){
+            parent->userBuffers[userId].removeFirst();
+        } else{
+            int pos = it - _symbols.begin();
+            int count = 0;
+            auto it2 = parent->userBuffers[userId].begin();
+
+            while(it2 != parent->userBuffers[userId].end() && it >= _symbols.begin()
+                  && it->getIDunivoco() == it2->getSimbolo().getIDunivoco()){
+                count++;
+                it--;
+                it2++;
+            }
+            if(count > 0){
+                _symbols.erase(it+1, it+count+1);
+                parent->userBuffers[userId].erase(parent->userBuffers[userId].begin(), it2);
+                parent->remoteDelete(pos-count+1, count);
+            }
+            // Aggiorno il cursore dell'utente che ha cancellato
+            parent->usersCursors[m.getCreatore()] = pos - count + 1;
+            //  std::cout<<"(delete) Sto mettendo il cursore all'indice: "<<parent->usersCursors[m.getCreatore()]<<std::endl;          // DEBUG
+        }
+        if(!parent->userBuffers[userId].empty())
+            processBuffer(userId);
+    }
+
 }
+
 
 
 QVector<CRDT_Symbol>::iterator CRDT_SharedEditor::trovaPosizione(QVector<int> target) {
