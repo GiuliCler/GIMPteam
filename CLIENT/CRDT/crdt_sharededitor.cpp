@@ -171,9 +171,10 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
     }
 
     if(azione == "insert" &&
-            (simbolo.getFormat() != head.getSimbolo().getFormat() || simbolo.getAlignment() != head.getSimbolo().getAlignment())){
+            (simbolo.getFormat() != head.getSimbolo().getFormat() || simbolo.getAlignment() != head.getSimbolo().getAlignment()
+            || parent->userBuffers[userId].size() > 2000)){
             processBuffer(userId);
-        }
+    }
     parent->userBuffers[userId].append(m);
 }
 
@@ -273,8 +274,10 @@ void CRDT_SharedEditor::processBuffer(int userId){
         parent->userBuffers[userId].clear();
 
     } else if(azione == "delete"){           // SIMBOLO CANCELLATO
-        if(_symbols.empty())
+        if(_symbols.empty()){
+            parent->userBuffers[userId].clear();
             return;
+        }
 
         QVector<int> posNew = simbolo.getPosizione();
 
@@ -326,11 +329,12 @@ void CRDT_SharedEditor::processBuffer(int userId){
             }
         }
 
+        int pos = it - _symbols.begin();
 
         if(it == _symbols.end()){
             parent->userBuffers[userId].removeFirst();
+            parent->usersCursors[m.getCreatore()] = pos;
         } else{
-            int pos = it - _symbols.begin();
             int count = 0;
             auto it2 = parent->userBuffers[userId].begin();
 
@@ -344,10 +348,13 @@ void CRDT_SharedEditor::processBuffer(int userId){
                 _symbols.erase(it+1, it+count+1);
                 parent->userBuffers[userId].erase(parent->userBuffers[userId].begin(), it2);
                 parent->remoteDelete(pos-count+1, count);
+                //  std::cout<<"(delete) Sto mettendo il cursore all'indice: "<<parent->usersCursors[m.getCreatore()]<<std::endl;          // DEBUG
+                // Aggiorno il cursore dell'utente che ha cancellato
+                parent->usersCursors[m.getCreatore()] = pos - count + 1;
+            } else{
+                parent->userBuffers[userId].removeFirst();
+                parent->usersCursors[m.getCreatore()] = pos;
             }
-            // Aggiorno il cursore dell'utente che ha cancellato
-            parent->usersCursors[m.getCreatore()] = pos - count + 1;
-            //  std::cout<<"(delete) Sto mettendo il cursore all'indice: "<<parent->usersCursors[m.getCreatore()]<<std::endl;          // DEBUG
         }
         if(!parent->userBuffers[userId].empty())
             processBuffer(userId);
