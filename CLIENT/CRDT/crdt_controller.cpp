@@ -728,14 +728,21 @@ void CRDT_controller::remoteInsert(int pos, QString s, QTextCharFormat fmt, Qt::
     if(fmt.fontPointSize() <= 0)
         fmt.setFontPointSize(defaultFontPointSize);
 
-    QTextBlockFormat blockFmt{tmp.blockFormat()};
+    QTextBlockFormat blockFmt;
 
     if(highlightUsers){
         fmt.setBackground(editorParent->getUserColor(crdt.getSiteIdAt(pos)));
     }
 
     tmp.insertText(s, fmt);
+
     if(tmp.blockFormat().alignment() != align){
+        tmp.setPosition(pos);
+        tmp.movePosition(
+                    tmp.atBlockEnd() ? QTextCursor::NextBlock : QTextCursor::StartOfBlock,
+                    QTextCursor::MoveAnchor);
+        tmp.setPosition(pos+s.length(), QTextCursor::KeepAnchor);
+        tmp.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
         blockFmt.setAlignment(align);
         tmp.mergeBlockFormat(blockFmt);
     }
