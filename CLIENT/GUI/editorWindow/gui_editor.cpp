@@ -350,8 +350,11 @@ void GUI_Editor::addUserToEditorGUI(int userid, QString nickname, QString iconId
     //GUI_MyTextEdit *son = findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName());
     if(userid != gimpParent->userid){
         QPoint p = QPoint (childMyTextEdit->cursorRect().topLeft().x(), childMyTextEdit->cursorRect().topLeft().y() + childMyTextEdit->verticalScrollBar()->value());
+        QList<CRDT_Message> buffer;
+
         childMyTextEdit->addUserCursor(userid, p, color);
         crdtController->usersCursors.insert(userid, 0);
+        crdtController->userBuffers.insert(userid, buffer);
     }
 }
 
@@ -376,6 +379,7 @@ void GUI_Editor::removeUserFromEditorGUI(int userid){
 
     // Rimuovo riga nel vettore dei cursori di crdt controller
     crdtController->usersCursors.remove(userid);
+    crdtController->userBuffers.remove(userid);
 }
 
 void GUI_Editor::addContributorToCurrentDocument(int userid, QString nickname, QString iconId){
@@ -401,6 +405,9 @@ void GUI_Editor::fillOnlineUsersCursors(std::shared_ptr<QSet<int>> userIds){
     for (QSet<int>::iterator userId = userIds->begin(); userId != userIds->end(); userId++){
         // Creo nuova riga nel vettore dei cursori di crdt controller
         crdtController->usersCursors.insert(*userId, 0);
+
+        QList<CRDT_Message> buffer;
+        crdtController->userBuffers.insert(*userId, buffer);
     }
 }
 

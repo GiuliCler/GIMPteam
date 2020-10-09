@@ -690,7 +690,7 @@ void CRDT_controller::menuCall(menuTools op){
 
 
 // show the delection of the letter by another user
-void CRDT_controller::remoteDelete(int pos){
+void CRDT_controller::remoteDelete(int start, int cnt){
 
 //    std::cout<<"EHI! SONO NELLA REMOTE DELETE! Position: "<< pos <<std::endl;         // DEBUG
 
@@ -699,9 +699,9 @@ void CRDT_controller::remoteDelete(int pos){
 
     QTextCursor tmp{textEdit.document()};
     tmp.beginEditBlock();
-    tmp.setPosition(pos);
-
-    tmp.deleteChar();
+    tmp.setPosition(start);
+    tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, cnt);
+    tmp.removeSelectedText();
 
     tmp.endEditBlock();
 
@@ -712,7 +712,7 @@ void CRDT_controller::remoteDelete(int pos){
 }
 
 // show the insertion of a new letter by another user
-void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Alignment align){
+void CRDT_controller::remoteInsert(int pos, QString s, QTextCharFormat fmt, Qt::Alignment align){
 
 //    std::cout<<"EHI! SONO NELLA REMOTE INSERT! Char: "<< c.toLatin1() <<std::endl;        // DEBUG
 
@@ -728,14 +728,21 @@ void CRDT_controller::remoteInsert(int pos, QChar c, QTextCharFormat fmt, Qt::Al
     if(fmt.fontPointSize() <= 0)
         fmt.setFontPointSize(defaultFontPointSize);
 
-    QTextBlockFormat blockFmt{tmp.blockFormat()};
+    QTextBlockFormat blockFmt;
 
     if(highlightUsers){
         fmt.setBackground(editorParent->getUserColor(crdt.getSiteIdAt(pos)));
     }
 
-    tmp.insertText(c, fmt);
+    tmp.insertText(s, fmt);
+
     if(tmp.blockFormat().alignment() != align){
+        tmp.setPosition(pos);
+        tmp.movePosition(
+                    tmp.atBlockEnd() ? QTextCursor::NextBlock : QTextCursor::StartOfBlock,
+                    QTextCursor::MoveAnchor);
+        tmp.setPosition(pos+s.length(), QTextCursor::KeepAnchor);
+        tmp.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
         blockFmt.setAlignment(align);
         tmp.mergeBlockFormat(blockFmt);
     }
@@ -775,7 +782,8 @@ void CRDT_controller::remoteStopCursor(){
 }
 
 // receive the request to restart moving the cursor
-void CRDT_controller::remoteStartCursor(){
+void CRDT_controller::remoteStartCursor(int userId){
+    crdt.processBuffer(userId);
     if(cursorMovable_sem == 1)
         QObject::connect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
     cursorMovable_sem--;
