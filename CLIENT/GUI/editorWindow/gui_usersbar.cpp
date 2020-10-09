@@ -125,6 +125,7 @@ void GUI_UsersBar::on_showColorsPushButton_clicked(){
 
     ui->showColorsPushButton->setEnabled(true);
     editorParent->gimpParent->setCursor(Qt::ArrowCursor);
+    editorParent->childMyTextEdit->setFocus();
 
     ui->hideColorsPushButton->show();
     ui->contributorUsersWidget->show();
@@ -151,7 +152,7 @@ void GUI_UsersBar::on_hideColorsPushButton_clicked(){
 
     ui->hideColorsPushButton->setEnabled(true);
     editorParent->gimpParent->setCursor(Qt::ArrowCursor);
-
+    editorParent->childMyTextEdit->setFocus();
 
     ui->showColorsPushButton->show();
     ui->contributorUsersWidget->hide();

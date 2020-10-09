@@ -281,7 +281,7 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
 
 void CRDT_controller::cursorMoved(){
 
-    std::cout << "Hey, I'm in Cursor Moved!" << std::endl;
+    //std::cout << "Hey, I'm in Cursor Moved!" << std::endl;
 
     // update the alignment button on the toolbar
     switch (textEdit.alignment()) {
@@ -358,9 +358,9 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     QTextCursor tmp{textEdit.document()};
     bool mustClearStacks = false;
 
-    std::cout << "Before adj - pos: " << pos << "; add: " << add << "; del: " << del <<"; deletedAmountOnPaste: " << deletedAmountOnPaste << std::endl;     // DEBUG
+    //std::cout << "Before adj - pos: " << pos << "; add: " << add << "; del: " << del <<"; deletedAmountOnPaste: " << deletedAmountOnPaste << std::endl;     // DEBUG
 
-    std::cout << "Pos cursore: " << textEdit.textCursor().position() << std::endl;
+    //std::cout << "Pos cursore: " << textEdit.textCursor().position() << std::endl;
 
     if(deletedAmountOnPaste != -1){
         if(pos == 0){
@@ -371,7 +371,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         deletedAmountOnPaste = -1;
     }
 
-    std::cout << "After adj - pos: " << pos << "; add: " << add << "; del: " << del << std::endl;     // DEBUG
+    //std::cout << "After adj - pos: " << pos << "; add: " << add << "; del: " << del << std::endl;     // DEBUG
 
     // remove the deleted letters from the crdt
     if(del > 0){

@@ -21,8 +21,8 @@ GUI_Opendoc::GUI_Opendoc(QWidget *parent) : QWidget(parent)
     fillList();
 
     //imposto la connect per il doppio click ed aprire il doc
-    connect(ui->ownedDocsListWidget, &QListWidget::doubleClicked, this, &GUI_Opendoc::on_openDocsPushButton_clicked);
-    connect(ui->sharedDocsListWidget, &QListWidget::doubleClicked, this, &GUI_Opendoc::on_openDocsPushButton_clicked);
+    connect(ui->ownedDocsListWidget, &QListWidget::itemActivated, this, &GUI_Opendoc::on_openDocsPushButton_clicked);
+    connect(ui->sharedDocsListWidget, &QListWidget::itemActivated, this, &GUI_Opendoc::on_openDocsPushButton_clicked);
     //questo mi serve per avere al massimo un item selezionato alla volta
     connect(ui->ownedDocsListWidget, &QListWidget::itemClicked, this, &GUI_Opendoc::on_ownedDocsListWidget_itemClicked);
     connect(ui->sharedDocsListWidget, &QListWidget::itemClicked, this, &GUI_Opendoc::on_sharedDocsListWidget_itemClicked);
