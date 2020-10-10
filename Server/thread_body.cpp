@@ -1656,3 +1656,23 @@ void Thread_body::checkPeriodicoClientConnessiSlot(){
         emit finished();
     }
 }
+
+void Thread_body::process(const CRDT_Message& m){
+
+    if(m.getCreatore() != current_userId)
+        return;
+
+    if(incomingMessagesBuffer.isEmpty()){
+        incomingMessagesBuffer.append(m);
+        return;
+    }
+
+    CRDT_Message head = incomingMessagesBuffer.first();
+
+    if(m.getAzione() != head.getAzione() || incomingMessagesBuffer.size() > 2000){
+        std::shared_ptr<QLinkedList<CRDT_Message>> bufferPointer(&incomingMessagesBuffer);
+        crdt->processBuffer(bufferPointer);
+    }
+
+    incomingMessagesBuffer.append(m);
+}

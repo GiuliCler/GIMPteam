@@ -1,6 +1,7 @@
 #ifndef CRDT_SERVEREDITOR_H
 #define CRDT_SERVEREDITOR_H
 
+#include <memory>
 #include <QObject>
 #include <QVector>
 #include <QMutex>
@@ -33,8 +34,8 @@ public:
     bool getUserMovingCursor(int userId);
     int countBlockingCursors();
 
-public slots:
     void process(const CRDT_Message& m);
+    void processBuffer(std::shared_ptr<QLinkedList<CRDT_Message>> incomingMessagesBuffer);
 };
 
 #endif // CRDT_SERVEREDITOR_H

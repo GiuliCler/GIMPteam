@@ -41,6 +41,7 @@ private:
     std::shared_ptr<CRDT_ServerEditor> crdt;
     QByteArray readBuffer;
     qint32 readBuffer_size;
+    QLinkedList<CRDT_Message> incomingMessagesBuffer;
 
     QString getUsername(int userId);
     QString getDocname(int docId);
@@ -81,6 +82,7 @@ private:
     bool writeData(QByteArray data);
     static QByteArray IntToArray(qint32 source);
 
+    void process(const CRDT_Message& m);
 
 signals:
     void error(QTcpSocket::SocketError socketError);
