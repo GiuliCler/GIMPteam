@@ -49,7 +49,7 @@ void GUI_MyTextEdit::insertFromMimeData (const QMimeData * constClipboard){
         //Se il testo da incollare ha un formato in html, provo a rimuovere eventuali evidenziazioni colorate
         //rimuovendolo a mano dalla stringa. Funziona solo con una precisa sintassi, quindi solo se il testo era stato copiato da gimpdocs
         QString newhtmlString = "";
-        QVector<QStringRef> htmlsplitted = constClipboard->html().splitRef(QRegularExpression("background-color.*?;"));
+        QStringList htmlsplitted = constClipboard->html().split(QRegularExpression("background-color.*?;"));
 
         for(auto string = htmlsplitted.begin(); string != htmlsplitted.end(); string++)
             newhtmlString.append(*string);
