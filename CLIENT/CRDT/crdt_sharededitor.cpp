@@ -162,12 +162,12 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
     int userId = m.getCreatore();
 
     if(!parent->userBuffers.contains(userId)){
-        std::cout << "Discarding message from unknown user " << userId << std::endl;
+        //std::cout << "Discarding message from unknown user " << userId << std::endl;
         return;
     }
 
     if(parent->userBuffers[userId].empty()){
-        std::cout << "Adding in empty buffer of user " << userId << std::endl;
+        //std::cout << "Adding in empty buffer of user " << userId << std::endl;
         parent->userBuffers[userId].append(m);
         return;
     }
@@ -177,7 +177,7 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
     CRDT_Message head = parent->userBuffers[userId][0];
 
     if(azione != head.getAzione()){
-        std::cout << "Changing op type in buffer of user " << userId << std::endl;
+        //std::cout << "Changing op type in buffer of user " << userId << std::endl;
         processBuffer(userId);
         parent->userBuffers[userId].append(m);
         return;

@@ -40,165 +40,7 @@ void Thread_body::executeJob(QByteArray data){
 
 //    qDebug() << "THREAD - executeJob - Prima della verifica del comando... il comando e': "<< QString::fromStdString(text.toStdString());      // DEBUG
 
-    QString c = "CREATE";
-    if(text.contains(c.toUtf8())){
-        QString username, password, nickname, icon;
-        in_data >> username;
-        in_data >> password;
-        in_data >> nickname;
-        in_data >> icon;
-
-        signup(username, password, nickname, icon);
-    }
-
-    c = "LOGIN";
-    if(text.contains(c.toUtf8())){
-        QString username, password;
-        in_data >> username;
-        in_data >> password;
-
-        login(username, password);
-    }
-
-    c = "LOGOUT";
-    if(text.contains(c.toUtf8())){
-
-        int userId;
-        in_data >> userId;
-
-        logout(userId);
-    }
-
-    c = "DELETE_DOC";
-    if(text.contains(c.toUtf8())){
-        int docId, userId;
-        in_data >> userId;
-        in_data >> docId;
-
-        deleteDoc(userId, docId);
-    }
-
-    c = "GET_DOC_TEXT";
-    if(text.contains(c.toUtf8())){
-        int docId, userId;
-        in_data >> docId;
-        in_data >> userId;
-
-        getDocText(docId, userId);
-    }
-
-    c = "UPDATE";
-    if(text.contains(c.toUtf8())){
-        QString password, nickname, icon;
-        int userId;
-        in_data >> userId;
-        in_data >> password;
-        in_data >> nickname;
-        in_data >> icon;
-
-        update(userId, password, nickname, icon);
-    }
-
-    c = "GET_USERNAME";
-    if(text.contains(c.toUtf8())){
-        int userId;
-        in_data >> userId;
-
-        retrieveUsername(userId);
-    }
-
-    c = "GET_NICKNAME";
-    if(text.contains(c.toUtf8())){
-        int userId;
-        in_data >> userId;
-
-        getNickname(userId);
-    }
-
-    c = "GET_DOC_NAME";
-    if(text.contains(c.toUtf8())){
-        int docId;
-        in_data >> docId;
-
-        retrieveDocName(docId);
-    }
-
-    c = "GET_ICON";
-    if(text.contains(c.toUtf8())){
-        int userId;
-        in_data >> userId;
-
-        getIcon(userId);
-    }
-
-    c = "GET_DOCS";
-    if(text.contains(c.toUtf8())){
-        int userId;
-        in_data >> userId;
-
-        getDocs(userId);
-    }
-
-    c = "GET_DOCID_DATO_URI";
-    if(text.contains(c.toUtf8())){
-        QString uri;
-        int userId;
-        in_data >> uri;
-        in_data >> userId;
-
-        getDocIdDatoUri(uri, userId);
-    }
-
-    c = "GET_URI";
-    if(text.contains(c.toUtf8())){
-        int docId;
-        in_data >> docId;
-
-        getUri(docId);
-    }
-
-    c = "GET_DOC_OWNER";
-    if(text.contains(c.toUtf8())){
-        int docId;
-        in_data >> docId;
-
-        getOwnerId(docId);
-    }
-
-    c = "GET_WORKINGUSERS_ONADOC";
-    if(text.contains(c.toUtf8())){
-        int docId;
-        in_data >> docId;
-
-        getWorkingUsersGivenDoc(docId);
-    }
-
-    c = "GET_CONTRIBUTORS_ONADOC";
-    if(text.contains(c.toUtf8())){
-        int docId;
-        in_data >> docId;
-
-        getCollaboratorsGivenDoc(docId);
-    }
-
-    c = "NEW_DOC";
-    if(text.contains(c.toUtf8())){
-        QString docName;
-        int userId;
-        in_data >> docName;
-        in_data >> userId;
-
-        newDoc(docName, userId);
-    }
-
-    c = "OPEN_DOC";
-    if(text.contains(c.toUtf8())){
-        int docId, userId;
-        in_data >> docId;
-        in_data >> userId;
-
-        openDocument(docId, userId);
-    }
+    QString c;
 
     c = "SEND";
     if(text.contains(c.toUtf8())){
@@ -219,6 +61,185 @@ void Thread_body::executeJob(QByteArray data){
         }
 
         emit messageToServer(m, threadId_toQString(thread_id), current_docId);
+        return;
+    }
+
+    c = "CREATE";
+    if(text.contains(c.toUtf8())){
+        QString username, password, nickname, icon;
+        in_data >> username;
+        in_data >> password;
+        in_data >> nickname;
+        in_data >> icon;
+
+        signup(username, password, nickname, icon);
+        return;
+    }
+
+    c = "LOGIN";
+    if(text.contains(c.toUtf8())){
+        QString username, password;
+        in_data >> username;
+        in_data >> password;
+
+        login(username, password);
+        return;
+    }
+
+    c = "LOGOUT";
+    if(text.contains(c.toUtf8())){
+
+        int userId;
+        in_data >> userId;
+
+        logout(userId);
+        return;
+    }
+
+    c = "DELETE_DOC";
+    if(text.contains(c.toUtf8())){
+        int docId, userId;
+        in_data >> userId;
+        in_data >> docId;
+
+        deleteDoc(userId, docId);
+        return;
+    }
+
+    c = "GET_DOC_TEXT";
+    if(text.contains(c.toUtf8())){
+        int docId, userId;
+        in_data >> docId;
+        in_data >> userId;
+
+        getDocText(docId, userId);
+        return;
+    }
+
+    c = "UPDATE";
+    if(text.contains(c.toUtf8())){
+        QString password, nickname, icon;
+        int userId;
+        in_data >> userId;
+        in_data >> password;
+        in_data >> nickname;
+        in_data >> icon;
+
+        update(userId, password, nickname, icon);
+        return;
+    }
+
+    c = "GET_USERNAME";
+    if(text.contains(c.toUtf8())){
+        int userId;
+        in_data >> userId;
+
+        retrieveUsername(userId);
+        return;
+    }
+
+    c = "GET_NICKNAME";
+    if(text.contains(c.toUtf8())){
+        int userId;
+        in_data >> userId;
+
+        getNickname(userId);
+        return;
+    }
+
+    c = "GET_DOC_NAME";
+    if(text.contains(c.toUtf8())){
+        int docId;
+        in_data >> docId;
+
+        retrieveDocName(docId);
+        return;
+    }
+
+    c = "GET_ICON";
+    if(text.contains(c.toUtf8())){
+        int userId;
+        in_data >> userId;
+
+        getIcon(userId);
+        return;
+    }
+
+    c = "GET_DOCS";
+    if(text.contains(c.toUtf8())){
+        int userId;
+        in_data >> userId;
+
+        getDocs(userId);
+        return;
+    }
+
+    c = "GET_DOCID_DATO_URI";
+    if(text.contains(c.toUtf8())){
+        QString uri;
+        int userId;
+        in_data >> uri;
+        in_data >> userId;
+
+        getDocIdDatoUri(uri, userId);
+        return;
+    }
+
+    c = "GET_URI";
+    if(text.contains(c.toUtf8())){
+        int docId;
+        in_data >> docId;
+
+        getUri(docId);
+        return;
+    }
+
+    c = "GET_DOC_OWNER";
+    if(text.contains(c.toUtf8())){
+        int docId;
+        in_data >> docId;
+
+        getOwnerId(docId);
+        return;
+    }
+
+    c = "GET_WORKINGUSERS_ONADOC";
+    if(text.contains(c.toUtf8())){
+        int docId;
+        in_data >> docId;
+
+        getWorkingUsersGivenDoc(docId);
+        return;
+    }
+
+    c = "GET_CONTRIBUTORS_ONADOC";
+    if(text.contains(c.toUtf8())){
+        int docId;
+        in_data >> docId;
+
+        getCollaboratorsGivenDoc(docId);
+        return;
+    }
+
+    c = "NEW_DOC";
+    if(text.contains(c.toUtf8())){
+        QString docName;
+        int userId;
+        in_data >> docName;
+        in_data >> userId;
+
+        newDoc(docName, userId);
+        return;
+    }
+
+    c = "OPEN_DOC";
+    if(text.contains(c.toUtf8())){
+        int docId, userId;
+        in_data >> docId;
+        in_data >> userId;
+
+        openDocument(docId, userId);
+        return;
     }
 
     c = "MOVECURSOR";
@@ -229,18 +250,21 @@ void Thread_body::executeJob(QByteArray data){
         in_data >> pos;
 
         moveCursor(userId, pos);
+        return;
     }
 
     c = "STOPCURSOR";
     if(text.contains(c.toUtf8())){
 
         stopCursor();
+        return;
     }
 
     c = "STARTCURSOR";
     if(text.contains(c.toUtf8())){
 
         startCursor();
+        return;
     }
 
     c = "DISCONNECT_FROM_DOC";
@@ -251,6 +275,7 @@ void Thread_body::executeJob(QByteArray data){
         in_data >> userId;
 
         closeDocument(docId, userId);
+        return;
     }
 
 //    qDebug() << "THREAD - executeJob (fine); Thread_id: "<<threadId_toQString(thread_id);            // DEBUG

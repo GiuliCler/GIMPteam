@@ -27,7 +27,9 @@ CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyT
     QObject::connect(textEdit.document(), &QTextDocument::undoAvailable, this, &CRDT_controller::undoAvailableChanged);
     QObject::connect(textEdit.document(), &QTextDocument::redoAvailable, this, &CRDT_controller::redoAvailableChanged);
     //QObject::connect(parent->childUsersBar, &GUI_UsersBar::highlightingUsers, this, &CRDT_controller::setUsersColors);
-    QObject::connect(connection, &connection_to_server::sigMoveCursor, this, &CRDT_controller::remoteMove);
+    QObject::connect(connection, &connection_to_server::sigMoveCursor, this, &CRDT_controller::remoteMove, Qt::ConnectionType::QueuedConnection);
+    QObject::connect(connection, &connection_to_server::sigStopCursor, this, &CRDT_controller::remoteStopCursor, Qt::ConnectionType::QueuedConnection);
+    QObject::connect(connection, &connection_to_server::sigStartCursor, this, &CRDT_controller::remoteStartCursor, Qt::ConnectionType::QueuedConnection);
 
     parent->childToolsBar->ui->spinBox->setSpecialValueText("Default");
 }
