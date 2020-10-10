@@ -49,16 +49,22 @@ GUI_Editor::GUI_Editor(QWidget *parent, int documentId, QString docName, bool ca
        call_open = false => la requestOpenDocumentWrapper NON deve essere chiamata => gui_newdoc.cpp  (NEW DOC)
     */
     int siteCounter;
+    int cursorSem;
     if(call_open){
         QString codedParameters = GUI_ConnectionToServerWrapper::requestOpenDocumentWrapper(gimpParent, gimpParent->userid, documentId);
         if(codedParameters.compare("errore") == 0)
             throw GUI_GenericException();
         siteCounter = codedParameters.split("_").at(1).toInt();
+        cursorSem = codedParameters.split("_").at(2).toInt();
     } else {
         siteCounter = 0;
+        cursorSem = 0;
     }
 
     crdtController = new CRDT_controller(gimpParent, this, *childMyTextEdit, gimpParent->userid, siteCounter);
+
+    while(cursorSem--)
+        crdtController->remoteStopCursor();
 
     //devo fare qui queste connect perchè devo aspettare che la crdtController sia creata
     connect(&(*crdtController), &CRDT_controller::updateCursorPosition, childMyTextEdit, &GUI_MyTextEdit::on_updateCursorPosition_emitted);
@@ -345,8 +351,11 @@ void GUI_Editor::addUserToEditorGUI(int userid, QString nickname, QString iconId
     //GUI_MyTextEdit *son = findChild<GUI_MyTextEdit*>(GUI_MyTextEdit::getObjectName());
     if(userid != gimpParent->userid){
         QPoint p = QPoint (childMyTextEdit->cursorRect().topLeft().x(), childMyTextEdit->cursorRect().topLeft().y() + childMyTextEdit->verticalScrollBar()->value());
+        QList<CRDT_Message> buffer;
+
         childMyTextEdit->addUserCursor(userid, p, color);
         crdtController->usersCursors.insert(userid, 0);
+        crdtController->userBuffers.insert(userid, buffer);
     }
 }
 
@@ -371,6 +380,7 @@ void GUI_Editor::removeUserFromEditorGUI(int userid){
 
     // Rimuovo riga nel vettore dei cursori di crdt controller
     crdtController->usersCursors.remove(userid);
+    crdtController->userBuffers.remove(userid);
 }
 
 void GUI_Editor::addContributorToCurrentDocument(int userid, QString nickname, QString iconId){
@@ -396,6 +406,9 @@ void GUI_Editor::fillOnlineUsersCursors(std::shared_ptr<QSet<int>> userIds){
     for (QSet<int>::iterator userId = userIds->begin(); userId != userIds->end(); userId++){
         // Creo nuova riga nel vettore dei cursori di crdt controller
         crdtController->usersCursors.insert(*userId, 0);
+
+        QList<CRDT_Message> buffer;
+        crdtController->userBuffers.insert(*userId, buffer);
     }
 }
 

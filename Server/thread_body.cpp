@@ -203,13 +203,22 @@ void Thread_body::executeJob(QByteArray data){
     c = "SEND";
     if(text.contains(c.toUtf8())){
 
-        CRDT_Message messaggio;
-        in_data >> messaggio;
+        CRDT_Message m;
+        in_data >> m;
 
         if(current_docId == -1)
             return;
 
-        emit messageToServer(messaggio, threadId_toQString(thread_id), current_docId);
+        if(m.getAzione() == "insert" || m.getAzione() == "delete"){
+            crdt->process(m);
+        }
+
+        if(m.getAzione() == "insert"){
+            QString str = QString::fromStdString(m.getSimbolo().getIDunivoco());
+            current_siteCounter = str.split("_")[1].toInt() + 1;
+        }
+
+        emit messageToServer(m, threadId_toQString(thread_id), current_docId);
     }
 
     c = "MOVECURSOR";
@@ -1272,7 +1281,8 @@ void Thread_body::openDocument(int docId, int userId){
                 writeData(blocko);
             } else {
                 current_siteCounter = siteCounter;
-                QString ritorno = "ok_"+QString::number(siteCounter);
+                int cursorSem = crdt->countBlockingCursors();
+                QString ritorno = "ok_"+QString::number(siteCounter) + "_" + QString::number(cursorSem);
 
                 out << ritorno.toUtf8();
                 writeData(blocko);
@@ -1318,7 +1328,7 @@ void Thread_body::openDocument(int docId, int userId){
 
 void Thread_body::closeDocument(int docId, int userId){
 
-    if(crdt->getUserMovingCursor(userId))
+    if(!crdt->getUserMovingCursor(userId))
         startCursor();
 
     // Rimuovo l'utente dalla riga degli utenti online su un certo documento
@@ -1414,16 +1424,6 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
     }
 
     if(thread_id_string == thread_id_sender){
-
-        if(m.getAzione() == "insert" || m.getAzione() == "delete"){
-            crdt->process(m);
-        }
-
-        if(m.getAzione() == "insert"){
-            QString str = QString::fromStdString(m.getSimbolo().getIDunivoco());
-            current_siteCounter = str.split("_")[1].toInt() + 1;
-        }
-
         if(!(QString::fromStdString(m.getAzione()).contains("ONLINEUSER")))
             return;
     }

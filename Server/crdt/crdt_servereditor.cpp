@@ -85,6 +85,11 @@ void CRDT_ServerEditor::process(const CRDT_Message& m){
 
     } else if(azione == "delete"){           /* SIMBOLO CANCELLATO */
 
+        if(_symbols.isEmpty()){
+            mutex->unlock();
+            return;
+        }
+
         QVector<int> posNew = simbolo.getPosizione();
 
         // Implementazione simil-TLB:
@@ -97,11 +102,15 @@ void CRDT_ServerEditor::process(const CRDT_Message& m){
         int user = m.getCreatore();                                       // Recupero dal messaggio lo userId di chi sta scrivendo
         int indexCursore = usersCursors.value(user);              // Recupero il cursore di tale user
 
+        if(indexCursore > _symbols.size())
+            indexCursore = _symbols.size();
+
         if(indexCursore == 0)                    // Controllo se il cursore dello user è in testa al documento
             cursoreInTesta = true;
 
-        if(indexCursore >= _symbols.size())      // Controllo se il cursore dello user è in coda al documento
+        if(indexCursore >= _symbols.size()){      // Controllo se il cursore dello user è in coda al documento
             cursoreInCoda = true;
+        }
 
         if(cursoreInTesta){
             if(posNew == _symbols[indexCursore].getPosizione()){              // Confronto posNew con pos di indexCursore per vedere se lo user ha premuto il tasto CANC
@@ -282,4 +291,14 @@ bool CRDT_ServerEditor::getUserMovingCursor(int userId){
     bool val = usersMovingCursors[userId];
     mutex->unlock();
     return val;
+}
+
+int CRDT_ServerEditor::countBlockingCursors(){
+    mutex->lock();
+    int n = 0;
+    for(bool val : usersMovingCursors)
+        if(!val)
+            n++;
+    mutex->unlock();
+    return n;
 }

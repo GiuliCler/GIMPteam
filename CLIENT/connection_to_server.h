@@ -76,6 +76,7 @@ private:
     QString ipAddress;  
     QTcpSocket *tcpSocket = nullptr;
     QByteArray fileTMP;
+    QByteArray sendBuffer;
     //GUI_Editor *editor = nullptr;
     const int Timeout = 100 * 1000;
     QByteArray readBuffer;
@@ -83,6 +84,7 @@ private:
     QByteArray readData();
     void readDataFile();
     bool writeData(QByteArray data);
+    bool writeDataBuffer();
     static QByteArray IntToArray(qint32 source);
     static qint32 ArrayToInt(QByteArray source);
 

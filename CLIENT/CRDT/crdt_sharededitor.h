@@ -25,6 +25,7 @@ private:
     QVector<CRDT_Symbol>::iterator trovaPosizione(QVector<int> pos);
     int confrontaPos(QVector<int> pos, QVector<int> currentPos);
 
+
 public:
     explicit CRDT_SharedEditor(CRDT_controller *parent, connection_to_server *connection, int siteId, int siteCounter);
     int getSiteId() const;
@@ -36,6 +37,7 @@ public:
 //    std::string to_string();        // FUNZIONI PER IL DEBUG
     Qt::Alignment getAlignAt(int pos);
     int getSiteIdAt(int pos);
+    void processBuffer(int userId);
 
 private slots:
     void process(const CRDT_Message& m);
