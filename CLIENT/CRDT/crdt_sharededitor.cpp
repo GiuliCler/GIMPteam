@@ -114,6 +114,25 @@ QVector<int> CRDT_SharedEditor::generaPosizione(QVector<int> prev, QVector<int> 
     return pos;
 }
 
+void CRDT_SharedEditor::localFirstInsert(int index, QChar value, QTextCharFormat fmt, Qt::Alignment align, QVector<int> posizione, int insertSize){
+
+//    std::cout << "localInsert - Adding " << value.toLatin1() << " to CRDT in pos " << index << std::endl;      // DEBUG
+
+    /* Creazione del nuovo simbolo e inserimento nella corretta posizione all'interno del vettore _symbols */
+    CRDT_Symbol simbolo{value, this->_siteId, this->_counter++, posizione, fmt, align};
+    auto it = _symbols.begin()+index;
+    _symbols.insert(it, insertSize, simbolo);
+
+    /* Creazione del messaggio e invio al NetworkServer */
+    CRDT_Message messaggio{"insert", simbolo, this->_siteId};
+    try {
+        connection->requestSendMessage(messaggio);
+    } catch (GUI_ConnectionException &exception){
+        GUI_Reconnection::GUI_ReconnectionWrapper(parent->getGimpDocs());
+        parent->getGimpDocs()->returnToLogin();
+    }
+
+}
 
 void CRDT_SharedEditor::localInsert(int index, QChar value, QTextCharFormat fmt, Qt::Alignment align, QVector<int> posizione){
 
@@ -121,8 +140,7 @@ void CRDT_SharedEditor::localInsert(int index, QChar value, QTextCharFormat fmt,
 
     /* Creazione del nuovo simbolo e inserimento nella corretta posizione all'interno del vettore _symbols */
     CRDT_Symbol simbolo{value, this->_siteId, this->_counter++, posizione, fmt, align};
-    auto it = _symbols.begin()+index;
-    _symbols.insert(it, simbolo);
+    _symbols[index] = simbolo;
 
     /* Creazione del messaggio e invio al NetworkServer */
     CRDT_Message messaggio{"insert", simbolo, this->_siteId};

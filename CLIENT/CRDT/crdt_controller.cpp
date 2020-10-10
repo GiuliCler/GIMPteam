@@ -485,7 +485,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         QVector<int> firstPosition = crdt.generaPrimaPosizione(pos);
 
         QTextCharFormat fmt{tmp.charFormat()};
-        crdt.localInsert(pos, textEdit.toPlainText().at(pos), fmt, tmp.blockFormat().alignment(), firstPosition);
+        crdt.localFirstInsert(pos, textEdit.toPlainText().at(pos), fmt, tmp.blockFormat().alignment(), firstPosition, add);
 
 //        auto time5 = std::chrono::high_resolution_clock::now();
 //                auto tot_time5 = std::chrono::duration_cast<std::chrono::microseconds>(time5 - start_time).count();
@@ -586,7 +586,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         QVector<int> firstPosition = crdt.generaPrimaPosizione(pos1);
 
         QTextCharFormat fmt{tmp.charFormat()};
-        crdt.localInsert(pos1, textEdit.toPlainText().at(pos1), fmt, tmp.blockFormat().alignment(), firstPosition);
+        crdt.localFirstInsert(pos1, textEdit.toPlainText().at(pos1), fmt, tmp.blockFormat().alignment(), firstPosition, cnt);
 
         // Aggiungo al fondo del vettore di interi il siteId
         firstPosition.push_back(crdt.getSiteId());
