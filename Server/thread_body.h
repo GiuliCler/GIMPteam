@@ -77,6 +77,7 @@ private:
     void moveCursor(int userId, int pos);
     void stopCursor();
     void startCursor();
+    void changeAlign(Qt::Alignment al);
     static qint32 ArrayToInt(QByteArray source);
     bool writeData(QByteArray data);
     static QByteArray IntToArray(qint32 source);

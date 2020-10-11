@@ -75,6 +75,7 @@ public slots:
     void remoteMove(int userId, int pos);
     void remoteStopCursor();
     void remoteStartCursor(int userId);
+    void remoteChangeAlign(Qt::Alignment al);
 
 signals:
     void menuSet(menuTools set);

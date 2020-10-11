@@ -30,6 +30,7 @@ CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyT
     QObject::connect(connection, &connection_to_server::sigMoveCursor, this, &CRDT_controller::remoteMove, Qt::ConnectionType::QueuedConnection);
     QObject::connect(connection, &connection_to_server::sigStopCursor, this, &CRDT_controller::remoteStopCursor, Qt::ConnectionType::QueuedConnection);
     QObject::connect(connection, &connection_to_server::sigStartCursor, this, &CRDT_controller::remoteStartCursor, Qt::ConnectionType::QueuedConnection);
+    QObject::connect(connection, &connection_to_server::sigChangeAlign, this, &CRDT_controller::remoteChangeAlign, Qt::ConnectionType::QueuedConnection);
 
     parent->childToolsBar->ui->spinBox->setSpecialValueText("Default");
 }
@@ -37,7 +38,6 @@ CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyT
 CRDT_controller::~CRDT_controller(){
 //    qDebug() << "Distruttore CRDT_controller chiamato";        // DEBUG
 }
-
 
 void CRDT_controller::setLeft(){
     textEdit.setAlignment(Qt::AlignLeft);
@@ -408,8 +408,13 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     if(pos + del -1 > crdt.getLength() - 1){
         del--;
         add--;
-        if(add == 0 & del == 0 && pos==0){
-            // TODO -- MANDI AL SERVER CAMBIO DI FORMATO SU DOCUMENTO VUOTO (try/catch per eccezioni!) (passi textEdit.alignment())
+        if(add == 0 & del == 0 && pos == 0){
+            try {
+                connection->requestChangeAlign(textEdit.alignment());
+            } catch (GUI_ConnectionException &exception){
+                GUI_Reconnection::GUI_ReconnectionWrapper(gimpDocs);
+                gimpDocs->returnToLogin();
+            }
         }
     }
 
@@ -661,7 +666,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     }
     cursorMovable_sem--;
     try {
-    connection->requestSendStartCursor();
+        connection->requestSendStartCursor();
     } catch (GUI_ConnectionException &exception){
         GUI_Reconnection::GUI_ReconnectionWrapper(gimpDocs);
         gimpDocs->returnToLogin();
@@ -854,17 +859,25 @@ void CRDT_controller::remoteStartCursor(int userId){
     cursorMoved();
 }
 
-/*
- * TODO
- * server: prende il messaggio di cambio allineamento ~startCursor (+ soliti check: doc_id == -1) e lo inoltra ad altri utenti
- *
- * REMOTE CHANGE ALIGN{
- * processingMessage = true (+ gestione di valore precedente)
- * se il doc è vuoto{
- *      chiama funzioni CRDT_controller::set_alignment (a seconda dell'allineamento ricevuto dall'altro client)
- *      }
- * }
- */
+// receive the request to change the alignment
+void CRDT_controller::remoteChangeAlign(Qt::Alignment al){
+
+    bool processingMessage_prev = processingMessage;
+    processingMessage = true;
+
+    if(crdt.getLength() == 0){
+        if(al == Qt::AlignLeft)
+            this->setLeft();
+        else if(al == Qt::AlignRight)
+            this->setRight();
+        else if(al == Qt::AlignCenter)
+            this->setCenter();
+        else
+            this->setJustified();
+    }
+
+    processingMessage = processingMessage_prev;
+}
 
 GIMPdocs* CRDT_controller::getGimpDocs(){
     return gimpDocs;
