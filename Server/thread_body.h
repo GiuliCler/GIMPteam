@@ -41,7 +41,7 @@ private:
     std::shared_ptr<CRDT_ServerEditor> crdt;
     QByteArray readBuffer;
     qint32 readBuffer_size;
-    QLinkedList<CRDT_Message> incomingMessagesBuffer;
+    std::shared_ptr<QLinkedList<CRDT_Message>> incomingMessagesBuffer;
 
     QString getUsername(int userId);
     QString getDocname(int docId);
