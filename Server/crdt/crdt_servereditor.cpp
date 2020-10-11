@@ -2,6 +2,7 @@
 #include <QFile>
 #include <iostream>
 #include <QDebug>
+#include <QLinkedList>
 
 CRDT_ServerEditor::CRDT_ServerEditor(QString percorsoFile, QObject *parent): QObject(parent), percorsoFile(percorsoFile) {
     mutex = new QMutex();
@@ -154,20 +155,18 @@ void CRDT_ServerEditor::process(const CRDT_Message& m){
     mutex->unlock();
 }
 
-void CRDT_ServerEditor::processBuffer(int userId){
+void CRDT_ServerEditor::processBuffer(std::shared_ptr<QLinkedList<CRDT_Message>> incomingMessagesBuffer){
 
-    while(!parent->userBuffers.value(userId).empty()){
+    while(!incomingMessagesBuffer->isEmpty()){
 
-        CRDT_Message m = parent->userBuffers.value(userId)[0];
+        CRDT_Message m = incomingMessagesBuffer->first();
         std::string azione = m.getAzione();
         CRDT_Symbol simbolo = m.getSimbolo();
 
+        mutex->lock();
         QVector<CRDT_Symbol>::iterator it = _symbols.begin();
-        //        std::cout<<"Sono nella process per una... "<<azione<<std::endl;        // DEBUG
 
         if(azione == "insert"){                 // SIMBOLO INSERITO
-
-            int count = 0;
 
             if(!_symbols.empty()){
 
@@ -179,67 +178,61 @@ void CRDT_ServerEditor::processBuffer(int userId){
                 // altrimenti, ricerca dicotomica (trovaPosizione originale)
 
                 QVector<int> posNew = simbolo.getPosizione();
-                bool inserimTesta = false, inserimCoda = false;
-                QVector<int> posCursoreDX, posCursoreSX;
                 int esitoDX, esitoSX;
-                int user = m.getCreatore();                                       // Recupero dal messaggio lo userId di chi sta scrivendo
-                int indexCursore = parent->usersCursors.value(user);              // Recupero il cursore di tale user
+                int userId = m.getCreatore();                                       // Recupero dal messaggio lo userId di chi sta scrivendo
+                int indexCursore = usersCursors.value(userId);              // Recupero il cursore di tale user
 
-                if(indexCursore > _symbols.size())
-                    indexCursore = _symbols.size();
-
-                if(indexCursore == 0)                    // Controllo se il cursore dello user è in testa al documento
-                    inserimTesta = true;
-
-                if(indexCursore >= _symbols.size()){      // Controllo se il cursore dello user è in coda al documento
-                    inserimCoda = true;
-                }
-
-                if(!inserimTesta){
-                    posCursoreSX = _symbols[indexCursore-1].getPosizione();       // Recupero posizione immediatamente prima del cursore
-                    esitoSX = confrontaPos(posNew, posCursoreSX);
-                } else {
+                if(indexCursore <= 0){
+                    //il cursore in TLB era in testa
                     esitoSX = 0;
+                } else {
+                    QVector<int> posCursoreSX = _symbols[indexCursore-1].getPosizione();       // Recupero posizione immediatamente prima del cursore
+                    esitoSX = confrontaPos(posNew, posCursoreSX);
                 }
 
-                if(!inserimCoda){
-                    posCursoreDX = _symbols[indexCursore].getPosizione();      // Recupero posizione corrispondente al cursore
-                    esitoDX = confrontaPos(posNew, posCursoreDX);
-                } else {
+                if(_symbols.size() <= indexCursore){
+                    //il cursore in TLB era in coda
                     esitoDX = 1;
+
+                    //nel caso sia maggiore
+                    indexCursore = _symbols.size();
+                } else {
+                    QVector<int> posCursoreDX = _symbols[indexCursore].getPosizione();      // Recupero posizione corrispondente al cursore
+                    esitoDX = confrontaPos(posNew, posCursoreDX);
                 }
 
-                // confrontaPos fornisce... ESITO = 1 --> posCursoreXX > posNew ; ESITO = 0 --> posCursoreXX < posNew
-                if(!esitoSX && esitoDX){
-                    // Caso in cui posCursoreSX < posNew < posCursoreDX
+                // Caso in cui posCursoreSX < posNew < posCursoreDX
+                if(esitoSX == 0 && esitoDX == 1)
                     it = _symbols.begin() + indexCursore;
-                    count = indexCursore;
-                } else {
+                else
                     it = trovaPosizione(posNew);
-                    count = it - _symbols.begin();
-                }
             }
+
+            int count = it - _symbols.begin();
 
             //check whether the symbol is already present in the CRDT
             if(it != _symbols.begin() && (it-1)->getIDunivoco() == simbolo.getIDunivoco()){
-                parent->userBuffers[userId].removeFirst();
-                parent->usersCursors[m.getCreatore()] = count;
+                incomingMessagesBuffer->removeFirst();
+                usersCursors[m.getCreatore()] = count;
                 continue;
             }
 
-            auto it2 = parent->userBuffers[userId].rbegin();
+            auto it2 = incomingMessagesBuffer->rbegin();
             QString s;
             QTextCharFormat fmt = simbolo.getFormat();
             Qt::Alignment align = simbolo.getAlignment();
 
-            while(it2 != parent->userBuffers[userId].rend()){
+            _symbols.insert(it, incomingMessagesBuffer->size(), simbolo);
+
+            TODO: ora devo fare l'inserimento vero e proprio uno alla volta
+            while(it2 != incomingMessagesBuffer->rend()){
     //            std::cout<<"Sto INSERENDO all'indice: "<<count<<"; simbolo: "<<simbolo.getCarattere().toLatin1()<<std::endl;          // DEBUG
                 _symbols.insert(count, it2->getSimbolo());
                 s.push_front(it2->getSimbolo().getCarattere());
                 it2++;
             }
 
-            parent->remoteInsert(count, s, fmt, align);
+
 
             // Aggiorno il cursore dell'utente che ha scritto
             parent->usersCursors[m.getCreatore()] = count + s.length();
@@ -334,7 +327,9 @@ void CRDT_ServerEditor::processBuffer(int userId){
                 continue;
         }
 
+        mutex->unlock();
     }
+
 }
 
 
