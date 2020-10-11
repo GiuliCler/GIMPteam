@@ -413,10 +413,8 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     //std::cout << "After adj - pos: " << pos << "; add: " << add << "; del: " << del << std::endl;     // DEBUG
 
     // remove the deleted letters from the crdt
-    if(del > 0){
-        for(int i = pos + del - 1; i >= pos; --i)
-            crdt.localErase(i);
-    }
+    if(del > 0)
+        crdt.localMultipleErase(pos, del);
 
     // insert the added letters in the crdt
     if(add > 0){
@@ -485,7 +483,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         QVector<int> firstPosition = crdt.generaPrimaPosizione(pos);
 
         QTextCharFormat fmt{tmp.charFormat()};
-        crdt.localInsert(pos, textEdit.toPlainText().at(pos), fmt, tmp.blockFormat().alignment(), firstPosition);
+        crdt.localFirstInsert(pos, textEdit.toPlainText().at(pos), fmt, tmp.blockFormat().alignment(), firstPosition, add);
 
 //        auto time5 = std::chrono::high_resolution_clock::now();
 //                auto tot_time5 = std::chrono::duration_cast<std::chrono::microseconds>(time5 - start_time).count();
@@ -521,8 +519,9 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         tmp.movePosition(QTextCursor::EndOfBlock);
 
         // remove these letters (w/ the old alignment) from the crdt
-        for(int i = tmp.position() - 1; i >= pos1 ; --i, ++cnt)
-            crdt.localErase(i);
+        cnt = tmp.position() - pos1;
+        crdt.localMultipleErase(pos1, cnt);
+
 
         // re-insert the letters making sure that the format is correct
         tmp.setPosition(pos1);
@@ -586,7 +585,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         QVector<int> firstPosition = crdt.generaPrimaPosizione(pos1);
 
         QTextCharFormat fmt{tmp.charFormat()};
-        crdt.localInsert(pos1, textEdit.toPlainText().at(pos1), fmt, tmp.blockFormat().alignment(), firstPosition);
+        crdt.localFirstInsert(pos1, textEdit.toPlainText().at(pos1), fmt, tmp.blockFormat().alignment(), firstPosition, cnt);
 
         // Aggiungo al fondo del vettore di interi il siteId
         firstPosition.push_back(crdt.getSiteId());

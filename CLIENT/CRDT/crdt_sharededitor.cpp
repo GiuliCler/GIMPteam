@@ -114,15 +114,14 @@ QVector<int> CRDT_SharedEditor::generaPosizione(QVector<int> prev, QVector<int> 
     return pos;
 }
 
-
-void CRDT_SharedEditor::localInsert(int index, QChar value, QTextCharFormat fmt, Qt::Alignment align, QVector<int> posizione){
+void CRDT_SharedEditor::localFirstInsert(int index, QChar value, QTextCharFormat fmt, Qt::Alignment align, QVector<int> posizione, int insertSize){
 
 //    std::cout << "localInsert - Adding " << value.toLatin1() << " to CRDT in pos " << index << std::endl;      // DEBUG
 
     /* Creazione del nuovo simbolo e inserimento nella corretta posizione all'interno del vettore _symbols */
     CRDT_Symbol simbolo{value, this->_siteId, this->_counter++, posizione, fmt, align};
     auto it = _symbols.begin()+index;
-    _symbols.insert(it, simbolo);
+    _symbols.insert(it, insertSize, simbolo);
 
     /* Creazione del messaggio e invio al NetworkServer */
     CRDT_Message messaggio{"insert", simbolo, this->_siteId};
@@ -135,25 +134,44 @@ void CRDT_SharedEditor::localInsert(int index, QChar value, QTextCharFormat fmt,
 
 }
 
+void CRDT_SharedEditor::localInsert(int index, QChar value, QTextCharFormat fmt, Qt::Alignment align, QVector<int> posizione){
 
-void CRDT_SharedEditor::localErase(int index){
-    /* Recupero dal vettore di simboli il simbolo da eliminare */
-    CRDT_Symbol simbolo = _symbols[index];
+//    std::cout << "localInsert - Adding " << value.toLatin1() << " to CRDT in pos " << index << std::endl;      // DEBUG
 
-//    std::cout<< "localErase - Deleting "<< simbolo.getCarattere().toLatin1() <<" -- "<<simbolo.getIDunivoco()<<std::endl;        // DEBUG
-
-    /* Elimino il simbolo */
-    auto it = _symbols.begin()+index;
-    _symbols.erase(it);
+    /* Creazione del nuovo simbolo e inserimento nella corretta posizione all'interno del vettore _symbols */
+    CRDT_Symbol simbolo{value, this->_siteId, this->_counter++, posizione, fmt, align};
+    _symbols[index] = simbolo;
 
     /* Creazione del messaggio e invio al NetworkServer */
-    CRDT_Message messaggio{"delete", simbolo, this->_siteId};
+    CRDT_Message messaggio{"insert", simbolo, this->_siteId};
     try {
         connection->requestSendMessage(messaggio);
     } catch (GUI_ConnectionException &exception){
         GUI_Reconnection::GUI_ReconnectionWrapper(parent->getGimpDocs());
         parent->getGimpDocs()->returnToLogin();
     }
+
+}
+
+void CRDT_SharedEditor::localMultipleErase(int index, int eraseSize){
+
+    for(int i = eraseSize - 1; 0 <= i; i--){
+        /* Recupero dal vettore di simboli il simbolo da eliminare */
+        CRDT_Symbol simbolo = _symbols[index + i];
+
+        /* Creazione del messaggio e invio al NetworkServer */
+        CRDT_Message messaggio{"delete", simbolo, this->_siteId};
+        try {
+            connection->requestSendMessage(messaggio);
+        } catch (GUI_ConnectionException &exception){
+            GUI_Reconnection::GUI_ReconnectionWrapper(parent->getGimpDocs());
+            parent->getGimpDocs()->returnToLogin();
+        }
+    }
+
+    /* Elimino i simboli */
+    auto it = _symbols.begin()+index;
+    _symbols.erase(it, it + eraseSize);
 
 }
 
@@ -265,15 +283,17 @@ void CRDT_SharedEditor::processBuffer(int userId){
                 continue;
             }
 
-            auto it2 = parent->userBuffers[userId].rbegin();
+            auto it2 = parent->userBuffers[userId].begin();
             QString s;
             QTextCharFormat fmt = simbolo.getFormat();
             Qt::Alignment align = simbolo.getAlignment();
 
-            while(it2 != parent->userBuffers[userId].rend()){
-    //            std::cout<<"Sto INSERENDO all'indice: "<<count<<"; simbolo: "<<simbolo.getCarattere().toLatin1()<<std::endl;          // DEBUG
-                _symbols.insert(count, it2->getSimbolo());
-                s.push_front(it2->getSimbolo().getCarattere());
+            //alloco spazio nel QVector
+            _symbols.insert(count, parent->userBuffers[userId].size(), it2->getSimbolo());
+
+            for(int i = 0; i < parent->userBuffers[userId].size(); i++){
+                _symbols[count + i] = it2->getSimbolo();
+                s.push_back(it2->getSimbolo().getCarattere());
                 it2++;
             }
 

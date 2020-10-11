@@ -31,8 +31,9 @@ public:
     int getSiteId() const;
 //    std::string print();            // FUNZIONI PER IL DEBUG
     QVector<int> generaPrimaPosizione(int index);
+    void localFirstInsert(int index, QChar value, QTextCharFormat fmt, Qt::Alignment align, QVector<int> posizione, int insertSize);
     void localInsert(int index, QChar value, QTextCharFormat fmt, Qt::Alignment align, QVector<int> posizione);
-    void localErase(int index);
+    void localMultipleErase(int index, int eraseSize);
     int getLength();
 //    std::string to_string();        // FUNZIONI PER IL DEBUG
     Qt::Alignment getAlignAt(int pos);

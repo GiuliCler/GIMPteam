@@ -20,6 +20,8 @@ Thread_body::Thread_body(int socketDescriptor, QThread* server, QObject *parent)
     database.connettiDB("gimpdocs_db", "conn" + threadId_toQString(thread_id));
 
     QObject::connect(this, &Thread_body::dataReceived, this, &Thread_body::executeJob);
+
+    incomingMessagesBuffer =  std::make_shared<QLinkedList<CRDT_Message>>();
 }
 
 Thread_body::~Thread_body(){
@@ -52,7 +54,7 @@ void Thread_body::executeJob(QByteArray data){
             return;
 
         if(m.getAzione() == "insert" || m.getAzione() == "delete"){
-            crdt->process(m);
+            process(m);
         }
 
         if(m.getAzione() == "insert"){
@@ -262,6 +264,8 @@ void Thread_body::executeJob(QByteArray data){
 
     c = "STARTCURSOR";
     if(text.contains(c.toUtf8())){
+
+        crdt->processBuffer(incomingMessagesBuffer);
 
         startCursor();
         return;
@@ -1655,4 +1659,22 @@ void Thread_body::checkPeriodicoClientConnessiSlot(){
         // Faccio morire il thread
         emit finished();
     }
+}
+
+void Thread_body::process(const CRDT_Message& m){
+
+    if(m.getCreatore() != current_userId)
+        return;
+
+    if(incomingMessagesBuffer->isEmpty()){
+        incomingMessagesBuffer->append(m);
+        return;
+    }
+
+    CRDT_Message head = incomingMessagesBuffer->first();
+
+    if(m.getAzione() != head.getAzione() || incomingMessagesBuffer->size() > 2000)
+        crdt->processBuffer(incomingMessagesBuffer);
+
+    incomingMessagesBuffer->append(m);
 }
