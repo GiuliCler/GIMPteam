@@ -97,7 +97,7 @@ void CRDT_ServerEditor::processBuffer(std::shared_ptr<QLinkedList<CRDT_Message>>
 
             if(_symbols.empty()){
                 incomingMessagesBuffer->clear();
-                return;
+                continue;
             }
 
 
