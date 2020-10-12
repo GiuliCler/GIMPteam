@@ -27,6 +27,7 @@ private:
     bool processingMessage = false;
     int defaultFontPointSize = 12;
     int deletedAmountOnPaste;
+    Qt::Alignment alignBeforePaste = Qt::AlignLeft;
 
     void setLeft();
     void setCenter();

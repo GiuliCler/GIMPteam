@@ -160,6 +160,8 @@ void CRDT_controller::cut(){
 
 void CRDT_controller::paste(){
     deletedAmountOnPaste = textEdit.textCursor().selectedText().length();
+    if(textEdit.document()->isEmpty())
+        alignBeforePaste = textEdit.alignment();
     textEdit.paste();
     textEdit.setFocus();
 }
@@ -389,7 +391,6 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
 
     QTextCursor tmp{textEdit.document()};
-    tmp.setPosition(pos);
     bool mustClearStacks = false;
 
     //std::cout << "Before adj - pos: " << pos << "; add: " << add << "; del: " << del <<"; deletedAmountOnPaste: " << deletedAmountOnPaste << std::endl;     // DEBUG
@@ -401,9 +402,18 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
             add = add - del + deletedAmountOnPaste;
             del = deletedAmountOnPaste;
             mustClearStacks = true;
+            if(add == textEdit.document()->characterCount() -1){
+                QTextBlockFormat fmt;
+                fmt.setAlignment(alignBeforePaste);
+
+                tmp.select(QTextCursor::Document);
+                tmp.mergeBlockFormat(fmt);
+            }
         }
         deletedAmountOnPaste = -1;
     }
+
+    tmp.setPosition(pos);
 
     if(pos + del -1 > crdt.getLength() - 1){
         del--;
