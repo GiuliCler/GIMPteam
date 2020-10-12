@@ -482,8 +482,10 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         // Trovo dove inserire la prima lettera
         QVector<int> firstPosition = crdt.generaPrimaPosizione(pos);
 
+        QString document = textEdit.toPlainText();
+
         QTextCharFormat fmt{tmp.charFormat()};
-        crdt.localFirstInsert(pos, textEdit.toPlainText().at(pos), fmt, tmp.blockFormat().alignment(), firstPosition, add);
+        crdt.localFirstInsert(pos, document.at(pos), fmt, tmp.blockFormat().alignment(), firstPosition, add);
 
 //        auto time5 = std::chrono::high_resolution_clock::now();
 //                auto tot_time5 = std::chrono::duration_cast<std::chrono::microseconds>(time5 - start_time).count();
@@ -492,8 +494,6 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         // Aggiungo al fondo del vettore di interi il siteId
         firstPosition.push_back(crdt.getSiteId());
         firstPosition.push_back(crdt.getSiteId());
-
-        QString document = textEdit.toPlainText();
 
         // Insert in crdt, making sure that the font size is > 0 (or use the default one)
         for(int i = pos+1; i < pos + add; ++i){
@@ -586,8 +586,10 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         // Trovo dove inserire la prima lettera
         QVector<int> firstPosition = crdt.generaPrimaPosizione(pos1);
 
+        QString document = textEdit.toPlainText();
+
         QTextCharFormat fmt{tmp.charFormat()};
-        crdt.localFirstInsert(pos1, textEdit.toPlainText().at(pos1), fmt, tmp.blockFormat().alignment(), firstPosition, cnt);
+        crdt.localFirstInsert(pos1, document.at(pos1), fmt, tmp.blockFormat().alignment(), firstPosition, cnt);
 
         // Aggiungo al fondo del vettore di interi il siteId
         firstPosition.push_back(crdt.getSiteId());
@@ -599,7 +601,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
             QTextCharFormat fmt{tmp.charFormat()};
 
             firstPosition[firstPosition.size()-2]++;
-            crdt.localInsert(i, textEdit.toPlainText().at(i), fmt, tmp.blockFormat().alignment(), firstPosition);
+            crdt.localInsert(i, document.at(i), fmt, tmp.blockFormat().alignment(), firstPosition);
         }
     }
 
