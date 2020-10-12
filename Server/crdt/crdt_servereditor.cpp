@@ -15,6 +15,8 @@ CRDT_ServerEditor::~CRDT_ServerEditor(){
 
 void CRDT_ServerEditor::processBuffer(std::shared_ptr<QLinkedList<CRDT_Message>> incomingMessagesBuffer){
 
+    mutex->lock();
+
     //'sto while serve per quel controllo per cui se la prima lettera da inserire c'è già la poppo dal buffer e ci riprovo colla seconda
     while(!incomingMessagesBuffer->isEmpty()){
 
@@ -73,13 +75,9 @@ void CRDT_ServerEditor::processBuffer(std::shared_ptr<QLinkedList<CRDT_Message>>
             //check whether the symbol is already present in the CRDT
             if(it != _symbols.begin() && (it-1)->getIDunivoco() == simbolo.getIDunivoco()){
                 incomingMessagesBuffer->removeFirst();
-                mutex->lock();
                 usersCursors[m.getCreatore()] = pos;
-                mutex->unlock();
                 continue;
             }
-
-            mutex->lock();
 
             //alloco spazio inserendo il primo
             _symbols.insert(it, incomingMessagesBuffer->size(), simbolo);
@@ -94,8 +92,6 @@ void CRDT_ServerEditor::processBuffer(std::shared_ptr<QLinkedList<CRDT_Message>>
 
             // Aggiorno il cursore dell'utente che ha scritto
             usersCursors[m.getCreatore()] = pos;
-
-            mutex->unlock();
 
         } else if(azione == "delete"){           // SIMBOLO CANCELLATO
 
@@ -139,9 +135,7 @@ void CRDT_ServerEditor::processBuffer(std::shared_ptr<QLinkedList<CRDT_Message>>
 
             if(_symbols.end() <= it || it->getIDunivoco() != simbolo.getIDunivoco()){
                 incomingMessagesBuffer->removeFirst();
-                mutex->lock();
                 usersCursors[m.getCreatore()] = pos;
-                mutex->unlock();
                 continue;
             }
 
@@ -155,18 +149,15 @@ void CRDT_ServerEditor::processBuffer(std::shared_ptr<QLinkedList<CRDT_Message>>
                 it2++;
             }
 
-            mutex->lock();
-
             _symbols.erase(it + 1, it + 1 + count);
             incomingMessagesBuffer->erase(incomingMessagesBuffer->begin(), it2);
 
             // Aggiorno il cursore dell'utente che ha cancellato
             usersCursors[m.getCreatore()] = pos + 1 - count;
-
-            mutex->unlock();
         }
     }
 
+    mutex->unlock();
 }
 
 
