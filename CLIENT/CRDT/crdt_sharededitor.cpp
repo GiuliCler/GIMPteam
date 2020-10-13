@@ -225,9 +225,9 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
         return;
     }
 
-    if(azione == "insert" &&
-            (simbolo.getFormat() != head.getSimbolo().getFormat() || simbolo.getAlignment() != head.getSimbolo().getAlignment()
-            || parent->userBuffers[userId].size() > 2000)){
+    if((azione == "insert" &&
+            (simbolo.getFormat() != head.getSimbolo().getFormat() || simbolo.getAlignment() != head.getSimbolo().getAlignment()))
+            || parent->userBuffers[userId].size() > 2000){
             processBuffer(userId);
     }
     parent->userBuffers[userId].append(m);
