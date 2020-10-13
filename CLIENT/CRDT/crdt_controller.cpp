@@ -502,7 +502,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
         QString document = textEdit.toPlainText();
 
-        if(textEdit.toPlainText().at(pos) == '\n'){
+        if(document.at(pos) == '\n'){
             tmp.movePosition(QTextCursor::PreviousCharacter);
             QTextCharFormat fmt{tmp.charFormat()};
             crdt.localFirstInsert(pos, document.at(pos), fmt, tmp.blockFormat().alignment(), firstPosition, add);
@@ -525,7 +525,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
             tmp.movePosition(QTextCursor::NextCharacter);
             firstPosition[firstPosition.size()-2]++;
 
-            if(textEdit.toPlainText().at(i) == '\n'){
+            if(document.at(i) == '\n'){
                 tmp.movePosition(QTextCursor::PreviousCharacter);
                 QTextCharFormat fmt{tmp.charFormat()};
                 crdt.localInsert(i, document.at(i), fmt, tmp.blockFormat().alignment(), firstPosition);
@@ -619,7 +619,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
         QString document = textEdit.toPlainText();
 
-        if(textEdit.toPlainText().at(pos1) == '\n'){
+        if(document.at(pos1) == '\n'){
             tmp.movePosition(QTextCursor::PreviousCharacter);
             QTextCharFormat fmt{tmp.charFormat()};
             crdt.localFirstInsert(pos1, document.at(pos1), fmt, tmp.blockFormat().alignment(), firstPosition, cnt);
@@ -639,7 +639,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
             firstPosition[firstPosition.size()-2]++;
             
-            if(textEdit.toPlainText().at(i) == '\n'){
+            if(document.at(i) == '\n'){
                 tmp.movePosition(QTextCursor::PreviousCharacter);
                 QTextCharFormat fmt{tmp.charFormat()};
                 crdt.localInsert(i, document.at(i), fmt, tmp.blockFormat().alignment(), firstPosition);
