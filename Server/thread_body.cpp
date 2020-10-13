@@ -30,7 +30,6 @@ Thread_body::~Thread_body(){
 
 void Thread_body::executeJob(QByteArray data){
 
-    auto thread_id = std::this_thread::get_id();
 //    qDebug() << "THREAD - executeJob (inizio); Thread_id: "<<threadId_toQString(thread_id);            // DEBUG
 
     QDataStream in_data(&data, QIODevice::ReadOnly);
@@ -62,7 +61,6 @@ void Thread_body::executeJob(QByteArray data){
             current_siteCounter = str.split("_")[1].toInt() + 1;
         }
 
-        emit messageToServer(m, threadId_toQString(thread_id), current_docId);
         return;
     }
 
@@ -264,9 +262,13 @@ void Thread_body::executeJob(QByteArray data){
 
     c = "STARTCURSOR";
     if(text.contains(c.toUtf8())){
+        auto thread_id = std::this_thread::get_id();
+        QLinkedList<CRDT_Message> tmpBuffer{*incomingMessagesBuffer};
 
         crdt->processBuffer(incomingMessagesBuffer);
 
+        for(CRDT_Message m : tmpBuffer)
+            emit messageToServer(m, threadId_toQString(thread_id), current_docId);
         startCursor();
         return;
     }
@@ -1704,8 +1706,15 @@ void Thread_body::process(const CRDT_Message& m){
 
     CRDT_Message head = incomingMessagesBuffer->first();
 
-    if(m.getAzione() != head.getAzione() || incomingMessagesBuffer->size() > 2000)
+    if(m.getAzione() != head.getAzione() || incomingMessagesBuffer->size() > 2000){
+        auto thread_id = std::this_thread::get_id();
+        QLinkedList<CRDT_Message> tmpBuffer{*incomingMessagesBuffer};
+
         crdt->processBuffer(incomingMessagesBuffer);
+
+        for(CRDT_Message m : tmpBuffer)
+            emit messageToServer(m, threadId_toQString(thread_id), current_docId);
+    }
 
     incomingMessagesBuffer->append(m);
 }
