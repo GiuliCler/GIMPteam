@@ -567,7 +567,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         }
         if(colored){
             tmp.setPosition(pos1);
-            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, add);
+            tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, cnt);
             QTextCharFormat fmt;
             fmt.setBackground(Qt::BrushStyle::NoBrush);
             tmp.mergeCharFormat(fmt);
