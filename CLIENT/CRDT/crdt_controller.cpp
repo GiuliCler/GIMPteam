@@ -552,7 +552,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         tmp.movePosition(QTextCursor::EndOfBlock);
 
         // remove these letters (w/ the old alignment) from the crdt
-        cnt = tmp.position() - pos1;
+        cnt = tmp.position() - pos1 + 1;
         crdt.localMultipleErase(pos1, cnt);
 
 
