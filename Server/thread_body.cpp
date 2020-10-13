@@ -271,6 +271,15 @@ void Thread_body::executeJob(QByteArray data){
         return;
     }
 
+    c = "CHANGEALIGN";
+    if(text.contains(c.toUtf8())){
+        Qt::Alignment al;
+        in_data >> al;
+
+        changeAlign(al);
+        return;
+    }
+
     c = "DISCONNECT_FROM_DOC";
     if(text.contains(c.toUtf8())){
 
@@ -1440,6 +1449,17 @@ void Thread_body::startCursor(){
     emit messageToServer(m, threadId_toQString(threadId), current_docId);
 }
 
+void Thread_body::changeAlign(Qt::Alignment al){
+    if(current_docId == -1)
+        return;
+
+    CRDT_Symbol s{};
+    CRDT_Message m{"CHANGEALIGN_"+std::to_string(al), s, current_userId};
+    auto threadId = std::this_thread::get_id();
+
+    emit messageToServer(m, threadId_toQString(threadId), current_docId);
+}
+
 void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int docId){
 
     auto thread_id = std::this_thread::get_id();
@@ -1548,6 +1568,17 @@ void Thread_body::processMessage(CRDT_Message m, QString thread_id_sender, int d
         QString s = "STARTCURSOR";
         out << s.toUtf8();
         out << m.getCreatore();
+        writeData(blocko);
+        return;
+    }
+
+    c = "CHANGEALIGN";
+    if(strAction.contains(c.toUtf8())){
+        QStringList str = strAction.split("_");
+        QString s = "CHANGEALIGN";
+        Qt::Alignment al{str[1].toInt()};
+        out << s.toUtf8();
+        out << al;
         writeData(blocko);
         return;
     }

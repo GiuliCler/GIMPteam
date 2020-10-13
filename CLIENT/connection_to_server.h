@@ -44,6 +44,7 @@ public:
     void requestSendMovedCursor(int userId, int pos);
     void requestSendStopCursor();
     void requestSendStartCursor();
+    void requestChangeAlign(Qt::Alignment al);
     void connectEditor();
     void disconnectEditor(int userId, int docId);
     std::shared_ptr<QSet<int>> getContributors(int docId);
@@ -64,6 +65,7 @@ signals:
     void sigMoveCursor(const int userId, const int pos);
     void sigStopCursor(int userId);
     void sigStartCursor(int userId);
+    void sigChangeAlign(Qt::Alignment al);
     void sigOfflineUser(int userId);
     void sigOnlineUser(int userid, QString nickname, QString iconId);
     void sigNewContributor(int userid, QString nickname, QString iconId);

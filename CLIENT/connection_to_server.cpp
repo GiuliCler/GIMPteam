@@ -969,6 +969,7 @@ void connection_to_server::requestSendStopCursor(){
 }
 
 void connection_to_server::requestSendStartCursor(){
+
 //    std::cout << "STARTCURSOR" << std::endl;
 //    qDebug()<<"STARTCURSOR";      // DEBUG
 
@@ -989,6 +990,29 @@ void connection_to_server::requestSendStartCursor(){
     sendBuffer.append(comando);
 
     writeDataBuffer();
+}
+
+void connection_to_server::requestChangeAlign(Qt::Alignment al){
+
+//        std::cout << "CHANGEALIGN" << std::endl;
+//        qDebug()<<"CHANGEALIGN";                        // DEBUG
+
+        if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
+            this->tcpSocket->connectToHost(this->ipAddress, this->port.toInt());
+
+        if (!tcpSocket->waitForConnected(Timeout)) {
+            throw GUI_ConnectionException("Timeout Expired.");
+        }
+
+        QByteArray buffer;
+        QDataStream out(&buffer, QIODevice::WriteOnly);
+        out.setVersion(QDataStream::Qt_5_12);
+        QByteArray comando = "CHANGEALIGN";
+
+        out << comando;
+        out << al;
+
+        writeData(buffer);
 }
 
 void connection_to_server::connectEditor(){
@@ -1229,7 +1253,15 @@ void connection_to_server::receiveMessage(QByteArray data){
         return;
     }
 
-
+    c = "CHANGEALIGN";
+    if(action.contains(c.toUtf8())){
+        Qt::Alignment al;
+        in_data >> al;
+//        qDebug() << "SLOT CLIENT receiveMessage - CHANGEALIGN";    //DEBUG
+//        std::cout << "SLOT CLIENT receiveMessage - CHANGEALIGN" << std::endl;
+        emit sigChangeAlign(al);
+        return;
+    }
 }
 
 bool connection_to_server::writeData(QByteArray data){

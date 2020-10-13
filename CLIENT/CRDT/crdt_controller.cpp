@@ -30,6 +30,7 @@ CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyT
     QObject::connect(connection, &connection_to_server::sigMoveCursor, this, &CRDT_controller::remoteMove, Qt::ConnectionType::QueuedConnection);
     QObject::connect(connection, &connection_to_server::sigStopCursor, this, &CRDT_controller::remoteStopCursor, Qt::ConnectionType::QueuedConnection);
     QObject::connect(connection, &connection_to_server::sigStartCursor, this, &CRDT_controller::remoteStartCursor, Qt::ConnectionType::QueuedConnection);
+    QObject::connect(connection, &connection_to_server::sigChangeAlign, this, &CRDT_controller::remoteChangeAlign, Qt::ConnectionType::QueuedConnection);
 
     parent->childToolsBar->ui->spinBox->setSpecialValueText("Default");
 }
@@ -37,7 +38,6 @@ CRDT_controller::CRDT_controller(GIMPdocs *gimpdocs, GUI_Editor *parent, GUI_MyT
 CRDT_controller::~CRDT_controller(){
 //    qDebug() << "Distruttore CRDT_controller chiamato";        // DEBUG
 }
-
 
 void CRDT_controller::setLeft(){
     textEdit.setAlignment(Qt::AlignLeft);
@@ -160,6 +160,8 @@ void CRDT_controller::cut(){
 
 void CRDT_controller::paste(){
     deletedAmountOnPaste = textEdit.textCursor().selectedText().length();
+    if(textEdit.document()->isEmpty())
+        alignBeforePaste = textEdit.alignment();
     textEdit.paste();
     textEdit.setFocus();
 }
@@ -389,7 +391,6 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
 
     QTextCursor tmp{textEdit.document()};
-    tmp.setPosition(pos);
     bool mustClearStacks = false;
 
     //std::cout << "Before adj - pos: " << pos << "; add: " << add << "; del: " << del <<"; deletedAmountOnPaste: " << deletedAmountOnPaste << std::endl;     // DEBUG
@@ -401,13 +402,30 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
             add = add - del + deletedAmountOnPaste;
             del = deletedAmountOnPaste;
             mustClearStacks = true;
+            if(add == textEdit.document()->characterCount() -1){
+                QTextBlockFormat fmt;
+                fmt.setAlignment(alignBeforePaste);
+
+                tmp.select(QTextCursor::Document);
+                tmp.mergeBlockFormat(fmt);
+            }
         }
         deletedAmountOnPaste = -1;
     }
 
+    tmp.setPosition(pos);
+
     if(pos + del -1 > crdt.getLength() - 1){
         del--;
         add--;
+        if(add == 0 & del == 0 && pos == 0){
+            try {
+                connection->requestChangeAlign(textEdit.alignment());
+            } catch (GUI_ConnectionException &exception){
+                GUI_Reconnection::GUI_ReconnectionWrapper(gimpDocs);
+                gimpDocs->returnToLogin();
+            }
+        }
     }
 
     //std::cout << "After adj - pos: " << pos << "; add: " << add << "; del: " << del << std::endl;     // DEBUG
@@ -484,8 +502,15 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
         QString document = textEdit.toPlainText();
 
-        QTextCharFormat fmt{tmp.charFormat()};
-        crdt.localFirstInsert(pos, document.at(pos), fmt, tmp.blockFormat().alignment(), firstPosition, add);
+        if(textEdit.toPlainText().at(pos) == '\n'){
+            tmp.movePosition(QTextCursor::PreviousCharacter);
+            QTextCharFormat fmt{tmp.charFormat()};
+            crdt.localFirstInsert(pos, document.at(pos), fmt, tmp.blockFormat().alignment(), firstPosition, add);
+            tmp.movePosition(QTextCursor::NextCharacter);
+        } else {
+            QTextCharFormat fmt{tmp.charFormat()};
+            crdt.localFirstInsert(pos, document.at(pos), fmt, tmp.blockFormat().alignment(), firstPosition, add);
+        }
 
 //        auto time5 = std::chrono::high_resolution_clock::now();
 //                auto tot_time5 = std::chrono::duration_cast<std::chrono::microseconds>(time5 - start_time).count();
@@ -498,10 +523,17 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         // Insert in crdt, making sure that the font size is > 0 (or use the default one)
         for(int i = pos+1; i < pos + add; ++i){
             tmp.movePosition(QTextCursor::NextCharacter);
-            QTextCharFormat fmt{tmp.charFormat()};
-
             firstPosition[firstPosition.size()-2]++;
-            crdt.localInsert(i, document.at(i), fmt, tmp.blockFormat().alignment(), firstPosition);
+
+            if(textEdit.toPlainText().at(i) == '\n'){
+                tmp.movePosition(QTextCursor::PreviousCharacter);
+                QTextCharFormat fmt{tmp.charFormat()};
+                crdt.localInsert(i, document.at(i), fmt, tmp.blockFormat().alignment(), firstPosition);
+                tmp.movePosition(QTextCursor::NextCharacter);
+            } else {
+                QTextCharFormat fmt{tmp.charFormat()};
+                crdt.localInsert(i, document.at(i), fmt, tmp.blockFormat().alignment(), firstPosition);
+            }
         }
     }
 
@@ -515,8 +547,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     if(!tmp.atEnd() &&  tmp.blockFormat().alignment() != crdt.getAlignAt(tmp.position())){
 
 //        std::cout << "At end: " << textEdit.textCursor().atEnd() << "; Alignment: " << textEdit.alignment() << "; crdt-al: " << crdt.getAlignAt(textEdit.textCursor().position()) << std::endl;        // DEBUG
-        int pos1 = textEdit.textCursor().position();
-        tmp = textEdit.textCursor();
+        int pos1 = tmp.position();
         //cancello dal fondo del blocco a tmp
         tmp.movePosition(QTextCursor::EndOfBlock);
 
@@ -588,8 +619,15 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
         QString document = textEdit.toPlainText();
 
-        QTextCharFormat fmt{tmp.charFormat()};
-        crdt.localFirstInsert(pos1, document.at(pos1), fmt, tmp.blockFormat().alignment(), firstPosition, cnt);
+        if(textEdit.toPlainText().at(pos1) == '\n'){
+            tmp.movePosition(QTextCursor::PreviousCharacter);
+            QTextCharFormat fmt{tmp.charFormat()};
+            crdt.localFirstInsert(pos1, document.at(pos1), fmt, tmp.blockFormat().alignment(), firstPosition, cnt);
+            tmp.movePosition(QTextCursor::NextCharacter);
+        } else {
+            QTextCharFormat fmt{tmp.charFormat()};
+            crdt.localFirstInsert(pos1, document.at(pos1), fmt, tmp.blockFormat().alignment(), firstPosition, cnt);
+        }
 
         // Aggiungo al fondo del vettore di interi il siteId
         firstPosition.push_back(crdt.getSiteId());
@@ -598,10 +636,18 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         // insert in crdt, making sure that the font size is > 0 (or use the default one)
         for(int i = pos1+1; i < pos1 + cnt; ++i){
             tmp.movePosition(QTextCursor::NextCharacter);
-            QTextCharFormat fmt{tmp.charFormat()};
 
             firstPosition[firstPosition.size()-2]++;
-            crdt.localInsert(i, document.at(i), fmt, tmp.blockFormat().alignment(), firstPosition);
+            
+            if(textEdit.toPlainText().at(i) == '\n'){
+                tmp.movePosition(QTextCursor::PreviousCharacter);
+                QTextCharFormat fmt{tmp.charFormat()};
+                crdt.localInsert(i, document.at(i), fmt, tmp.blockFormat().alignment(), firstPosition);
+                tmp.movePosition(QTextCursor::NextCharacter);
+            } else {
+                QTextCharFormat fmt{tmp.charFormat()};
+                crdt.localInsert(i, document.at(i), fmt, tmp.blockFormat().alignment(), firstPosition);
+            }
         }
     }
 
@@ -634,7 +680,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     }
     cursorMovable_sem--;
     try {
-    connection->requestSendStartCursor();
+        connection->requestSendStartCursor();
     } catch (GUI_ConnectionException &exception){
         GUI_Reconnection::GUI_ReconnectionWrapper(gimpDocs);
         gimpDocs->returnToLogin();
@@ -642,6 +688,10 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
     if(highlightUsers && cursorMovable_sem == 0)
         cursorMoved();
+
+//    for(auto l: crdt._symbols){
+//        std::cout << "Letter " << l.getCarattere().toLatin1() << " aligned: " << l.getAlignment() << std::endl;
+//    }
 }
 
 // if the clipboard has some text, enable the paste
@@ -712,6 +762,10 @@ void CRDT_controller::menuCall(menuTools op){
 // show the delection of the letter by another user
 void CRDT_controller::remoteDelete(int start, int cnt){
 
+//    for(auto l: crdt._symbols){
+//        std::cout << "Letter " << l.getCarattere().toLatin1() << " aligned: " << l.getAlignment() << std::endl;
+//    }
+
 //    std::cout<<"EHI! SONO NELLA REMOTE DELETE! Position: "<< pos <<std::endl;         // DEBUG
 
     bool processingMessage_prev = processingMessage;
@@ -734,6 +788,9 @@ void CRDT_controller::remoteDelete(int start, int cnt){
 // show the insertion of a new letter by another user
 void CRDT_controller::remoteInsert(int pos, QString s, QTextCharFormat fmt, Qt::Alignment align){
 
+//    for(auto l: crdt._symbols){
+//        std::cout << "Letter " << l.getCarattere().toLatin1() << " aligned: " << l.getAlignment() << std::endl;
+//    }
 //    std::cout<<"EHI! SONO NELLA REMOTE INSERT! Char: "<< c.toLatin1() <<std::endl;        // DEBUG
 
     bool processingMessage_prev = processingMessage;
@@ -756,13 +813,18 @@ void CRDT_controller::remoteInsert(int pos, QString s, QTextCharFormat fmt, Qt::
 
     tmp.insertText(s, fmt);
 
+    if(s.back() == '\n')
+        tmp.movePosition(QTextCursor::PreviousCharacter);
+
     if(tmp.blockFormat().alignment() != align){
         tmp.setPosition(pos);
-        tmp.movePosition(
-                    tmp.atBlockEnd() ? QTextCursor::NextBlock : QTextCursor::StartOfBlock,
-                    QTextCursor::MoveAnchor);
-        tmp.setPosition(pos+s.length(), QTextCursor::KeepAnchor);
-        tmp.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+        tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor,
+                         s.back() == '\n' ? s.length()-1 : s.length());
+//        tmp.movePosition(
+//                    tmp.atBlockEnd() ? QTextCursor::NextBlock : QTextCursor::StartOfBlock,
+//                    QTextCursor::MoveAnchor);
+//        tmp.setPosition(pos+s.length(), QTextCursor::KeepAnchor);
+//        tmp.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
         blockFmt.setAlignment(align);
         tmp.mergeBlockFormat(blockFmt);
     }
@@ -809,6 +871,26 @@ void CRDT_controller::remoteStartCursor(int userId){
     cursorMovable_sem--;
 
     cursorMoved();
+}
+
+// receive the request to change the alignment
+void CRDT_controller::remoteChangeAlign(Qt::Alignment al){
+
+    bool processingMessage_prev = processingMessage;
+    processingMessage = true;
+
+    if(crdt.getLength() == 0){
+        if(al == Qt::AlignLeft)
+            this->setLeft();
+        else if(al == Qt::AlignRight)
+            this->setRight();
+        else if(al == Qt::AlignCenter)
+            this->setCenter();
+        else
+            this->setJustified();
+    }
+
+    processingMessage = processingMessage_prev;
 }
 
 GIMPdocs* CRDT_controller::getGimpDocs(){
