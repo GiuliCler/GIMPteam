@@ -418,7 +418,7 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     if(pos + del -1 > crdt.getLength() - 1){
         del--;
         add--;
-        if(add == 0 & del == 0 && pos == 0){
+        if(add == 0 && del == 0 && pos == 0){
             try {
                 connection->requestChangeAlign(textEdit.alignment());
             } catch (GUI_ConnectionException &exception){
