@@ -40,7 +40,7 @@ void CRDT_ServerEditor::processBuffer(std::shared_ptr<QLinkedList<CRDT_Message>>
                 QVector<int> posNew = simbolo.getPosizione();
                 int esitoDX, esitoSX;
                 int userId = m.getCreatore();                                       // Recupero dal messaggio lo userId di chi sta scrivendo
-                int indexCursore = usersCursors.value(userId);              // Recupero il cursore di tale user
+                int indexCursore = std::min(usersCursors.value(userId), _symbols.size());              // Recupero il cursore di tale user
 
                 if(indexCursore <= 0){
                     //il cursore in TLB era in testa
