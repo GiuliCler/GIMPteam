@@ -12,15 +12,39 @@
 CRDT_SharedEditor::CRDT_SharedEditor(CRDT_controller *parent, connection_to_server *connection, int siteId, int siteCounter): parent(parent), connection(connection), _siteId(siteId), _counter(siteCounter){
 
         // Recupero il file da caricare nell'editor
-        int pos = 0;
         QByteArray file = connection->getFileTMP();
         QDataStream data(&file, QIODevice::ReadOnly);
         data >> _symbols;
 
-        // Aggiorno lo shared editor
-        for(auto it = _symbols.begin();it<_symbols.end();it++, pos++) {
-            parent->remoteInsert(pos, it->getCarattere(), it->getFormat(), it->getAlignment());
+        int pos = 0;
+        int start = 0;
+        QString s = "";
+        QTextCharFormat fmt;
+        Qt::Alignment align;
+
+        if(!_symbols.isEmpty()){
+            fmt = _symbols.first().getFormat();
+            align = _symbols.first().getAlignment();
         }
+
+        // Aggiorno lo shared editor
+        auto it = _symbols.begin();
+        while(it < _symbols.end()){
+            if(fmt == it->getFormat() && align == it->getAlignment()){
+                s.push_back(it->getCarattere());
+            } else {
+                parent->remoteInsert(start, s, fmt, align);
+                s.clear();
+                s.push_back(it->getCarattere());
+                fmt = it->getFormat();
+                align = it->getAlignment();
+                start = pos;
+            }
+            it++;
+            pos++;
+        }
+        if(!s.isEmpty())
+            parent->remoteInsert(start, s, fmt, align);
 
         QObject::connect(connection, &connection_to_server::sigProcessMessage, this, &CRDT_SharedEditor::process, Qt::QueuedConnection);
 }
