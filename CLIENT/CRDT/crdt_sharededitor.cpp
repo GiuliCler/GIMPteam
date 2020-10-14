@@ -140,8 +140,6 @@ QVector<int> CRDT_SharedEditor::generaPosizione(QVector<int> prev, QVector<int> 
 
 void CRDT_SharedEditor::localFirstInsert(int index, QChar value, QTextCharFormat fmt, Qt::Alignment align, QVector<int> posizione, int insertSize){
 
-//    std::cout << "localInsert - Adding " << value.toLatin1() << " to CRDT in pos " << index << std::endl;      // DEBUG
-
     /* Creazione del nuovo simbolo e inserimento nella corretta posizione all'interno del vettore _symbols */
     CRDT_Symbol simbolo{value, this->_siteId, this->_counter++, posizione, fmt, align};
     auto it = _symbols.begin()+index;
@@ -159,8 +157,6 @@ void CRDT_SharedEditor::localFirstInsert(int index, QChar value, QTextCharFormat
 }
 
 void CRDT_SharedEditor::localInsert(int index, QChar value, QTextCharFormat fmt, Qt::Alignment align, QVector<int> posizione){
-
-//    std::cout << "localInsert - Adding " << value.toLatin1() << " to CRDT in pos " << index << std::endl;      // DEBUG
 
     /* Creazione del nuovo simbolo e inserimento nella corretta posizione all'interno del vettore _symbols */
     CRDT_Symbol simbolo{value, this->_siteId, this->_counter++, posizione, fmt, align};
@@ -204,12 +200,10 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
     int userId = m.getCreatore();
 
     if(!parent->userBuffers.contains(userId)){
-        //std::cout << "Discarding message from unknown user " << userId << std::endl;
         return;
     }
 
     if(parent->userBuffers[userId].empty()){
-        //std::cout << "Adding in empty buffer of user " << userId << std::endl;
         parent->userBuffers[userId].append(m);
         return;
     }
@@ -219,7 +213,6 @@ void CRDT_SharedEditor::process(const CRDT_Message& m){
     CRDT_Message head = parent->userBuffers[userId][0];
 
     if(azione != head.getAzione()){
-        //std::cout << "Changing op type in buffer of user " << userId << std::endl;
         processBuffer(userId);
         parent->userBuffers[userId].append(m);
         return;
@@ -243,7 +236,6 @@ void CRDT_SharedEditor::processBuffer(int userId){
         CRDT_Symbol simbolo = m.getSimbolo();
 
         QVector<CRDT_Symbol>::iterator it = _symbols.begin();
-        //        std::cout<<"Sono nella process per una... "<<azione<<std::endl;        // DEBUG
 
         if(azione == "insert"){                 // SIMBOLO INSERITO
 
@@ -325,7 +317,6 @@ void CRDT_SharedEditor::processBuffer(int userId){
 
             // Aggiorno il cursore dell'utente che ha scritto
             parent->usersCursors[m.getCreatore()] = count + s.length();
-    //            std::cout<<"(insert) Sto mettendo il cursore all'indice: "<<parent->usersCursors[m.getCreatore()]<<std::endl;          // DEBUG
 
             parent->userBuffers[userId].clear();
 
@@ -404,7 +395,6 @@ void CRDT_SharedEditor::processBuffer(int userId){
                     _symbols.erase(it+1, it+count+1);
                     parent->userBuffers[userId].erase(parent->userBuffers[userId].begin(), it2);
                     parent->remoteDelete(pos-count+1, count);
-                    //  std::cout<<"(delete) Sto mettendo il cursore all'indice: "<<parent->usersCursors[m.getCreatore()]<<std::endl;          // DEBUG
                     // Aggiorno il cursore dell'utente che ha cancellato
                     parent->usersCursors[m.getCreatore()] = pos - count + 1;
                 } else{
@@ -452,16 +442,6 @@ QVector<CRDT_Symbol>::iterator CRDT_SharedEditor::trovaPosizione(QVector<int> ta
         // currentPos < target
         it = it + centro + 1;
     }
-
-//    for(it = _symbols.begin; it < _symbols.end; it++){
-//        currentPos = (*it).getPosizione();
-//        esito = confrontaPos(pos, currentPos);
-//        if(esito)
-//            break;
-//    }
-
-//    if(!esito)
-//        it = _symbols.end();
 
     return it;
 }

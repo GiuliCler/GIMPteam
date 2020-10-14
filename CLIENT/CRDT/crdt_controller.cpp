@@ -315,7 +315,6 @@ void CRDT_controller::currentCharFormatChanged(const QTextCharFormat &format){
 
 void CRDT_controller::cursorMoved(){
 
-    //std::cout << "Hey, I'm in Cursor Moved!" << std::endl;
     if(cursorMovable_sem > 0)
         return;
 
@@ -377,8 +376,6 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     if(processingMessage)
         return;
 
-//    auto start_time = std::chrono::high_resolution_clock::now();
-
     cursorMovable_sem++;
     if(cursorMovable_sem == 1)
         QObject::disconnect(&this->textEdit, &QTextEdit::cursorPositionChanged, this, &CRDT_controller::cursorMoved);
@@ -394,8 +391,6 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
     bool mustClearStacks = false;
 
     //std::cout << "Before adj - pos: " << pos << "; add: " << add << "; del: " << del <<"; deletedAmountOnPaste: " << deletedAmountOnPaste << std::endl;     // DEBUG
-
-    //std::cout << "Pos cursore: " << textEdit.textCursor().position() << std::endl;
 
     if(deletedAmountOnPaste != -1){
         if(pos == 0){
@@ -445,8 +440,6 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
                 break;
             }
         }
-
-//        std::cout << "Pos cursore (DOPO CODICE NoBrush): " << tmp.position() << std::endl;      // DEBUG
 
         if(colored){
             tmp.setPosition(pos);
@@ -512,10 +505,6 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
             crdt.localFirstInsert(pos, document.at(pos), fmt, tmp.blockFormat().alignment(), firstPosition, add);
         }
 
-//        auto time5 = std::chrono::high_resolution_clock::now();
-//                auto tot_time5 = std::chrono::duration_cast<std::chrono::microseconds>(time5 - start_time).count();
-//                std::cout << "Inserted first time: " << tot_time5 << std::endl;
-
         // Aggiungo al fondo del vettore di interi il siteId
         firstPosition.push_back(crdt.getSiteId());
         firstPosition.push_back(crdt.getSiteId());
@@ -537,16 +526,11 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         }
     }
 
-//    auto time6 = std::chrono::high_resolution_clock::now();
-//            auto tot_time6 = std::chrono::duration_cast<std::chrono::microseconds>(time6 - start_time).count();
-//            std::cout << "Inserted all time: " << tot_time6 << std::endl;
-
     int cnt = 0;
 
     // if i'm changing the alignment of the paragraph next to the cursor (deleting an enter)
     if(!tmp.atEnd() &&  tmp.blockFormat().alignment() != crdt.getAlignAt(tmp.position())){
 
-//        std::cout << "At end: " << textEdit.textCursor().atEnd() << "; Alignment: " << textEdit.alignment() << "; crdt-al: " << crdt.getAlignAt(textEdit.textCursor().position()) << std::endl;        // DEBUG
         int pos1 = tmp.position();
         //cancello dal fondo del blocco a tmp
         tmp.movePosition(QTextCursor::EndOfBlock);
@@ -554,7 +538,6 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
         // remove these letters (w/ the old alignment) from the crdt
         cnt = tmp.position() - pos1 + 1;
         crdt.localMultipleErase(pos1, cnt);
-
 
         // re-insert the letters making sure that the format is correct
         tmp.setPosition(pos1);
@@ -688,10 +671,6 @@ void CRDT_controller::contentChanged(int pos, int del, int add){
 
     if(highlightUsers && cursorMovable_sem == 0)
         cursorMoved();
-
-//    for(auto l: crdt._symbols){
-//        std::cout << "Letter " << l.getCarattere().toLatin1() << " aligned: " << l.getAlignment() << std::endl;
-//    }
 }
 
 // if the clipboard has some text, enable the paste
@@ -762,10 +741,6 @@ void CRDT_controller::menuCall(menuTools op){
 // show the delection of the letter by another user
 void CRDT_controller::remoteDelete(int start, int cnt){
 
-//    for(auto l: crdt._symbols){
-//        std::cout << "Letter " << l.getCarattere().toLatin1() << " aligned: " << l.getAlignment() << std::endl;
-//    }
-
 //    std::cout<<"EHI! SONO NELLA REMOTE DELETE! Position: "<< pos <<std::endl;         // DEBUG
 
     bool processingMessage_prev = processingMessage;
@@ -788,9 +763,6 @@ void CRDT_controller::remoteDelete(int start, int cnt){
 // show the insertion of a new letter by another user
 void CRDT_controller::remoteInsert(int pos, QString s, QTextCharFormat fmt, Qt::Alignment align){
 
-//    for(auto l: crdt._symbols){
-//        std::cout << "Letter " << l.getCarattere().toLatin1() << " aligned: " << l.getAlignment() << std::endl;
-//    }
 //    std::cout<<"EHI! SONO NELLA REMOTE INSERT! Char: "<< c.toLatin1() <<std::endl;        // DEBUG
 
     bool processingMessage_prev = processingMessage;
@@ -820,11 +792,7 @@ void CRDT_controller::remoteInsert(int pos, QString s, QTextCharFormat fmt, Qt::
         tmp.setPosition(pos);
         tmp.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor,
                          s.back() == '\n' ? s.length()-1 : s.length());
-//        tmp.movePosition(
-//                    tmp.atBlockEnd() ? QTextCursor::NextBlock : QTextCursor::StartOfBlock,
-//                    QTextCursor::MoveAnchor);
-//        tmp.setPosition(pos+s.length(), QTextCursor::KeepAnchor);
-//        tmp.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+
         blockFmt.setAlignment(align);
         tmp.mergeBlockFormat(blockFmt);
     }
@@ -844,11 +812,10 @@ void CRDT_controller::remoteMove(int userId, int pos){
 
     if(pos >= textEdit.document()->characterCount())
         pos = textEdit.document()->characterCount() - 1;
-//    else
+
     tmp.setPosition(pos);
 
     // Aggiorno vettore dei cursori degli utenti online
-//    std::cout<<"(remoteMove) Sto MUOVENDO IL CURSORE all'indice: "<<pos<<std::endl;          // DEBUG
     usersCursors[userId] = pos;
 
     QPoint position = QPoint (textEdit.cursorRect(tmp).topLeft().x(), textEdit.cursorRect(tmp).topLeft().y() + textEdit.verticalScrollBar()->value());

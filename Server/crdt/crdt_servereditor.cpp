@@ -193,16 +193,6 @@ QVector<CRDT_Symbol>::iterator CRDT_ServerEditor::trovaPosizione(QVector<int> ta
         it = it + centro + 1;
     }
 
-//    for(it = _symbols.begin; it < _symbols.end; it++){
-//        currentPos = (*it).getPosizione();
-//        esito = confrontaPos(pos, currentPos);
-//        if(esito)
-//            break;
-//    }
-
-//    if(!esito)
-//        it = _symbols.end();
-
     return it;
 }
 

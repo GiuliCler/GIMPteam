@@ -924,7 +924,7 @@ bool connection_to_server::pingServer(){
 }
 
 void connection_to_server::requestSendMovedCursor(int userId, int pos){
-//    std::cout << "MOVECURSOR" << std::endl;
+
 //    qDebug()<<"MOVECURSOR";      // DEBUG
 
     if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
@@ -948,7 +948,6 @@ void connection_to_server::requestSendMovedCursor(int userId, int pos){
 
 void connection_to_server::requestSendStopCursor(){
 
-//    std::cout << "STOPCURSOR" << std::endl;
 //    qDebug()<<"STOPCURSOR";      // DEBUG
 
     if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
@@ -970,7 +969,6 @@ void connection_to_server::requestSendStopCursor(){
 
 void connection_to_server::requestSendStartCursor(){
 
-//    std::cout << "STARTCURSOR" << std::endl;
 //    qDebug()<<"STARTCURSOR";      // DEBUG
 
     if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
@@ -994,7 +992,6 @@ void connection_to_server::requestSendStartCursor(){
 
 void connection_to_server::requestChangeAlign(Qt::Alignment al){
 
-//        std::cout << "CHANGEALIGN" << std::endl;
 //        qDebug()<<"CHANGEALIGN";                        // DEBUG
 
         if(this->tcpSocket->state() != QTcpSocket::ConnectedState)
@@ -1161,7 +1158,6 @@ void connection_to_server::receiveMessage(QByteArray data){
     QByteArray action;
     in_data >> action;
 
-//    std::cout << "SLOT CLIENT receiveMessage - action ricevuta: "<< action.toStdString() << std::endl;      // DEBUG
 //    qDebug() << "SLOT CLIENT receiveMessage - action ricevuta: "<<QString::fromStdString(action.toStdString());      // DEBUG
 
     QString c;
@@ -1238,7 +1234,6 @@ void connection_to_server::receiveMessage(QByteArray data){
         int userId;
         in_data >> userId;
 //        qDebug() << "SLOT CLIENT receiveMessage - STOPCURSOR";    //DEBUG
-//        std::cout << "SLOT CLIENT receiveMessage - STOPCURSOR" << std::endl;
         emit sigStopCursor(userId);
         return;
     }
@@ -1248,7 +1243,6 @@ void connection_to_server::receiveMessage(QByteArray data){
         int userId;
         in_data >> userId;
 //        qDebug() << "SLOT CLIENT receiveMessage - STARTCURSOR";    //DEBUG
-//        std::cout << "SLOT CLIENT receiveMessage - STARTCURSOR" << std::endl;
         emit sigStartCursor(userId);
         return;
     }
@@ -1258,7 +1252,6 @@ void connection_to_server::receiveMessage(QByteArray data){
         Qt::Alignment al;
         in_data >> al;
 //        qDebug() << "SLOT CLIENT receiveMessage - CHANGEALIGN";    //DEBUG
-//        std::cout << "SLOT CLIENT receiveMessage - CHANGEALIGN" << std::endl;
         emit sigChangeAlign(al);
         return;
     }
@@ -1283,8 +1276,6 @@ bool connection_to_server::writeData(QByteArray data){
 }
 
 bool connection_to_server::writeDataBuffer(){
-//    static long long tot_time = 0;
-//    auto start_time = std::chrono::high_resolution_clock::now();
 
     if(this->tcpSocket->state() == QAbstractSocket::ConnectedState) {
 
@@ -1295,11 +1286,6 @@ bool connection_to_server::writeDataBuffer(){
         }
 
         this->sendBuffer.clear();
-
-//        auto end_time = std::chrono::high_resolution_clock::now();
-//        tot_time = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
-//        std::cout << "sending Buffer: ";
-//        std::cout << tot_time << std::endl;
 
         return true;
 
@@ -1426,8 +1412,6 @@ void connection_to_server::readDataFile(){
                     in_simb >> s;
                     simboli.push_back(s);
                     i++;
-
-//                    qDebug()<<"readDataFile - Fatto il push_back del simbolo: "<<s.getCarattere().toLatin1();              // DEBUG
 
                     flag = true;
                     break;
